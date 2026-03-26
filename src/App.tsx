@@ -17,21 +17,49 @@ import {
   getSymmetryOperations
 } from './services/tensorCalculator';
 
+function negateExpression(expr: string): string {
+  if (expr === "0") return "0";
+  let result = expr.trim();
+  if (!result.startsWith('-') && !result.startsWith('+')) {
+    result = '+' + result;
+  }
+  result = result.replace(/\+/g, 'TEMP_PLUS').replace(/-/g, '+').replace(/TEMP_PLUS/g, '-');
+  result = result.replace(/^\+\s*/, '');
+  result = result.replace(/\s*\+\s*/g, ' + ').replace(/\s*-\s*/g, ' - ');
+  result = result.trim().replace(/^-\s*/, '-');
+  return result;
+}
+
+const FormatPointGroup = ({ name }: { name: string }) => {
+  const parts = name.split(/(-[1-6])/);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.startsWith('-')) {
+          return <span key={i} className="overline">{part.slice(1)}</span>;
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+};
+
 const SymmetryOperation = ({ symbol }: { symbol: string }) => {
   const match = symbol.match(/^(-?\d|m)(?:_([a-z\[\]0-9-°]+))?([⁺⁻])?(')?$/);
   if (!match) return <span>{symbol}</span>;
   
   const [, base, axis, sign, prime] = match;
+  const displaySign = sign === '⁺' ? '+' : sign === '⁻' ? '-' : '';
   
   return (
     <span className="inline-flex items-center font-mono text-xs bg-white/50 px-2 py-1 border border-[#141414] border-opacity-10 rounded-sm">
-      <span>{base}</span>
-      {axis && <sub className="text-[0.7em] ml-0.5 mt-1">{axis}</sub>}
-      {sign && (
-        <sup className="text-[0.7em] ml-0.5 -mt-2">
-          {sign === '⁺' ? '+' : '-'}
-        </sup>
+      {displaySign && <span>{displaySign}</span>}
+      {base.startsWith('-') ? (
+        <span className="overline">{base.slice(1)}</span>
+      ) : (
+        <span>{base}</span>
       )}
+      {axis && <sub className="text-[0.7em] ml-0.5 mt-1">{axis}</sub>}
       {prime && <span className="text-[1.25em] leading-none ml-0.5 font-bold">′</span>}
     </span>
   );
@@ -39,14 +67,14 @@ const SymmetryOperation = ({ symbol }: { symbol: string }) => {
 
 const TensorTerm = ({ term, isNull }: { term: string; isNull: boolean; key?: any }) => {
   // Split by parts that look like Symbol_Indices(Power)?
-  // e.g. χ_xyz, E_x, E_y², P_x, M_z
+  // e.g. χ_xyz, E_x, E_y², P_x, M_z, S_x
   // We restrict indices to x, y, z to prevent greedy matching of adjacent symbols
-  const parts = term.split(/([χPMQE]_[xyz]+²?)/);
+  const parts = term.split(/([χPMQES]_[xyz]+²?)/);
 
   return (
     <span className={isNull ? 'opacity-30' : 'text-[#141414]'}>
       {parts.map((part, i) => {
-        const match = part.match(/^([χPMQE])_([xyz]+)(²)?$/);
+        const match = part.match(/^([χPMQES])_([xyz]+)(²)?$/);
         if (match) {
           const [, symbol, indices, power] = match;
           const isChi = symbol === 'χ';
@@ -117,6 +145,64 @@ export default function App() {
 
   const currentExpressions = calculateSHGExpressions(selectedGroup?.name || "", selectedTensorType, selectedTimeReversal, selectedKDir);
 
+  const sourceTerms = useMemo(() => {
+    const getExpr = (comp: string) => currentExpressions.find(e => e.component === comp)?.expression || "0";
+    
+    if (selectedTensorType === 'ED') {
+      if (selectedKDir === 'x') {
+        return [
+          { component: 'S_y', expression: getExpr('P_y'), relation: 'P_y' },
+          { component: 'S_z', expression: getExpr('P_z'), relation: 'P_z' }
+        ];
+      } else if (selectedKDir === 'y') {
+        return [
+          { component: 'S_x', expression: getExpr('P_x'), relation: 'P_x' },
+          { component: 'S_z', expression: getExpr('P_z'), relation: 'P_z' }
+        ];
+      } else {
+        return [
+          { component: 'S_x', expression: getExpr('P_x'), relation: 'P_x' },
+          { component: 'S_y', expression: getExpr('P_y'), relation: 'P_y' }
+        ];
+      }
+    } else if (selectedTensorType === 'MD') {
+      if (selectedKDir === 'x') {
+        return [
+          { component: 'S_y', expression: negateExpression(getExpr('M_z')), relation: '-M_z' },
+          { component: 'S_z', expression: getExpr('M_y'), relation: 'M_y' }
+        ];
+      } else if (selectedKDir === 'y') {
+        return [
+          { component: 'S_x', expression: getExpr('M_z'), relation: 'M_z' },
+          { component: 'S_z', expression: negateExpression(getExpr('M_x')), relation: '-M_x' }
+        ];
+      } else {
+        return [
+          { component: 'S_x', expression: negateExpression(getExpr('M_y')), relation: '-M_y' },
+          { component: 'S_y', expression: getExpr('M_x'), relation: 'M_x' }
+        ];
+      }
+    } else if (selectedTensorType === 'EQ') {
+      if (selectedKDir === 'x') {
+        return [
+          { component: 'S_y', expression: getExpr('Q_yx'), relation: 'Q_yx' },
+          { component: 'S_z', expression: getExpr('Q_zx'), relation: 'Q_zx' }
+        ];
+      } else if (selectedKDir === 'y') {
+        return [
+          { component: 'S_x', expression: getExpr('Q_xy'), relation: 'Q_xy' },
+          { component: 'S_z', expression: getExpr('Q_zy'), relation: 'Q_zy' }
+        ];
+      } else {
+        return [
+          { component: 'S_x', expression: getExpr('Q_xz'), relation: 'Q_xz' },
+          { component: 'S_y', expression: getExpr('Q_yz'), relation: 'Q_yz' }
+        ];
+      }
+    }
+    return [];
+  }, [currentExpressions, selectedTensorType, selectedKDir]);
+
   return (
     <div className="min-h-screen bg-[#E4E3E0] text-[#141414] font-sans selection:bg-[#141414] selection:text-[#E4E3E0]">
       {/* Header */}
@@ -161,7 +247,7 @@ export default function App() {
                       onClick={() => handleSelect(group)}
                       className="w-full text-left p-4 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors flex justify-between items-center group"
                     >
-                      <span className="text-xl font-serif italic">{group.name}</span>
+                      <span className="text-xl font-serif italic"><FormatPointGroup name={group.name} /></span>
                       <span className="text-[10px] uppercase tracking-widest opacity-50 group-hover:opacity-100">{group.crystalSystem}</span>
                     </button>
                   ))}
@@ -199,7 +285,7 @@ export default function App() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <h2 className="text-5xl font-serif italic">{selectedGroup.name}</h2>
+                    <h2 className="text-5xl font-serif italic"><FormatPointGroup name={selectedGroup.name} /></h2>
                     <p className="text-xs uppercase tracking-widest opacity-50 mt-1">
                       {selectedGroup.type === 'I' ? 'Standard' : selectedGroup.type === 'II' ? 'Gray' : 'Magnetic'} Point Group
                     </p>
@@ -340,7 +426,7 @@ export default function App() {
 
               <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
                 <Compass className="w-3 h-3" />
-                Induced SHG Source Terms (k ∥ {selectedKDir})
+                {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'} (k ∥ {selectedKDir})
               </div>
 
               <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
@@ -368,8 +454,44 @@ export default function App() {
 
                 <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
                   Note: This calculation assumes two identical input fields E(ω). 
-                  The transverse condition is strictly enforced: E · k = 0 (E<sub>{selectedKDir}</sub> = 0) 
-                  and only propagating source terms (transverse to k) are displayed.
+                  The transverse condition is strictly enforced: E · k = 0 (E<sub>{selectedKDir}</sub> = 0).
+                </div>
+              </div>
+
+              <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+                <Compass className="w-3 h-3" />
+                Source Term Components S<sub>i</sub>
+              </div>
+
+              <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-3xl font-serif italic">Effective Source Terms</h3>
+                  <div className="text-[10px] font-mono opacity-50">
+                    {selectedTensorType === 'ED' ? 'S ∝ P' : selectedTensorType === 'MD' ? 'S ∝ ∇ × M' : 'S ∝ ∇ · Q'}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {sourceTerms.map((expr, i) => {
+                    const isNull = expr.expression === "0";
+                    return (
+                      <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-[#141414] border-opacity-10 pb-4">
+                        <div className="w-16 font-mono text-xl">
+                          <TensorTerm term={expr.component} isNull={isNull} />
+                        </div>
+                        <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
+                          <span className="opacity-30 mr-4">∝</span>
+                          <span className="opacity-50 mr-4"><TensorTerm term={expr.relation} isNull={isNull} /></span>
+                          <span className="opacity-30 mr-4">=</span>
+                          <TensorTerm term={expr.expression} isNull={isNull} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
+                  Note: Only propagating source terms (transverse to k) are displayed.
                 </div>
               </div>
 

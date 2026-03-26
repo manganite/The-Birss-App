@@ -398,16 +398,6 @@ export function calculateSHGExpressions(
   for (let outIdx = 0; outIdx < outputCount; outIdx++) {
     const outIndices = tensorType === 'EQ' ? [Math.floor(outIdx / 3), outIdx % 3] : [outIdx];
     
-    // Filter: Only show components that can propagate (transverse to k)
-    if (tensorType === 'EQ') {
-      // For Quadrupole, effective polarization P_i ~ Q_ij * k_j
-      // Transverse P requires i != longitudinal and j == longitudinal
-      if (outIndices[0] === longitudinal || outIndices[1] !== longitudinal) continue;
-    } else {
-      // For Dipole (ED/MD), P/M must be transverse to k
-      if (outIndices[0] === longitudinal) continue;
-    }
-
     const outLabel = tensorType === 'EQ' ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}` : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
     
     const terms: string[] = [];
@@ -481,20 +471,40 @@ export function calculateSHGExpressions(
       }
 
       const finalParts = Array.from(grouped.entries()).map(([chi, fieldList]) => {
+        if (fieldList.length === 1) {
+          const [c, fields] = fieldList[0].split('*');
+          let numC = parseFloat(c);
+          let actualFields = fields;
+          const fieldMatch = fields.match(/^([\d.]+)(.*)$/);
+          if (fieldMatch) {
+            numC *= parseFloat(fieldMatch[1]);
+            actualFields = fieldMatch[2];
+          }
+          
+          if (Math.abs(numC - 1) < epsilon) return `${chi}${actualFields}`;
+          if (Math.abs(numC + 1) < epsilon) return `-${chi}${actualFields}`;
+          return `${numC}${chi}${actualFields}`;
+        }
+
         const fieldExpr = fieldList
-          .map(f => {
+          .map((f, idx) => {
             const [c, fields] = f.split('*');
             const numC = parseFloat(c);
-            if (Math.abs(numC - 1) < epsilon) return fields;
-            if (Math.abs(numC + 1) < epsilon) return `-${fields}`;
-            return `${numC > 0 ? '+' : ''}${numC}${fields}`;
+            let term = "";
+            if (Math.abs(numC - 1) < epsilon) term = fields;
+            else if (Math.abs(numC + 1) < epsilon) term = `-${fields}`;
+            else term = `${numC}${fields}`;
+            
+            if (idx > 0 && numC > 0) {
+              return `+ ${term}`;
+            } else if (idx > 0 && numC < 0) {
+              return `- ${term.substring(1)}`;
+            }
+            return term;
           })
-          .join(" ")
-          .replace(/^\+/, "")
-          .replace(/\s\+/g, " +")
-          .replace(/\s-/g, " -");
+          .join(" ");
         
-        return fieldList.length > 1 ? `${chi}(${fieldExpr})` : `${chi}${fieldExpr}`;
+        return `${chi}(${fieldExpr})`;
       });
 
       results.push({
