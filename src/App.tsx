@@ -27,11 +27,12 @@ const SymmetryOperation = ({ symbol }: { symbol: string }) => {
     <span className="inline-flex items-center font-mono text-xs bg-white/50 px-2 py-1 border border-[#141414] border-opacity-10 rounded-sm">
       <span>{base}</span>
       {axis && <sub className="text-[0.7em] ml-0.5 mt-1">{axis}</sub>}
-      {(sign || prime) && (
+      {sign && (
         <sup className="text-[0.7em] ml-0.5 -mt-2">
-          {sign === '⁺' ? '+' : sign === '⁻' ? '-' : ''}{prime || ''}
+          {sign === '⁺' ? '+' : '-'}
         </sup>
       )}
+      {prime && <span className="text-[1.25em] leading-none ml-0.5 font-bold">′</span>}
     </span>
   );
 };

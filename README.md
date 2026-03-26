@@ -2,7 +2,7 @@
 
 Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic Dipole, Electric Quadrupole) and induced transverse Second Harmonic Generation (SHG) source terms for all 32 crystallographic and 122 magnetic point groups.
 
-### [Live Demo](https://thomaslottermoser.github.io/birss-app/)
+### [Live Demo](https://manganite.github.io/birss-app/)
 
 ## Features
 - **Point Group Analysis**: Detailed symmetry classification for all 32 crystallographic point groups.
@@ -19,7 +19,7 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
 - **GitHub Actions** for automated deployment to GitHub Pages
 
 ## Running Locally
-1. Clone the repo: `git clone https://github.com/thomaslottermoser/birss-app.git`
+1. Clone the repo: `git clone https://github.com/manganite/birss-app.git`
 2. Install dependencies: `npm install`
 3. Start development server: `npm run dev`
 4. Build for production: `npm run build`
