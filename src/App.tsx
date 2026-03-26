@@ -5,9 +5,44 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Info, Layers, Zap, Hexagon, Box, Triangle, Minus } from 'lucide-react';
+import { Search, Info, Layers, Zap, Hexagon, Box, Triangle, Minus, Compass } from 'lucide-react';
 import { POINT_GROUPS, PointGroupData } from './data/pointGroups';
-import { calculateTensorComponents, TensorTimeReversal, isCentrosymmetric } from './services/tensorCalculator';
+import { 
+  calculateTensorComponents, 
+  TensorTimeReversal, 
+  isCentrosymmetric,
+  calculateSHGExpressions,
+  SHGExpression,
+  TensorType
+} from './services/tensorCalculator';
+
+const TensorTerm = ({ term, isNull }: { term: string; isNull: boolean; key?: any }) => {
+  // Split by parts that look like Symbol_Indices(Power)?
+  // e.g. χ_xyz, E_x, E_y², P_x, M_z
+  // We restrict indices to x, y, z to prevent greedy matching of adjacent symbols
+  const parts = term.split(/([χPMQE]_[xyz]+²?)/);
+
+  return (
+    <span className={isNull ? 'opacity-30' : 'text-[#141414]'}>
+      {parts.map((part, i) => {
+        const match = part.match(/^([χPMQE])_([xyz]+)(²)?$/);
+        if (match) {
+          const [, symbol, indices, power] = match;
+          const isChi = symbol === 'χ';
+          
+          return (
+            <span key={i} className={isChi ? 'mr-1.5 inline-block' : ''}>
+              {symbol}
+              <sub className="text-[0.75em] leading-none ml-px font-sans italic">{indices}</sub>
+              {power && <sup className="text-[0.75em] leading-none">{power}</sup>}
+            </span>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </span>
+  );
+};
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,11 +81,15 @@ export default function App() {
     return calculateTensorComponents(selectedGroup.name, selectedTensorType, selectedTimeReversal);
   }, [selectedGroup, selectedTensorType, selectedTimeReversal]);
 
+  const [selectedKDir, setSelectedKDir] = useState<'x' | 'y' | 'z'>('z');
+
   const tensorMeta = {
     ED: { label: 'Electric Dipole', rank: 'RANK 3', type: 'POLAR' },
     MD: { label: 'Magnetic Dipole', rank: 'RANK 3', type: 'AXIAL' },
     EQ: { label: 'Electric Quadrupole', rank: 'RANK 4', type: 'POLAR' },
   };
+
+  const currentExpressions = calculateSHGExpressions(selectedGroup?.name || "", selectedTensorType, selectedTimeReversal, selectedKDir);
 
   return (
     <div className="min-h-screen bg-[#E4E3E0] text-[#141414] font-sans selection:bg-[#141414] selection:text-[#E4E3E0]">
@@ -198,6 +237,25 @@ export default function App() {
                     ))}
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">Propagation Direction (k)</p>
+                  <div className="flex gap-3">
+                    {(['x', 'y', 'z'] as const).map((dir) => (
+                      <button
+                        key={dir}
+                        onClick={() => setSelectedKDir(dir)}
+                        className={`px-8 py-2 text-[10px] uppercase tracking-[0.2em] transition-all border border-[#141414] ${
+                          selectedKDir === dir 
+                            ? 'bg-[#141414] text-[#E4E3E0]' 
+                            : 'hover:bg-[#141414] hover:text-[#E4E3E0] opacity-50 hover:opacity-100 border-opacity-20'
+                        }`}
+                      >
+                        k ∥ {dir}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
@@ -219,11 +277,11 @@ export default function App() {
                     return (
                       <div key={i} className="group border-b border-[#141414] border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
                         <div className="text-lg font-mono tracking-tighter flex flex-wrap items-baseline gap-2">
-                          <span className={`${isNull ? 'opacity-30' : 'text-[#141414]'}`}>{parts[0]}</span>
+                          <TensorTerm term={parts[0]} isNull={isNull} />
                           {parts.length > 1 && parts.slice(1).map((part, pi) => (
                             <div key={pi} className="flex items-baseline gap-2">
                               <span className="text-xs opacity-30">=</span>
-                              <span className="text-sm opacity-70">{part}</span>
+                              <TensorTerm term={part} isNull={isNull} />
                             </div>
                           ))}
                         </div>
@@ -240,10 +298,45 @@ export default function App() {
                     <Info className="w-5 h-5" />
                     <p className="text-xs leading-relaxed italic">
                       In centrosymmetric point groups, all components of the second-order nonlinear susceptibility 
-                      tensor $\chi^{(2)}$ (Electric Dipole) vanish under the inversion operation.
+                      tensor χ<sup>(2)</sup> (Electric Dipole) vanish under the inversion operation.
                     </p>
                   </div>
                 )}
+              </div>
+
+              <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+                <Compass className="w-3 h-3" />
+                Induced SHG Source Terms (k ∥ {selectedKDir})
+              </div>
+
+              <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-3xl font-serif italic">Induced Nonlinear Response</h3>
+                  <div className="text-[10px] font-mono opacity-50">TRANSVERSE FIELDS ONLY</div>
+                </div>
+
+                <div className="space-y-6">
+                  {currentExpressions.map((expr, i) => {
+                    const isNull = expr.expression === "0";
+                    return (
+                      <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-[#141414] border-opacity-10 pb-4">
+                        <div className="w-16 font-mono text-xl">
+                          <TensorTerm term={expr.component} isNull={isNull} />
+                        </div>
+                        <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
+                          <span className="opacity-30 mr-4">=</span>
+                          <TensorTerm term={expr.expression} isNull={isNull} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
+                  Note: This calculation assumes two identical input fields E(ω). 
+                  The transverse condition is strictly enforced: E · k = 0 (E<sub>{selectedKDir}</sub> = 0) 
+                  and only propagating source terms (transverse to k) are displayed.
+                </div>
               </div>
 
               <div className="p-8 border border-[#141414] border-opacity-10 space-y-4">

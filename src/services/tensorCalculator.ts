@@ -363,6 +363,155 @@ export function isCentrosymmetric(groupName: string): boolean {
   return group.some(m => isSameMatrix(m, inversion));
 }
 
+export interface SHGExpression {
+  component: string;
+  expression: string;
+}
+
+export function calculateSHGExpressions(
+  groupName: string,
+  tensorType: TensorType,
+  trType: TensorTimeReversal,
+  kDir: 'x' | 'y' | 'z'
+): SHGExpression[] {
+  const generators = GENERATORS[groupName];
+  if (!generators) return [];
+
+  const group = getFullGroup(generators);
+  const rank = tensorType === 'EQ' ? 4 : 3;
+  const isAxial = tensorType === 'MD';
+  const isTimeOdd = trType === 'c';
+  const dim = Math.pow(3, rank);
+
+  // Transverse indices
+  const transverse = kDir === 'x' ? [1, 2] : kDir === 'y' ? [0, 2] : [0, 1];
+  const tLabels = ['x', 'y', 'z'];
+
+  // We'll build the expressions for each output component
+  // For ED/MD: P_i or M_i (i=0,1,2)
+  // For EQ: Q_ij (i,j=0,1,2)
+  const outputCount = tensorType === 'EQ' ? 9 : 3;
+  const results: SHGExpression[] = [];
+
+  const longitudinal = kDir === 'x' ? 0 : kDir === 'y' ? 1 : 2;
+
+  for (let outIdx = 0; outIdx < outputCount; outIdx++) {
+    const outIndices = tensorType === 'EQ' ? [Math.floor(outIdx / 3), outIdx % 3] : [outIdx];
+    
+    // Filter: Only show components that can propagate (transverse to k)
+    if (tensorType === 'EQ') {
+      // For Quadrupole, effective polarization P_i ~ Q_ij * k_j
+      // Transverse P requires i != longitudinal and j == longitudinal
+      if (outIndices[0] === longitudinal || outIndices[1] !== longitudinal) continue;
+    } else {
+      // For Dipole (ED/MD), P/M must be transverse to k
+      if (outIndices[0] === longitudinal) continue;
+    }
+
+    const outLabel = tensorType === 'EQ' ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}` : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
+    
+    const terms: string[] = [];
+    const epsilon = 1e-6;
+
+    // Sum over transverse input fields
+    for (let j = 0; j < transverse.length; j++) {
+      for (let k = j; k < transverse.length; k++) {
+        const inJ = transverse[j];
+        const inK = transverse[k];
+        
+        const fullIndices = [...outIndices, inJ, inK];
+        let flatIdx = 0;
+        for (let r = 0; r < rank; r++) {
+          flatIdx += fullIndices[r] * Math.pow(3, rank - 1 - r);
+        }
+
+        const basisVector = new Array(dim).fill(0);
+        basisVector[flatIdx] = 1;
+        const averaged = averageTensor(basisVector, group, rank, isAxial, isTimeOdd);
+        
+        // Find the "canonical" independent component this maps to
+        // We look for the first index in the averaged vector that is non-zero
+        let foundRelation = "";
+        for (let i = 0; i < dim; i++) {
+          if (Math.abs(averaged[i]) > epsilon) {
+            const label = getLabel(getIndices(i, rank));
+            // The value at averaged[i] is the projection. 
+            // If we want to express chi_flatIdx in terms of chi_i, 
+            // we need to know the ratio.
+            // Since averaged = (1/|G|) sum g(basisVector), 
+            // if chi_flatIdx = chi_i, then averaged[flatIdx] = averaged[i].
+            // The coefficient is averaged[flatIdx] / averaged[i] (if they are related)
+            // But wait, it's simpler: the independent components are the basis of the invariant subspace.
+            
+            const coeff = averaged[flatIdx] / averaged[i];
+            const sign = coeff > 0 ? "" : "-";
+            const absCoeff = Math.abs(coeff);
+            const coeffStr = Math.abs(absCoeff - 1) < epsilon ? "" : Number(absCoeff.toFixed(2)).toString();
+            
+            const fieldPart = inJ === inK ? `E_${tLabels[inJ]}²` : `2E_${tLabels[inJ]}E_${tLabels[inK]}`;
+            foundRelation = `${sign}${coeffStr}${label}${fieldPart}`;
+            break; 
+          }
+        }
+        
+        if (foundRelation) {
+          terms.push(foundRelation);
+        }
+      }
+    }
+
+    if (terms.length > 0) {
+      // Group by chi label to combine field terms
+      const grouped = new Map<string, string[]>();
+      for (const t of terms) {
+        // Match: [sign/coeff][chi_label][field_part]
+        const match = t.match(/^([+-]?[\d.]*)(χ_[xyz]+)(.*)$/);
+        if (match) {
+          const [, coeff, chi, fields] = match;
+          const current = grouped.get(chi) || [];
+          
+          // Handle cases where coeff is just "" or "+" or "-"
+          let c = coeff;
+          if (c === "" || c === "+") c = "1";
+          else if (c === "-") c = "-1";
+          
+          current.push(`${c}*${fields}`);
+          grouped.set(chi, current);
+        }
+      }
+
+      const finalParts = Array.from(grouped.entries()).map(([chi, fieldList]) => {
+        const fieldExpr = fieldList
+          .map(f => {
+            const [c, fields] = f.split('*');
+            const numC = parseFloat(c);
+            if (Math.abs(numC - 1) < epsilon) return fields;
+            if (Math.abs(numC + 1) < epsilon) return `-${fields}`;
+            return `${numC > 0 ? '+' : ''}${numC}${fields}`;
+          })
+          .join(" ")
+          .replace(/^\+/, "")
+          .replace(/\s\+/g, " +")
+          .replace(/\s-/g, " -");
+        
+        return fieldList.length > 1 ? `${chi}(${fieldExpr})` : `${chi}${fieldExpr}`;
+      });
+
+      results.push({
+        component: outLabel,
+        expression: finalParts.join(" + ").replace(/\+ -/g, "- ")
+      });
+    } else {
+      results.push({
+        component: outLabel,
+        expression: "0"
+      });
+    }
+  }
+
+  return results;
+}
+
 function formatResults(basisResults: number[][], rank: number, isTimeOdd: boolean): string[] {
   const dim = Math.pow(3, rank);
   const output: string[] = [];
@@ -378,7 +527,7 @@ function formatResults(basisResults: number[][], rank: number, isTimeOdd: boolea
         const scale = basis[i] / basis[leadIdx];
         const sign = scale > 0 ? (members.length === 0 ? "" : " = ") : " = -";
         const absScale = Math.abs(scale);
-        const scaleStr = Math.abs(absScale - 1) < epsilon ? "" : absScale.toFixed(2);
+        const scaleStr = Math.abs(absScale - 1) < epsilon ? "" : Number(absScale.toFixed(2)).toString();
         members.push(`${sign}${scaleStr}${getLabel(getIndices(i, rank))}`);
       }
     }
