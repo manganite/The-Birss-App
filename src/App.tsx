@@ -208,7 +208,7 @@ export default function App() {
       {/* Header */}
       <header className="border-b border-[#141414] p-8 md:p-12 relative">
         <a 
-          href="https://github.com/thomaslottermoser/birss-app" 
+          href="https://github.com/manganite/birss-app" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="absolute top-8 right-8 md:top-12 md:right-12 opacity-50 hover:opacity-100 transition-opacity"
