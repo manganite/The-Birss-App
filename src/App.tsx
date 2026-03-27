@@ -65,16 +65,18 @@ const SymmetryOperation = ({ symbol }: { symbol: string; key?: any }) => {
   );
 };
 
-const TensorTerm = ({ term, isNull }: { term: string; isNull: boolean; key?: any }) => {
+const TensorTerm = ({ term, isNull }: { term?: string; isNull: boolean; key?: any }) => {
+  if (!term) return null;
+  
   // Split by parts that look like Symbol_Indices(Power)?
-  // e.g. χ_xyz, E_x, E_y², P_x, M_z, S_x
-  // We restrict indices to x, y, z to prevent greedy matching of adjacent symbols
-  const parts = term.split(/([χPMQES]_[xyz]+²?)/);
+  // e.g. χ_xyz, E_x, E_y², P_x, M_z, S_x, S_X, E_X²
+  // We restrict indices to x, y, z, X, Y, Z to prevent greedy matching of adjacent symbols
+  const parts = term.split(/([χPMQES]_[xyzXYZ]+²?)/);
 
   return (
     <span className={isNull ? 'opacity-30' : 'text-[#141414]'}>
       {parts.map((part, i) => {
-        const match = part.match(/^([χPMQES])_([xyz]+)(²)?$/);
+        const match = part.match(/^([χPMQES])_([xyzXYZ]+)(²)?$/);
         if (match) {
           const [, symbol, indices, power] = match;
           const isChi = symbol === 'χ';
@@ -362,7 +364,7 @@ export default function App() {
 
               <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
                 <Compass className="w-3 h-3" />
-                {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'}
+                {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'} (CRYSTAL FRAME)
               </div>
 
               <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
@@ -471,17 +473,44 @@ export default function App() {
                 </div>
 
                 <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
-                  Note: Only propagating source terms (transverse to k) are displayed.
+                  Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse (E_Z = 0).
                 </div>
               </div>
 
               <div className="p-8 border border-[#141414] border-opacity-10 space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-widest">Reference Note</h4>
-                <p className="text-xs opacity-60 leading-relaxed">
-                  The symmetry relations presented here follow the conventions of the International Tables for Crystallography. 
-                  {selectedTensorType === 'MD' && " Magnetic Dipole (Axial 3rd rank) tensors do not necessarily vanish in centrosymmetric groups."}
-                  {selectedTensorType === 'EQ' && " Electric Quadrupole (Polar 4th rank) tensors survive inversion symmetry."}
-                </p>
+                <h4 className="text-xs font-bold uppercase tracking-widest">References</h4>
+                {(selectedTensorType === 'MD' || selectedTensorType === 'EQ') && (
+                  <p className="text-xs opacity-60 leading-relaxed">
+                    {selectedTensorType === 'MD' && "Note: Magnetic Dipole (Axial 3rd rank) tensors do not necessarily vanish in centrosymmetric groups."}
+                    {selectedTensorType === 'EQ' && "Note: Electric Quadrupole (Polar 4th rank) tensors survive inversion symmetry."}
+                  </p>
+                )}
+                <ul className="text-xs opacity-60 space-y-3 list-disc list-inside mt-4">
+                  <li className="pl-2">
+                    <a href="https://doi.org/10.1107/97809553602060000114" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
+                      International Tables for Crystallography
+                    </a>
+                    <span className="block ml-5 mt-0.5 opacity-80">General crystal symmetry aspects.</span>
+                  </li>
+                  <li className="pl-2">
+                    <a href="https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
+                      Birss, R. R. (1966). Symmetry and Magnetism.
+                    </a>
+                    <span className="block ml-5 mt-0.5 opacity-80">Magnetic point groups and tensor component calculation.</span>
+                  </li>
+                  <li className="pl-2">
+                    <a href="https://doi.org/10.1103/PhysRev.130.919" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
+                      Pershan, P. S. (1963). Nonlinear Optical Properties of Solids.
+                    </a>
+                    <span className="block ml-5 mt-0.5 opacity-80">Nonlinear optical multipole contributions.</span>
+                  </li>
+                  <li className="pl-2">
+                    <a href="https://doi.org/10.1007/s003400050650" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
+                      Fröhlich, D., et al. (1999). Nonlinear spectroscopy of antiferromagnetics.
+                    </a>
+                    <span className="block ml-5 mt-0.5 opacity-80">Source term calculation.</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </motion.div>

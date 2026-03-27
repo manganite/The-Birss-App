@@ -668,13 +668,11 @@ export function calculateSHGExpressions(
     }
 
     const expr = formatPoly(sPoly, true);
-    if (expr !== "0") {
-      sourceExprs.push({
-        component: outLabel,
-        expression: expr,
-        relation
-      });
-    }
+    sourceExprs.push({
+      component: outLabel,
+      expression: expr,
+      relation
+    });
   }
 
   return {
