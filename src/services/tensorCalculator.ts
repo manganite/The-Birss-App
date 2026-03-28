@@ -395,6 +395,67 @@ export interface SHGResult {
   source: SHGExpression[];
 }
 
+export function formatCoeff(c: number): string {
+  const absC = Math.abs(c);
+  if (absC < 1e-5) return "0";
+  
+  // Check if it's an integer
+  const rounded = Math.round(absC);
+  if (Math.abs(absC - rounded) < 1e-5) {
+    if (rounded === 1) return "";
+    return rounded.toString();
+  }
+
+  // Common fractions
+  const fractions = [
+    { val: 0.5, str: "\\frac{1}{2}" },
+    { val: 0.25, str: "\\frac{1}{4}" },
+    { val: 0.75, str: "\\frac{3}{4}" },
+    { val: 0.125, str: "\\frac{1}{8}" },
+    { val: 0.375, str: "\\frac{3}{8}" },
+    { val: 0.625, str: "\\frac{5}{8}" },
+    { val: 0.875, str: "\\frac{7}{8}" },
+    { val: 1.5, str: "\\frac{3}{2}" },
+    { val: 2.5, str: "\\frac{5}{2}" },
+    { val: 1/3, str: "\\frac{1}{3}" },
+    { val: 2/3, str: "\\frac{2}{3}" },
+    { val: 4/3, str: "\\frac{4}{3}" },
+  ];
+
+  for (const frac of fractions) {
+    if (Math.abs(absC - frac.val) < 1e-5) return frac.str;
+  }
+
+  // Square roots and their combinations
+  const roots = [
+    { val: Math.SQRT2, str: "\\sqrt{2}" },
+    { val: Math.sqrt(3), str: "\\sqrt{3}" },
+    { val: 1 / Math.SQRT2, str: "\\frac{1}{\\sqrt{2}}" },
+    { val: Math.sqrt(3) / 2, str: "\\frac{\\sqrt{3}}{2}" },
+    { val: 1 / Math.sqrt(3), str: "\\frac{1}{\\sqrt{3}}" },
+    { val: 1 / (2 * Math.SQRT2), str: "\\frac{1}{2\\sqrt{2}}" },
+    { val: 1 / (4 * Math.SQRT2), str: "\\frac{1}{4\\sqrt{2}}" },
+    { val: Math.sqrt(3) / 4, str: "\\frac{\\sqrt{3}}{4}" },
+    { val: 1 / (2 * Math.sqrt(3)), str: "\\frac{1}{2\\sqrt{3}}" },
+    { val: Math.sqrt(3) / 8, str: "\\frac{\\sqrt{3}}{8}" },
+    { val: 3 * Math.sqrt(3) / 8, str: "\\frac{3\\sqrt{3}}{8}" },
+    { val: 2 * Math.SQRT2, str: "2\\sqrt{2}" },
+    { val: 2 * Math.sqrt(3), str: "2\\sqrt{3}" },
+    { val: Math.sqrt(2) / 3, str: "\\frac{\\sqrt{2}}{3}" },
+    { val: 2 * Math.sqrt(2) / 3, str: "\\frac{2\\sqrt{2}}{3}" },
+    { val: Math.sqrt(6), str: "\\sqrt{6}" },
+    { val: Math.sqrt(6) / 2, str: "\\frac{\\sqrt{6}}{2}" },
+    { val: Math.sqrt(6) / 3, str: "\\frac{\\sqrt{6}}{3}" },
+    { val: Math.sqrt(6) / 4, str: "\\frac{\\sqrt{6}}{4}" },
+  ];
+
+  for (const root of roots) {
+    if (Math.abs(absC - root.val) < 1e-4) return root.str;
+  }
+
+  return Number(absC.toFixed(3)).toString();
+}
+
 export function calculateSHGExpressions(
   groupName: string,
   tensorType: TensorType,
@@ -496,21 +557,18 @@ export function calculateSHGExpressions(
       if (fieldParts.length === 1) {
         const { pair, coeff } = fieldParts[0];
         const fieldStr = fieldLabels[pair];
-        if (Math.abs(coeff - 1) < epsilon) finalParts.push(`${chi}${fieldStr}`);
-        else if (Math.abs(coeff + 1) < epsilon) finalParts.push(`-${chi}${fieldStr}`);
-        else finalParts.push(`${Number(coeff.toFixed(3))}${chi}${fieldStr}`);
+        const sign = coeff < 0 ? "-" : "";
+        finalParts.push(`${sign}${formatCoeff(coeff)}${chi}${fieldStr}`);
       } else {
         const innerExpr = fieldParts.map((fp, idx) => {
           const fieldStr = fieldLabels[fp.pair];
           const c = fp.coeff;
-          let term = "";
-          if (Math.abs(c - 1) < epsilon) term = fieldStr;
-          else if (Math.abs(c + 1) < epsilon) term = `-${fieldStr}`;
-          else term = `${Number(c.toFixed(3))}${fieldStr}`;
-          
-          if (idx > 0 && c > 0) return `+ ${term}`;
-          if (idx > 0 && c < 0) return `- ${term.substring(1)}`;
-          return term;
+          const coeffStr = formatCoeff(c);
+          if (idx === 0) {
+            return `${c < 0 ? '-' : ''}${coeffStr}${fieldStr}`;
+          } else {
+            return `${c < 0 ? '-' : '+'} ${coeffStr}${fieldStr}`;
+          }
         }).join(" ");
         finalParts.push(`${chi}(${innerExpr})`);
       }
@@ -604,8 +662,7 @@ export function calculateSHGExpressions(
     for (let i = 0; i < coeffs.length; i++) {
       const c = coeffs[i];
       if (Math.abs(c) > 1e-6) {
-        const absC = Math.abs(c);
-        const cStr = Math.abs(absC - 1) < 1e-6 ? "" : Number(absC.toFixed(3)).toString();
+        const cStr = formatCoeff(c);
         const sign = c > 0 ? (parts.length === 0 ? "" : "+ ") : (parts.length === 0 ? "-" : "- ");
         parts.push(`${sign}${cStr}${labels[i]}`);
       }
@@ -695,8 +752,7 @@ function formatResults(basisResults: number[][], rank: number, isTimeOdd: boolea
         if (leadIdx === -1) leadIdx = i;
         const scale = basis[i] / basis[leadIdx];
         const sign = scale > 0 ? (members.length === 0 ? "" : " = ") : " = -";
-        const absScale = Math.abs(scale);
-        const scaleStr = Math.abs(absScale - 1) < epsilon ? "" : Number(absScale.toFixed(2)).toString();
+        const scaleStr = formatCoeff(scale);
         members.push(`${sign}${scaleStr}${label}`);
       }
     }

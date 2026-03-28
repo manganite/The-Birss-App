@@ -14,7 +14,8 @@ import {
   calculateSHGExpressions,
   SHGExpression,
   TensorType,
-  getSymmetryOperations
+  getSymmetryOperations,
+  formatCoeff
 } from './services/tensorCalculator';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
 import { FormatPointGroup, SymmetryOperation } from './components/MathComponents';
@@ -35,6 +36,36 @@ function negateExpression(expr: string): string {
 }
 
 
+
+function getLabFrameVectors(tx: number, ty: number) {
+  const cx = Math.cos(tx * Math.PI / 180);
+  const sx = Math.sin(tx * Math.PI / 180);
+  const cy = Math.cos(ty * Math.PI / 180);
+  const sy = Math.sin(ty * Math.PI / 180);
+
+  const formatVec = (v: number[]) => {
+    const terms = [];
+    const labels = ['x', 'y', 'z'];
+    for (let i = 0; i < 3; i++) {
+      if (Math.abs(v[i]) > 1e-5) {
+        const coeff = formatCoeff(v[i]);
+        const sign = v[i] < 0 ? "-" : (terms.length > 0 ? "+" : "");
+        terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}`);
+      }
+    }
+    return terms.length > 0 ? terms.join(" ") : "0";
+  };
+
+  const X_lab = [cy, sx * sy, cx * sy];
+  const Y_lab = [0, cx, -sx];
+  const Z_lab = [-sy, sx * cy, cx * cy];
+
+  return {
+    X: formatVec(X_lab),
+    Y: formatVec(Y_lab),
+    Z: formatVec(Z_lab)
+  };
+}
 
 const TensorTerm = ({ term, isNull }: { term?: string; isNull: boolean; key?: any }) => {
   if (!term) return null;
@@ -99,6 +130,7 @@ export default function App() {
   };
 
   const currentExpressions = calculateSHGExpressions(selectedGroup?.name || "", selectedTensorType, selectedTimeReversal, thetaX, thetaY);
+  const labFrame = getLabFrameVectors(thetaX, thetaY);
 
   const sourceTerms = currentExpressions.source;
   const inducedTerms = currentExpressions.induced;
@@ -434,9 +466,29 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-[9px] uppercase tracking-widest opacity-40 mt-2">
-                    (Rotations are applied in the Lab frame: first <InlineMath math="\theta_X" />, then <InlineMath math="\theta_Y" />)
-                  </p>
+                  <div className="flex flex-col md:flex-row gap-8 items-start mt-6">
+                    <div className="flex-1">
+                      <p className="text-[9px] uppercase tracking-widest opacity-40">
+                        (Rotations are applied in the Lab frame: first <InlineMath math="\theta_X" />, then <InlineMath math="\theta_Y" />)
+                      </p>
+                    </div>
+                    <div className="flex-1 bg-[#141414]/5 p-4 border border-[#141414]/10 rounded-sm w-full">
+                      <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 mb-3">Lab Frame Orientation in Crystal</h4>
+                      <div className="flex flex-col gap-3 text-sm font-mono">
+                        <div className="flex items-center gap-2">
+                          <span className="opacity-50 text-xs w-24">Propagation (k):</span>
+                          <InlineMath math={`\\mathbf{Z}_{lab} = ${labFrame.Z}`} />
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="opacity-50 text-xs w-24">Polarization:</span>
+                          <div className="flex flex-col gap-1">
+                            <InlineMath math={`\\mathbf{X}_{lab} = ${labFrame.X}`} />
+                            <InlineMath math={`\\mathbf{Y}_{lab} = ${labFrame.Y}`} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-6">
