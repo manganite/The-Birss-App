@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { X } from 'lucide-react';
+import { X, Calculator } from 'lucide-react';
 import { getSymmetryOperations } from '../services/tensorCalculator';
 import { FormatPointGroup, SymmetryOperation } from './MathComponents';
 import { PointGroupData } from '../data/pointGroups';
@@ -7,9 +7,10 @@ import { PointGroupData } from '../data/pointGroups';
 interface OperationsModalProps {
   group: PointGroupData;
   onClose: () => void;
+  onOpenInCalculator?: () => void;
 }
 
-export const OperationsModal = ({ group, onClose }: OperationsModalProps) => {
+export const OperationsModal = ({ group, onClose, onOpenInCalculator }: OperationsModalProps) => {
   const operations = getSymmetryOperations(group.name);
 
   return (
@@ -18,15 +19,15 @@ export const OperationsModal = ({ group, onClose }: OperationsModalProps) => {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="bg-[#E4E3E0] w-full max-w-2xl border border-[#141414] shadow-2xl overflow-hidden"
+        className="bg-[#E4E3E0] w-full max-w-2xl border border-[#141414] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-4 border-b border-[#141414]">
+        <div className="flex items-center justify-between p-4 border-b border-[#141414] shrink-0">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-medium tracking-tight">
               <FormatPointGroup name={group.name} />
             </h2>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 hidden sm:flex">
               <span>{group.crystalSystem}</span>
               <span>•</span>
               <span>Type {group.type}</span>
@@ -40,7 +41,7 @@ export const OperationsModal = ({ group, onClose }: OperationsModalProps) => {
           </button>
         </div>
         
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-6 overflow-y-auto">
           <h3 className="text-xs uppercase tracking-[0.2em] opacity-50 mb-4">Symmetry Operations ({operations.length})</h3>
           <div className="flex flex-wrap gap-2">
             {operations.map((op, idx) => (
@@ -48,6 +49,21 @@ export const OperationsModal = ({ group, onClose }: OperationsModalProps) => {
             ))}
           </div>
         </div>
+
+        {onOpenInCalculator && (
+          <div className="p-4 border-t border-[#141414] bg-[#141414]/5 flex justify-end shrink-0">
+            <button
+              onClick={() => {
+                onOpenInCalculator();
+                onClose();
+              }}
+              className="px-4 py-2 bg-[#141414] text-[#E4E3E0] text-sm uppercase tracking-widest hover:bg-transparent hover:text-[#141414] border border-[#141414] transition-colors flex items-center gap-2"
+            >
+              <Calculator className="w-4 h-4" />
+              Open in Calculator
+            </button>
+          </div>
+        )}
       </motion.div>
     </div>
   );

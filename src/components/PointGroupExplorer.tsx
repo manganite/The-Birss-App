@@ -14,7 +14,11 @@ const CRYSTAL_SYSTEMS = [
   "Cubic"
 ];
 
-export const PointGroupExplorer = () => {
+interface PointGroupExplorerProps {
+  onSelectGroupForCalculator?: (group: PointGroupData) => void;
+}
+
+export const PointGroupExplorer = ({ onSelectGroupForCalculator }: PointGroupExplorerProps) => {
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
 
   const groupsBySystem = useMemo(() => {
@@ -142,6 +146,7 @@ export const PointGroupExplorer = () => {
           <OperationsModal 
             group={selectedGroup} 
             onClose={() => setSelectedGroup(null)} 
+            onOpenInCalculator={onSelectGroupForCalculator ? () => onSelectGroupForCalculator(selectedGroup) : undefined}
           />
         )}
       </AnimatePresence>

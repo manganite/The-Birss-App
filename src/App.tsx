@@ -184,7 +184,12 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto p-8 md:p-12">
         {currentView === 'explorer' ? (
-          <PointGroupExplorer />
+          <PointGroupExplorer 
+            onSelectGroupForCalculator={(group) => {
+              setSelectedGroup(group);
+              setCurrentView('calculator');
+            }}
+          />
         ) : !selectedGroup ? (
           <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-8">
             <div className="w-24 h-24 border border-[#141414] border-dashed rounded-full flex items-center justify-center animate-spin-slow">

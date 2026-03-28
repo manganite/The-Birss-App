@@ -374,17 +374,7 @@ function getIndices(idx: number, rank: number): number[] {
 
 function getLabel(indices: number[]): string {
   const chars = ['x', 'y', 'z'];
-  const sortedIndices = [...indices];
-  if (sortedIndices.length >= 2) {
-    const last = sortedIndices.pop()!;
-    const secondLast = sortedIndices.pop()!;
-    if (last < secondLast) {
-      sortedIndices.push(last, secondLast);
-    } else {
-      sortedIndices.push(secondLast, last);
-    }
-  }
-  return '\\chi_{' + sortedIndices.map(i => chars[i]).join('') + '}';
+  return '\\chi_{' + indices.map(i => chars[i]).join('') + '}';
 }
 
 export function isCentrosymmetric(groupName: string): boolean {
