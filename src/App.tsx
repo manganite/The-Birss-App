@@ -16,6 +16,8 @@ import {
   TensorType,
   getSymmetryOperations
 } from './services/tensorCalculator';
+import { PointGroupExplorer } from './components/PointGroupExplorer';
+import { FormatPointGroup, SymmetryOperation } from './components/MathComponents';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 
@@ -32,45 +34,7 @@ function negateExpression(expr: string): string {
   return result;
 }
 
-const FormatPointGroup = ({ name }: { name: string }) => {
-  const latex = name.replace(/-([1-6])/g, '\\bar{$1}');
-  return <InlineMath math={latex} />;
-};
 
-const SymmetryOperation = ({ symbol }: { symbol: string; key?: any }) => {
-  const match = symbol.match(/^(-?\d|m)(?:_([a-z\[\]0-9-°]+))?([⁺⁻])?(')?$/);
-  if (!match) return <span className="inline-flex items-center text-xs bg-white/50 px-2 py-1 border border-[#141414] border-opacity-10 rounded-sm"><InlineMath math={symbol} /></span>;
-  
-  const [, base, axis, sign, prime] = match;
-  
-  let latex = '';
-  
-  if (base.startsWith('-')) {
-    latex += `\\bar{${base.slice(1)}}`;
-  } else {
-    latex += base;
-  }
-  
-  if (axis) {
-    let cleanAxis = axis.replace('°', '^\\circ');
-    latex += `_{${cleanAxis}}`;
-  }
-  
-  let sup = '';
-  if (sign === '⁺') sup += '+';
-  if (sign === '⁻') sup += '-';
-  if (prime) sup += '\\prime';
-  
-  if (sup) {
-    latex += `^{${sup}}`;
-  }
-  
-  return (
-    <span className="inline-flex items-center text-xs bg-white/50 px-2 py-1 border border-[#141414] border-opacity-10 rounded-sm">
-      <InlineMath math={latex} />
-    </span>
-  );
-};
 
 const TensorTerm = ({ term, isNull }: { term?: string; isNull: boolean; key?: any }) => {
   if (!term) return null;
@@ -83,6 +47,7 @@ const TensorTerm = ({ term, isNull }: { term?: string; isNull: boolean; key?: an
 };
 
 export default function App() {
+  const [currentView, setCurrentView] = useState<'calculator' | 'explorer'>('calculator');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
   const [selectedTensorType, setSelectedTensorType] = useState<'ED' | 'MD' | 'EQ'>('ED');
@@ -142,6 +107,21 @@ export default function App() {
     <div className="min-h-screen bg-[#E4E3E0] text-[#141414] font-sans selection:bg-[#141414] selection:text-[#E4E3E0]">
       {/* Header */}
       <header className="border-b border-[#141414] p-8 md:p-12 relative">
+        <div className="absolute top-8 left-8 md:top-12 md:left-12 flex items-center gap-4 text-xs font-mono uppercase tracking-widest">
+          <button 
+            onClick={() => setCurrentView('calculator')}
+            className={`transition-opacity ${currentView === 'calculator' ? 'opacity-100 font-bold border-b border-[#141414]' : 'opacity-50 hover:opacity-100'}`}
+          >
+            Calculator
+          </button>
+          <span className="opacity-30">/</span>
+          <button 
+            onClick={() => setCurrentView('explorer')}
+            className={`transition-opacity ${currentView === 'explorer' ? 'opacity-100 font-bold border-b border-[#141414]' : 'opacity-50 hover:opacity-100'}`}
+          >
+            Explorer
+          </button>
+        </div>
         <a 
           href="https://github.com/manganite/birss-app" 
           target="_blank" 
@@ -151,7 +131,7 @@ export default function App() {
         >
           <Github className="w-6 h-6" />
         </a>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8 mt-8 md:mt-0">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8 mt-16 md:mt-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] opacity-50">
               <Zap className="w-3 h-3" />
@@ -203,7 +183,9 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto p-8 md:p-12">
-        {!selectedGroup ? (
+        {currentView === 'explorer' ? (
+          <PointGroupExplorer />
+        ) : !selectedGroup ? (
           <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-8">
             <div className="w-24 h-24 border border-[#141414] border-dashed rounded-full flex items-center justify-center animate-spin-slow">
               <Layers className="w-8 h-8 opacity-20" />
