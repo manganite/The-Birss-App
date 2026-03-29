@@ -45,25 +45,31 @@ function getLabFrameVectors(tx: number, ty: number) {
 
   const formatVec = (v: number[]) => {
     const terms = [];
-    const labels = ['x', 'y', 'z'];
+    const labels = ['X', 'Y', 'Z'];
     for (let i = 0; i < 3; i++) {
       if (Math.abs(v[i]) > 1e-5) {
         const coeff = formatCoeff(v[i]);
         const sign = v[i] < 0 ? "-" : (terms.length > 0 ? "+" : "");
-        terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}`);
+        terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}_{LAB}`);
       }
     }
     return terms.length > 0 ? terms.join(" ") : "0";
   };
 
-  const X_lab = [cy, sx * sy, cx * sy];
-  const Y_lab = [0, cx, -sx];
-  const Z_lab = [-sy, sx * cy, cx * cy];
+  // R maps Crystal to Lab: V_lab = R * V_cryst
+  // So V_cryst = R^T * V_lab
+  // x_crys = R_00 X_lab + R_10 Y_lab + R_20 Z_lab
+  // y_crys = R_01 X_lab + R_11 Y_lab + R_21 Z_lab
+  // z_crys = R_02 X_lab + R_12 Y_lab + R_22 Z_lab
+
+  const x_crys = [cy, 0, -sy];
+  const y_crys = [sx * sy, cx, sx * cy];
+  const z_crys = [cx * sy, -sx, cx * cy];
 
   return {
-    X: formatVec(X_lab),
-    Y: formatVec(Y_lab),
-    Z: formatVec(Z_lab)
+    X: formatVec(x_crys),
+    Y: formatVec(y_crys),
+    Z: formatVec(z_crys)
   };
 }
 
@@ -77,24 +83,52 @@ const TensorTerm = ({ term, isNull }: { term?: string; isNull: boolean; key?: an
   );
 };
 
+const normalizeString = (str: string) => {
+  return str
+    .toLowerCase()
+    .replace(/[’‘`´,]/g, "'") // Replace curly quotes, backticks, commas with standard apostrophe
+    .replace(/\s+/g, "");     // Remove all spaces
+};
+
+type GroupCategory = 'All' | 'Ordinary' | 'Gray' | 'Black & White';
+
+const getGroupCategory = (name: string): GroupCategory => {
+  if (name.endsWith("1'")) return 'Gray';
+  if (name.includes("'")) return 'Black & White';
+  return 'Ordinary';
+};
+
 export default function App() {
   const [currentView, setCurrentView] = useState<'calculator' | 'explorer'>('calculator');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<GroupCategory>('All');
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
   const [selectedTensorType, setSelectedTensorType] = useState<'ED' | 'MD' | 'EQ'>('ED');
   const [selectedTimeReversal, setSelectedTimeReversal] = useState<TensorTimeReversal>('i');
 
   const filteredGroups = useMemo(() => {
-    if (!searchQuery) return [];
-    return POINT_GROUPS.filter(pg => 
-      pg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pg.crystalSystem.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5);
-  }, [searchQuery]);
+    let groups = POINT_GROUPS;
+    
+    if (activeCategory !== 'All') {
+      groups = groups.filter(pg => getGroupCategory(pg.name) === activeCategory);
+    }
+
+    if (searchQuery) {
+      const normalizedQuery = normalizeString(searchQuery);
+      groups = groups.filter(pg => 
+        normalizeString(pg.name).includes(normalizedQuery) ||
+        normalizeString(pg.crystalSystem).includes(normalizedQuery)
+      );
+    }
+    
+    return groups;
+  }, [searchQuery, activeCategory]);
 
   const handleSelect = (group: PointGroupData) => {
     setSelectedGroup(group);
     setSearchQuery('');
+    setIsSearchFocused(false);
   };
 
   const getCrystalIcon = (system: string) => {
@@ -182,31 +216,54 @@ export default function App() {
               <Search className="w-4 h-4 opacity-50" />
               <input 
                 type="text"
-                placeholder="Search Point Group (e.g. mm2, 432)"
+                placeholder="Search groups (e.g., 4/m, 4'/m, 11')"
                 className="bg-transparent border-none outline-none w-full text-sm placeholder:opacity-30"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
               />
             </div>
+            <p className="text-[10px] opacity-50 mt-2 leading-tight">
+              Use an apostrophe (') for time-reversed elements (Black & White) and append 1' for Gray groups.
+            </p>
             
             <AnimatePresence>
-              {filteredGroups.length > 0 && (
+              {isSearchFocused && (
                 <motion.div 
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 w-full bg-[#E4E3E0] border border-[#141414] border-t-0 z-50 shadow-xl"
+                  className="absolute top-full left-0 w-full bg-[#E4E3E0] border border-[#141414] border-t-0 z-50 shadow-xl flex flex-col max-h-[400px]"
                 >
-                  {filteredGroups.map(group => (
-                    <button
-                      key={group.name}
-                      onClick={() => handleSelect(group)}
-                      className="w-full text-left p-4 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors flex justify-between items-center group"
-                    >
-                      <span className="text-xl font-serif italic"><FormatPointGroup name={group.name} /></span>
-                      <span className="text-[10px] uppercase tracking-widest opacity-50 group-hover:opacity-100">{group.crystalSystem}</span>
-                    </button>
-                  ))}
+                  <div className="p-2 border-b border-[#141414]/20 flex flex-wrap gap-1 bg-[#E4E3E0] sticky top-0 z-10">
+                    {(['All', 'Ordinary', 'Gray', 'Black & White'] as GroupCategory[]).map(cat => (
+                      <button
+                        key={cat}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full transition-colors ${activeCategory === cat ? 'bg-[#141414] text-[#E4E3E0]' : 'bg-transparent text-[#141414] hover:bg-[#141414]/10'}`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="overflow-y-auto flex-1">
+                    {filteredGroups.length > 0 ? filteredGroups.map(group => (
+                      <button
+                        key={group.name}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSelect(group)}
+                        className="w-full text-left p-3 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors flex justify-between items-center group border-b border-[#141414]/5 last:border-0"
+                      >
+                        <span className="text-lg font-serif italic"><FormatPointGroup name={group.name} /></span>
+                        <span className="text-[10px] uppercase tracking-widest opacity-50 group-hover:opacity-100">{group.crystalSystem}</span>
+                      </button>
+                    )) : (
+                      <div className="p-4 text-center text-xs opacity-50">No groups found</div>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -428,63 +485,44 @@ export default function App() {
                 </div>
 
                 <div className="space-y-6 border-b border-[#141414] border-opacity-10 pb-8">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    <div className="space-y-3">
-                      <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">Crystal Rotation (<InlineMath math="\theta_X" />)</p>
-                      <div className="flex gap-3">
-                        {[0, 45, 90].map((angle) => (
-                          <button
-                            key={`x-${angle}`}
-                            onClick={() => setThetaX(angle)}
-                            className={`px-6 py-2 text-[10px] uppercase tracking-[0.2em] transition-all border border-[#141414] ${
-                              thetaX === angle 
-                                ? 'bg-[#141414] text-[#E4E3E0]' 
-                                : 'hover:bg-[#141414] hover:text-[#E4E3E0] opacity-50 hover:opacity-100 border-opacity-20'
-                            }`}
-                          >
-                            {angle}°
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">Crystal Rotation (<InlineMath math="\theta_Y" />)</p>
-                      <div className="flex gap-3">
-                        {[0, 45, 90].map((angle) => (
-                          <button
-                            key={`y-${angle}`}
-                            onClick={() => setThetaY(angle)}
-                            className={`px-6 py-2 text-[10px] uppercase tracking-[0.2em] transition-all border border-[#141414] ${
-                              thetaY === angle 
-                                ? 'bg-[#141414] text-[#E4E3E0]' 
-                                : 'hover:bg-[#141414] hover:text-[#E4E3E0] opacity-50 hover:opacity-100 border-opacity-20'
-                            }`}
-                          >
-                            {angle}°
-                          </button>
-                        ))}
-                      </div>
+                  <div className="space-y-3">
+                    <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">
+                      Select the direction of light propagation relative to the crystal axes
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      {[
+                        { label: 'k || z', math: 'k \\parallel z', tx: 0, ty: 0 },
+                        { label: 'k || x', math: 'k \\parallel x', tx: 0, ty: -90 },
+                        { label: 'k || y', math: 'k \\parallel y', tx: 90, ty: 0 },
+                        { label: 'k || xy', math: 'k \\parallel xy', tx: 90, ty: -45 },
+                        { label: 'k || xz', math: 'k \\parallel xz', tx: 0, ty: -45 },
+                        { label: 'k || yz', math: 'k \\parallel yz', tx: 45, ty: 0 },
+                      ].map((ori) => (
+                        <button
+                          key={ori.label}
+                          onClick={() => {
+                            setThetaX(ori.tx);
+                            setThetaY(ori.ty);
+                          }}
+                          className={`px-4 py-2 text-[12px] tracking-[0.1em] transition-all border border-[#141414] ${
+                            thetaX === ori.tx && thetaY === ori.ty
+                              ? 'bg-[#141414] text-[#E4E3E0]' 
+                              : 'hover:bg-[#141414] hover:text-[#E4E3E0] opacity-50 hover:opacity-100 border-opacity-20'
+                          }`}
+                        >
+                          <InlineMath math={ori.math} />
+                        </button>
+                      ))}
                     </div>
                   </div>
                   <div className="flex flex-col md:flex-row gap-8 items-start mt-6">
-                    <div className="flex-1">
-                      <p className="text-[9px] uppercase tracking-widest opacity-40">
-                        (Rotations are applied in the Lab frame: first <InlineMath math="\theta_X" />, then <InlineMath math="\theta_Y" />)
-                      </p>
-                    </div>
                     <div className="flex-1 bg-[#141414]/5 p-4 border border-[#141414]/10 rounded-sm w-full">
-                      <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 mb-3">Lab Frame Orientation in Crystal</h4>
+                      <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 mb-3">Crystal Orientation in Lab Frame</h4>
                       <div className="flex flex-col gap-3 text-sm font-mono">
-                        <div className="flex items-center gap-2">
-                          <span className="opacity-50 text-xs w-24">Propagation (k):</span>
-                          <InlineMath math={`\\mathbf{Z}_{lab} = ${labFrame.Z}`} />
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span className="opacity-50 text-xs w-24">Polarization:</span>
-                          <div className="flex flex-col gap-1">
-                            <InlineMath math={`\\mathbf{X}_{lab} = ${labFrame.X}`} />
-                            <InlineMath math={`\\mathbf{Y}_{lab} = ${labFrame.Y}`} />
-                          </div>
+                        <div className="flex flex-wrap gap-x-6 gap-y-2">
+                          <InlineMath math={`\\mathbf{x}_{crys} = ${labFrame.X}`} />
+                          <InlineMath math={`\\mathbf{y}_{crys} = ${labFrame.Y}`} />
+                          <InlineMath math={`\\mathbf{z}_{crys} = ${labFrame.Z}`} />
                         </div>
                       </div>
                     </div>
@@ -511,7 +549,7 @@ export default function App() {
                 </div>
 
                 <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
-                  Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse (<InlineMath math="E_Z = 0" />).
+                  Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse: <InlineMath math="\vec{E} = (E_X, E_Y, 0)" />.
                 </div>
               </div>
 
