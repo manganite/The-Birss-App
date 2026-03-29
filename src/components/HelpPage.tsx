@@ -1,6 +1,6 @@
 import React from 'react';
 import { InlineMath, BlockMath } from 'react-katex';
-import { BookOpen, Compass, Layers, Zap, Info } from 'lucide-react';
+import { BookOpen, Compass, Layers, Zap, Info, Activity } from 'lucide-react';
 
 export function HelpPage() {
   return (
@@ -16,7 +16,7 @@ export function HelpPage() {
       {/* Feature Overview */}
       <section className="space-y-6">
         <h2 className="text-2xl font-serif italic border-b border-[#141414] pb-2">Feature Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 border border-[#141414] border-opacity-10 space-y-3">
             <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
               <Zap className="w-4 h-4" />
@@ -33,6 +33,15 @@ export function HelpPage() {
             </div>
             <p className="text-sm opacity-70 leading-relaxed">
               Browse all 122 crystallographic magnetic point groups. Filter by crystal system, group type (Ordinary, Gray, Black & White), and view their symmetry operations and properties.
+            </p>
+          </div>
+          <div className="p-6 border border-[#141414] border-opacity-10 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+              <Activity className="w-4 h-4" />
+              Simulator
+            </div>
+            <p className="text-sm opacity-70 leading-relaxed">
+              Visualize expected SHG intensity polarimetry patterns. Adjust crystal orientation, tensor component amplitudes, and phases to simulate parallel and crossed polarization configurations.
             </p>
           </div>
         </div>
@@ -174,6 +183,91 @@ export function HelpPage() {
             <p className="text-sm opacity-70 leading-relaxed">
               <strong>Longitudinal vs. Transverse:</strong> For light propagating along the Z-axis in the laboratory frame, the incoming electric field is purely <strong>transverse</strong> (<InlineMath math="E_X, E_Y \neq 0" />, <InlineMath math="E_Z = 0" />). The material may generate an induced polarization with a <strong>longitudinal</strong> component (<InlineMath math="S_Z \neq 0" />). However, an oscillating dipole does not radiate along its axis of oscillation. Therefore, only the transverse source components (<InlineMath math="S_X, S_Y" />) will emit SHG light in the forward (Z) direction.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Simulation Feature */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-serif italic border-b border-[#141414] pb-2">Simulation Feature</h2>
+        
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              How to use it?
+            </h3>
+            <ol className="text-sm opacity-70 list-decimal list-inside space-y-2 ml-4">
+              <li>Select the point group, tensor type, and time-reversal symmetry from the main controls.</li>
+              <li>Adjust the crystal orientation angles (<InlineMath math="\theta_X, \theta_Y" />) to set the incidence angle of the light.</li>
+              <li>The simulator automatically isolates the independent tensor components (<InlineMath math="\chi_{ijk\dots}" />) that contribute to the transverse source terms (<InlineMath math="S_X, S_Y" />).</li>
+              <li>Adjust the relative amplitude and phase of each independent tensor component using the sliders.</li>
+              <li>Observe the resulting SHG intensity polarimetry patterns in the radar charts for both Parallel and Crossed configurations.</li>
+            </ol>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+              <Compass className="w-4 h-4" />
+              Physics behind it
+            </h3>
+            <p className="text-sm opacity-70 leading-relaxed">
+              In a typical SHG polarimetry experiment, linearly polarized light is incident on the crystal. The polarization of the incident light (polarizer) and the detected SHG light (analyzer) are rotated to probe the symmetry of the nonlinear susceptibility tensor.
+            </p>
+            <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
+              <li><strong>Parallel Configuration:</strong> The polarizer and analyzer are aligned and rotate together.</li>
+              <li><strong>Crossed Configuration:</strong> The polarizer and analyzer are orthogonal (the polarizer is at <InlineMath math="-90^\circ" /> relative to the analyzer).</li>
+            </ul>
+            <p className="text-sm opacity-70 leading-relaxed">
+              The radar charts display the SHG intensity as the <strong>analyzer angle</strong> is rotated from <InlineMath math="0^\circ" /> to <InlineMath math="360^\circ" />.
+            </p>
+          </div>
+
+          <div className="p-6 bg-[#141414]/5 border border-[#141414] border-opacity-10 space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-widest">A bit of mathematics: Calculating intensity</h3>
+            <p className="text-sm opacity-70 leading-relaxed">
+              Let <InlineMath math="\phi" /> be the analyzer angle. The incident electric field <InlineMath math="\vec{E}^\omega" /> induces nonlinear source terms <InlineMath math="S_X" /> and <InlineMath math="S_Y" /> in the material. The measured intensity is proportional to the square of the projected source term along the analyzer direction.
+            </p>
+            
+            <div className="space-y-4 mt-4">
+              <div>
+                <h4 className="font-medium text-sm">Parallel Configuration</h4>
+                <p className="text-sm opacity-70 leading-relaxed mt-1">
+                  The polarizer is at the same angle <InlineMath math="\phi" />. The incident field components are:
+                </p>
+                <div className="text-center overflow-x-auto py-2">
+                  <BlockMath math="E_X = \cos(\phi), \quad E_Y = \sin(\phi)" />
+                </div>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The detected SHG electric field is the projection of the source terms onto the analyzer:
+                </p>
+                <div className="text-center overflow-x-auto py-2">
+                  <BlockMath math="E_{\parallel}^{2\omega} = S_X \cos(\phi) + S_Y \sin(\phi)" />
+                </div>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The measured intensity is <InlineMath math="I_{\parallel} \propto |E_{\parallel}^{2\omega}|^2" />.
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-[#141414] border-opacity-10">
+                <h4 className="font-medium text-sm">Crossed Configuration</h4>
+                <p className="text-sm opacity-70 leading-relaxed mt-1">
+                  The polarizer is at <InlineMath math="\phi - 90^\circ" />. The incident field components are:
+                </p>
+                <div className="text-center overflow-x-auto py-2">
+                  <BlockMath math="E_X = \cos(\phi - 90^\circ) = \sin(\phi), \quad E_Y = \sin(\phi - 90^\circ) = -\cos(\phi)" />
+                </div>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The analyzer remains at <InlineMath math="\phi" />, so the detected SHG electric field is:
+                </p>
+                <div className="text-center overflow-x-auto py-2">
+                  <BlockMath math="E_{\perp}^{2\omega} = S_X \cos(\phi) + S_Y \sin(\phi)" />
+                </div>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The measured intensity is <InlineMath math="I_{\perp} \propto |E_{\perp}^{2\omega}|^2" />.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

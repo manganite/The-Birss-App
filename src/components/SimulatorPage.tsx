@@ -56,8 +56,19 @@ export function SimulatorPage({
   const independentComponents = useMemo(() => {
     const components = new Set<string>();
     sourceTerms.forEach(term => {
-      if (term.rawPoly) {
-        Array.from(term.rawPoly.keys()).forEach(chi => components.add(chi));
+      if ((term.component === 'S_X' || term.component === 'S_Y') && term.rawPoly) {
+        for (const [chi, pairMap] of term.rawPoly.entries()) {
+          let hasNonZero = false;
+          for (const coeff of pairMap.values()) {
+            if (Math.abs(coeff) > 1e-6) {
+              hasNonZero = true;
+              break;
+            }
+          }
+          if (hasNonZero) {
+            components.add(chi);
+          }
+        }
       }
     });
     return Array.from(components).sort();
@@ -92,12 +103,10 @@ export function SimulatorPage({
 
     if (!sXPoly || !sYPoly) return { data: [], maxIntensity: 0, maxParallel: 0, maxCrossed: 0 };
 
-    for (let phiDeg = 0; phiDeg < 360; phiDeg += 2) {
-      const phi = (phiDeg * Math.PI) / 180;
-      const Ex = Math.cos(phi);
-      const Ey = Math.sin(phi);
+    for (let analyzerDeg = 0; analyzerDeg < 360; analyzerDeg += 2) {
+      const analyzerRad = (analyzerDeg * Math.PI) / 180;
 
-      const evaluatePoly = (poly: Map<string, Map<string, number>>) => {
+      const evaluatePoly = (poly: Map<string, Map<string, number>>, Ex: number, Ey: number) => {
         let real = 0;
         let imag = 0;
 
@@ -128,21 +137,30 @@ export function SimulatorPage({
         return { real, imag };
       };
 
-      const Sx = evaluatePoly(sXPoly);
-      const Sy = evaluatePoly(sYPoly);
+      // Parallel Analyzer: polarizer at same angle
+      const phi_par = analyzerRad;
+      const Ex_par = Math.cos(phi_par);
+      const Ey_par = Math.sin(phi_par);
+      const Sx_par = evaluatePoly(sXPoly, Ex_par, Ey_par);
+      const Sy_par = evaluatePoly(sYPoly, Ex_par, Ey_par);
 
-      // Parallel Analyzer: analyzer at angle phi
-      const ax_par = Math.cos(phi);
-      const ay_par = Math.sin(phi);
-      const E_par_real = Sx.real * ax_par + Sy.real * ay_par;
-      const E_par_imag = Sx.imag * ax_par + Sy.imag * ay_par;
+      const ax_par = Math.cos(analyzerRad);
+      const ay_par = Math.sin(analyzerRad);
+      const E_par_real = Sx_par.real * ax_par + Sy_par.real * ay_par;
+      const E_par_imag = Sx_par.imag * ax_par + Sy_par.imag * ay_par;
       const I_par = E_par_real * E_par_real + E_par_imag * E_par_imag;
 
-      // Crossed Analyzer: analyzer at angle phi + 90 deg
-      const ax_perp = -Math.sin(phi);
-      const ay_perp = Math.cos(phi);
-      const E_perp_real = Sx.real * ax_perp + Sy.real * ay_perp;
-      const E_perp_imag = Sx.imag * ax_perp + Sy.imag * ay_perp;
+      // Crossed Analyzer: polarizer at angle - 90 deg
+      const phi_perp = analyzerRad - Math.PI / 2;
+      const Ex_perp = Math.cos(phi_perp);
+      const Ey_perp = Math.sin(phi_perp);
+      const Sx_perp = evaluatePoly(sXPoly, Ex_perp, Ey_perp);
+      const Sy_perp = evaluatePoly(sYPoly, Ex_perp, Ey_perp);
+
+      const ax_perp = Math.cos(analyzerRad);
+      const ay_perp = Math.sin(analyzerRad);
+      const E_perp_real = Sx_perp.real * ax_perp + Sy_perp.real * ay_perp;
+      const E_perp_imag = Sx_perp.imag * ax_perp + Sy_perp.imag * ay_perp;
       const I_perp = E_perp_real * E_perp_real + E_perp_imag * E_perp_imag;
 
       maxIntensity = Math.max(maxIntensity, I_par, I_perp);
@@ -150,7 +168,7 @@ export function SimulatorPage({
       maxCrossed = Math.max(maxCrossed, I_perp);
 
       data.push({
-        angle: phiDeg,
+        angle: analyzerDeg,
         parallel: I_par,
         crossed: I_perp
       });
@@ -328,14 +346,14 @@ export function SimulatorPage({
                   <div className="text-[10px] uppercase tracking-widest opacity-50">Polarizer || Analyzer</div>
                   <div className="w-full aspect-square max-w-[350px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="90%" data={simulationData.data}>
-                        <PolarGrid stroke="#141414" strokeOpacity={0.1} />
-                        <PolarAngleAxis dataKey="angle" type="number" domain={[0, 360]} ticks={[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330] as any} tickFormatter={(val) => `${val}°`} stroke="#141414" strokeOpacity={0.5} tick={{ fontSize: 10 }} />
-                        <PolarRadiusAxis angle={90} domain={[0, Math.max(1e-6, simulationData.maxParallel)]} tick={false} axisLine={false} />
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={simulationData.data}>
+                        <PolarGrid gridType="circle" stroke="#141414" strokeOpacity={0.1} />
+                        <PolarAngleAxis dataKey="angle" type="number" domain={[0, 360]} ticks={[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330] as any} tickFormatter={(val) => `${val}°`} stroke="#141414" strokeOpacity={0.5} tick={{ fontSize: 10 }} axisLineType="circle" />
+                        <PolarRadiusAxis angle={90} domain={[0, Math.max(1e-6, simulationData.maxIntensity) / 0.95]} tick={false} axisLine={false} />
                         <Radar name="Parallel" dataKey="parallel" stroke="#141414" strokeWidth={2} fill="#141414" fillOpacity={0.1} isAnimationActive={false} />
                         <Tooltip 
                           formatter={(value: number) => value.toFixed(4)}
-                          labelFormatter={(label) => `Angle: ${label}°`}
+                          labelFormatter={(label) => `Analyzer Angle: ${label}°`}
                           contentStyle={{ backgroundColor: '#E4E3E0', border: '1px solid #141414', borderRadius: '0px' }}
                         />
                       </RadarChart>
@@ -350,14 +368,14 @@ export function SimulatorPage({
                   <div className="text-[10px] uppercase tracking-widest opacity-50">Polarizer ⊥ Analyzer</div>
                   <div className="w-full aspect-square max-w-[350px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="90%" data={simulationData.data}>
-                        <PolarGrid stroke="#141414" strokeOpacity={0.1} />
-                        <PolarAngleAxis dataKey="angle" type="number" domain={[0, 360]} ticks={[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330] as any} tickFormatter={(val) => `${val}°`} stroke="#141414" strokeOpacity={0.5} tick={{ fontSize: 10 }} />
-                        <PolarRadiusAxis angle={90} domain={[0, Math.max(1e-6, simulationData.maxCrossed)]} tick={false} axisLine={false} />
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={simulationData.data}>
+                        <PolarGrid gridType="circle" stroke="#141414" strokeOpacity={0.1} />
+                        <PolarAngleAxis dataKey="angle" type="number" domain={[0, 360]} ticks={[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330] as any} tickFormatter={(val) => `${val}°`} stroke="#141414" strokeOpacity={0.5} tick={{ fontSize: 10 }} axisLineType="circle" />
+                        <PolarRadiusAxis angle={90} domain={[0, Math.max(1e-6, simulationData.maxIntensity) / 0.95]} tick={false} axisLine={false} />
                         <Radar name="Crossed" dataKey="crossed" stroke="#141414" strokeWidth={2} fill="#141414" fillOpacity={0.1} isAnimationActive={false} />
                         <Tooltip 
                           formatter={(value: number) => value.toFixed(4)}
-                          labelFormatter={(label) => `Angle: ${label}°`}
+                          labelFormatter={(label) => `Analyzer Angle: ${label}°`}
                           contentStyle={{ backgroundColor: '#E4E3E0', border: '1px solid #141414', borderRadius: '0px' }}
                         />
                       </RadarChart>
@@ -365,6 +383,11 @@ export function SimulatorPage({
                   </div>
                   <div className="text-[10px] font-mono opacity-50">Max: {simulationData.maxCrossed.toFixed(4)}</div>
                 </div>
+              </div>
+            )}
+            {independentComponents.length > 0 && (
+              <div className="mt-8 text-center text-xs opacity-50">
+                Note: The angle shown in the plots represents the analyzer angle.
               </div>
             )}
           </div>
