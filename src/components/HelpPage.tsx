@@ -41,8 +41,13 @@ export function HelpPage() {
               Simulator
             </div>
             <p className="text-sm opacity-70 leading-relaxed">
-              Visualize expected SHG intensity polarimetry patterns. Adjust crystal orientation, tensor component amplitudes, and phases to simulate parallel and crossed polarization configurations.
+              Visualize expected SHG intensity polarimetry patterns. Adjust crystal orientation, tensor component amplitudes, and phases to simulate various polarization configurations.
             </p>
+            <ul className="text-sm opacity-70 list-disc list-inside space-y-1 ml-4">
+              <li><strong>Anisotropy:</strong> Parallel and Crossed configurations as a function of analyzer angle.</li>
+              <li><strong>Polarizer:</strong> Fixed analyzer at 0° and 90°, as a function of polarizer angle.</li>
+              <li><strong>Analyzer:</strong> Fixed polarizer at 0° and 90°, as a function of analyzer angle.</li>
+            </ul>
           </div>
         </div>
       </section>
@@ -202,7 +207,7 @@ export function HelpPage() {
               <li>Adjust the crystal orientation angles (<InlineMath math="\theta_X, \theta_Y" />) to set the incidence angle of the light.</li>
               <li>The simulator automatically isolates the independent tensor components (<InlineMath math="\chi_{ijk\dots}" />) that contribute to the transverse source terms (<InlineMath math="S_X, S_Y" />).</li>
               <li>Adjust the relative amplitude and phase of each independent tensor component using the sliders.</li>
-              <li>Observe the resulting SHG intensity polarimetry patterns in the radar charts for both Parallel and Crossed configurations.</li>
+              <li>Switch between the <strong>Anisotropy</strong>, <strong>Polarizer</strong>, and <strong>Analyzer</strong> tabs to observe the resulting SHG intensity polarimetry patterns in the radar charts.</li>
             </ol>
           </div>
 
@@ -212,15 +217,18 @@ export function HelpPage() {
               Physics behind it
             </h3>
             <p className="text-sm opacity-70 leading-relaxed">
-              In a typical SHG polarimetry experiment, linearly polarized light is incident on the crystal. The polarization of the incident light (polarizer) and the detected SHG light (analyzer) are rotated to probe the symmetry of the nonlinear susceptibility tensor.
+              In a typical SHG polarimetry experiment, linearly polarized light is incident on the crystal. The polarization of the incident light (polarizer) and the detected SHG light (analyzer) are rotated to probe the symmetry of the nonlinear susceptibility tensor. The simulator provides three distinct views:
             </p>
             <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
-              <li><strong>Parallel Configuration:</strong> The polarizer and analyzer are aligned and rotate together.</li>
-              <li><strong>Crossed Configuration:</strong> The polarizer and analyzer are orthogonal (the polarizer is at <InlineMath math="-90^\circ" /> relative to the analyzer).</li>
+              <li><strong>Anisotropy:</strong> The radar charts display the SHG intensity as the <strong>analyzer angle</strong> is rotated from <InlineMath math="0^\circ" /> to <InlineMath math="360^\circ" />.
+                <ul className="list-[circle] list-inside ml-6 mt-1 space-y-1">
+                  <li><strong>Parallel Configuration:</strong> The polarizer and analyzer are aligned and rotate together.</li>
+                  <li><strong>Crossed Configuration:</strong> The polarizer and analyzer are orthogonal (the polarizer is at <InlineMath math="-90^\circ" /> relative to the analyzer).</li>
+                </ul>
+              </li>
+              <li><strong>Polarizer:</strong> The analyzer is fixed at <InlineMath math="0^\circ" /> or <InlineMath math="90^\circ" />, and the intensity is plotted as a function of the <strong>polarizer angle</strong>.</li>
+              <li><strong>Analyzer:</strong> The polarizer is fixed at <InlineMath math="0^\circ" /> or <InlineMath math="90^\circ" />, and the intensity is plotted as a function of the <strong>analyzer angle</strong>.</li>
             </ul>
-            <p className="text-sm opacity-70 leading-relaxed">
-              The radar charts display the SHG intensity as the <strong>analyzer angle</strong> is rotated from <InlineMath math="0^\circ" /> to <InlineMath math="360^\circ" />.
-            </p>
           </div>
 
           <div className="p-6 bg-[#141414]/5 border border-[#141414] border-opacity-10 space-y-4">
