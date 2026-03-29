@@ -22,6 +22,54 @@ import { FormatPointGroup, SymmetryOperation } from './components/MathComponents
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 
+function AxisOrientationInfo({ crystalSystem }: { crystalSystem: string }) {
+  if (crystalSystem === 'Triclinic') return null;
+
+  let content = null;
+  switch (crystalSystem) {
+    case 'Monoclinic':
+      content = (
+        <>
+          <span className="font-mono font-medium">z</span> is the unique axis (parallel to the 2-fold axis or perpendicular to the mirror plane).
+        </>
+      );
+      break;
+    case 'Orthorhombic':
+    case 'Tetragonal':
+    case 'Cubic':
+      content = (
+        <>
+          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" />, <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[010]" />, <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" />
+        </>
+      );
+      break;
+    case 'Trigonal':
+    case 'Hexagonal':
+      content = (
+        <>
+          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" /> / <InlineMath math="[0001]" /> (c-axis)<br/>
+          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" /> / <InlineMath math="[2\bar{1}\bar{1}0]" /> (a-axis)<br/>
+          <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[120]" /> / <InlineMath math="[01\bar{1}0]" />
+        </>
+      );
+      break;
+  }
+
+  if (!content) return null;
+
+  return (
+    <div className="p-4 border border-[#141414] border-opacity-10 space-y-2 bg-[#141414]/5">
+      <p className="text-[10px] uppercase tracking-widest opacity-50 flex items-center gap-1.5">
+        <Compass className="w-3 h-3" />
+        Axis Orientation
+      </p>
+      <p className="text-xs leading-relaxed opacity-70">
+        {content}
+      </p>
+    </div>
+  );
+}
+
 function negateExpression(expr: string): string {
   if (expr === "0") return "0";
   let result = expr.trim();
@@ -332,6 +380,8 @@ export default function App() {
                       ))}
                     </div>
                   </div>
+                  
+                  <AxisOrientationInfo crystalSystem={selectedGroup.crystalSystem} />
                 </div>
               </section>
             </div>
