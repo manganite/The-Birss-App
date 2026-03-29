@@ -2,8 +2,6 @@
 
 Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic Dipole, Electric Quadrupole) and induced transverse Second Harmonic Generation (SHG) source terms for all 32 crystallographic and 122 magnetic point groups.
 
-By Thomas Lottermoser
-
 ### [Live Demo](https://manganite.github.io/birss-app/)
 
 ## Features
