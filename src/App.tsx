@@ -18,6 +18,7 @@ import {
   formatCoeff
 } from './services/tensorCalculator';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
+import { HelpPage } from './components/HelpPage';
 import { FormatPointGroup, SymmetryOperation } from './components/MathComponents';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
@@ -147,7 +148,7 @@ const getGroupCategory = (name: string): GroupCategory => {
 };
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'calculator' | 'explorer'>('calculator');
+  const [currentView, setCurrentView] = useState<'calculator' | 'explorer' | 'help'>('calculator');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeCategory, setActiveCategory] = useState<GroupCategory>('All');
@@ -235,6 +236,13 @@ export default function App() {
           >
             Explorer
           </button>
+          <span className="opacity-30">/</span>
+          <button 
+            onClick={() => setCurrentView('help')}
+            className={`transition-opacity ${currentView === 'help' ? 'opacity-100 font-bold border-b border-[#141414]' : 'opacity-50 hover:opacity-100'}`}
+          >
+            Help
+          </button>
         </div>
         <a 
           href="https://github.com/manganite/birss-app" 
@@ -320,7 +328,9 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto p-8 md:p-12">
-        {currentView === 'explorer' ? (
+        {currentView === 'help' ? (
+          <HelpPage />
+        ) : currentView === 'explorer' ? (
           <PointGroupExplorer 
             onSelectGroupForCalculator={(group) => {
               setSelectedGroup(group);
@@ -604,39 +614,19 @@ export default function App() {
               </div>
 
               <div className="p-8 border border-[#141414] border-opacity-10 space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-widest">References</h4>
+                <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Info className="w-4 h-4" />
+                  Tensor Notes
+                </h4>
                 {(selectedTensorType === 'MD' || selectedTensorType === 'EQ') && (
                   <p className="text-xs opacity-60 leading-relaxed">
                     {selectedTensorType === 'MD' && "Note: Magnetic Dipole (Axial 3rd rank) tensors do not necessarily vanish in centrosymmetric groups."}
                     {selectedTensorType === 'EQ' && "Note: Electric Quadrupole (Polar 4th rank) tensors survive inversion symmetry."}
                   </p>
                 )}
-                <ul className="text-xs opacity-60 space-y-3 list-disc list-inside mt-4">
-                  <li className="pl-2">
-                    <a href="https://doi.org/10.1107/97809553602060000114" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
-                      International Tables for Crystallography
-                    </a>
-                    <span className="block ml-5 mt-0.5 opacity-80">General crystal symmetry aspects.</span>
-                  </li>
-                  <li className="pl-2">
-                    <a href="https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
-                      Birss, R. R. (1966). Symmetry and Magnetism.
-                    </a>
-                    <span className="block ml-5 mt-0.5 opacity-80">Magnetic point groups and tensor component calculation.</span>
-                  </li>
-                  <li className="pl-2">
-                    <a href="https://doi.org/10.1103/PhysRev.130.919" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
-                      Pershan, P. S. (1963). Nonlinear Optical Properties of Solids.
-                    </a>
-                    <span className="block ml-5 mt-0.5 opacity-80">Nonlinear optical multipole contributions.</span>
-                  </li>
-                  <li className="pl-2">
-                    <a href="https://doi.org/10.1007/s003400050650" target="_blank" rel="noreferrer" className="underline hover:opacity-100 font-medium">
-                      Fröhlich, D., et al. (1999). Nonlinear spectroscopy of antiferromagnetics.
-                    </a>
-                    <span className="block ml-5 mt-0.5 opacity-80">Source term calculation.</span>
-                  </li>
-                </ul>
+                <p className="text-xs opacity-60 leading-relaxed mt-2">
+                  For more details on conventions, physics background, and references, please see the <button onClick={() => setCurrentView('help')} className="underline hover:opacity-100 font-medium">Help page</button>.
+                </p>
               </div>
             </div>
           </motion.div>
