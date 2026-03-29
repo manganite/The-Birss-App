@@ -155,6 +155,7 @@ export default function App() {
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
   const [selectedTensorType, setSelectedTensorType] = useState<'ED' | 'MD' | 'EQ'>('ED');
   const [selectedTimeReversal, setSelectedTimeReversal] = useState<TensorTimeReversal>('i');
+  const [activeResultTab, setActiveResultTab] = useState<'components' | 'induced' | 'source'>('components');
 
   const filteredGroups = useMemo(() => {
     let groups = POINT_GROUPS;
@@ -178,6 +179,7 @@ export default function App() {
     setSelectedGroup(group);
     setSearchQuery('');
     setIsSearchFocused(false);
+    setCurrentView('calculator');
   };
 
   const getCrystalIcon = (system: string) => {
@@ -221,108 +223,111 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#E4E3E0] text-[#141414] font-sans selection:bg-[#141414] selection:text-[#E4E3E0]">
       {/* Header */}
-      <header className="border-b border-[#141414] p-8 md:p-12 relative">
-        <div className="absolute top-8 left-8 md:top-12 md:left-12 flex items-center gap-4 text-xs font-mono uppercase tracking-widest">
-          <button 
-            onClick={() => setCurrentView('calculator')}
-            className={`transition-opacity ${currentView === 'calculator' ? 'opacity-100 font-bold border-b border-[#141414]' : 'opacity-50 hover:opacity-100'}`}
-          >
-            Calculator
-          </button>
-          <span className="opacity-30">/</span>
-          <button 
-            onClick={() => setCurrentView('explorer')}
-            className={`transition-opacity ${currentView === 'explorer' ? 'opacity-100 font-bold border-b border-[#141414]' : 'opacity-50 hover:opacity-100'}`}
-          >
-            Explorer
-          </button>
-          <span className="opacity-30">/</span>
-          <button 
-            onClick={() => setCurrentView('help')}
-            className={`transition-opacity ${currentView === 'help' ? 'opacity-100 font-bold border-b border-[#141414]' : 'opacity-50 hover:opacity-100'}`}
-          >
-            Help
-          </button>
-        </div>
-        <a 
-          href="https://github.com/manganite/birss-app" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="absolute top-8 right-8 md:top-12 md:right-12 opacity-50 hover:opacity-100 transition-opacity"
-          title="View source on GitHub"
-        >
-          <Github className="w-6 h-6" />
-        </a>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8 mt-16 md:mt-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] opacity-50">
-              <Zap className="w-3 h-3" />
-              SHG TENSOR CALCULATOR
-            </div>
-            <h1 className="text-6xl md:text-8xl font-serif italic tracking-tight leading-none">
+      <header className="border-b border-[#141414] bg-[#E4E3E0] px-6 py-4 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          
+          {/* Left: Title & Tagline */}
+          <div className="flex items-center">
+            <h1 className="text-2xl font-serif italic tracking-tight leading-none">
               The Birss App
             </h1>
-            <p className="max-w-xl text-sm opacity-70 leading-relaxed">
-              Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic Dipole, Electric Quadrupole) and induced transverse Second Harmonic Generation (SHG) source terms for all 32 crystallographic and 122 magnetic point groups.
-            </p>
+            <span className="hidden md:inline-block text-xs opacity-60 ml-4 border-l border-[#141414] border-opacity-20 pl-4">
+              Nonlinear optical tensors for magnetic point groups
+            </span>
           </div>
-          
-          <div className="relative w-full md:w-80">
-            <div className="flex items-center gap-2 border-b border-[#141414] pb-2 focus-within:border-opacity-100 border-opacity-30 transition-all">
-              <Search className="w-4 h-4 opacity-50" />
-              <input 
-                type="text"
-                placeholder="Search groups (e.g., 4/m, 4'/m, 11')"
-                className="bg-transparent border-none outline-none w-full text-sm placeholder:opacity-30"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-              />
+
+          {/* Center: Navigation Pills */}
+          <div className="flex items-center bg-white/40 border border-[#141414] border-opacity-10 rounded-full p-1 self-start lg:self-auto">
+            <button 
+              onClick={() => setCurrentView('calculator')}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'calculator' ? 'bg-[#141414] text-[#E4E3E0]' : 'hover:bg-[#141414]/5 text-[#141414]/70'}`}
+            >
+              Calculator
+            </button>
+            <button 
+              onClick={() => setCurrentView('explorer')}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'explorer' ? 'bg-[#141414] text-[#E4E3E0]' : 'hover:bg-[#141414]/5 text-[#141414]/70'}`}
+            >
+              Explorer
+            </button>
+            <button 
+              onClick={() => setCurrentView('help')}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'help' ? 'bg-[#141414] text-[#E4E3E0]' : 'hover:bg-[#141414]/5 text-[#141414]/70'}`}
+            >
+              Help
+            </button>
+          </div>
+
+          {/* Right: Search & GitHub */}
+          <div className="flex items-center gap-4 self-start lg:self-auto w-full lg:w-auto">
+            <div className="relative w-full lg:w-64">
+              <div className="flex items-center bg-white/50 border border-[#141414] border-opacity-20 rounded-full px-3 py-1.5 focus-within:border-opacity-100 focus-within:bg-white transition-all">
+                <Search className="w-3.5 h-3.5 opacity-50" />
+                <input 
+                  type="text"
+                  placeholder="Search groups (e.g., 4/m, 4'/m, 11')"
+                  className="bg-transparent border-none outline-none w-full text-xs ml-2 placeholder:opacity-40"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                />
+              </div>
+              
+              <AnimatePresence>
+                {isSearchFocused && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="absolute top-[calc(100%+8px)] right-0 w-full lg:w-80 bg-[#E4E3E0] border border-[#141414] rounded-lg z-50 shadow-xl flex flex-col max-h-[400px] overflow-hidden"
+                  >
+                    <div className="p-3 border-b border-[#141414] border-opacity-10 bg-white/30 text-[10px] opacity-60 leading-tight">
+                      Use an apostrophe (') for time-reversed elements (Black & White) and append 1' for Gray groups.
+                    </div>
+                    
+                    <div className="p-2 border-b border-[#141414]/10 flex flex-wrap gap-1 bg-white/10 sticky top-0 z-10">
+                      {(['All', 'Ordinary', 'Gray', 'Black & White'] as GroupCategory[]).map(cat => (
+                        <button
+                          key={cat}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => setActiveCategory(cat)}
+                          className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full transition-colors ${activeCategory === cat ? 'bg-[#141414] text-[#E4E3E0]' : 'bg-transparent text-[#141414] hover:bg-[#141414]/10'}`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="overflow-y-auto flex-1 p-2">
+                      {filteredGroups.length > 0 ? filteredGroups.map(group => (
+                        <button
+                          key={group.name}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => handleSelect(group)}
+                          className="w-full text-left px-3 py-2 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors flex justify-between items-center group rounded-md"
+                        >
+                          <span className="text-sm font-serif italic"><FormatPointGroup name={group.name} /></span>
+                          <span className="text-[10px] uppercase tracking-widest opacity-50 group-hover:opacity-100">{group.crystalSystem}</span>
+                        </button>
+                      )) : (
+                        <div className="p-4 text-center text-xs opacity-50">No groups found</div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <p className="text-[10px] opacity-50 mt-2 leading-tight">
-              Use an apostrophe (') for time-reversed elements (Black & White) and append 1' for Gray groups.
-            </p>
             
-            <AnimatePresence>
-              {isSearchFocused && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 w-full bg-[#E4E3E0] border border-[#141414] border-t-0 z-50 shadow-xl flex flex-col max-h-[400px]"
-                >
-                  <div className="p-2 border-b border-[#141414]/20 flex flex-wrap gap-1 bg-[#E4E3E0] sticky top-0 z-10">
-                    {(['All', 'Ordinary', 'Gray', 'Black & White'] as GroupCategory[]).map(cat => (
-                      <button
-                        key={cat}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => setActiveCategory(cat)}
-                        className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full transition-colors ${activeCategory === cat ? 'bg-[#141414] text-[#E4E3E0]' : 'bg-transparent text-[#141414] hover:bg-[#141414]/10'}`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <div className="overflow-y-auto flex-1">
-                    {filteredGroups.length > 0 ? filteredGroups.map(group => (
-                      <button
-                        key={group.name}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => handleSelect(group)}
-                        className="w-full text-left p-3 hover:bg-[#141414] hover:text-[#E4E3E0] transition-colors flex justify-between items-center group border-b border-[#141414]/5 last:border-0"
-                      >
-                        <span className="text-lg font-serif italic"><FormatPointGroup name={group.name} /></span>
-                        <span className="text-[10px] uppercase tracking-widest opacity-50 group-hover:opacity-100">{group.crystalSystem}</span>
-                      </button>
-                    )) : (
-                      <div className="p-4 text-center text-xs opacity-50">No groups found</div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <a 
+              href="https://github.com/manganite/birss-app" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="opacity-40 hover:opacity-100 transition-opacity hidden sm:block"
+              title="View source on GitHub"
+            >
+              <Github className="w-5 h-5" />
+            </a>
           </div>
         </div>
       </header>
@@ -439,177 +444,204 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
-                <Zap className="w-3 h-3" />
-                {tensorMeta[selectedTensorType].label} Tensor ({tensorMeta[selectedTensorType].type})
-              </div>
-              
-              <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-3xl font-serif italic">Non-zero Components</h3>
-                  <div className="text-[10px] font-mono opacity-50">{tensorMeta[selectedTensorType].rank}</div>
+              <div className="bg-white/50 border border-[#141414] overflow-hidden">
+                {/* Tab Menu */}
+                <div className="flex overflow-x-auto border-b border-[#141414] border-opacity-20 bg-white/30 hide-scrollbar">
+                  <button
+                    onClick={() => setActiveResultTab('components')}
+                    className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activeResultTab === 'components' ? 'bg-[#141414] text-[#E4E3E0]' : 'hover:bg-[#141414]/5 text-[#141414]/70'}`}
+                  >
+                    Tensor Components
+                  </button>
+                  <button
+                    onClick={() => setActiveResultTab('induced')}
+                    className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors border-l border-[#141414] border-opacity-10 ${activeResultTab === 'induced' ? 'bg-[#141414] text-[#E4E3E0]' : 'hover:bg-[#141414]/5 text-[#141414]/70'}`}
+                  >
+                    Induced Response
+                  </button>
+                  <button
+                    onClick={() => setActiveResultTab('source')}
+                    className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors border-l border-[#141414] border-opacity-10 ${activeResultTab === 'source' ? 'bg-[#141414] text-[#E4E3E0]' : 'hover:bg-[#141414]/5 text-[#141414]/70'}`}
+                  >
+                    Source Terms
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                  {currentComponents.map((comp, i) => {
-                    const isNull = comp.toLowerCase().includes('zero') || comp.toLowerCase().includes('none') || comp.includes('not supported');
-                    if (isNull) {
-                      return (
-                        <div key={i} className="group border-b border-[#141414] border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
-                          <div className="text-lg font-mono tracking-tighter opacity-30">
-                            {comp}
-                          </div>
-                          <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
-                            Null State
-                          </div>
+                {/* Tab Content */}
+                <div className="p-6 md:p-8 min-h-[400px]">
+                  {activeResultTab === 'components' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center border-b border-[#141414] border-opacity-10 pb-4">
+                        <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+                          <Zap className="w-3 h-3" />
+                          {tensorMeta[selectedTensorType].label} Tensor ({tensorMeta[selectedTensorType].type})
                         </div>
-                      );
-                    }
-                    
-                    const parts = comp.split('=').map(p => p.trim());
-                    return (
-                      <div key={i} className="group border-b border-[#141414] border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
-                        <div className="text-lg font-mono tracking-tighter flex flex-wrap items-baseline gap-2">
-                          <TensorTerm term={parts[0]} isNull={false} />
-                          {parts.length > 1 && parts.slice(1).map((part, pi) => (
-                            <div key={pi} className="flex items-baseline gap-2">
-                              <span className="text-xs opacity-30"><InlineMath math="=" /></span>
-                              <TensorTerm term={part} isNull={false} />
+                        <div className="text-[10px] font-mono opacity-50">RANK {tensorMeta[selectedTensorType].rank}</div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                        {currentComponents.map((comp, i) => {
+                          const isNull = comp.toLowerCase().includes('zero') || comp.toLowerCase().includes('none') || comp.includes('not supported');
+                          if (isNull) {
+                            return (
+                              <div key={i} className="group border-b border-[#141414] border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
+                                <div className="text-lg font-mono tracking-tighter opacity-30">
+                                  {comp}
+                                </div>
+                                <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
+                                  Null State
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          const parts = comp.split('=').map(p => p.trim());
+                          return (
+                            <div key={i} className="group border-b border-[#141414] border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
+                              <div className="text-lg font-mono tracking-tighter flex flex-wrap items-baseline gap-2">
+                                <TensorTerm term={parts[0]} isNull={false} />
+                                {parts.length > 1 && parts.slice(1).map((part, pi) => (
+                                  <div key={pi} className="flex items-baseline gap-2">
+                                    <span className="text-xs opacity-30"><InlineMath math="=" /></span>
+                                    <TensorTerm term={part} isNull={false} />
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
+                                Active Component
+                              </div>
                             </div>
-                          ))}
-                        </div>
-                        <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
-                          Active Component
-                        </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
 
-                {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && (
-                  <div className="p-6 border border-[#141414] border-dashed flex items-center gap-4 opacity-50">
-                    <Info className="w-5 h-5" />
-                    <p className="text-xs leading-relaxed italic">
-                      In centrosymmetric point groups, all components of the second-order nonlinear susceptibility 
-                      tensor <InlineMath math="\chi^{(2)}" /> (Electric Dipole) vanish under the inversion operation.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
-                <Compass className="w-3 h-3" />
-                {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'} (CRYSTAL FRAME)
-              </div>
-
-              <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-3xl font-serif italic">Induced Nonlinear Response</h3>
-                  <div className="text-[10px] font-mono opacity-50">FULL FIELD COMPONENTS</div>
-                </div>
-
-                <div className="space-y-6">
-                  {inducedTerms.map((expr, i) => {
-                    const isNull = expr.expression === "0";
-                    return (
-                      <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-[#141414] border-opacity-10 pb-4">
-                        <div className="w-16 font-mono text-xl">
-                          <TensorTerm term={expr.component} isNull={isNull} />
+                      {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && (
+                        <div className="p-6 border border-[#141414] border-dashed flex items-center gap-4 opacity-50 mt-8">
+                          <Info className="w-5 h-5" />
+                          <p className="text-xs leading-relaxed italic">
+                            In centrosymmetric point groups, all components of the second-order nonlinear susceptibility 
+                            tensor <InlineMath math="\chi^{(2)}" /> (Electric Dipole) vanish under the inversion operation.
+                          </p>
                         </div>
-                        <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
-                          <span className="opacity-30 mr-4"><InlineMath math="=" /></span>
-                          <TensorTerm term={expr.expression} isNull={isNull} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
-                  Note: This calculation assumes two identical input fields <InlineMath math="E(\omega)" />. 
-                  The full electric field vector is considered for the induced response.
-                </div>
-              </div>
-
-              <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
-                <Compass className="w-3 h-3" />
-                Source Term Components S (Lab Frame)
-              </div>
-
-              <div className="bg-white/50 border border-[#141414] p-8 md:p-12 space-y-8">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-3xl font-serif italic">Effective Source Terms</h3>
-                  <div className="text-[10px] font-mono opacity-50">
-                    {selectedTensorType === 'ED' ? <InlineMath math="S \propto P" /> : selectedTensorType === 'MD' ? <InlineMath math="S \propto \nabla \times M" /> : <InlineMath math="S \propto \nabla \cdot Q" />}
-                  </div>
-                </div>
-
-                <div className="space-y-6 border-b border-[#141414] border-opacity-10 pb-8">
-                  <div className="space-y-3">
-                    <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">
-                      Select the direction of light propagation relative to the crystal axes
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {[
-                        { label: 'k || z', math: 'k \\parallel z', tx: 0, ty: 0 },
-                        { label: 'k || x', math: 'k \\parallel x', tx: 0, ty: -90 },
-                        { label: 'k || y', math: 'k \\parallel y', tx: 90, ty: 0 },
-                        { label: 'k || xy', math: 'k \\parallel xy', tx: 90, ty: -45 },
-                        { label: 'k || xz', math: 'k \\parallel xz', tx: 0, ty: -45 },
-                        { label: 'k || yz', math: 'k \\parallel yz', tx: 45, ty: 0 },
-                      ].map((ori) => (
-                        <button
-                          key={ori.label}
-                          onClick={() => {
-                            setThetaX(ori.tx);
-                            setThetaY(ori.ty);
-                          }}
-                          className={`px-4 py-2 text-[12px] tracking-[0.1em] transition-all border border-[#141414] ${
-                            thetaX === ori.tx && thetaY === ori.ty
-                              ? 'bg-[#141414] text-[#E4E3E0]' 
-                              : 'hover:bg-[#141414] hover:text-[#E4E3E0] opacity-50 hover:opacity-100 border-opacity-20'
-                          }`}
-                        >
-                          <InlineMath math={ori.math} />
-                        </button>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-8 items-start mt-6">
-                    <div className="flex-1 bg-[#141414]/5 p-4 border border-[#141414]/10 rounded-sm w-full">
-                      <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 mb-3">Crystal Orientation in Lab Frame</h4>
-                      <div className="flex flex-col gap-3 text-sm font-mono">
-                        <div className="flex flex-wrap gap-x-6 gap-y-2">
-                          <InlineMath math={`\\mathbf{x}_{crys} = ${labFrame.X}`} />
-                          <InlineMath math={`\\mathbf{y}_{crys} = ${labFrame.Y}`} />
-                          <InlineMath math={`\\mathbf{z}_{crys} = ${labFrame.Z}`} />
+                  )}
+
+                  {activeResultTab === 'induced' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center border-b border-[#141414] border-opacity-10 pb-4">
+                        <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+                          <Compass className="w-3 h-3" />
+                          {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'} (CRYSTAL FRAME)
                         </div>
+                        <div className="text-[10px] font-mono opacity-50">FULL FIELD COMPONENTS</div>
+                      </div>
+
+                      <div className="space-y-6">
+                        {inducedTerms.map((expr, i) => {
+                          const isNull = expr.expression === "0";
+                          return (
+                            <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-[#141414] border-opacity-10 pb-4">
+                              <div className="w-16 font-mono text-xl">
+                                <TensorTerm term={expr.component} isNull={isNull} />
+                              </div>
+                              <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
+                                <span className="opacity-30 mr-4"><InlineMath math="=" /></span>
+                                <TensorTerm term={expr.expression} isNull={isNull} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed mt-8">
+                        Note: This calculation assumes two identical input fields <InlineMath math="E(\omega)" />. 
+                        The full electric field vector is considered for the induced response.
                       </div>
                     </div>
-                  </div>
-                </div>
+                  )}
 
-                <div className="space-y-6">
-                  {sourceTerms.map((expr, i) => {
-                    const isNull = expr.expression === "0";
-                    return (
-                      <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-[#141414] border-opacity-10 pb-4">
-                        <div className="w-16 font-mono text-xl">
-                          <TensorTerm term={expr.component} isNull={isNull} />
+                  {activeResultTab === 'source' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div className="flex justify-between items-center border-b border-[#141414] border-opacity-10 pb-4">
+                        <div className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+                          <Compass className="w-3 h-3" />
+                          Source Term Components S (Lab Frame)
                         </div>
-                        <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
-                          <span className="opacity-30 mr-4"><InlineMath math="\propto" /></span>
-                          <span className="opacity-50 mr-4"><TensorTerm term={expr.relation} isNull={isNull} /></span>
-                          <span className="opacity-30 mr-4"><InlineMath math="=" /></span>
-                          <TensorTerm term={expr.expression} isNull={isNull} />
+                        <div className="text-[10px] font-mono opacity-50">
+                          {selectedTensorType === 'ED' ? <InlineMath math="S \propto P" /> : selectedTensorType === 'MD' ? <InlineMath math="S \propto \nabla \times M" /> : <InlineMath math="S \propto \nabla \cdot Q" />}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
 
-                <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed">
-                  Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse: <InlineMath math="\vec{E} = (E_X, E_Y, 0)" />.
+                      <div className="space-y-6 border-b border-[#141414] border-opacity-10 pb-6">
+                        <div className="space-y-3">
+                          <p className="text-[10px] uppercase tracking-[0.2em] opacity-50">
+                            Select the direction of light propagation relative to the crystal axes
+                          </p>
+                          <div className="flex flex-wrap gap-3">
+                            {[
+                              { label: 'k || z', math: 'k \\parallel z', tx: 0, ty: 0 },
+                              { label: 'k || x', math: 'k \\parallel x', tx: 0, ty: -90 },
+                              { label: 'k || y', math: 'k \\parallel y', tx: 90, ty: 0 },
+                              { label: 'k || xy', math: 'k \\parallel xy', tx: 90, ty: -45 },
+                              { label: 'k || xz', math: 'k \\parallel xz', tx: 0, ty: -45 },
+                              { label: 'k || yz', math: 'k \\parallel yz', tx: 45, ty: 0 },
+                            ].map((ori) => (
+                              <button
+                                key={ori.label}
+                                onClick={() => {
+                                  setThetaX(ori.tx);
+                                  setThetaY(ori.ty);
+                                }}
+                                className={`px-4 py-2 text-[12px] tracking-[0.1em] transition-all border border-[#141414] ${
+                                  thetaX === ori.tx && thetaY === ori.ty
+                                    ? 'bg-[#141414] text-[#E4E3E0]' 
+                                    : 'hover:bg-[#141414] hover:text-[#E4E3E0] opacity-50 hover:opacity-100 border-opacity-20'
+                                }`}
+                              >
+                                <InlineMath math={ori.math} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex flex-col md:flex-row gap-8 items-start mt-6">
+                          <div className="flex-1 bg-[#141414]/5 p-4 border border-[#141414]/10 rounded-sm w-full">
+                            <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 mb-3">Crystal Orientation in Lab Frame</h4>
+                            <div className="flex flex-col gap-3 text-sm font-mono">
+                              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                                <InlineMath math={`\\mathbf{x}_{crys} = ${labFrame.X}`} />
+                                <InlineMath math={`\\mathbf{y}_{crys} = ${labFrame.Y}`} />
+                                <InlineMath math={`\\mathbf{z}_{crys} = ${labFrame.Z}`} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        {sourceTerms.map((expr, i) => {
+                          const isNull = expr.expression === "0";
+                          return (
+                            <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-[#141414] border-opacity-10 pb-4">
+                              <div className="w-16 font-mono text-xl">
+                                <TensorTerm term={expr.component} isNull={isNull} />
+                              </div>
+                              <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
+                                <span className="opacity-30 mr-4"><InlineMath math="\propto" /></span>
+                                <span className="opacity-50 mr-4"><TensorTerm term={expr.relation} isNull={isNull} /></span>
+                                <span className="opacity-30 mr-4"><InlineMath math="=" /></span>
+                                <TensorTerm term={expr.expression} isNull={isNull} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="p-4 border border-[#141414] border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed mt-8">
+                        Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse: <InlineMath math="\vec{E} = (E_X, E_Y, 0)" />.
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
