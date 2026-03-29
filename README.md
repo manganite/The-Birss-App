@@ -2,15 +2,27 @@
 
 Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic Dipole, Electric Quadrupole) and induced transverse Second Harmonic Generation (SHG) source terms for all 32 crystallographic and 122 magnetic point groups.
 
+By Thomas Lottermoser
+
 ### [Live Demo](https://manganite.github.io/birss-app/)
 
 ## Features
-- **Point Group Analysis**: Detailed symmetry classification for all 32 crystallographic and 122 magnetic point groups.
-- **Tensor Calculation**: Automatic determination of non-zero and independent components for Electric Dipole (ED, $\chi^{(2)}$), Magnetic Dipole (MD), and Electric Quadrupole (EQ) tensors, including Time-Reversal symmetry (i-type, c-type).
-- **SHG Source Terms**: Real-time calculation of induced nonlinear response in the Lab Frame ($S_X, S_Y, S_Z$) with incoming light propagating along the Z-axis ($E_Z = 0$). Includes crystal rotation controls ($\theta_X$, $\theta_Y$) to simulate experimental setups.
-- **Coordinate Systems**: Clear distinction and transformation between the Crystal Frame (for tensor components) and the Lab Frame (for observables).
-- **Symmetry-Aware Rendering**: Correct mathematical notation with subscripts and superscripts for all physical symbols.
-- **Responsive Design**: Optimized for both desktop and mobile viewing.
+
+- **Calculator**: 
+  - Automatic determination of non-zero and independent components for Electric Dipole (ED, $\chi^{(2)}$), Magnetic Dipole (MD), and Electric Quadrupole (EQ) tensors.
+  - Supports Time-Reversal symmetry toggles (i-type, c-type).
+  - Real-time calculation of induced nonlinear response in the Lab Frame ($S_X, S_Y, S_Z$) with incoming light propagating along the Z-axis ($E_Z = 0$). 
+  - Includes crystal rotation controls ($\theta_X$, $\theta_Y$) to simulate experimental setups.
+- **Explorer**: 
+  - Browse all 122 crystallographic magnetic point groups.
+  - Filter by crystal system and group type (Ordinary, Gray, Black & White).
+  - View symmetry operations and properties for each group.
+- **Simulator**: 
+  - Visualize expected SHG intensity polarimetry patterns.
+  - Adjust crystal orientation, tensor component amplitudes, and phases to simulate parallel and crossed polarization configurations.
+  - Interactive radar charts displaying SHG intensity as the analyzer angle is rotated.
+- **Help & Documentation**: 
+  - Comprehensive physics background, mathematics behind the intensity calculations, and usage instructions.
 
 ## References
 The symmetry relations and calculations presented in this app follow the conventions established in the following literature:
@@ -20,10 +32,13 @@ The symmetry relations and calculations presented in this app follow the convent
 - **[Fröhlich, D., et al. (1999). Nonlinear spectroscopy of antiferromagnetics](https://doi.org/10.1007/s003400050650)**: Source term calculation.
 
 ## Tech Stack
-- **Developed with [Google AI Studio](https://ai.studio/build)** — Built, iterated, and deployed using natural language prompting.
+- **Developed with [Google AI Studio Build](https://ai.studio/build)** — Built, iterated, and deployed using natural language prompting.
 - **React 19** + **Vite**
 - **Tailwind CSS** for styling
 - **Lucide React** for iconography
+- **KaTeX** (`react-katex`) for mathematical rendering
+- **Recharts** for radar chart visualizations
+- **Framer Motion** for smooth animations
 - **GitHub Actions** for automated deployment to GitHub Pages
 
 ## Running Locally

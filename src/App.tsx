@@ -675,9 +675,12 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-24 border-t border-[#141414] p-8 text-center">
+      <footer className="mt-24 border-t border-[#141414] p-8 text-center space-y-2">
         <p className="text-[10px] uppercase tracking-[0.5em] opacity-30">
           The Birss App &copy; 2026
+        </p>
+        <p className="text-[10px] uppercase tracking-[0.2em] opacity-30">
+          By Thomas Lottermoser
         </p>
       </footer>
 
