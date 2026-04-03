@@ -462,7 +462,8 @@ export function calculateSHGExpressions(
   tensorType: TensorType,
   trType: TensorTimeReversal,
   thetaX: number = 0,
-  thetaY: number = 0
+  thetaY: number = 0,
+  labFrameDisplayMode: 'EX_EY' | 'E0_THETA' = 'EX_EY'
 ): SHGResult {
   const generators = GENERATORS[groupName];
   if (!generators) return { induced: [], source: [] };
@@ -547,10 +548,15 @@ export function calculateSHGExpressions(
       
       if (fieldParts.length === 0) continue;
 
-      const fieldLabels: Record<string, string> = isLabFrame ? { 
-        '00': 'E_X^2', '11': 'E_Y^2', '22': 'E_Z^2', 
-        '01': 'E_X E_Y', '02': 'E_X E_Z', '12': 'E_Y E_Z' 
-      } : { 
+      const fieldLabels: Record<string, string> = isLabFrame ? (
+        labFrameDisplayMode === 'E0_THETA' ? { 
+          '00': 'E_0^2 \\cos^2(\\theta_{pol})', '11': 'E_0^2 \\sin^2(\\theta_{pol})', '22': '0', 
+          '01': 'E_0^2 \\cos(\\theta_{pol}) \\sin(\\theta_{pol})', '02': '0', '12': '0' 
+        } : { 
+          '00': 'E_X^2', '11': 'E_Y^2', '22': 'E_Z^2', 
+          '01': 'E_X E_Y', '02': 'E_X E_Z', '12': 'E_Y E_Z' 
+        }
+      ) : { 
         '00': 'E_x^2', '11': 'E_y^2', '22': 'E_z^2', 
         '01': 'E_x E_y', '02': 'E_x E_z', '12': 'E_y E_z' 
       };
@@ -951,4 +957,40 @@ export function getSymmetryOperations(groupName: string): string[] {
     const primeB = b.includes("'") ? 1 : 0;
     return primeA - primeB;
   });
+}
+
+export function getLabFrameVectors(tx: number, ty: number) {
+  const cx = Math.cos(tx * Math.PI / 180);
+  const sx = Math.sin(tx * Math.PI / 180);
+  const cy = Math.cos(ty * Math.PI / 180);
+  const sy = Math.sin(ty * Math.PI / 180);
+
+  const formatVec = (v: number[]) => {
+    const terms = [];
+    const labels = ['X', 'Y', 'Z'];
+    for (let i = 0; i < 3; i++) {
+      if (Math.abs(v[i]) > 1e-5) {
+        const coeff = formatCoeff(v[i]);
+        const sign = v[i] < 0 ? "-" : (terms.length > 0 ? "+" : "");
+        terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}_{LAB}`);
+      }
+    }
+    return terms.length > 0 ? terms.join(" ") : "0";
+  };
+
+  // R maps Crystal to Lab: V_lab = R * V_cryst
+  // So V_cryst = R^T * V_lab
+  // x_crys = R_00 X_lab + R_10 Y_lab + R_20 Z_lab
+  // y_crys = R_01 X_lab + R_11 Y_lab + R_21 Z_lab
+  // z_crys = R_02 X_lab + R_12 Y_lab + R_22 Z_lab
+
+  const x_crys = [cy, 0, -sy];
+  const y_crys = [sx * sy, cx, sx * cy];
+  const z_crys = [cx * sy, -sx, cx * cy];
+
+  return {
+    X: formatVec(x_crys),
+    Y: formatVec(y_crys),
+    Z: formatVec(z_crys)
+  };
 }

@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PointGroupData } from '../data/pointGroups';
-import { TensorType, TensorTimeReversal } from '../services/tensorCalculator';
+import { TensorType, TensorTimeReversal, getLabFrameVectors } from '../services/tensorCalculator';
 import { calculateSHGExpressions } from '../services/tensorCalculator';
-import { InlineMath } from 'react-katex';
-import { Zap, Compass, Sliders, Activity } from 'lucide-react';
+import { InlineMath, BlockMath } from 'react-katex';
+import { Zap, Compass, Sliders, Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -25,6 +25,10 @@ interface SimulatorPageProps {
   setThetaX: (t: number) => void;
   thetaY: number;
   setThetaY: (t: number) => void;
+  amplitudes: Record<string, number>;
+  setAmplitudes: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  phases: Record<string, number>;
+  setPhases: React.Dispatch<React.SetStateAction<Record<string, number>>>;
 }
 
 export function SimulatorPage({
@@ -36,11 +40,16 @@ export function SimulatorPage({
   thetaX,
   setThetaX,
   thetaY,
-  setThetaY
+  setThetaY,
+  amplitudes,
+  setAmplitudes,
+  phases,
+  setPhases
 }: SimulatorPageProps) {
-  const [amplitudes, setAmplitudes] = useState<Record<string, number>>({});
-  const [phases, setPhases] = useState<Record<string, number>>({});
   const [activePolarimetryTab, setActivePolarimetryTab] = useState<'anisotropy' | 'polarizer' | 'analyzer'>('anisotropy');
+  const [showEquations, setShowEquations] = useState(false);
+
+  const labFrame = useMemo(() => getLabFrameVectors(thetaX, thetaY), [thetaX, thetaY]);
 
   const sourceTerms = useMemo(() => {
     if (!selectedGroup) return [];
@@ -49,7 +58,8 @@ export function SimulatorPage({
       selectedTensorType,
       selectedTimeReversal,
       thetaX,
-      thetaY
+      thetaY,
+      'E0_THETA'
     ).source;
   }, [selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY]);
 
@@ -156,13 +166,8 @@ export function SimulatorPage({
       const angleRad = (angleDeg * Math.PI) / 180;
 
       // 1. Anisotropy (angle = polarizer angle, analyzer = angle or angle + 90)
-      // Note: original code used analyzerDeg as the angle, and polarizer was analyzerDeg or analyzerDeg - 90
-      // Let's stick to the original logic for Anisotropy: angle = analyzer angle
-      // Wait, original logic:
-      // Parallel: polarizer = analyzerRad
-      // Crossed: polarizer = analyzerRad - 90
       const I_par = calcIntensity(angleRad, angleRad);
-      const I_perp = calcIntensity(angleRad - Math.PI / 2, angleRad);
+      const I_perp = calcIntensity(angleRad, angleRad + Math.PI / 2);
 
       // 2. Polarizer (angle = polarizer angle, analyzer = 0 or 90)
       const I_pol_a0 = calcIntensity(angleRad, 0);
@@ -291,6 +296,18 @@ export function SimulatorPage({
               </button>
             ))}
           </div>
+          <div className="flex flex-col md:flex-row gap-8 items-start mt-6">
+            <div className="flex-1 bg-[#141414]/5 p-4 border border-[#141414]/10 rounded-sm w-full">
+              <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 mb-3">Crystal Orientation in Lab Frame</h4>
+              <div className="flex flex-col gap-3 text-sm font-mono">
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  <InlineMath math={`\\mathbf{x}_{crys} = ${labFrame.X}`} />
+                  <InlineMath math={`\\mathbf{y}_{crys} = ${labFrame.Y}`} />
+                  <InlineMath math={`\\mathbf{z}_{crys} = ${labFrame.Z}`} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -402,7 +419,7 @@ export function SimulatorPage({
                               <Radar name="Parallel" dataKey="parallel" stroke="#141414" strokeWidth={2} fill="#141414" fillOpacity={0.1} isAnimationActive={false} />
                               <Tooltip 
                                 formatter={(value: number) => value.toFixed(4)}
-                                labelFormatter={(label) => `Analyzer Angle: ${label}°`}
+                                labelFormatter={(label) => `Polarizer Angle: ${label}°`}
                                 contentStyle={{ backgroundColor: '#E4E3E0', border: '1px solid #141414', borderRadius: '0px' }}
                               />
                             </RadarChart>
@@ -424,7 +441,7 @@ export function SimulatorPage({
                               <Radar name="Crossed" dataKey="crossed" stroke="#141414" strokeWidth={2} fill="#141414" fillOpacity={0.1} isAnimationActive={false} />
                               <Tooltip 
                                 formatter={(value: number) => value.toFixed(4)}
-                                labelFormatter={(label) => `Analyzer Angle: ${label}°`}
+                                labelFormatter={(label) => `Polarizer Angle: ${label}°`}
                                 contentStyle={{ backgroundColor: '#E4E3E0', border: '1px solid #141414', borderRadius: '0px' }}
                               />
                             </RadarChart>
@@ -533,7 +550,7 @@ export function SimulatorPage({
 
                   {independentComponents.length > 0 && (
                     <div className="mt-8 text-center text-xs opacity-50">
-                      Note: The angle shown in the plots represents the {activePolarimetryTab === 'polarizer' ? 'polarizer' : 'analyzer'} angle. 0° corresponds to the Lab X-axis, and 90° corresponds to the Lab Y-axis.
+                      Note: The angle shown in the plots represents the {activePolarimetryTab === 'analyzer' ? 'analyzer' : 'polarizer'} angle. 0° corresponds to the Lab X-axis, and 90° corresponds to the Lab Y-axis.
                     </div>
                   )}
                 </div>
@@ -541,6 +558,103 @@ export function SimulatorPage({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Equations Section */}
+      <div className="mt-12 border-t border-[#141414] border-opacity-10 pt-8">
+        <button 
+          onClick={() => setShowEquations(!showEquations)}
+          className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity mx-auto"
+        >
+          {showEquations ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {showEquations ? 'Hide Mathematical Details' : 'Show Mathematical Details'}
+        </button>
+
+        {showEquations && (
+          <div className="mt-8 bg-white/50 border border-[#141414] p-6 md:p-8 space-y-8 animate-in slide-in-from-top-4 duration-300">
+            <div className="space-y-4">
+              <h3 className="text-lg font-serif italic">Mathematical Model</h3>
+              <p className="text-sm opacity-70 leading-relaxed">
+                The SHG intensity <InlineMath math="I" /> is calculated based on the incident electric field <InlineMath math="\vec{E}_{in}" /> and the resulting source polarization <InlineMath math="\vec{S}" />.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50">1. Incident Field</h4>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The incident light propagates along the Lab Z-axis. The electric field vector is defined by the polarizer angle <InlineMath math="\theta_{pol}" />:
+                </p>
+                <div className="bg-[#141414]/5 p-4 overflow-x-auto">
+                  <BlockMath math="\vec{E}_{in} = \begin{pmatrix} E_X \\ E_Y \\ 0 \end{pmatrix} = E_0 \begin{pmatrix} \cos(\theta_{pol}) \\ \sin(\theta_{pol}) \\ 0 \end{pmatrix}" />
+                </div>
+              </div>
+
+              <div className="space-y-4 md:col-span-2">
+                <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50">2. Source Terms (Current Configuration)</h4>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  For the selected point group and crystal orientation, the source terms evaluate to:
+                </p>
+                <div className="bg-[#141414]/5 p-4 overflow-x-auto space-y-4">
+                  {sourceTerms.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
+                    <div key={i} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
+                      <div><TensorTerm term={`${term.component}(\\theta_{pol})`} isNull={term.expression === '0'} /></div>
+                      <div>=</div>
+                      <div><TensorTerm term={term.expression} isNull={term.expression === '0'} /></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4 md:col-span-2">
+                <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50">3. Detected Intensity Formulas</h4>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The plotted intensities <InlineMath math="I \propto |E_{out}|^2" /> correspond to the following configurations, where <InlineMath math="\theta" /> is the angle shown on the polar plot:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-[#141414]/5 p-4 space-y-4">
+                    <div className="text-xs font-bold uppercase tracking-widest opacity-50">Anisotropy</div>
+                    <div className="space-y-2">
+                      <div className="text-xs opacity-70">Parallel (<InlineMath math="\theta_{pol} = \theta_{ana} = \theta" />):</div>
+                      <div className="overflow-x-auto pb-2"><BlockMath math="I_{\parallel} = |S_X(\theta) \cos\theta + S_Y(\theta) \sin\theta|^2" /></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-xs opacity-70">Crossed (<InlineMath math="\theta_{pol} = \theta, \theta_{ana} = \theta + 90^\circ" />):</div>
+                      <div className="overflow-x-auto pb-2"><BlockMath math="I_{\perp} = |-S_X(\theta) \sin\theta + S_Y(\theta) \cos\theta|^2" /></div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-[#141414]/5 p-4 space-y-4">
+                    <div className="text-xs font-bold uppercase tracking-widest opacity-50">Polarizer</div>
+                    <div className="space-y-2">
+                      <div className="text-xs opacity-70">Analyzer 0° (<InlineMath math="\theta_{ana} = 0^\circ, \theta_{pol} = \theta" />):</div>
+                      <div className="overflow-x-auto pb-2"><BlockMath math="I = |S_X(\theta)|^2" /></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-xs opacity-70">Analyzer 90° (<InlineMath math="\theta_{ana} = 90^\circ, \theta_{pol} = \theta" />):</div>
+                      <div className="overflow-x-auto pb-2"><BlockMath math="I = |S_Y(\theta)|^2" /></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#141414]/5 p-4 space-y-4">
+                    <div className="text-xs font-bold uppercase tracking-widest opacity-50">Analyzer</div>
+                    <div className="space-y-2">
+                      <div className="text-xs opacity-70">Polarizer 0° (<InlineMath math="\theta_{pol} = 0^\circ, \theta_{ana} = \theta" />):</div>
+                      <div className="overflow-x-auto pb-2"><BlockMath math="I = |S_X(0^\circ) \cos\theta + S_Y(0^\circ) \sin\theta|^2" /></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-xs opacity-70">Polarizer 90° (<InlineMath math="\theta_{pol} = 90^\circ, \theta_{ana} = \theta" />):</div>
+                      <div className="overflow-x-auto pb-2"><BlockMath math="I = |S_X(90^\circ) \cos\theta + S_Y(90^\circ) \sin\theta|^2" /></div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs opacity-50 mt-4">
+                  * Note: <InlineMath math="S_X(\theta)" /> and <InlineMath math="S_Y(\theta)" /> are evaluated by substituting <InlineMath math="\theta_{pol} = \theta" /> into the source term equations above.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

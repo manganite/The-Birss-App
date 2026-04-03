@@ -15,7 +15,8 @@ import {
   SHGExpression,
   TensorType,
   getSymmetryOperations,
-  formatCoeff
+  formatCoeff,
+  getLabFrameVectors
 } from './services/tensorCalculator';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
 import { HelpPage } from './components/HelpPage';
@@ -85,44 +86,6 @@ function negateExpression(expr: string): string {
   return result;
 }
 
-
-
-function getLabFrameVectors(tx: number, ty: number) {
-  const cx = Math.cos(tx * Math.PI / 180);
-  const sx = Math.sin(tx * Math.PI / 180);
-  const cy = Math.cos(ty * Math.PI / 180);
-  const sy = Math.sin(ty * Math.PI / 180);
-
-  const formatVec = (v: number[]) => {
-    const terms = [];
-    const labels = ['X', 'Y', 'Z'];
-    for (let i = 0; i < 3; i++) {
-      if (Math.abs(v[i]) > 1e-5) {
-        const coeff = formatCoeff(v[i]);
-        const sign = v[i] < 0 ? "-" : (terms.length > 0 ? "+" : "");
-        terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}_{LAB}`);
-      }
-    }
-    return terms.length > 0 ? terms.join(" ") : "0";
-  };
-
-  // R maps Crystal to Lab: V_lab = R * V_cryst
-  // So V_cryst = R^T * V_lab
-  // x_crys = R_00 X_lab + R_10 Y_lab + R_20 Z_lab
-  // y_crys = R_01 X_lab + R_11 Y_lab + R_21 Z_lab
-  // z_crys = R_02 X_lab + R_12 Y_lab + R_22 Z_lab
-
-  const x_crys = [cy, 0, -sy];
-  const y_crys = [sx * sy, cx, sx * cy];
-  const z_crys = [cx * sy, -sx, cx * cy];
-
-  return {
-    X: formatVec(x_crys),
-    Y: formatVec(y_crys),
-    Z: formatVec(z_crys)
-  };
-}
-
 const normalizeString = (str: string) => {
   return str
     .toLowerCase()
@@ -147,6 +110,8 @@ export default function App() {
   const [selectedTensorType, setSelectedTensorType] = useState<'ED' | 'MD' | 'EQ'>('ED');
   const [selectedTimeReversal, setSelectedTimeReversal] = useState<TensorTimeReversal>('i');
   const [activeResultTab, setActiveResultTab] = useState<'components' | 'induced' | 'source'>('components');
+  const [amplitudes, setAmplitudes] = useState<Record<string, number>>({});
+  const [phases, setPhases] = useState<Record<string, number>>({});
 
   const filteredGroups = useMemo(() => {
     let groups = POINT_GROUPS;
@@ -352,6 +317,10 @@ export default function App() {
             setThetaX={setThetaX}
             thetaY={thetaY}
             setThetaY={setThetaY}
+            amplitudes={amplitudes}
+            setAmplitudes={setAmplitudes}
+            phases={phases}
+            setPhases={setPhases}
           />
         ) : !selectedGroup ? (
           <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-8">

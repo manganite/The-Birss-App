@@ -44,7 +44,7 @@ export function HelpPage() {
               Visualize expected SHG intensity polarimetry patterns. Adjust crystal orientation, tensor component amplitudes, and phases to simulate various polarization configurations.
             </p>
             <ul className="text-sm opacity-70 list-disc list-inside space-y-1 ml-4">
-              <li><strong>Anisotropy:</strong> Parallel and Crossed configurations as a function of analyzer angle.</li>
+              <li><strong>Anisotropy:</strong> Parallel and Crossed configurations as a function of polarizer angle.</li>
               <li><strong>Polarizer:</strong> Fixed analyzer at 0° and 90°, as a function of polarizer angle.</li>
               <li><strong>Analyzer:</strong> Fixed polarizer at 0° and 90°, as a function of analyzer angle.</li>
             </ul>
@@ -220,10 +220,10 @@ export function HelpPage() {
               In a typical SHG polarimetry experiment, linearly polarized light is incident on the crystal. The polarization of the incident light (polarizer) and the detected SHG light (analyzer) are rotated to probe the symmetry of the nonlinear susceptibility tensor. The simulator provides three distinct views:
             </p>
             <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
-              <li><strong>Anisotropy:</strong> The radar charts display the SHG intensity as the <strong>analyzer angle</strong> is rotated from <InlineMath math="0^\circ" /> to <InlineMath math="360^\circ" />.
+              <li><strong>Anisotropy:</strong> The radar charts display the SHG intensity as the <strong>polarizer angle</strong> is rotated from <InlineMath math="0^\circ" /> to <InlineMath math="360^\circ" />.
                 <ul className="list-[circle] list-inside ml-6 mt-1 space-y-1">
                   <li><strong>Parallel Configuration:</strong> The polarizer and analyzer are aligned and rotate together.</li>
-                  <li><strong>Crossed Configuration:</strong> The polarizer and analyzer are orthogonal (the polarizer is at <InlineMath math="-90^\circ" /> relative to the analyzer).</li>
+                  <li><strong>Crossed Configuration:</strong> The polarizer and analyzer are orthogonal (the analyzer is at <InlineMath math="+90^\circ" /> relative to the polarizer).</li>
                 </ul>
               </li>
               <li><strong>Polarizer:</strong> The analyzer is fixed at <InlineMath math="0^\circ" /> or <InlineMath math="90^\circ" />, and the intensity is plotted as a function of the <strong>polarizer angle</strong>.</li>
@@ -234,23 +234,23 @@ export function HelpPage() {
           <div className="p-6 bg-[#141414]/5 border border-[#141414] border-opacity-10 space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-widest">A bit of mathematics: Calculating intensity</h3>
             <p className="text-sm opacity-70 leading-relaxed">
-              Let <InlineMath math="\phi" /> be the analyzer angle. The incident electric field <InlineMath math="\vec{E}^\omega" /> induces nonlinear source terms <InlineMath math="S_X" /> and <InlineMath math="S_Y" /> in the material. The measured intensity is proportional to the square of the projected source term along the analyzer direction.
+              Let <InlineMath math="\theta" /> be the polarizer angle. The incident electric field <InlineMath math="\vec{E}^\omega" /> induces nonlinear source terms <InlineMath math="S_X" /> and <InlineMath math="S_Y" /> in the material. The measured intensity is proportional to the square of the projected source term along the analyzer direction.
             </p>
             
             <div className="space-y-4 mt-4">
               <div>
                 <h4 className="font-medium text-sm">Parallel Configuration</h4>
                 <p className="text-sm opacity-70 leading-relaxed mt-1">
-                  The polarizer is at the same angle <InlineMath math="\phi" />. The incident field components are:
+                  The analyzer is at the same angle <InlineMath math="\theta" />. The incident field components are:
                 </p>
                 <div className="text-center overflow-x-auto py-2">
-                  <BlockMath math="E_X = \cos(\phi), \quad E_Y = \sin(\phi)" />
+                  <BlockMath math="E_X = E_0 \cos(\theta), \quad E_Y = E_0 \sin(\theta)" />
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
                   The detected SHG electric field is the projection of the source terms onto the analyzer:
                 </p>
                 <div className="text-center overflow-x-auto py-2">
-                  <BlockMath math="E_{\parallel}^{2\omega} = S_X \cos(\phi) + S_Y \sin(\phi)" />
+                  <BlockMath math="E_{\parallel}^{2\omega} = S_X \cos(\theta) + S_Y \sin(\theta)" />
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
                   The measured intensity is <InlineMath math="I_{\parallel} \propto |E_{\parallel}^{2\omega}|^2" />.
@@ -260,16 +260,16 @@ export function HelpPage() {
               <div className="pt-4 border-t border-[#141414] border-opacity-10">
                 <h4 className="font-medium text-sm">Crossed Configuration</h4>
                 <p className="text-sm opacity-70 leading-relaxed mt-1">
-                  The polarizer is at <InlineMath math="\phi - 90^\circ" />. The incident field components are:
+                  The analyzer is at <InlineMath math="\theta + 90^\circ" />. The incident field components are:
                 </p>
                 <div className="text-center overflow-x-auto py-2">
-                  <BlockMath math="E_X = \cos(\phi - 90^\circ) = \sin(\phi), \quad E_Y = \sin(\phi - 90^\circ) = -\cos(\phi)" />
+                  <BlockMath math="E_X = E_0 \cos(\theta), \quad E_Y = E_0 \sin(\theta)" />
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  The analyzer remains at <InlineMath math="\phi" />, so the detected SHG electric field is:
+                  The analyzer is at <InlineMath math="\theta + 90^\circ" />, so the detected SHG electric field is:
                 </p>
                 <div className="text-center overflow-x-auto py-2">
-                  <BlockMath math="E_{\perp}^{2\omega} = S_X \cos(\phi) + S_Y \sin(\phi)" />
+                  <BlockMath math="E_{\perp}^{2\omega} = S_X \cos(\theta + 90^\circ) + S_Y \sin(\theta + 90^\circ) = -S_X \sin(\theta) + S_Y \cos(\theta)" />
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
                   The measured intensity is <InlineMath math="I_{\perp} \propto |E_{\perp}^{2\omega}|^2" />.
