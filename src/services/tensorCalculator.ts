@@ -426,7 +426,7 @@ export function formatSubstitutedPoly(
     if (mode === 'THETA') {
       if (multiplyTrig === '\\cos\\theta') {
         fieldLabels = {
-          '00': '\\cos^3\\theta', '11': '\\sin^2\\theta \\cos\\theta', '22': '0',
+          '00': '\\cos^3\\theta', '11': '\\cos\\theta \\sin^2\\theta', '22': '0',
           '01': '\\cos^2\\theta \\sin\\theta', '02': '0', '12': '0'
         };
       } else if (multiplyTrig === '\\sin\\theta') {
@@ -509,7 +509,7 @@ export function formatSubstitutedPolySum(
       if (mode === 'THETA') {
         if (multiplyTrig === '\\cos\\theta') {
           fieldLabels = {
-            '00': '\\cos^3\\theta', '11': '\\sin^2\\theta \\cos\\theta', '22': '0',
+            '00': '\\cos^3\\theta', '11': '\\cos\\theta \\sin^2\\theta', '22': '0',
             '01': '\\cos^2\\theta \\sin\\theta', '02': '0', '12': '0'
           };
         } else if (multiplyTrig === '\\sin\\theta') {
