@@ -63,6 +63,18 @@ export function SimulatorPage({
     ).source;
   }, [selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY]);
 
+  const sourceTermsExEy = useMemo(() => {
+    if (!selectedGroup) return [];
+    return calculateSHGExpressions(
+      selectedGroup.name,
+      selectedTensorType,
+      selectedTimeReversal,
+      thetaX,
+      thetaY,
+      'EX_EY'
+    ).source;
+  }, [selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY]);
+
   // Extract unique independent tensor components from the raw polynomials
   const independentComponents = useMemo(() => {
     const components = new Set<string>();
@@ -595,14 +607,27 @@ export function SimulatorPage({
                 <p className="text-sm opacity-70 leading-relaxed">
                   For the selected point group and crystal orientation, the source terms evaluate to:
                 </p>
-                <div className="bg-[#141414]/5 p-4 overflow-x-auto space-y-4">
-                  {sourceTerms.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
-                    <div key={i} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
-                      <div><TensorTerm term={`${term.component}(\\theta_{pol})`} isNull={term.expression === '0'} /></div>
-                      <div>=</div>
-                      <div><TensorTerm term={term.expression} isNull={term.expression === '0'} /></div>
-                    </div>
-                  ))}
+                <div className="bg-[#141414]/5 p-4 overflow-x-auto space-y-6">
+                  <div className="space-y-4">
+                    <div className="text-xs font-bold uppercase tracking-widest opacity-50 mb-2">As functions of <InlineMath math="E_X, E_Y" /></div>
+                    {sourceTermsExEy.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
+                      <div key={`exey-${i}`} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
+                        <div><TensorTerm term={term.component} isNull={term.expression === '0'} /></div>
+                        <div>=</div>
+                        <div><TensorTerm term={term.expression} isNull={term.expression === '0'} /></div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-4 pt-4 border-t border-[#141414]/10">
+                    <div className="text-xs font-bold uppercase tracking-widest opacity-50 mb-2">As functions of <InlineMath math="\theta_{pol}" /></div>
+                    {sourceTerms.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
+                      <div key={`theta-${i}`} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
+                        <div><TensorTerm term={`${term.component}(\\theta_{pol})`} isNull={term.expression === '0'} /></div>
+                        <div>=</div>
+                        <div><TensorTerm term={term.expression} isNull={term.expression === '0'} /></div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -648,9 +673,6 @@ export function SimulatorPage({
                     </div>
                   </div>
                 </div>
-                <p className="text-xs opacity-50 mt-4">
-                  * Note: <InlineMath math="S_X(\theta)" /> and <InlineMath math="S_Y(\theta)" /> are evaluated by substituting <InlineMath math="\theta_{pol} = \theta" /> into the source term equations above.
-                </p>
               </div>
             </div>
           </div>
