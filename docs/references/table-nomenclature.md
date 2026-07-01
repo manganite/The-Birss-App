@@ -35,6 +35,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | O<sub>h</sub>(O) — cubic bar family (6 groups) | `m'-3'm'` | `m'3m'` (barless) | `m'3̄'m'` | **short-form style**: app keeps the 3-bar (and its prime); Birss Table 6 drops both. Family: `m-3`, `m'-3'`, `m-3m`, `m-3m'`, `m'-3'm'`, `m'-3'm` |
 | C<sub>2v</sub>(C<sub>s</sub>) = `(2'm'm)` | 2-fold ∥ a | 2-fold ∥ a (rotated) | standard | **axis setting** (same symbol, rotated frame) |
 | D<sub>4R</sub> (grey, e.g. of D<sub>4</sub>) | `4221'` | `4221'` | Schoenflies `D`<sub>`4R`</sub>, HM `4221'` | grey **Schoenflies** = subscript R; HM = `…1'` |
+| C<sub>3i</sub> ≡ S<sub>6</sub> (`-3` family) | Schoenflies **C₃ᵢ** | C₃ᵢ — table-3 `C3i(S6)`, C3i primary | S₆ | **Schoenflies name** for the same abstract group: app/Birss = C₃ᵢ, ITC = S₆ (HM `-3` identical). Sole Schoenflies-naming divergence. |
 
 *(The last row reproduces ITC Table 1.5.2.1: `D`<sub>`4R`</sub> = `4221'`, `D`<sub>`4`</sub> = `422`, `D`<sub>`4`</sub>`(C`<sub>`4`</sub>`)` = `42'2'`, `D`<sub>`4`</sub>`(D`<sub>`2`</sub>`)` = `4'22'`.)*
 
@@ -95,14 +96,14 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | Tetragonal | D<sub>4h</sub>(C<sub>4v</sub>) | `4/m'mm` | 4/m' 2'/m 2'/m | `m'.4:m` | black-white (III / MP3) |  |
 | Tetragonal | D<sub>4h</sub>(D<sub>2d</sub>) | `4'/m'm'm` | 4'/m' 2/m' 2'/m | `m'.4':m'` | black-white (III / MP3) |  |
 | Trigonal | C<sub>3</sub> | `3` | 3 | `3` | colourless (I / MP2) |  |
-| Trigonal | S<sub>6</sub> | `-3` | -3 | `-6` | colourless (I / MP2) |  |
-| Trigonal | S<sub>6</sub>(C<sub>3</sub>) | `-3'` | -3' | `-6'` | black-white (III / MP3) |  |
+| Trigonal | C<sub>3i</sub> | `-3` | -3 | `-6` | colourless (I / MP2) | Schoenflies: app/Birss C3i; ITC spells it S6 (S6≡C3i) |
+| Trigonal | C<sub>3i</sub>(C<sub>3</sub>) | `-3'` | -3' | `-6'` | black-white (III / MP3) | Schoenflies: ITC S6(C3) |
 | Trigonal | D<sub>3</sub> | `32` | 321 | `3:2` | colourless (I / MP2) |  |
 | Trigonal | D<sub>3</sub>(C<sub>3</sub>) | `32'` | 32'1 | `3:2'` | black-white (III / MP3) |  |
 | Trigonal | C<sub>3v</sub> | `3m` | 3m1 | `3.m` | colourless (I / MP2) |  |
 | Trigonal | C<sub>3v</sub>(C<sub>3</sub>) | `3m'` | 3m'1 | `3.m'` | black-white (III / MP3) |  |
 | Trigonal | D<sub>3d</sub> | `-3m` | -3 2/m 1 | `-6.m` | colourless (I / MP2) |  |
-| Trigonal | D<sub>3d</sub>(S<sub>6</sub>) | `-3m'` | -3 2'/m' 1 | `-6.m'` | black-white (III / MP3) |  |
+| Trigonal | D<sub>3d</sub>(C<sub>3i</sub>) | `-3m'` | -3 2'/m' 1 | `-6.m'` | black-white (III / MP3) | Schoenflies: ITC D3d(S6) |
 | Trigonal | D<sub>3d</sub>(D<sub>3</sub>) | `-3'm'` | -3' 2/m' 1 | `-6'.m'` | black-white (III / MP3) |  |
 | Trigonal | D<sub>3d</sub>(C<sub>3v</sub>) | `-3'm` | -3' 2'/m 1 | `-6'.m` | black-white (III / MP3) |  |
 | Hexagonal | C<sub>6</sub> | `6` | 6 | `6` | colourless (I / MP2) |  |
@@ -110,7 +111,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | Hexagonal | C<sub>3h</sub> | `-6` | -6 | `3:m` | colourless (I / MP2) |  |
 | Hexagonal | C<sub>3h</sub>(C<sub>3</sub>) | `-6'` | -6' | `3:m'` | black-white (III / MP3) |  |
 | Hexagonal | C<sub>6h</sub> | `6/m` | 6/m | `6:m` | colourless (I / MP2) |  |
-| Hexagonal | C<sub>6h</sub>(S<sub>6</sub>) | `6'/m'` | 6'/m' | `6':m'` | black-white (III / MP3) |  |
+| Hexagonal | C<sub>6h</sub>(C<sub>3i</sub>) | `6'/m'` | 6'/m' | `6':m'` | black-white (III / MP3) | Schoenflies: ITC C6h(S6) |
 | Hexagonal | C<sub>6h</sub>(C<sub>6</sub>) | `6/m'` | 6/m' | `6:m'` | black-white (III / MP3) |  |
 | Hexagonal | C<sub>6h</sub>(C<sub>3h</sub>) | `6'/m` | 6'/m | `6':m` | black-white (III / MP3) |  |
 | Hexagonal | D<sub>6</sub> | `622` | 622 | `6:2` | colourless (I / MP2) |  |
@@ -190,14 +191,14 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | D<sub>4h</sub>(C<sub>4v</sub>) | `4/m'mm` | 1, 2_z, -2_x, -2_y, -2_xy, -2_-xy, ±4_z, -1', 2'_x, 2'_y, -2'_z, 2'_xy, 2'_-xy, ±-4'_z | σ(4), σ(7)  /  σ'(1) |
 | D<sub>4h</sub>(D<sub>2d</sub>) | `4'/m'm'm` | 1, 2_x, 2_y, 2_z, -2_xy, -2_-xy, ±-4_z, -1', -2'_x, -2'_y, -2'_z, 2'_xy, 2'_-xy, ±4'_z | σ(2), σ(8)  /  σ'(1) |
 | C<sub>3</sub> | `3` | 1, ±3_z | σ(6)  /  — |
-| S<sub>6</sub> | `-3` | 1, -1, ±3_z, ±-3_z | σ(1), σ(6)  /  — |
-| S<sub>6</sub>(C<sub>3</sub>) | `-3'` | 1, ±3_z, -1', ±-3'_z | σ(6)  /  σ'(1) |
+| C<sub>3i</sub> | `-3` | 1, -1, ±3_z, ±-3_z | σ(1), σ(6)  /  — |
+| C<sub>3i</sub>(C<sub>3</sub>) | `-3'` | 1, ±3_z, -1', ±-3'_z | σ(6)  /  σ'(1) |
 | D<sub>3</sub> | `32` | 1, 3(2⊥), ±3_z | σ(2), σ(6)  /  — |
 | D<sub>3</sub>(C<sub>3</sub>) | `32'` | 1, ±3_z, 3(2'⊥) | σ(6)  /  σ'(2) |
 | C<sub>3v</sub> | `3m` | 1, 3(-2⊥), ±3_z | σ(4), σ(6)  /  — |
 | C<sub>3v</sub>(C<sub>3</sub>) | `3m'` | 1, ±3_z, 3(-2'⊥) | σ(6)  /  σ'(4) |
 | D<sub>3d</sub> | `-3m` | 1, -1, 3(2⊥), 3(-2⊥), ±3_z, ±-3_z | σ(1), σ(2), σ(6)  /  — |
-| D<sub>3d</sub>(S<sub>6</sub>) | `-3m'` | 1, -1, ±3_z, ±-3_z, 3(2'⊥), 3(-2'⊥) | σ(1), σ(6)  /  σ'(2) |
+| D<sub>3d</sub>(C<sub>3i</sub>) | `-3m'` | 1, -1, ±3_z, ±-3_z, 3(2'⊥), 3(-2'⊥) | σ(1), σ(6)  /  σ'(2) |
 | D<sub>3d</sub>(D<sub>3</sub>) | `-3'm'` | 1, 3(2⊥), ±3_z, -1', 3(-2'⊥), ±-3'_z | σ(2), σ(6)  /  σ'(1) |
 | D<sub>3d</sub>(C<sub>3v</sub>) | `-3'm` | 1, ±3_z, 3(-2⊥), -1', 3(2'⊥), ±-3'_z | σ(4), σ(6)  /  σ'(1) |
 | C<sub>6</sub> | `6` | 1, 2_z, ±3_z, ±6_z | σ(3), σ(6)  /  — |
@@ -205,7 +206,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | C<sub>3h</sub> | `-6` | 1, -2_z, ±3_z, ±-6_z | σ(5), σ(6)  /  — |
 | C<sub>3h</sub>(C<sub>3</sub>) | `-6'` | 1, ±3_z, -2'_z, ±-6'_z | σ(6)  /  σ'(5) |
 | C<sub>6h</sub> | `6/m` | 1, -1, 2_z, -2_z, ±3_z, ±-3_z, ±6_z, ±-6_z | σ(1), σ(3), σ(6)  /  — |
-| C<sub>6h</sub>(S<sub>6</sub>) | `6'/m'` | 1, -1, ±3_z, ±-3_z, 2'_z, -2'_z, ±6'_z, ±-6'_z | σ(1), σ(6)  /  σ'(3) |
+| C<sub>6h</sub>(C<sub>3i</sub>) | `6'/m'` | 1, -1, ±3_z, ±-3_z, 2'_z, -2'_z, ±6'_z, ±-6'_z | σ(1), σ(6)  /  σ'(3) |
 | C<sub>6h</sub>(C<sub>6</sub>) | `6/m'` | 1, 2_z, ±3_z, ±6_z, -1', -2'_z, ±-3'_z, ±-6'_z | σ(3), σ(6)  /  σ'(1) |
 | C<sub>6h</sub>(C<sub>3h</sub>) | `6'/m` | 1, -2_z, ±3_z, ±-6_z, -1', 2'_z, ±-3'_z, ±6'_z | σ(5), σ(6)  /  σ'(1) |
 | D<sub>6</sub> | `622` | 1, 6(2⊥), 2_z, ±3_z, ±6_z | σ(2), σ(3), σ(6)  /  — |
@@ -258,7 +259,7 @@ Not in ITC 1.5.2.3 or Birss Table 6. Each = classical parent ⊗ {1,1'}: Schoenf
 | Tetragonal | D<sub>2dR</sub> | `-42m1'` | -42m1' | `-4.m1'` | `-42m` |
 | Tetragonal | D<sub>4hR</sub> | `4/mmm1'` | 4/m 2/m 2/m1' | `m.4:m1'` | `4/mmm` |
 | Trigonal | C<sub>3R</sub> | `31'` | 31' | `31'` | `3` |
-| Trigonal | S<sub>6R</sub> | `-31'` | -31' | `-61'` | `-3` |
+| Trigonal | C<sub>3iR</sub> | `-31'` | -31' | `-61'` | `-3` |
 | Trigonal | D<sub>3R</sub> | `321'` | 3211' | `3:21'` | `32` |
 | Trigonal | C<sub>3vR</sub> | `3m1'` | 3m11' | `3.m1'` | `3m` |
 | Trigonal | D<sub>3dR</sub> | `-3m1'` | -3 2/m 11' | `-6.m1'` | `-3m` |
@@ -277,6 +278,6 @@ Not in ITC 1.5.2.3 or Birss Table 6. Each = classical parent ⊗ {1,1'}: Schoenf
 
 **Totals:** 90 (ITC 1.5.2.3: 32 colourless + 58 black-white) + 32 grey = **122**.
 
-*Sources:* Schoenflies & full HM — ITC Table 1.5.2.3 (`ch1o5_.pdf`; hexagonal and cubic rows read directly from the page image, including the O<sub>h</sub>/T<sub>h</sub> full-HM). Shubnikov, operators, generators — Birss Table 6. Type scheme — ITC §1.5.2 / Bradley–Cracknell.
+*Sources:* Schoenflies from ITC Table 1.5.2.3 — but in the **app/Birss naming** where the two differ (the `-3` family is `C3i`, not ITC's `S6`; sole such case). Full HM — ITC Table 1.5.2.3 (`ch1o5_.pdf`; hexagonal and cubic rows read directly from the page image, including the O<sub>h</sub>/T<sub>h</sub> full-HM). Shubnikov, operators, generators — Birss Table 6. Type scheme — ITC §1.5.2 / Bradley–Cracknell.
 
 *Rendering note:* column widths are not settable in Markdown; Tables A and B are split precisely so that long full-HM strings (Table A) and long operator lists (Table B) each get the full column width and stop wrapping across many lines.
