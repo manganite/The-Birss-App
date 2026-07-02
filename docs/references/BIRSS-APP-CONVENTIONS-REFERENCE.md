@@ -96,25 +96,34 @@ For each group, assert the intended element→axis assignment equals Table 4a. F
 ## Step 3 — Generators
 
 ### Contract
-Generators are read from **Table 3** (classical, `σ(N)`) and **Table 6** (black-white, `σ(N)` unitary + `σ'(N)` antiunitary). The app's generator **matrices** must equal Birss's σ(0)–σ(9) pool; antiunitary generators carry the time-reversal flag (`σ'`).
+Generators are read from **Table 3** (classical, `σ(N)`) and **Table 6** (black-white, `σ(N)` unitary + `σ'(N)` antiunitary). The app's generators must be drawn from Birss's σ(0)–σ(9) pool (or an equivalent generator of the same group) and **close to Birss's operator set**; antiunitary generators carry the time-reversal flag (`σ'`).
 
 **The σ(0)–σ(9) pool** (Birss eq. 2.17): ten fixed 3×3 matrices referenced by number in Table 3 / Table 6.
 
-| σ | operation | σ | operation |
-|---|---|---|---|
-| σ(0) | identity `1` | σ(5) | mirror ⊥ z (`-2_z` = m_z) |
-| σ(1) | inversion `-1` | σ(6) | 3-fold about z (`3_z`, 120°) |
-| σ(2) | 2-fold about y (`2_y`) | σ(7) | 4-fold about z (`4_z`) |
-| σ(3) | 2-fold about z (`2_z`) | σ(8) | roto-inversion `-4_z` |
-| σ(4) | mirror ⊥ y (`-2_y` = m_y) | σ(9) | 3-fold about [111] (cyclic x→y→z→x) |
+Explicit matrices, verbatim from eq. (2.17). They act on column coordinate vectors, v′ = σ·v (so σ(9) sends (x,y,z) → (y,z,x)):
 
-`σ'(N)` = the same matrix σ(N) combined with time reversal (antiunitary). The explicit 3×3 entries are Birss eq. (2.17); Table 3's "Generating matrices" column and Table 6's σ(N)/σ'(N) columns give the per-group generator sets.
+```
+σ(0) = [[ 1, 0, 0], [ 0, 1, 0], [ 0, 0, 1]]              identity  1
+σ(1) = [[-1, 0, 0], [ 0,-1, 0], [ 0, 0,-1]]              inversion  1̄
+σ(2) = [[-1, 0, 0], [ 0, 1, 0], [ 0, 0,-1]]              2_y
+σ(3) = [[-1, 0, 0], [ 0,-1, 0], [ 0, 0, 1]]              2_z
+σ(4) = [[ 1, 0, 0], [ 0,-1, 0], [ 0, 0, 1]]              -2_y = m_y   (mirror ⊥ y)
+σ(5) = [[ 1, 0, 0], [ 0, 1, 0], [ 0, 0,-1]]              -2_z = m_z   (mirror ⊥ z)
+σ(6) = [[-1/2, √3/2, 0], [-√3/2, -1/2, 0], [0, 0, 1]]    3_z          (120° about z)
+σ(7) = [[ 0, 1, 0], [-1, 0, 0], [ 0, 0, 1]]              4_z          (proper 4-fold)
+σ(8) = [[ 0,-1, 0], [ 1, 0, 0], [ 0, 0,-1]]              -4_z = 4̄_z   (roto-inversion, improper)
+σ(9) = [[ 0, 1, 0], [ 0, 0, 1], [ 1, 0, 0]]              3-fold about [111]
+```
+
+σ(7) (proper) and σ(8) (roto-inversion) are **distinct** matrices; swapping them, or marking σ(7) antiunitary, changes the group. The app's `getRotationZ(90)` = `[[0,-1,0],[1,0,0],[0,0,1]]` is `4_z` in the *opposite* sense — an equivalent generator that closes to the same group, so it will **not** match σ(7) by raw-matrix equality (verify by closure — see Test).
+
+`σ'(N)` = the same matrix σ(N) with the time-reversal (antiunitary) flag set. Table 3's "Generating matrices" column and Table 6's σ(N)/σ'(N) columns give the per-group generator sets.
 
 - Implement each generator as the Birss σ matrix, not an ad-hoc rotation, so that closure reproduces Birss's operators exactly.
 - Prefer building alternate settings (out of scope here) via similarity transforms `G' = S·G·S⁻¹` with the antiunitary flag preserved — never by hand-writing rotated generators.
 
 ### Test
-For each group, assert app generator matrices (and antiunitary flags) == the `σ(N)`/`σ'(N)` entries in Table 3 / Table 6 for that row.
+For each group, assert the app's **closed operator set** (matrices *and* antiunitary flags) equals the Birss **Table-6 operator column** for that row — the authority, independent of generator choice and rotation sense. Do **not** assert raw generator-matrix equality against the `σ(N)` column: the app may use an equivalent generator of opposite handedness (e.g. `getRotationZ(90)` = `4_z` CCW vs Birss `σ(7)` = `4_z` CW) that closes to the same group, and the `σ(N)`/`σ'(N)` column is a non-authoritative cross-check (documented misprints exist, and for bracketed rows such as `-4'm2'` the σ-column disagrees with its own operator column). Closure to the operator column settles both.
 
 ---
 
