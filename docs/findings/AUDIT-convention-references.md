@@ -1,9 +1,10 @@
 # Audit: app vs. convention references — progress report
 
-**Status: IN PROGRESS.** This document is being built incrementally as
-`WORKORDER-audit-against-references.md` proceeds phase by phase, per that work order's own
-instruction to append findings after each phase. It is not yet the final Phase 5 report —
-Phase 2 has an open, unresolved finding (see below) and Phases 3–5 have not started.
+**Status: IN PROGRESS — Phases 1–2 complete.** This document is built incrementally as
+`WORKORDER-audit-against-references.md` proceeds phase by phase. Phases 1 and 2 are complete and
+merged (`main` @ `026d4b0`, PR #47): the nomenclature audit passes 122/122 and the operator-set
+audit passes 122/122 after six generator fixes (app) and five table-6 corrections (birss-tables,
+book-scan-verified pass 5). Phases 3–5 are pending.
 
 ---
 
@@ -97,7 +98,7 @@ cleanly):
   don't appear to be mutually consistent under the σ-pool's stated algebra, as best verified so
   far.
 
-**Working hypotheses, not yet resolved:**
+**Working hypotheses — RESOLVED:**
 1. A transcription/consistency issue in Birss's own Table 6 for this bracketed row specifically
    (birss-tables' own documentation already records two *other* known misprints elsewhere —
    6mm's and -6m2's generator lists — so an undiscovered third one in a bracketed/rotated-frame
@@ -106,6 +107,11 @@ cleanly):
 2. A gap in how σ(N) indices should be interpreted for bracketed/rotated-setting groups
    specifically (vs. the standard-orientation groups, where the same mechanism produces correct
    results — 113/122 groups pass cleanly).
+
+Resolution: hypothesis 1 was confirmed. Fresh scans of the printed book pages showed the
+transcribed operator column of `-4'm2'` (and four further entries) to be digitalization errors;
+`birss-tables` table-6 pass 5 corrected them, after which σ-closure ≡ operator column for all 90
+rows and the app-side audit isolates exactly the six generator bugs fixed in PR #47.
 
 **Resolution.** Of the original 9 failing groups, investigation split them into two
 independent categories:
