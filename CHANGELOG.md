@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Corrected the generators of six magnetic point groups, verified against Birss,
+  *Symmetry and Magnetism* (1966) Table 6 (book-scan-verified operator column) via
+  explicit matrix closure:
+  - `6'/m'` and `6'/m` had each other's inversion time-reversal flag (unitary vs.
+    primed `-1` swapped): selecting `6'/m'` incorrectly gave a non-zero ED `c`-tensor
+    (should be `≡ 0`, since `6'/m'` contains the *unitary* inversion) and `6'/m`
+    incorrectly gave `ED c = 0` (should be Birss Table 4e row O3, 2 independent
+    components).
+  - `m'-3'm'` and `m'-3'm` had each other's 4-fold generator (proper `4_z` vs.
+    roto-inversion `-4_z` swapped): selecting `m'-3'm'` incorrectly gave a non-zero
+    ED `c`-tensor (should be `≡ 0`, halving subgroup H = 432 forbids it) and
+    `m'-3'm` incorrectly gave `ED c = 0` (should be the Td-type single-component
+    form, Birss Table 4e row U3).
+  - `4'/m'm'm`'s Default orientation was built in the σ/4-rotated frame
+    (misoriented relative to its own `-42m` halving subgroup); the ED `c`-tensor's
+    component labels were attached to the wrong axes in the Default setting.
+  - `-4'm2'`'s Default orientation was likewise built in the σ/4-rotated frame:
+    the ED `i`-tensor form previously (and wrongly) pinned to Setting 2 belongs to
+    Default, and Setting 2 now carries the `-42m`-diagonal-mirror form instead
+    (Default and Setting 2 swap).
+  - All six wrong since v0.1.1. Anchored to `birss-tables` pass-5 book-scan
+    corrections; `docs/references/table-nomenclature.md` Table B regenerated
+    accordingly.
+
 ## [0.13.1] - 2026-07-01
 
 ### Fixed
