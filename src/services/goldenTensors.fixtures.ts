@@ -35,6 +35,60 @@ const TABLE_4E_VERIFICATION =
   'components for each class at rank n=3.';
 
 /**
+ * Shared citation for the ED c-type companions of the 21 Table-4e class-representative
+ * fixtures above (audit Phase 3d, WORKORDER-audit-close-out.md Part 1).
+ *
+ * All 21 representative groups are Type-I (classical, unprimed): their GENERATORS entries
+ * contain zero antiunitary elements, so closure never introduces one either (multiply()'s
+ * isAntiUnitary is the XOR of its operands' flags -- XOR of false/false is always false).
+ * transformTensor's `trFactor` only ever differs from +1 when `isTimeOdd && g.isAntiUnitary`;
+ * with no antiunitary element in the group, that condition is never true, so trFactor is
+ * unconditionally +1 regardless of tr-type. The i-type and c-type averages are therefore
+ * computed by the *identical* sum for these 21 groups -- not merely equal in value but
+ * literally the same computation -- independent of and prior to any app run. This is also
+ * Table 7's own stated rule for the 32 classical rows ("i-tensors and c-tensors coincide for
+ * classical groups"). `expected` is copied verbatim from the corresponding already
+ * table-anchored ED-i fixture above.
+ */
+const TYPE_I_I_EQUALS_C =
+  "This group's GENERATORS entry (and hence its closure) contains zero antiunitary " +
+  'elements, so trFactor = 1 unconditionally (transformTensor only ever sets it to -1 when ' +
+  'isTimeOdd && g.isAntiUnitary) -- the c-type average is the identical computation as the ' +
+  "i-type average, not merely equal in value. Matches Table 7's own rule that i-tensors and " +
+  'c-tensors coincide for the 32 classical (Type-I) rows. `expected` is copied from the ' +
+  'already table-anchored ED-i fixture for this group above.';
+
+/**
+ * Shared citation for the MD i/c companions of the 11 pure-rotation (chiral) classical
+ * groups (audit Phase 3d, WORKORDER-audit-close-out.md Part 1): 1, 2, 222, 4, 422, 3, 32,
+ * 6, 622, 23, 432.
+ *
+ * Two independent structural facts, both verified directly against each group's closed
+ * operator set (not against app output):
+ * (a) zero antiunitary elements (as TYPE_I_I_EQUALS_C) -- i-type and c-type coincide;
+ * (b) zero improper elements (det(g) = +1 for every element -- these 11 groups are exactly
+ *     the chiral/pure-rotation classical point groups) -- transformTensor's `factor =
+ *     (isAxial ? detG : 1) * trFactor` therefore has detG = +1 for every element regardless
+ *     of the `isAxial` flag, so the ED (polar) and MD (axial) computations are the *same
+ *     sum*, not merely equal in value.
+ * Combined, all four of {ED,MD} x {i,c} are the identical computation for these 11 groups;
+ * `expected` is copied verbatim from the already table-anchored ED-i fixture for the group.
+ *
+ * This also explains MD-i's achievable class range: Table 4a's "Axial tensor of odd rank n"
+ * column assigns exactly these groups' own classes {A,B,D,F,H,K,L,N,P,S,T} (verified against
+ * all 32 rows of table-4a.md) to every one of the 32 classical point groups -- no classical
+ * group is ever assigned one of the other 10 letters {C,E,G,I,J,M,O,Q,R,U} in that column, so
+ * those 10 classes are structurally unreachable for MD's i-type via *any* group, not merely
+ * uncovered by this fixture set.
+ */
+const PURE_ROTATION_ALL_FOUR_EQUAL =
+  "This group's closed operator set contains zero antiunitary elements (as " +
+  'TYPE_I_I_EQUALS_C) *and* zero improper elements (det(g) = +1 for every element -- one of ' +
+  'the 11 chiral/pure-rotation classical point groups), so ED-i, ED-c, MD-i, and MD-c are ' +
+  'all the identical computation for this group, not merely equal in value. `expected` is ' +
+  'copied from the already table-anchored ED-i fixture for this group above.';
+
+/**
  * Shared citation for WORKORDER-fix-six-generators.md Phase 1 fixtures (the six
  * generator-set corrections: 6'/m', 6'/m, m'-3'm', m'-3'm, -4'm2', 4'/m'm'm).
  *
@@ -541,6 +595,276 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}'],
     source: TABLE_4E_VERIFICATION,
     note: 'Birss Table 4e row U3 (1 independent component).',
+  },
+
+  // ED c-type companions of the 21 Table-4e class-representative fixtures above (audit
+  // Phase 3d): each group's GENERATORS entry contains zero antiunitary elements, so the
+  // c-type value is the identical computation as the already table-anchored i-type value
+  // -- see TYPE_I_I_EQUALS_C.
+  {
+    group: "1", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxx}", "\\chi_{xxy} = \\chi_{xyx}", "\\chi_{xxz} = \\chi_{xzx}", "\\chi_{xyy}", "\\chi_{xyz} = \\chi_{xzy}", "\\chi_{xzz}", "\\chi_{yxx}", "\\chi_{yxy} = \\chi_{yyx}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{yyy}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{yzz}", "\\chi_{zxx}", "\\chi_{zxy} = \\chi_{zyx}", "\\chi_{zxz} = \\chi_{zzx}", "\\chi_{zyy}", "\\chi_{zyz} = \\chi_{zzy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row A3 (18 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "2", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx}", "\\chi_{xyz} = \\chi_{xzy}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx}", "\\chi_{zxy} = \\chi_{zyx}", "\\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row B3 (8 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "m", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxx}", "\\chi_{xxy} = \\chi_{xyx}", "\\chi_{xyy}", "\\chi_{xzz}", "\\chi_{yxx}", "\\chi_{yxy} = \\chi_{yyx}", "\\chi_{yyy}", "\\chi_{yzz}", "\\chi_{zxz} = \\chi_{zzx}", "\\chi_{zyz} = \\chi_{zzy}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row C3 (10 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "222", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xyz} = \\chi_{xzy}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{zxy} = \\chi_{zyx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row D3 (3 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "mm2", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx}", "\\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row E3 (5 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "4", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row F3 (4 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "-4", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx}", "\\chi_{zxx} = -\\chi_{zyy}", "\\chi_{zxy} = \\chi_{zyx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row G3 (4 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "422", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row H3 (1 independent component) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "4mm", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row I3 (3 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "-42m", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx}", "\\chi_{zxy} = \\chi_{zyx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row J3 (2 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "3", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}", "\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}", "\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row K3 (6 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "32", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row L3 (2 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "3m", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}", "\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row M3 (4 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "6", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row N3 (4 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "-6", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}", "\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row O3 (2 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "622", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row P3 (1 independent component) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "6mm", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row Q3 (3 independent components) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "-6m2", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row R3 (1 independent component) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "23", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row S3 (1 independent component) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "432", tensor: 'ED', tr: 'c',
+    expected: ["All components are zero."],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row T3 (all zero — piezoelectricity forbidden in 432) -- same class as the ED-i fixture for this group above.',
+  },
+  {
+    group: "-43m", tensor: 'ED', tr: 'c',
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}"],
+    source: TYPE_I_I_EQUALS_C,
+    note: 'Birss Table 4e row U3 (1 independent component) -- same class as the ED-i fixture for this group above.',
+  },
+
+  // MD i/c companions of the pure-rotation-group subset of the Table-4e class
+  // representatives above (audit Phase 3d): these 11 groups (1, 2, 222, 4, 422, 3, 32,
+  // 6, 622, 23, 432) are the *only* classical point groups that are pure rotation
+  // (chiral, zero improper elements) -- see PURE_ROTATION_ALL_FOUR_EQUAL. They are also
+  // the only 11 classes structurally reachable by MD's i-type at all: Table 4a's
+  // "Axial tensor of odd rank n" column only ever assigns one of exactly these 11
+  // letters {A,B,D,F,H,K,L,N,P,S,T} to any of the 32 classical point groups (verified
+  // against the full table); the other 10 letters {C,E,G,I,J,M,O,Q,R,U} never appear in
+  // that column and so can never be an MD-i class for *any* group. MD-i class coverage
+  // is therefore complete at 11/11 achievable classes, not merely time-boxed.
+  {
+    group: "1", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xxx}", "\\chi_{xxy} = \\chi_{xyx}", "\\chi_{xxz} = \\chi_{xzx}", "\\chi_{xyy}", "\\chi_{xyz} = \\chi_{xzy}", "\\chi_{xzz}", "\\chi_{yxx}", "\\chi_{yxy} = \\chi_{yyx}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{yyy}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{yzz}", "\\chi_{zxx}", "\\chi_{zxy} = \\chi_{zyx}", "\\chi_{zxz} = \\chi_{zzx}", "\\chi_{zyy}", "\\chi_{zyz} = \\chi_{zzy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row A3 (18 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "1", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xxx}", "\\chi_{xxy} = \\chi_{xyx}", "\\chi_{xxz} = \\chi_{xzx}", "\\chi_{xyy}", "\\chi_{xyz} = \\chi_{xzy}", "\\chi_{xzz}", "\\chi_{yxx}", "\\chi_{yxy} = \\chi_{yyx}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{yyy}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{yzz}", "\\chi_{zxx}", "\\chi_{zxy} = \\chi_{zyx}", "\\chi_{zxz} = \\chi_{zzx}", "\\chi_{zyy}", "\\chi_{zyz} = \\chi_{zzy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row A3 (18 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "2", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xxz} = \\chi_{xzx}", "\\chi_{xyz} = \\chi_{xzy}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx}", "\\chi_{zxy} = \\chi_{zyx}", "\\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row B3 (8 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "2", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xxz} = \\chi_{xzx}", "\\chi_{xyz} = \\chi_{xzy}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{yyz} = \\chi_{yzy}", "\\chi_{zxx}", "\\chi_{zxy} = \\chi_{zyx}", "\\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row B3 (8 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "222", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xyz} = \\chi_{xzy}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{zxy} = \\chi_{zyx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row D3 (3 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "222", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xyz} = \\chi_{xzy}", "\\chi_{yxz} = \\chi_{yzx}", "\\chi_{zxy} = \\chi_{zyx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row D3 (3 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "4", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row F3 (4 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "4", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row F3 (4 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "422", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row H3 (1 independent component) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "422", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row H3 (1 independent component) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "3", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}", "\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}", "\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row K3 (6 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "3", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}", "\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}", "\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row K3 (6 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "32", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row L3 (2 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "32", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row L3 (2 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "6", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row N3 (4 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "6", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}", "\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}", "\\chi_{zxx} = \\chi_{zyy}", "\\chi_{zzz}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row N3 (4 independent components) -- same class and value as the ED-i fixture for this group above.',
+  },
+  // 622 MD-i already pinned above (Table 4e row P3, Type-I hexagonal det(g) branch);
+  // this constant additionally confirms it equals the ED-i value (PURE_ROTATION_ALL_FOUR_EQUAL).
+  {
+    group: "622", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row P3 (1 independent component) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "23", tensor: 'MD', tr: "i",
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row S3 (1 independent component) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "23", tensor: 'MD', tr: "c",
+    expected: ["\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}"],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row S3 (1 independent component) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "432", tensor: 'MD', tr: "i",
+    expected: ["All components are zero."],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row T3 (all zero — piezoelectricity forbidden in 432) -- same class and value as the ED-i fixture for this group above.',
+  },
+  {
+    group: "432", tensor: 'MD', tr: "c",
+    expected: ["All components are zero."],
+    source: PURE_ROTATION_ALL_FOUR_EQUAL,
+    note: 'Birss Table 4e row T3 (all zero — piezoelectricity forbidden in 432) -- same class and value as the ED-i fixture for this group above.',
   },
 
   // Alternate-setting fixtures — Phase 1 (Mechanism B, setting 2)

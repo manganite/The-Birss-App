@@ -173,7 +173,87 @@ discovery). Full gate green: `tsc --noEmit`, `vite build`, `vitest run` (1183 te
 
 ---
 
-## Phase 3 — Tensor-form coverage & gap-filling — not started
+## Phase 3 — Tensor-form coverage & gap-filling — ✅ DONE
+
+**What was built:**
+- `scripts/coverage_matrix.mjs` — enumerates all 122 groups × {ED, MD, EQ} × {i, c} (732
+  cells) and classifies each as **ZERO** (via the app's own `calculateTensorComponents` —
+  exhaustive and authoritative for this coverage catalog, since this is a catalog of what
+  exists, not an independence check of any one value), **PINNED** (an exact fixture exists in
+  `goldenTensors.fixtures.ts` for that `(group, tensor, tr)` at the Default setting), or
+  **UNPINNED**. ZERO cells additionally get a best-effort `reason` annotation derived from the
+  group's own closed operator set (grey rule, unitary/primed inversion parity) — this
+  annotation is *not* exhaustive (some cells vanish for purely rotational reasons with no
+  inversion involved, e.g. `432` ED-i, `m-3m` MD-i) and is labeled as a generic rotational
+  vanishing in those cases.
+- `src/data/tensorCoverage.audit.test.ts` — two guardrail test blocks:
+  - **3b** — for all 32 grey (Type II) groups × {ED, MD, EQ}, asserts the c-tensor ≡ 0 (Step
+    5e). 96 assertions, all green.
+  - **3c** — for group `1` (no crystal constraint, the only case where Table 4e/4f's raw
+    count is directly observable): asserts ED has 18 independent components and EQ has 54
+    (empirically confirmed before writing the test, per the anti-circularity rule — 18 matches
+    the existing `1`/A3 fixture, 54 is `9 × 6`: 9 free `(i,j)` output pairs × 6 `kl`-symmetrized
+    field pairs), plus property-level checks that `χ_ijk=χ_ikj` (last-two) is imposed while
+    `χ_ijk=χ_jik` (first-two) and the EQ `(i,j)` output pair are *not* collapsed.
+- 43 new golden fixtures in `goldenTensors.fixtures.ts` (see below).
+
+**Coverage-matrix summary** (`npx tsx scripts/coverage_matrix.mjs`, current state):
+
+| Tensor | tr | ZERO | PINNED | UNPINNED | Total |
+|---|---|---|---|---|---|
+| ED | i | 56 | 25 | 41 | 122 |
+| ED | c | 56 | 36 | 30 | 122 |
+| MD | i | 11 | 15 | 96 | 122 |
+| MD | c | 56 | 11 | 55 | 122 |
+| EQ | i | 0 | 1 | 121 | 122 |
+| EQ | c | 53 | 0 | 69 | 122 |
+| **All** | **both** | **232** | **88** | **412** | **732** |
+
+The completeness criterion for 3d is **per Table-4e/4f symbol class** (one representative
+group per class suffices), *not* per-group — a group appearing UNPINNED above is expected and
+fine as long as its class has a representative fixture elsewhere. Per-group UNPINNED counts stay
+large by design (see the full grouped list in the `coverage_matrix.mjs` output; omitted here for
+length — regenerate via the script rather than reading a stale copy).
+
+**3d — Gap fixtures, by tensor:**
+
+- **ED (rank-3 polar-odd, Table 4e) — fully pinned, 21/21 classes, both i and c.** All 21
+  classes (A3–U3) already had an i-type representative from earlier work. Added 21 new ED
+  c-type companion fixtures (`TYPE_I_I_EQUALS_C`) for the same 21 Type-I (classical) groups:
+  each group's `GENERATORS` entry contains zero antiunitary elements, so `transformTensor`'s
+  `trFactor` is unconditionally `+1` regardless of tr-type — the i-type and c-type averages are
+  the *identical computation*, not merely equal in value (also Table 7's own stated rule for
+  classical rows). `expected` is copied verbatim from the already table-anchored ED-i entry.
+- **MD (rank-3 axial-odd, Table 4e reused with the axial transform law) — fully pinned across
+  its structurally achievable range, 11/11.** Table 4a's "Axial tensor of odd rank n" column
+  assigns exactly 11 distinct letters — `{A,B,D,F,H,K,L,N,P,S,T}` — across all 32 classical
+  point groups (verified programmatically against the full table); the other 10 letters
+  (`C,E,G,I,J,M,O,Q,R,U`) never appear in that column and so can **never** be an MD-i class for
+  *any* group — not a gap, a structural fact. Those 11 letters belong to exactly the 11
+  chiral/pure-rotation classical point groups (`1, 2, 222, 4, 422, 3, 32, 6, 622, 23, 432`),
+  each of which has *zero* antiunitary elements (as above) *and* zero improper elements
+  (`det(g) = +1` for every element), so `ED-i = ED-c = MD-i = MD-c` is the same computation for
+  all four — verified computationally for all 11 groups before writing any fixture. Added 21 new
+  MD fixtures (11 groups × {i, c}, minus one already-pinned duplicate found and skipped —
+  `622` MD-i pre-existed from earlier work, cross-confirmed to the identical value).
+- **EQ (rank-4 polar-even, Table 4f) — deferred as a documented residual**, per the Rules'
+  explicit MD/EQ escape hatch. Table 4f's raw headers use several distinct multi-index
+  permutation-family conventions not present in Table 4e (`yxxx(x·3)`, `xxyy(x:3)`,
+  `xxyz(c4)`, `zzxy(xy:6)`, …); decoding each convention's jk-particularization behavior
+  correctly (analogous to the Table-4e `(3)`-suffix decoding validated in Phase 1) needs its
+  own dedicated pass with its own calibration fixtures, which risks rushing a physics-affecting
+  data change. EQ-i is 1/122 pinned (`m-3m`, pre-existing) and EQ-c is 0/122 pinned; both are
+  0/21 classes by direct citation. Left as residual for a future phase; see `WORKORDER-audit-
+  close-out.md`'s own Definition of Done, which explicitly permits this.
+
+**Anti-circularity:** every new `expected` value in this phase is either copied from an
+already table-anchored fixture under an exact, code-verified structural argument (zero
+antiunitary elements → tr-type is a no-op; zero improper elements → axial/polar is *also* a
+no-op), or is a property-level assertion about the pipeline's own structure (3b/3c) — none is
+read off a fresh app-output value. All new tests/fixtures passed on first run; no
+stop-and-report findings in this phase.
+
+**Gates:** `tsc --noEmit`, `vite build`, `vitest run` all green (1328 tests, up from 1183).
 
 ## Phase 4 — End-to-end hand-Birss regression tests — not started
 
