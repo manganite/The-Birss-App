@@ -1,10 +1,12 @@
 # Audit: app vs. convention references — progress report
 
-**Status: IN PROGRESS — Phases 1–2 complete.** This document is built incrementally as
-`WORKORDER-audit-against-references.md` proceeds phase by phase. Phases 1 and 2 are complete and
-merged (`main` @ `026d4b0`, PR #47): the nomenclature audit passes 122/122 and the operator-set
-audit passes 122/122 after six generator fixes (app) and five table-6 corrections (birss-tables,
-book-scan-verified pass 5). Phases 3–5 are pending.
+**Status: COMPLETE (2026-07-02).** All five phases are done and merged to `main`. Phase 1
+(nomenclature, 122/122) and Phase 2 (operator-set, 122/122 after six app fixes + five
+birss-tables corrections) landed via PR #47. Phases 3 (tensor-form coverage: ED 21/21 classes,
+MD 11/11 achievable classes, EQ deferred as a documented residual), 4 (three named hand-Birss
+end-to-end checks), and 5 (this final report) landed as local `--no-ff` merges to `main` per
+`WORKORDER-audit-close-out.md`. Final gate: `tsc --noEmit` / `vite build` / `vitest run` all
+green, 1331/1331 tests.
 
 ---
 
@@ -255,6 +257,81 @@ stop-and-report findings in this phase.
 
 **Gates:** `tsc --noEmit`, `vite build`, `vitest run` all green (1328 tests, up from 1183).
 
-## Phase 4 — End-to-end hand-Birss regression tests — not started
+## Phase 4 — End-to-end hand-Birss regression tests — ✅ DONE
 
-## Phase 5 — Final report & gates — not started (this document becomes that report)
+**What was built:** `src/services/handBirss.e2e.test.ts`, describe block `hand-Birss
+end-to-end (audit Phase 4)`, three named tests asserted through the app's public
+`calculateTensorComponents` entry point (the same function the UI calls) — no internal
+projection helper is touched:
+
+- **`mm2` (classical)** — ED `i` == Birss Table 4e row E3, jk-particularized (5 independent
+  components). Anchor: `goldenTensors.fixtures.ts`, `'mm2'`/ED/i fixture (line 470 as of this
+  commit; Step 5's own worked example in `BIRSS-APP-CONVENTIONS-REFERENCE.md`).
+- **`-3'm'` (black-white, Cr₂O₃)** — ED `c` == the canonical magnetoelectric SHG source term.
+  Anchor: `goldenTensors.fixtures.ts`, `"-3'm'"`/ED/c fixture (line 111); independently
+  cross-checked against the primary literature source itself (Fiebig, Pavlov, Pisarev, *JOSA
+  B* **22**, 96 (2005), Sec. 4.A.3, p.100), not merely against Birss.
+- **`-43m` (cubic)** — ED `i` == Birss Table 4e row U3 (the Td-type single independent
+  component). Anchor: `goldenTensors.fixtures.ts`, `'-43m'`/ED/i fixture (line 594).
+
+`goldenTensors.test.ts` already asserts all three of these fixtures through this exact same
+entry point (`calculateTensorComponents(f.group, f.tensor, f.tr, f.setting)`), so this phase
+adds no new projection machinery — per the work order's own instruction, the three tests are
+thin, explicitly-named wrappers that pin the audit's literal "app output = hand-Birss"
+acceptance criterion as its own standalone, discoverable checkpoint. All three green, no
+stop-and-report findings.
+
+**Gates:** `tsc --noEmit`, `vite build`, `vitest run` all green (1331 tests, up from 1328).
+
+## Phase 5 — Final report & gates — ✅ COMPLETE
+
+**Final attribution summary.** The 6-group generator bug (PR #47) traces back to an initial
+3-way consistency audit (`σ(N)`/`σ'(N)` closure vs. Table 6's operator column vs. the app's own
+`GENERATORS`, all 90 Type-III rows) that flagged **9 distinct groups** on its first run. Full
+resolution, cited against primary sources in `birss-tables` (cloned locally for this pass —
+`table-6.md`, `conventions-reference.md`):
+
+| Category | Count | Groups | Fix location |
+|---|---|---|---|
+| **App-side generator bugs** | 6 | `6'/m'`, `6'/m`, `m'-3'm'`, `m'-3'm`, `4'/m'm'm`, `-4'm2'` | `symmetryGroups.ts`, PR #47 |
+| **`birss-tables` transcription/digitalization errors** (table-6.md's own markdown wrong; book itself correct) | 4 | `-4'm2'` operator column (wrong axis frame), `6'22'` (2 missing time-reversal primes), `6'mm'` (σ'(5)→σ'(3)), `-6m'2'` (σ'(2)→σ'(4)) | `birss-tables` pass 5 (`83a37f5`) |
+| **Genuine misprint in the printed book itself** (newly found this pass; transcription was faithful) | 1 | `6'/m'mm'` (book's own σ(2) collides with unitary `2_y` ∈ H, closes to the wrong abstract group) | `birss-tables` pass 5 (`83a37f5`) |
+| **Flagged by the 3-way audit, needed no change** (transcription already correct) | 1 | `6'/mm'm` | none — false alarm, documented in `table-6.md` |
+| **Pre-existing, independently documented book misprints** (predate this audit; in Table 3, not Table 6) | 2 | `6mm`, `-6m2` generator lists | `birss-tables`, earlier pass (`53a17ed`) — cited here as the precedent the new `6'/m'mm'` misprint is analogous to |
+
+Row counts: `-4'm2'` appears in **both** the app-bug row and the transcription-error row — an
+independent, coincidental double-fault (its Table-6 operator column *and* the app's own
+generator were each wrong, in different ways, for the same row). Excluding that overlap, the
+original 9-group audit resolves as 6 app bugs + 3 pure-upstream fixes (`6'mm'`, `-6m'2'`,
+`6'/m'mm'`) = 9; `6'22'` was a 10th, separate correction in the same pass-5 sweep, not part of
+the original 9 (it had not yet tripped the audit test at first discovery). The 2 Table-3
+misprints are older, independent history included here only because pass-5's write-up cites
+them as precedent.
+
+*(Note on the work order's shorthand "5 initial false alarms (σ-column anchor)" line: this
+report does not reproduce that exact figure. The only confirmed no-change-needed case found in
+the primary-source review is `6'/mm'm` (1 group). If "5" refers to the 5 groups whose bug
+pattern was a clean antiunitary-coset swap — `4'/m'm'm`, `6'/m'`, `6'/m`, `m'-3'm'`, `m'-3'm`
+— those were **not** false alarms; they are 5 of the 6 confirmed app bugs above, the "clean
+swap" pattern being what made them straightforward to fix rather than evidence they weren't
+real. This report presents the fully-source-verified breakdown in place of the shorthand.)*
+
+**Residuals (open items, none blocking):**
+- **Table 4f (EQ)** is not yet print-verified and its class-form fixtures are not yet written
+  (Phase 3d, deferred as a documented residual — see Phase 3 above). EQ-i is 1/122 pinned
+  (pre-existing, `m-3m`), EQ-c is 0/122 pinned; 0/21 classes covered by direct citation either
+  way. A future pass needs its own decoding + calibration of Table 4f's multi-index
+  permutation-family header conventions (`x·3`, `x:3`, `c4`, `xy:6`) before any Table-4f-cited
+  fixture can be written, per this document's own anti-circularity rule.
+- **MD (Table 4e, axial)** is fully pinned across its structurally achievable i-type range
+  (11/11 classes) but the remaining ~10 letters are permanently unreachable for MD-i (a
+  structural fact, not a gap — see Phase 3). MD-c's achievable range is wider (up to 21
+  letters, reachable only through specific black-white groups' cross-formula) and was not
+  separately audited; any MD-c-specific gap-filling is left to a future pass.
+- No open `VERIFY:` markers remain in `goldenTensors.fixtures.ts` (Part 0b: all 11 flipped to
+  `VERIFIED:`, signed off against the printed Birss Table 4e, 2026-07-02).
+
+**Final gates** (this commit, `main`): `npx tsc --noEmit` — clean. `npx vite build` — clean.
+`npx vitest run` — **1331/1331 passing** (13 test files), up from 1183 at the start of this
+work order. `npx tsx scripts/coverage_matrix.mjs` — 88 PINNED / 232 ZERO / 412 UNPINNED of 732
+cells (UNPINNED is per-group, not per-class; see Phase 3's completeness criterion).
