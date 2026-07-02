@@ -123,7 +123,7 @@ Explicit matrices, verbatim from eq. (2.17). They act on column coordinate vecto
 - Prefer building alternate settings (out of scope here) via similarity transforms `G' = S·G·S⁻¹` with the antiunitary flag preserved — never by hand-writing rotated generators.
 
 ### Test
-For each group, assert the app's **closed operator set** (matrices *and* antiunitary flags) equals the Birss **Table-6 operator column** for that row — the authority, independent of generator choice and rotation sense. Do **not** assert raw generator-matrix equality against the `σ(N)` column: the app may use an equivalent generator of opposite handedness (e.g. `getRotationZ(90)` = `4_z` CCW vs Birss `σ(7)` = `4_z` CW) that closes to the same group, and the `σ(N)`/`σ'(N)` column is a non-authoritative cross-check (documented misprints exist, and for bracketed rows such as `-4'm2'` the σ-column disagrees with its own operator column). Closure to the operator column settles both.
+For each group, assert the app's **closed operator set** (matrices *and* antiunitary flags) equals the Birss **Table-6 operator column** for that row — the authority, independent of generator choice and rotation sense. Do **not** assert raw generator-matrix equality against the `σ(N)` column: the app may use an equivalent generator of opposite handedness (e.g. `getRotationZ(90)` = `4_z` CCW vs Birss `σ(7)` = `4_z` CW) that closes to the same group. As a cross-check, also close the row's `σ(N)`/`σ'(N)` generators: if that closure disagrees with the operator column, one of the two was transcribed incorrectly — resolve against the printed book page before trusting either.
 
 ---
 
@@ -192,3 +192,9 @@ For each (group, tensor, i/c): (1) look up the class in Table 7 / 4a; (2) look u
 ## Scope & recorded decisions
 - **Canonical group key** = the short Hermann–Mauguin symbol in the app's notation (Step 1). The full HM and magnetic Schoenflies notation for all 122 groups are in [`table-nomenclature.md`](./table-nomenclature.md).
 - **Alternative axis settings are out of scope here** — this document covers the Default (setting-1) group only. For reference, the orthorhombic setting scheme is: Default = c-unique, `ORTHO_CYCLIC` = a-unique, `ORTHO_REVERSE` = b-unique; 7 groups have three meaningful settings, 5 have none (maximum 3, never 4). Settings are realized via similarity transforms (Step 3), never hand-written generators.
+
+## Changelog
+
+- **2026-07-01**: Initial version — five-step verification ladder (names → axes → generators → operations → tensor forms), fully self-contained (per-system axis conventions, bracketed groups, particularization inlined); cross-linked with `table-nomenclature.md`.
+- **2026-07-02**: Step 3 — explicit σ(0)–σ(9) matrices added verbatim from Birss eq. (2.17); Contract and Test re-anchored to **closure against the Table-6 operator column** (generator choice and rotation sense are free; raw generator-matrix equality against the σ(N) column is explicitly not a valid test).
+- **2026-07-02**: Step 3 Test — removed an earlier claim that `-4'm2'`'s σ-column disagrees with its own operator column; the disagreement was a transcription error in the *operator* column of `birss-tables/table-6.md` (wrong axis frame), fixed there in pass 5. With that fix, σ-closure and operator column agree for all 90 rows.

@@ -34,6 +34,23 @@ const TABLE_4E_VERIFICATION =
   'Table 4a maps each group to a symbol class (A_n–U_n); Table 4e gives the independent ' +
   'components for each class at rank n=3.';
 
+/**
+ * Shared citation for WORKORDER-fix-six-generators.md Phase 1 fixtures (the six
+ * generator-set corrections: 6'/m', 6'/m, m'-3'm', m'-3'm, -4'm2', 4'/m'm'm).
+ *
+ * Method: from-scratch reimplementation (not imported from src/) of the rank-3
+ * transformation law + group closure + basis extraction, applied to each group's
+ * *corrected* GENERATORS entry -- never to app output. Calibrated bit-for-bit
+ * against seven pre-existing golden fixtures before being trusted here.
+ */
+const SIX_GENERATOR_FIX_DERIVATION =
+  "Independently re-derived (WORKORDER-fix-six-generators.md Phase 1) from this group's " +
+  "*corrected* GENERATORS entry via a from-scratch reimplementation of the rank-3 " +
+  'transformation law + group closure + basis extraction, calibrated bit-for-bit against ' +
+  'seven pre-existing golden fixtures before being applied to these six groups; see ' +
+  'docs/findings/AUDIT-convention-references.md for the derivation script and full ' +
+  'calibration/cross-check log.';
+
 export const GOLDEN_FIXTURES: GoldenFixture[] = [
   // --- Trigonal: -3'm' (Cr2O3) -----------------------------------------------------
   {
@@ -568,8 +585,17 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
   },
   {
     group: "-4'm2'", tensor: 'ED', tr: 'i', setting: 2,
-    expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
-    source: 'Similarity transform Rz(45°); swaps d₁₄→d₁₅ family (i-type). Table-7 cross-check: (-4\'m2\') i-tensor polar odd = (J_n), consistent with 2 independent components.',
+    expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx}', '\\chi_{zxy} = \\chi_{zyx}'],
+    source:
+      "Birss Table 7 (class lookup) + Table 4e row J3, jk-particularized. Re-anchored " +
+      "after the -4'm2' generator fix (symmetryGroups.ts, WORKORDER-fix-six-generators.md " +
+      "Phase 2): Default and Setting 2 swap frames. Setting 2 (Rz(45°)) now carries the " +
+      "'-42m'-diagonal-mirror orientation -- IDENTICAL to the standalone '-42m' ED-i golden " +
+      "fixture above (Birss Table 4e row J3, 2 independent components) -- while Default " +
+      "carries the '-4m2'-axis form (see the -4'm2' Default ED-i fixture, Phase 1e, " +
+      "WORKORDER-fix-six-generators.md). Previously this entry was pinned (wrongly) to the " +
+      "'-4m2'-axis form under a 'similarity transform Rz(45°)' citation -- that anchor was " +
+      'app-derived (not admissible) and predates the fix.',
   },
   {
     group: "-42'm'", tensor: 'ED', tr: 'i', setting: 2,
@@ -807,5 +833,154 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     group: "21'", tensor: 'ED', tr: 'i', setting: 2,
     expected: ['\\chi_{xxy} = \\chi_{xyx}', '\\chi_{xyz} = \\chi_{xzy}', '\\chi_{yxx}', '\\chi_{yxz} = \\chi_{yzx}', '\\chi_{yyy}', '\\chi_{yzz}', '\\chi_{zxy} = \\chi_{zyx}', '\\chi_{zyz} = \\chi_{zzy}'],
     source: 'Grey derivative of 2: i-type equals colourless parent.',
+  },
+
+  // =============================================================================
+  // WORKORDER-fix-six-generators.md Phase 1 -- golden fixtures for the six generator-set
+  // corrections: 6'/m', 6'/m, m'-3'm', m'-3'm, -4'm2', 4'/m'm'm.
+  // // VERIFY: pending human sign-off against the printed Birss tables (AGENTS.md).
+  //
+  // Expected values are independently re-derived -- never read off app output -- via a
+  // from-scratch reimplementation of the rank-3 transformation law + group closure + basis
+  // extraction (mirroring tensorProjection.ts but written separately), applied to each
+  // group's *corrected* GENERATORS entry (the Phase 2 fix in symmetryGroups.ts). The
+  // reimplementation was calibrated bit-for-bit against seven pre-existing golden fixtures
+  // (-3'm' ED c / MD i, default -42m ED i, 4mm ED i, m-3m MD i, -43m ED i, 432 ED i) before
+  // being trusted on these six groups; several of the values below also land on an exact
+  // textual match with an independently-cited pre-existing fixture elsewhere in this file
+  // (noted per-entry). See docs/findings/AUDIT-convention-references.md for the derivation
+  // script and full calibration/cross-check log.
+  // =============================================================================
+  {
+    group: "6'/m'", tensor: 'ED', tr: 'i',
+    expected: ['All components are zero.'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      "H (unitary halving subgroup) = C3i, and crucially the group's inversion is the " +
+      "UNITARY '-1' (table-nomenclature.md row \"C6h(C3i) | 6'/m'\": operator column is " +
+      "`1, -1, ±3_z, ±-3_z, 2'_z, -2'_z, ±6'_z, ±-6'_z` -- bare `-1`, not `-1'`). i-type " +
+      'ignores the antiunitary flag entirely, so any spatially-inversive element -- unitary ' +
+      'or primed -- forces all polar (ED) odd-rank tensors to zero by parity.',
+  },
+  {
+    group: "6'/m'", tensor: 'ED', tr: 'c',
+    expected: ['All components are zero.'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      'The same UNITARY inversion kills c-type too: for a unitary (non-antiunitary) ' +
+      'element, trFactor is always +1 regardless of tr-type, so a unitary -1 forces T = -T ' +
+      'for any polar rank-3 T, independent of time-reversal weighting. This is the bug this ' +
+      "fixture catches: pre-fix, the app has the primed/unprimed inversion flags swapped " +
+      "between this group and 6'/m, so the OLD \"6'/m'\" generators give this group the " +
+      "nonzero 6'/m answer (Birss Table 4e row O3, see the 6'/m ED-c fixture below) instead " +
+      'of zero.',
+  },
+  {
+    group: "6'/m", tensor: 'ED', tr: 'i',
+    expected: ['All components are zero.'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      'i-type strips the antiunitary flag, so it sees the full 12-element spatial operation ' +
+      'set (H = C3h union its primed-inversion coset), which spatially equals the full ' +
+      'centrosymmetric 6/m (C6h) point group -- forcing ED-i = 0 by parity, independent of ' +
+      'the time-reversal bug fixed here.',
+  },
+  {
+    group: "6'/m", tensor: 'ED', tr: 'c',
+    expected: [
+      '\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}',
+      '\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}',
+    ],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      "H (unitary halving subgroup) = C3h = the standalone '-6' point group " +
+      "(table-nomenclature.md row \"C6h(C3h) | 6'/m\": unitary part `1, -2_z, ±3_z, ±-6_z`). " +
+      'c-type weights H at +1 and its primed-inversion coset at -1; the surviving ' +
+      "2-component space is IDENTICAL to '-6'(ED,i) -- Birss Table 4e row O3, an " +
+      'independently-cited golden fixture already in this file above (\'-6\', ED, i) -- an ' +
+      'exact textual match, not merely a structural analogy. This is the decisive fixture ' +
+      "for the swap bug: pre-fix, the app's primed-inversion flag is backwards between " +
+      "6'/m' and 6'/m (same bug as the pair above), so the OLD \"6'/m\" generators give the " +
+      '(wrong) all-zero answer instead of this form.',
+  },
+  {
+    group: "m'-3'm'", tensor: 'ED', tr: 'c',
+    expected: ['All components are zero.'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      "H (unitary halving subgroup) = 432 (O point group; table-nomenclature.md row " +
+      "\"Oh(O) | m'-3'm'\": unitary part `1, 9(2), 4(±3), 3(±4)`, order 24). Even the " +
+      'H-only (weight-+1) polar rank-3 invariant space is already the zero subspace -- ' +
+      "Birss Table 4e row T3, 'piezoelectricity forbidden in 432', an independently-cited " +
+      "golden fixture already in this file above ('432', ED, i) -- so intersecting with the " +
+      "c-type +/-1 weighting (necessarily a subspace of the H-invariant space) stays zero " +
+      "regardless of the antiunitary coset's sign.",
+  },
+  {
+    group: "m'-3'm", tensor: 'ED', tr: 'c',
+    expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      "H (unitary halving subgroup) = -43m (Td point group; table-nomenclature.md row " +
+      "\"Oh(Td) | m'-3'm\": unitary part `1, 3(2), 6(-2), 4(±3), 3(±-4)`, order 24). The " +
+      'surviving c-type space equals the full H-invariant space -- Birss Table 4e row U3 ' +
+      "(1 independent component), IDENTICAL to the standalone '-43m' ED-i golden fixture " +
+      'already in this file above: an exact textual match. This is the decisive fixture for ' +
+      "the m'-3'm'/m'-3'm swap bug: pre-fix, the app gives this Td-type single-component " +
+      "form to \"m'-3'm'\" (H = O, where it must be zero per the entry above) instead of to " +
+      "\"m'-3'm\".",
+  },
+  {
+    group: "-4'm2'", tensor: 'ED', tr: 'i',
+    expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      'H (unitary halving subgroup) = mm2 (z-unique, mirrors perp-x/perp-y; ' +
+      "table-nomenclature.md row \"D2d(C2v) | -4'm2'\": unitary part `1, 2_z, -2_x, -2_y`). " +
+      'i-type ignores the antiunitary flag and averages over the full 8-element spatial ' +
+      "set, which equals the '-4m2' orientation of D2d (mirrors perp-x/perp-y, as opposed " +
+      "to the default '-42m' diagonal-mirror setting) -- IDENTICAL to the existing '-42m' " +
+      "setting-2 (Rz(45 deg), the '-4m2' orientation) ED-i golden fixture already in this " +
+      "file: an exact textual match. This is the decisive Default-frame fixture for the " +
+      "-4'm2' bug: pre-fix, the app builds the Default generators in the Rz(45 deg)-rotated " +
+      "('-42m'-diagonal) frame instead, so this form was wrongly pinned to Setting 2 (see " +
+      'the Phase 3 re-anchor of the line-570 fixture) while Default gave the other ' +
+      "('-42m'-class) form.",
+  },
+  {
+    group: "4'/m'm'm", tensor: 'ED', tr: 'i',
+    expected: ['All components are zero.'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      "Guard fixture (WORKORDER-fix-six-generators.md Phase 1f): i-type strips the " +
+      'antiunitary flag, seeing the full 16-element spatial set = the centrosymmetric ' +
+      '4/mmm point group -- forcing ED-i = 0 regardless of the frame-orientation bug fixed ' +
+      'here. Passes both pre- and post-fix (orientation-independent); kept as a guard only, ' +
+      'not the decisive pin (see the ED-c entry below).',
+  },
+  {
+    group: "4'/m'm'm", tensor: 'ED', tr: 'c',
+    expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx}', '\\chi_{zxy} = \\chi_{zyx}'],
+    source: SIX_GENERATOR_FIX_DERIVATION,
+    note:
+      "H (unitary halving subgroup) = -42m (D2d, standard diagonal-mirror setting; " +
+      "table-nomenclature.md row \"D4h(D2d) | 4'/m'm'm\": unitary part `1, 2_x, 2_y, 2_z, " +
+      '-2_xy, -2_-xy, ±-4_z`, IDENTICAL to the standalone GENERATORS[\'-42m\'] group). ' +
+      'c-type weights H at +1 and the primed-inversion coset at -1; the surviving space ' +
+      "equals the full '-42m'-default ED-i space (Birss Table 4e row J3) -- an exact " +
+      "textual match to the standalone '-42m' ED-i golden fixture already in this file. " +
+      'DEVIATION FROM WORKORDER: WORKORDER-fix-six-generators.md Phase 1f names "MD c" as ' +
+      'the decisive pin and claims "ED i ≡ 0 and c ≡ 0". Independent re-derivation ' +
+      '(calibrated separately -- see docs/findings/AUDIT-convention-references.md) shows ' +
+      'this is incorrect on two points: (1) MD-c is identically zero for this group (the ' +
+      'antiunitary -1’ imposes T = -T on the axial c-type tensor via the extra det(g) ' +
+      'factor, unlike the polar case), so a zero, frame-invariant tensor cannot be the ' +
+      'frame-sensitive discriminator the workorder intends; (2) ED-c is in fact nonzero -- ' +
+      'the antiunitary -1’ imposes T = +T on the polar c-type tensor (factor = ' +
+      'trFactor(-1) * inversion-parity((-1)^3 = -1) = +1), the same magnetoelectric ' +
+      'mechanism as the canonical Cr2O3 \'-3\'m\'\' fixture at the top of this file. ED-c is ' +
+      'therefore the correct decisive, frame-sensitive pin: it takes the \'-42m\'-default ' +
+      "(diagonal-mirror) J3 form post-fix, vs. the Rz(45 deg)-rotated ('-4m2'-axis) form " +
+      'pre-fix.',
   },
 ];

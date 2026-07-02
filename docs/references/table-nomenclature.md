@@ -182,7 +182,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | C<sub>4v</sub>(C<sub>4</sub>) | `4m'm'` | 1, 2_z, ±4_z, -2'_x, -2'_y, -2'_xy, -2'_-xy | σ(7)  /  σ'(4) |
 | D<sub>2d</sub> | `-42m` | 1, 2_x, 2_y, 2_z, -2_xy, -2_-xy, ±-4_z | σ(2), σ(8)  /  — |
 | D<sub>2d</sub>(D<sub>2</sub>) | `-4'2m'` | 1, 2_x, 2_y, 2_z, -2'_xy, -2'_-xy, ±-4'_z | σ(2), σ(3)  /  σ'(8) |
-| D<sub>2d</sub>(C<sub>2v</sub>) | `-4'm2'` | 1, 2_z, -2_xy, -2_-xy, 2'_x, 2'_y, ±-4'_z | σ(3), σ(4)  /  σ'(8) |
+| D<sub>2d</sub>(C<sub>2v</sub>) | `-4'm2'` | 1, 2_z, -2_x, -2_y, 2'_xy, 2'_-xy, ±-4'_z | σ(3), σ(4)  /  σ'(8) |
 | D<sub>2d</sub>(S<sub>4</sub>) | `-42'm'` | 1, 2_z, ±-4_z, 2'_x, 2'_y, -2'_xy, -2'_-xy | σ(8)  /  σ'(2) |
 | D<sub>4h</sub> | `4/mmm` | 1, -1, 2_x, 2_y, 2_z, 2_xy, 2_-xy, -2_x, -2_y, -2_z, -2_xy, -2_-xy, ±4_z, ±-4_z | σ(1), σ(2), σ(7)  /  — |
 | D<sub>4h</sub>(D<sub>2h</sub>) | `4'/mmm'` | 1, -1, 2_x, 2_y, 2_z, -2_x, -2_y, -2_z, 2'_xy, 2'_-xy, -2'_xy, -2'_-xy, ±4'_z, ±-4'_z | σ(1), σ(2), σ(3)  /  σ'(7) |
@@ -210,17 +210,17 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | C<sub>6h</sub>(C<sub>6</sub>) | `6/m'` | 1, 2_z, ±3_z, ±6_z, -1', -2'_z, ±-3'_z, ±-6'_z | σ(3), σ(6)  /  σ'(1) |
 | C<sub>6h</sub>(C<sub>3h</sub>) | `6'/m` | 1, -2_z, ±3_z, ±-6_z, -1', 2'_z, ±-3'_z, ±6'_z | σ(5), σ(6)  /  σ'(1) |
 | D<sub>6</sub> | `622` | 1, 6(2⊥), 2_z, ±3_z, ±6_z | σ(2), σ(3), σ(6)  /  — |
-| D<sub>6</sub>(D<sub>3</sub>) | `6'22'` | 1, 3(2⊥), ±3_z, 3(2'⊥), 2_z, ±6_z | σ(2), σ(6)  /  σ'(3) |
+| D<sub>6</sub>(D<sub>3</sub>) | `6'22'` | 1, 3(2⊥), ±3_z, 3(2'⊥), 2'_z, ±6'_z | σ(2), σ(6)  /  σ'(3) |
 | D<sub>6</sub>(C<sub>6</sub>) | `62'2'` | 1, 2_z, ±3_z, ±6_z, 6(2'⊥) | σ(3), σ(6)  /  σ'(2) |
 | C<sub>6v</sub> | `6mm` | 1, 2_z, 6(-2⊥), ±3_z, ±6_z | σ(3), σ(4), σ(6)  /  — |
-| C<sub>6v</sub>(C<sub>3v</sub>) | `6'mm'` | 1, 3(-2⊥), ±3_z, 2'_z, ±6'_z, 3(-2'⊥) | σ(4), σ(6)  /  σ'(5) |
+| C<sub>6v</sub>(C<sub>3v</sub>) | `6'mm'` | 1, 3(-2⊥), ±3_z, 2'_z, ±6'_z, 3(-2'⊥) | σ(4), σ(6)  /  σ'(3) |
 | C<sub>6v</sub>(C<sub>6</sub>) | `6m'm'` | 1, 2_z, ±3_z, ±6_z, 6(-2'⊥) | σ(3), σ(6)  /  σ'(4) |
 | D<sub>3h</sub> | `-6m2` | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z | σ(4), σ(5), σ(6)  /  — |
 | D<sub>3h</sub>(D<sub>3</sub>) | `-6'2m'` | 1, 3(2⊥), ±3_z, -2'_z, ±-6'_z, 3(-2'⊥) | σ(2), σ(6)  /  σ'(5) |
 | D<sub>3h</sub>(C<sub>3v</sub>) | `-6'm2'` | 1, 3(-2⊥), ±3_z, 3(2'⊥), -2'_z, ±-6'_z | σ(4), σ(6)  /  σ'(5) |
-| D<sub>3h</sub>(C<sub>3h</sub>) | `-6m'2'` | 1, -2_z, ±3_z, ±-6_z, 3(2'⊥), 3(-2'⊥) | σ(5), σ(6)  /  σ'(2) |
+| D<sub>3h</sub>(C<sub>3h</sub>) | `-6m'2'` | 1, -2_z, ±3_z, ±-6_z, 3(2'⊥), 3(-2'⊥) | σ(5), σ(6)  /  σ'(4) |
 | D<sub>6h</sub> | `6/mmm` | 1, -1, 6(2⊥), 2_z, 6(-2⊥), -2_z, ±3_z, ±-3_z, ±6_z, ±-6_z | σ(1), σ(2), σ(3), σ(6)  /  — |
-| D<sub>6h</sub>(D<sub>3d</sub>) | `6'/m'mm'` | 1, -1, 3(2⊥), 3(-2⊥), ±3_z, ±-3_z, 3(2'⊥), 2'_z, 3(-2'⊥), -2'_z, ±6'_z, ±-6'_z | σ(1), σ(2), σ(6)  /  σ'(2) |
+| D<sub>6h</sub>(D<sub>3d</sub>) | `6'/m'mm'` | 1, -1, 3(2⊥), 3(-2⊥), ±3_z, ±-3_z, 3(2'⊥), 2'_z, 3(-2'⊥), -2'_z, ±6'_z, ±-6'_z | σ(1), σ(2), σ(6)  /  σ'(3) |
 | D<sub>6h</sub>(C<sub>6h</sub>) | `6/mm'm'` | 1, -1, 2_z, -2_z, ±3_z, ±-3_z, ±6_z, ±-6_z, 6(2'⊥), 6(-2'⊥) | σ(1), σ(3), σ(6)  /  σ'(2) |
 | D<sub>6h</sub>(D<sub>6</sub>) | `6/m'm'm'` | 1, 6(2⊥), 2_z, ±3_z, ±6_z, -1', -2'_z, ±-3'_z, ±-6'_z, 6(-2'⊥) | σ(2), σ(3), σ(6)  /  σ'(1) |
 | D<sub>6h</sub>(C<sub>6v</sub>) | `6/m'mm` | 1, 2_z, 6(-2⊥), ±3_z, ±6_z, -1', -2'_z, 6(2'⊥), ±-3'_z, ±-6'_z | σ(3), σ(4), σ(6)  /  σ'(1) |
@@ -281,3 +281,9 @@ Not in ITC 1.5.2.3 or Birss Table 6. Each = classical parent ⊗ {1,1'}: Schoenf
 *Sources:* Schoenflies from ITC Table 1.5.2.3 — but in the **app/Birss naming** where the two differ (the `-3` family is `C3i`, not ITC's `S6`; sole such case). Full HM — ITC Table 1.5.2.3 (`ch1o5_.pdf`; hexagonal and cubic rows read directly from the page image, including the O<sub>h</sub>/T<sub>h</sub> full-HM). Shubnikov, operators, generators — Birss Table 6. Type scheme — ITC §1.5.2 / Bradley–Cracknell.
 
 *Rendering note:* column widths are not settable in Markdown; Tables A and B are split precisely so that long full-HM strings (Table A) and long operator lists (Table B) each get the full column width and stop wrapping across many lines.
+
+## Changelog
+
+- **2026-07-01**: Initial version — 122 groups (Table A nomenclature, Table B operators/generators, Table C grey), reading guide, type scheme, App↔Birss↔ITC comparison.
+- **2026-07-02**: Schoenflies naming of the `-3` family changed S₆ → C₃ᵢ per the app's Birss-wins rule (Birss Table 3 lists `C3i(S6)`, C3i primary); ITC's S₆ spelling noted per row; C₃ᵢ≡S₆ added to the comparison table. Sole Schoenflies-naming divergence between the two sources.
+- **2026-07-02**: Table B regenerated after `birss-tables` table-6 pass-5 book-scan corrections — five rows updated: `-4'm2'` (operator column was transcribed in the wrong axis frame), `6'22'` (two missing time-reversal primes), `6'mm'`/`-6m'2'`/`6'/m'mm'` (σ' generator entries). See table-6.md pass-5 notes for evidence.

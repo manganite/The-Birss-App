@@ -46,7 +46,7 @@ pushed to origin.**
 
 ---
 
-## Phase 2 — Operator-set audit (Steps 2–4) — 🔴 IN PROGRESS, real findings surfaced
+## Phase 2 — Operator-set audit (Steps 2–4) — ✅ RESOLVED, 122/122 green
 
 **Anchor:** `docs/references/table-nomenclature.md` Table B (σ(N)/σ'(N) generator column,
 cross-checked byte-for-byte against `birss-tables/table-6.md` directly — confirmed faithful
@@ -109,13 +109,61 @@ cleanly):
    specifically (vs. the standard-orientation groups, where the same mechanism produces correct
    results — 113/122 groups pass cleanly).
 
-**Not yet done:** the same close reading for the other 8 failing groups (started noticing a
-"pure AU-swap" sub-pattern across 5 of them, which may be a distinct, simpler issue from
-`-4'm2'`'s — needs its own investigation before concluding anything). No fix has been applied
-yet. Per the work order's non-negotiable stop-and-report rule, this is being treated as a
-finding to investigate carefully rather than a discrepancy to force-fix quickly.
+**Resolution.** Of the original 9 failing groups, investigation split them into two
+independent categories:
 
-**Files added, not yet committed** (still on branch `fix/operator-set-audit`):
+1. **3 groups were pure `birss-tables/table-6.md` transcription/misprint issues** — the *app's*
+   pre-existing generators were already correct; only the reference table was wrong. Fixed
+   upstream in `birss-tables` pass 5 (see `docs/references/table-nomenclature.md`'s own
+   Changelog, 2026-07-02 entry): `6'mm'`, `-6m'2'`, `6'/m'mm'` (σ'(N) generator-column entries).
+   A fourth row, `6'22'` (two missing time-reversal primes), was fixed in the same pass but was
+   not part of the original 9 — it had not yet tripped the audit test at the time of first
+   discovery. No app code change was needed for any of these four; regenerating
+   `table-nomenclature.md` Table B from the corrected upstream data was sufficient (see the
+   uncommitted `table-nomenclature.md` diff carried into this session — folded into the same
+   commit as the app fix below).
+2. **6 groups had a genuine app-side `GENERATORS` bug** in `symmetryGroups.ts`, fixed in this
+   session per `WORKORDER-fix-six-generators.md`, all verified by explicit matrix closure
+   against the book-scan-verified Table-6 operator column:
+
+   | Group | Bug | Root cause |
+   |---|---|---|
+   | `6'/m'` ↔ `6'/m` | inversion time-reversal flag swapped between the pair | the primed/unprimed `-1` was assigned to the wrong member of the pair |
+   | `m'-3'm'` ↔ `m'-3'm` | 4-fold generator swapped | σ(7) (proper `4_z`, H = O) and σ(8) (roto-inversion `-4_z`, H = Td) were assigned to the wrong member of the pair |
+   | `4'/m'm'm` | default built in the σ/4-rotated (`4'/m'mm'`) frame | used σ(4′)+mirror+primed-inversion instead of σ(8)+σ(2)+primed-inversion (H = `-42m` in the wrong orientation) |
+   | `-4'm2'` | default built in the σ/4-rotated frame; also overlapped with `-4'm2'`'s own Table-6 **operator column** being transcribed in the wrong axis frame upstream (category 1 above) — a rare case where both the app *and* the reference table were independently wrong | used a primed `2_x` where the corrected row needs an unprimed mirror ⊥y |
+
+   `-4'm2'` is the one row present in **both** categories: its Table-6 operator-column
+   transcription error (upstream, category 1) and its app generator error (this session,
+   category 2) were independent bugs that happened to affect the same row.
+
+**Fix applied:** six exact generator-line replacements in `src/services/symmetryGroups.ts` (see
+`WORKORDER-fix-six-generators.md` Phase 2 for the literal diffs). Verified test-first: Phase-1
+golden fixtures (`src/services/goldenTensors.fixtures.ts`) were added and shown failing against
+the *old* generators before the fix, then confirmed green after.
+
+One deviation from the work order surfaced during independent fixture derivation: Phase 1f
+(`4'/m'm'm`) claimed "ED i ≡ 0 and c ≡ 0" with **MD c** as the decisive frame-sensitive pin. An
+independently re-implemented (calibrated, not app-derived) closure computation showed this is
+backwards — MD-c is identically zero for this group (the antiunitary `-1'` imposes `T = -T` on
+the axial c-type tensor via the extra `det(g)` factor), while **ED-c is the nonzero,
+frame-sensitive tensor** (same magnetoelectric mechanism as the canonical Cr2O3 `-3'm'`
+fixture: antiunitary `-1'` imposes `T = +T` on the polar c-type tensor). The fixture was written
+using ED-c as the decisive pin instead; see its `note` in `goldenTensors.fixtures.ts` for the
+full derivation.
+
+**Result:** `src/data/operatorSet.reference.test.ts` — 122/122 groups pass (was 113/122 at first
+discovery). Full gate green: `tsc --noEmit`, `vite build`, `vitest run` (1183 tests).
+
+**Files added/changed this session** (branch `fix/operator-set-audit`):
+- `src/services/symmetryGroups.ts` — six `GENERATORS` line fixes (Phase 2)
+- `src/services/goldenTensors.fixtures.ts` — nine new Phase-1 golden fixtures for the six
+  groups + one re-anchored fixture (`-4'm2'` Setting 2, Phase 3)
+- `docs/references/table-nomenclature.md` — Table B regenerated from `birss-tables` pass 5
+- `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` — Step 3 Test wording updated to match
+  the pass-5 resolution (σ-closure and operator-column now agree for all 90 Type-III rows)
+
+**Files added in the prior (pre-fix) investigation session, now folded into the same effort:**
 - `src/services/birssGenerators.reference.fixtures.ts`
 - `src/data/operatorSet.reference.test.ts`
 
