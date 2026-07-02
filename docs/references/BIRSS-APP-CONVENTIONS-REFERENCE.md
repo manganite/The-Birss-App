@@ -119,7 +119,7 @@ Explicit matrices, verbatim from eq. (2.17). They act on column coordinate vecto
 
 `σ'(N)` = the same matrix σ(N) with the time-reversal (antiunitary) flag set. Table 3's "Generating matrices" column and Table 6's σ(N)/σ'(N) columns give the per-group generator sets.
 
-- Implement each generator as the Birss σ matrix, not an ad-hoc rotation, so that closure reproduces Birss's operators exactly.
+- **Prefer** implementing generators as the Birss σ matrices verbatim; equivalent generators (e.g. a rotation of opposite sense) are acceptable — the correctness criterion is always **closure to the Table-6 operator column**, never the generator matrix itself.
 - Prefer building alternate settings (out of scope here) via similarity transforms `G' = S·G·S⁻¹` with the antiunitary flag preserved — never by hand-writing rotated generators.
 
 ### Test

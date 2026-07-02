@@ -5,8 +5,6 @@
 instruction to append findings after each phase. It is not yet the final Phase 5 report —
 Phase 2 has an open, unresolved finding (see below) and Phases 3–5 have not started.
 
-**Plan:** `/home/thomas/.claude/plans/here-is-a-another-expressive-quill.md`
-
 ---
 
 ## Phase 1 — Nomenclature completeness (Step 1) — ✅ DONE, merged to `main`

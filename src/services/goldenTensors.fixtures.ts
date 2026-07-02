@@ -583,6 +583,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
     source: 'Similarity transform Rz(45°); swaps d₁₄→d₁₅ family (i-type).',
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "-4'm2'", tensor: 'ED', tr: 'i', setting: 2,
     expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx}', '\\chi_{zxy} = \\chi_{zyx}'],
@@ -838,7 +839,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
   // =============================================================================
   // WORKORDER-fix-six-generators.md Phase 1 -- golden fixtures for the six generator-set
   // corrections: 6'/m', 6'/m, m'-3'm', m'-3'm, -4'm2', 4'/m'm'm.
-  // // VERIFY: pending human sign-off against the printed Birss tables (AGENTS.md).
+  // VERIFY: pending human sign-off against the printed Birss tables (AGENTS.md).
   //
   // Expected values are independently re-derived -- never read off app output -- via a
   // from-scratch reimplementation of the rank-3 transformation law + group closure + basis
@@ -851,6 +852,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
   // (noted per-entry). See docs/findings/AUDIT-convention-references.md for the derivation
   // script and full calibration/cross-check log.
   // =============================================================================
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "6'/m'", tensor: 'ED', tr: 'i',
     expected: ['All components are zero.'],
@@ -862,6 +864,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       'ignores the antiunitary flag entirely, so any spatially-inversive element -- unitary ' +
       'or primed -- forces all polar (ED) odd-rank tensors to zero by parity.',
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "6'/m'", tensor: 'ED', tr: 'c',
     expected: ['All components are zero.'],
@@ -875,6 +878,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       "nonzero 6'/m answer (Birss Table 4e row O3, see the 6'/m ED-c fixture below) instead " +
       'of zero.',
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "6'/m", tensor: 'ED', tr: 'i',
     expected: ['All components are zero.'],
@@ -885,6 +889,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       'centrosymmetric 6/m (C6h) point group -- forcing ED-i = 0 by parity, independent of ' +
       'the time-reversal bug fixed here.',
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "6'/m", tensor: 'ED', tr: 'c',
     expected: [
@@ -903,6 +908,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       "6'/m' and 6'/m (same bug as the pair above), so the OLD \"6'/m\" generators give the " +
       '(wrong) all-zero answer instead of this form.',
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "m'-3'm'", tensor: 'ED', tr: 'c',
     expected: ['All components are zero.'],
@@ -916,6 +922,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       "c-type +/-1 weighting (necessarily a subspace of the H-invariant space) stays zero " +
       "regardless of the antiunitary coset's sign.",
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "m'-3'm", tensor: 'ED', tr: 'c',
     expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx} = \\chi_{zxy} = \\chi_{zyx}'],
@@ -930,6 +937,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       "form to \"m'-3'm'\" (H = O, where it must be zero per the entry above) instead of to " +
       "\"m'-3'm\".",
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "-4'm2'", tensor: 'ED', tr: 'i',
     expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
@@ -947,6 +955,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       'the Phase 3 re-anchor of the line-570 fixture) while Default gave the other ' +
       "('-42m'-class) form.",
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "4'/m'm'm", tensor: 'ED', tr: 'i',
     expected: ['All components are zero.'],
@@ -958,6 +967,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       'here. Passes both pre- and post-fix (orientation-independent); kept as a guard only, ' +
       'not the decisive pin (see the ED-c entry below).',
   },
+  // VERIFY: pending human sign-off against the printed Birss tables.
   {
     group: "4'/m'm'm", tensor: 'ED', tr: 'c',
     expected: ['\\chi_{xyz} = \\chi_{xzy} = \\chi_{yxz} = \\chi_{yzx}', '\\chi_{zxy} = \\chi_{zyx}'],

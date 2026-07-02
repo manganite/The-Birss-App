@@ -8,9 +8,15 @@ import { sigma, sigmaPrime, refClose, refSetsEqual, type RefMatrix3x3 } from '..
 /**
  * Steps 2-4 of BIRSS-APP-CONVENTIONS-REFERENCE.md: for every Default-setting group,
  * the app's closed operator set (GENERATORS -> getCachedFullGroup) must equal Birss
- * Table 6's, read from table-nomenclature.md Table B's sigma(N)/sigma'(N) generator
- * column (not the "Symmetry operators" text column, which uses compressed
- * multiplicity notation like `9(2)` for cubic groups). Comparison is at the matrix
+ * Table 6's. Per the convention contract, the authoritative reference is Table 6's
+ * *operator column*; this test anchors instead at Table B's sigma(N)/sigma'(N)
+ * generator column, closed with the independent sigma pool, as an **exact proxy**:
+ * sigma-closure == operator column for all 90 rows is guaranteed by birss-tables
+ * table-6 "2026-07 pass 5" (book-scan verification; documented there). The proxy is
+ * used because the operator column's compressed multiplicity notation (`9(2)`,
+ * `3(2⊥)`) is azimuth-silent for trigonal/hexagonal rows and cannot be parsed into
+ * exact matrices. Any future edit to table-6.md must re-establish the sigma-operator
+ * consistency before this test's anchor remains valid. Comparison is at the matrix
  * level (birssGenerators.reference.fixtures.ts's independent pool + closure), not
  * formatted-string level, so a bug in the app's own display labeling
  * (formatMatrixSymbol) can't hide or fake a mismatch here. Grey groups (Table C)
