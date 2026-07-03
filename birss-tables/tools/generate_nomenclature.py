@@ -7,7 +7,9 @@
   2. Birss Table 6 (../table-6.md) for the Shubnikov symbol, operators, and sigma(N)/sigma'(N)
      generators; the 32 grey groups are derived by the G (x) {1,1'} rule.
 
-Run from anywhere:  python3 generate_nomenclature.py
+Run from the repo root:  python3 birss-tables/tools/generate_nomenclature.py
+(or `npm run nomenclature`, or `python3 generate_nomenclature.py` from this directory -- all
+paths are resolved relative to this file, not the working directory).
 Writes ../table-nomenclature.md next to the other reference tables. Deterministic: the output is
 byte-for-byte reproducible, so CI can assert the committed file equals this script's output.
 """
@@ -113,16 +115,19 @@ rows = [
 ("Cubic","m'-3'm'","Oh(O)","4/m' -3' 2/m'","Birss Table 6 short = m'3m'; app keeps bar+prime"),
 ("Cubic","m'-3'm","Oh(Td)","4'/m' -3' 2'/m","Birss Table 6 short = m'3m; app keeps bar+prime"),
 ]
-assert len(rows)==90
+if len(rows) != 90:
+    raise ValueError(f"expected 90 ITC rows, got {len(rows)}")
 
 # ---- 2. Parse Birss table-6 for Shubnikov / operators / generators (same order) ----
 t6=[]
-for ln in open(TABLES / "table-6.md", encoding="utf-8"):
-    if re.match(r"^\| (Triclinic|Monoclinic|Orthorhombic|Tetragonal|Trigonal|Hexagonal|Cubic) \|", ln):
-        c=[x.strip() for x in ln.strip().strip("|").split("|")]
-        # c: system, hm, shub, csubHM, csubShub, operators, sigma, sigmaprime
-        t6.append({"hm":c[1],"shub":c[2],"ops":c[5],"sig":c[6],"sigp":c[7]})
-assert len(t6)==90, len(t6)
+with open(TABLES / "table-6.md", encoding="utf-8") as f:
+    for ln in f:
+        if re.match(r"^\| (Triclinic|Monoclinic|Orthorhombic|Tetragonal|Trigonal|Hexagonal|Cubic) \|", ln):
+            c=[x.strip() for x in ln.strip().strip("|").split("|")]
+            # c: system, hm, shub, csubHM, csubShub, operators, sigma, sigmaprime
+            t6.append({"hm":c[1],"shub":c[2],"ops":c[5],"sig":c[6],"sigp":c[7]})
+if len(t6) != 90:
+    raise ValueError(f"expected 90 table-6 rows, parsed {len(t6)}")
 
 def sub_tok(tok):
     m=re.match(r"^([CDSTO])(.*)$",tok)
