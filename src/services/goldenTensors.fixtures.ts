@@ -1341,4 +1341,27 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: "Default 4'/m'm'm ED-c form (table-anchored, Table 4e via SIX_GENERATOR_FIX_DERIVATION: chi_xyz=chi_xzy=chi_yxz=chi_yzx, chi_zxy=chi_zyx) rotated by Rz(45deg) into the 4'/m'mm' setting. Pure tensor algebra; independent projection over the transformed operators reproduces it.",
     // VERIFY: pending human sign-off against the printed Birss tables.
   },
+
+  // --- Grey-group setting-2 coverage: ED-i identical to the unitary parent -------------
+  // Grey rule: for a time-even (i) tensor the antiunitary 1' acts as identity, so ED-i of
+  // G1' equals ED-i of its unitary parent G. Each expected value below is copied verbatim
+  // from the parent's own table-anchored setting-2 ED-i fixture (verified to match exactly).
+  {
+    group: "m1'", tensor: 'ED', tr: 'i', setting: 2,
+    expected: ['\\chi_{xxx}', '\\chi_{xxz} = \\chi_{xzx}', '\\chi_{xyy}', '\\chi_{xzz}', '\\chi_{yxy} = \\chi_{yyx}', '\\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx}', '\\chi_{zxz} = \\chi_{zzx}', '\\chi_{zyy}', '\\chi_{zzz}'],
+    source: "Grey rule: ED-i identical to parent m (setting 2), which is table-anchored (see m ED-i setting-2 fixture).",
+    // VERIFY: pending human sign-off against the printed Birss tables.
+  },
+  {
+    group: "3m1'", tensor: 'ED', tr: 'i', setting: 2,
+    expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx} = \\chi_{zyy}', '\\chi_{zzz}'],
+    source: "Grey rule: ED-i identical to parent 3m (setting 2), table-anchored.",
+    // VERIFY: pending human sign-off against the printed Birss tables.
+  },
+  {
+    group: "-6m21'", tensor: 'ED', tr: 'i', setting: 2,
+    expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}'],
+    source: "Grey rule: ED-i identical to parent -6m2 (setting 2), table-anchored.",
+    // VERIFY: pending human sign-off against the printed Birss tables.
+  },
 ];
