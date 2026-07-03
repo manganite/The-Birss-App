@@ -1,0 +1,31 @@
+# Source PDFs (large binaries — keep alongside the repo but don't version them)
+*.pdf
+# Exception: track the compiled tables document
+!birss-tables.pdf
+
+# LaTeX intermediates
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Project instructions (local only)
+CLAUDE.md
+
+# OCR scratch files (disposable working material, see CLAUDE.md)
+.tmp_ocr/
+
+# Python virtual environments
+.venv/
+
+# Tool directories
+.claude/
+.local/
+
+# OS / editor cruft
+.DS_Store
+__pycache__/
+*.py[cod]

@@ -1,0 +1,39 @@
+# Birss Symmetry & Magnetism — Transcription Project
+
+Markdown transcriptions of selected tables from:
+
+> R. R. Birss, *Symmetry and Magnetism*, North-Holland / Elsevier, 1966.
+> Free online access: [Internet Archive](https://archive.org/details/symmetrymagnetis0000robe)
+
+This project digitises the key reference tables into clean, cross-referenced Markdown, and compares them with the corresponding tables in the International Tables for Crystallography (ITC).
+
+---
+
+## Files
+
+| File | Contents |
+|---|---|
+| `conventions-reference.md` | Master reference: coordinate conventions, notation systems (HM / Schoenflies / Shubnikov), the σ(0)–σ(9) generating matrix pool, tensor type definitions (polar/axial, i-/c-tensor), and the complete cross-reference guide for all tables. **Read this first.** |
+| `birss-tables.tex` | LaTeX source compiling the transcribed tables into a single typeset document. |
+| `birss-tables.pdf` | Compiled PDF of the tables. |
+| `table-3.md` | The 32 crystallographic point groups — symmetry operations, Schoenflies / HM / Shubnikov symbols, and generating matrices. |
+| `table-4a.md` | Symbol-equivalence mapping: assigns each of the 32 point groups a letter symbol class (A–U) for each tensor type (polar/axial × even/odd rank). Gateway to Tables 4b–4f. |
+| `table-4b.md` | Tensor forms, rank 0 (scalars) across all 32 point groups. |
+| `table-4c.md` | Tensor forms, rank 1 (vectors) across all 32 point groups. |
+| `table-4d.md` | Tensor forms, rank 2 across all 32 point groups. |
+| `table-4e.md` | Tensor forms, rank 3 across all 32 point groups. |
+| `table-4f.md` | Tensor forms, rank 4 across all 32 point groups. |
+| `table-6.md` | The 90 magnetic point groups (32 classical + 58 black-and-white), with generating matrices including primed (time-reversal-combined) operations. |
+| `table-7.md` | Magnetic point groups mapped to i-tensor and c-tensor symbol classes (extensions of the Table 4a scheme to magnetically ordered materials). |
+| `birss-itc-comparison.md` | Comparison of Birss's tables with the corresponding International Tables for Crystallography (ITC) entries. |
+
+## How to use
+
+1. Start with `conventions-reference.md` to understand the notation.
+2. Look up a point group in `table-3.md` to find its symbol and generating matrices.
+3. Use `table-4a.md` to find the symbol class for the tensor type and rank you need.
+4. Look up that symbol class in the appropriate `table-4b` through `table-4f`.
+
+For magnetic point groups, follow the same chain starting from `table-6.md` and `table-7.md`.
+
+> **Note on the 32 "grey" groups:** The 32 Type II (grey) magnetic point groups are omitted from Tables 6 and 7 because their i-tensors are identical to the classical groups in Table 3, and their c-tensors are identically zero.
