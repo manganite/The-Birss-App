@@ -44,7 +44,7 @@ The tensor component output follows the conventions of **Birss, *Symmetry and Ma
 Beyond the app itself, this repo provides the complete transcribed Birss (1966) reference
 tables and didactic guidance under **[`birss-tables/`](./birss-tables/)**:
 
-- The tables: [`table-3`](birss-tables/table-3.md), [`table-4a`](birss-tables/table-4a.md)–[`table-4f`](birss-tables/table-4f.md), [`table-6`](birss-tables/table-6.md), [`table-7`](birss-tables/table-7.md), [`table-nomenclature`](birss-tables/table-nomenclature.md).
+- The tables: [`table-3`](birss-tables/table-3.md), [`table-4a`](birss-tables/table-4a.md)–[`table-4f`](birss-tables/table-4f.md), [`table-6`](birss-tables/table-6.md), [`table-7`](birss-tables/table-7.md), [`table-nomenclature`](birss-tables/table-nomenclature.md) ([regeneration guide](birss-tables/README.md#regenerating-table-nomenclaturemd) — CI-enforced against `table-6.md`).
 - **[`conventions-reference.md`](birss-tables/conventions-reference.md)** — axes, nomenclature, bracketed settings, z∥c.
 - **[`birss-itc-comparison.md`](birss-tables/birss-itc-comparison.md)** — divergences from the International Tables (S′/Cₙᵢ, type numbering).
 - The typeset **[`birss-tables.pdf`](birss-tables/birss-tables.pdf)**.

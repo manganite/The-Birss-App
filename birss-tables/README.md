@@ -40,3 +40,18 @@ This project digitises the key reference tables into clean, cross-referenced Mar
 For magnetic point groups, follow the same chain starting from `table-6.md` and `table-7.md`.
 
 > **Note on the 32 "grey" groups:** The 32 Type II (grey) magnetic point groups are omitted from Tables 6 and 7 because their i-tensors are identical to the classical groups in Table 3, and their c-tensors are identically zero.
+
+## Regenerating `table-nomenclature.md`
+
+`table-nomenclature.md` is a generated artifact, not hand-maintained:
+
+```bash
+python3 tools/generate_nomenclature.py
+```
+
+It reads the ITC 1.5.2.3 Schoenflies/full-HM transcription held in the script's own `rows` list
+(the source of record for those two columns — they aren't tabulated anywhere else in the repo)
+and `table-6.md` (Shubnikov symbols, operators, σ(N)/σ'(N) generators), deriving the 32 grey rows
+by the G ⊗ {1,1'} rule. It writes `table-nomenclature.md` next to it. CI runs this script and
+fails the build if the committed file drifts from its output, so any edit to `table-6.md` or the
+script's `rows` requires regenerating and committing the table.

@@ -20,5 +20,9 @@ jobs:
         run: npm install
       - name: Lint (type-check)
         run: npm run lint
+      - name: Nomenclature table is reproducible
+        run: |
+          python3 birss-tables/tools/generate_nomenclature.py
+          git diff --exit-code birss-tables/table-nomenclature.md
       - name: Test
         run: npm run test
