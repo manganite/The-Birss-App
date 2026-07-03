@@ -629,7 +629,7 @@ orientations of associated classical groups A and B.
 
 ## Final Evaluation: Birss, ITC and birss-app — Conventions, Discrepancies and Common Ground
 
-*Cross-referencing: Birss, *Symmetry and Magnetism* (1964); ITC Vol. A, Chapter 3.2
+*Cross-referencing: Birss, *Symmetry and Magnetism* (1966); ITC Vol. A, Chapter 3.2
 (point groups and crystal classes); ITC Vol. D, Section 1.5 (magnetic properties);
 birss-tables/birss-itc-comparison.md; and the birss-app codebase.*
 

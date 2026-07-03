@@ -30,7 +30,7 @@ const GENERATOR_DERIVATION =
 
 const TABLE_4E_VERIFICATION =
   'Verified against Birss, "Symmetry and Magnetism" (1966), Table 4e (rank-3 polar ' +
-  'tensor components), via the birss-tables repo (github.com/manganite/birss-tables). ' +
+  'tensor components), via the transcribed tables in `birss-tables/`. ' +
   'Table 4a maps each group to a symbol class (A_n–U_n); Table 4e gives the independent ' +
   'components for each class at rank n=3.';
 

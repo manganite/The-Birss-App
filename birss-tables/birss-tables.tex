@@ -1,0 +1,790 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[left=18mm,right=18mm,top=20mm,bottom=20mm]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{pdflscape}
+
+% --- Custom macros ---
+\newcommand{\ob}[1]{\overline{#1}}
+\newcommand{\sg}[1]{\sigma^{(#1)}}
+\newcommand{\sgp}[1]{\sigma'^{(#1)}}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black,
+}
+
+\newenvironment{notelist}{%
+  \begin{list}{--}{%
+    \setlength{\topsep}{2pt}%
+    \setlength{\itemsep}{1pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\leftmargin}{1.5em}%
+  }%
+}{\end{list}}
+
+\title{\textbf{Symmetry Tables for Crystallographic\\and Magnetic Point Groups}\\[6pt]
+\large After R.\,R.\ Birss, \textit{Symmetry and Magnetism} (1966)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\tableofcontents
+
+%=============================================================================
+\newpage
+\section{Content Overview}
+
+This document compiles Tables~3, 4a--4f, 6, and~7 from R.\,R.\ Birss,
+\textit{Symmetry and Magnetism} (Elsevier/\allowbreak North-Holland, 1966),
+typeset with proper crystallographic notation.
+
+\begin{notelist}
+\item \textbf{Table~3} (p.\,\pageref{sec:table3}): The 32 classical crystallographic
+  point groups --- Hermann--Mauguin (international) symbols, Schoenflies and Shubnikov
+  symbols, symmetry operations, group order, and generating matrices.
+\item \textbf{Table~4a} (p.\,\pageref{sec:table4a}): Maps each of the 32 point groups to
+  tensor-symbol classes (letters A--U) for four tensor types (polar/axial $\times$
+  even/odd rank).
+\item \textbf{Tables~4b--4f} (p.\,\pageref{sec:table4bcd}): Independent tensor components
+  for each symbol class at ranks 0--4. Table~4b: rank~0 (scalar); Table~4c: rank~1
+  (vector); Table~4d: rank~2; Table~4e: rank~3; Table~4f: rank~4.
+\item \textbf{Table~6} (p.\,\pageref{sec:table6}): The 90 magnetic point groups (types I and III)
+  (90 rows: 32 classical + 58 black-and-white; the 32 grey groups are omitted).
+\item \textbf{Table~7} (p.\,\pageref{sec:table7}): i-tensor and c-tensor symbol classes
+  for the 90 magnetic point groups, using the same A--U scheme as Table~4a.
+\end{notelist}
+
+%=============================================================================
+\section{Notation}
+
+\subsection*{Point-group symbols}
+\begin{notelist}
+\item \textbf{Overbars} denote improper rotations (roto-inversions):
+  $\ob{1}$ = inversion, $\ob{2}$ = mirror reflection,
+  $\ob{3}$, $\ob{4}$, $\ob{6}$ = higher-order roto-inversions.
+\item \textbf{Hermann--Mauguin} (international) symbols: e.g.\ $\ob{4}2m$,
+  $m\ob{3}m$, $6/mmm$.
+\item \textbf{Schoenflies} symbols: e.g.\ $C_{2v}$, $D_{4h}$, $O_h$.
+\item \textbf{Shubnikov} symbols: use colons ($:$) for normal subgroups, dots
+  ($\cdot$) for semidirect products, slashes ($/$) for quotients. Overbars as above.
+\end{notelist}
+
+\subsection*{Symmetry operations}
+\begin{notelist}
+\item $\pm n_z$ = the pair of proper $n$-fold rotations about $z$.
+\item $\pm\ob{n}_z$ = the pair of $n$-fold roto-inversions about $z$.
+\item $\perp$ = perpendicular to the principal axis (e.g.\ $3(2{\perp})$ =
+  three 2-fold axes perpendicular to the 3-fold axis).
+\item $n(m)$ groups $n$ equivalent operations of type $m$.
+\item $2_{xy}$, $2_{-xy}$ = diagonal 2-fold axes (along $[110]$- and
+  $[1\ob{1}0]$-type directions); similarly $\ob{2}_{xy}$, $\ob{2}_{-xy}$ for
+  the corresponding mirrors.
+\item A prime ($'$) indicates the operation is combined with time reversal
+  (Tables~6 and~7). In grouped terms $n(m'{\perp})$, the prime is on the
+  operation symbol, not the multiplicity count.
+\end{notelist}
+
+\subsection*{Generating matrices}
+\begin{notelist}
+\item $\sg{N}$: named generating matrices (see Birss \S5 for definitions).
+\item $\sgp{N}$: generating matrix combined with time reversal (Table~6).
+\end{notelist}
+
+\subsection*{Tensor symbol classes and components (Tables 4a--4f, 7)}
+\begin{notelist}
+\item Letters A--U label 21 distinct symmetry classes. Table~4a (and Table~7)
+  assigns each point group a letter for each tensor type; this letter is the
+  row key into Tables~4b--4f.
+\item A dash (---) in Tables~4a or~7 means the tensor vanishes identically.
+\item In Tables~4b--4f, column headers are tensor index tuples.
+  Permutation shorthands: $(3)$ = 3 unrestricted permutations;
+  $(x{\cdot}3)$ = 3 permutations keeping a specific index structure;
+  $(x{:}3)$ = 3 permutations with the first index fixed;
+  $(c4)$ = 4 cyclic permutations;
+  $(xy{:}6)$ = 6 permutations preserving the relative order of $x$ and $y$.
+\item A coordinate symbol (e.g.\ $xx$, $xyz$) means the component survives as an
+  independent parameter. A minus sign (e.g.\ $-xy$) means the component equals
+  the negative of the named one. A compound entry (e.g.\ $yyxx{+}xyyx{+}yxyx$)
+  means the component equals that sum. $0$ means the component vanishes.
+\item Parenthesized tensor symbols such as $(E_m)$ in Table~7 denote alternate
+  reference-axis settings (same abstract group, rotated axes).
+\end{notelist}
+
+%=============================================================================
+\section{How to Use These Tables}
+
+\subsection*{Finding tensor forms for a classical point group}
+\begin{enumerate}\setlength{\itemsep}{1pt}
+\item Find the point group in \textbf{Table~3} to see its symmetry operations and
+  generating matrices.
+\item In \textbf{Table~4a}, read the symbol class (A--U) for the desired tensor type
+  (polar/axial, even/odd rank).
+\item Append the rank to the letter to form the row label:
+  even rank $m$: $m=0 \to$ Table~4b, $m=2 \to$ Table~4d, $m=4 \to$ Table~4f;
+  odd rank $n$: $n=1 \to$ Table~4c, $n=3 \to$ Table~4e.
+\item Look up that row in the appropriate table for the independent components.
+\end{enumerate}
+
+\noindent\textbf{Example:} Point group $422$ has axial-even symbol $H_m$ (Table~4a).
+For the rank-2 axial tensor, look up row $H_2$ in Table~4d; for rank-4, row $H_4$
+in Table~4f.
+
+\subsection*{Finding tensor forms for a magnetic point group}
+\begin{enumerate}\setlength{\itemsep}{1pt}
+\item Find the magnetic point group in \textbf{Table~6} to see its symmetry operations,
+  classical subgroup, and generating matrices.
+\item In \textbf{Table~7}, read the i-tensor and c-tensor symbol classes.
+\item Use the same rank-mapping as above (Tables~4b--4f) to find the independent
+  components.
+\end{enumerate}
+
+\noindent The 32 grey (type~II) groups are omitted from Tables~6 and~7: for each,
+the i-tensor equals that of the classical group and every c-tensor vanishes.
+
+%=============================================================================
+\section{Cross-References}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}l p{10cm}@{}}
+\toprule
+\textbf{From} & \textbf{To} \\
+\midrule
+Table~3 (point groups) & Table~4a (tensor symbol classes), Table~6 (magnetic extension) \\
+Table~4a (symbol classes) & Tables~4b--4f (tensor components), Table~7 (magnetic extension) \\
+Tables~4b--4f (components) & Table~4a or~7 (which row to look up) \\
+Table~6 (magnetic groups) & Table~3 (classical groups, $\sg{N}$ notation), Table~7 (tensor symbols) \\
+Table~7 (magnetic tensors) & Table~4a (symbol-class scheme), Tables~4b--4f (components), Table~6 (operations) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%=============================================================================
+%=============================================================================
+%
+%  TABLES
+%
+%=============================================================================
+%=============================================================================
+
+\newpage
+\begin{landscape}
+\section*{Table 3: The 32 Crystallographic Point Groups}
+\addcontentsline{toc}{section}{Table 3: The 32 Crystallographic Point Groups}
+\label{sec:table3}
+\footnotesize
+\begin{longtable}{l l l l l p{9.5cm} r l}
+\toprule
+System & \shortstack{Intl.\\(abbrev.)} & \shortstack{Intl.\\(full)} & Schoenflies & Shubnikov & Symmetry operations & $|G|$ & \shortstack{Generating\\matrices} \\
+\midrule
+\endfirsthead
+\toprule
+System & \shortstack{Intl.\\(abbrev.)} & \shortstack{Intl.\\(full)} & Schoenflies & Shubnikov & Symmetry operations & $|G|$ & \shortstack{Generating\\matrices} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{r}{\footnotesize\itshape continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Triclinic & $1$ & $1$ & $C_1$ & $1$ & $1$ & 1 & $\sg{0}$ \\
+Triclinic & $\ob{1}$ & $\ob{1}$ & $C_i\;(S_2)$ & $\ob{2}$ & $1$, $\ob{1}$ & 2 & $\sg{1}$ \\
+\addlinespace
+Monoclinic & $2$ & $2$ & $C_2$ & $2$ & $1$, $2_z$ & 2 & $\sg{3}$ \\
+Monoclinic & $m$ & $m$ & $C_s\;(C_{1h})$ & $m$ & $1$, $\ob{2}_z$ & 2 & $\sg{5}$ \\
+Monoclinic & $2/m$ & $2/m$ & $C_{2h}$ & $2{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$ & 4 & $\sg{1}$, $\sg{3}$ \\
+\addlinespace
+Orthorhombic & $222$ & $222$ & $D_2\;(V)$ & $2{:}2$ & $1$, $2_x$, $2_y$, $2_z$ & 4 & $\sg{2}$, $\sg{3}$ \\
+Orthorhombic & $mm2$ & $mm2$ & $C_{2v}$ & $2{\cdot}m$ & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$ & 4 & $\sg{3}$, $\sg{4}$ \\
+Orthorhombic & $mmm$ & $mmm$ & $D_{2h}\;(V_h)$ & $m{\cdot}2{:}m$ & $1$, $\ob{1}$, $2_x$, $2_y$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_z$ & 8 & $\sg{1}$, $\sg{2}$, $\sg{3}$ \\
+\addlinespace
+Tetragonal & $4$ & $4$ & $C_4$ & $4$ & $1$, $2_z$, $\pm 4_z$ & 4 & $\sg{7}$ \\
+Tetragonal & $\ob{4}$ & $\ob{4}$ & $S_4$ & $\ob{4}$ & $1$, $2_z$, $\pm\ob{4}_z$ & 4 & $\sg{8}$ \\
+Tetragonal & $4/m$ & $4/m$ & $C_{4h}$ & $4{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 4_z$, $\pm\ob{4}_z$ & 8 & $\sg{1}$, $\sg{7}$ \\
+Tetragonal & $422$ & $422$ & $D_4$ & $4{:}2$ & $1$, $2_x$, $2_y$, $2_z$, $2_{xy}$, $2_{-xy}$, $\pm 4_z$ & 8 & $\sg{2}$, $\sg{7}$ \\
+Tetragonal & $4mm$ & $4mm$ & $C_{4v}$ & $4{\cdot}m$ & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm 4_z$ & 8 & $\sg{4}$, $\sg{7}$ \\
+Tetragonal & $\ob{4}2m$ & $\ob{4}2m$ & $D_{2d}\;(V_d)$ & $\ob{4}{\cdot}m$ & $1$, $2_x$, $2_y$, $2_z$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm\ob{4}_z$ & 8 & $\sg{2}$, $\sg{8}$ \\
+Tetragonal & $4/mmm$ & $4/mmm$ & $D_{4h}$ & $m{\cdot}4{:}m$ & $1$, $\ob{1}$, $2_x$, $2_y$, $2_z$, $2_{xy}$, $2_{-xy}$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_z$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm 4_z$, $\pm\ob{4}_z$ & 16 & $\sg{1}$, $\sg{2}$, $\sg{7}$ \\
+\addlinespace
+Trigonal & $3$ & $3$ & $C_3$ & $3$ & $1$, $\pm 3_z$ & 3 & $\sg{6}$ \\
+Trigonal & $\ob{3}$ & $\ob{3}$ & $C_{3i}\;(S_6)$ & $\ob{6}$ & $1$, $\ob{1}$, $\pm 3_z$, $\pm\ob{3}_z$ & 6 & $\sg{1}$, $\sg{6}$ \\
+Trigonal & $32$ & $32$ & $D_3$ & $3{:}2$ & $1$, $3(2{\perp})$, $\pm 3_z$ & 6 & $\sg{2}$, $\sg{6}$ \\
+Trigonal & $3m$ & $3m$ & $C_{3v}$ & $3{\cdot}m$ & $1$, $3(\ob{2}{\perp})$, $\pm 3_z$ & 6 & $\sg{4}$, $\sg{6}$ \\
+Trigonal & $\ob{3}m$ & $\ob{3}m$ & $D_{3d}$ & $\ob{6}{\cdot}m$ & $1$, $\ob{1}$, $3(2{\perp})$, $3(\ob{2}{\perp})$, $\pm 3_z$, $\pm\ob{3}_z$ & 12 & $\sg{1}$, $\sg{2}$, $\sg{6}$ \\
+\addlinespace
+Hexagonal & $6$ & $6$ & $C_6$ & $6$ & $1$, $2_z$, $\pm 3_z$, $\pm 6_z$ & 6 & $\sg{3}$, $\sg{6}$ \\
+Hexagonal & $\ob{6}$ & $\ob{6}$ & $C_{3h}$ & $3{:}m$ & $1$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$ & 6 & $\sg{5}$, $\sg{6}$ \\
+Hexagonal & $6/m$ & $6/m$ & $C_{6h}$ & $6{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{3}_z$, $\pm 6_z$, $\pm\ob{6}_z$ & 12 & $\sg{1}$, $\sg{3}$, $\sg{6}$ \\
+Hexagonal & $622$ & $622$ & $D_6$ & $6{:}2$ & $1$, $6(2{\perp})$, $2_z$, $\pm 3_z$, $\pm 6_z$ & 12 & $\sg{2}$, $\sg{3}$, $\sg{6}$ \\
+Hexagonal & $6mm$ & $6mm$ & $C_{6v}$ & $6{\cdot}m$ & $1$, $2_z$, $6(\ob{2}{\perp})$, $\pm 3_z$, $\pm 6_z$ & 12 & $\sg{3}$, $\sg{4}$, $\sg{6}$ \\
+Hexagonal & $\ob{6}m2$ & $\ob{6}m2$ & $D_{3h}$ & $m{\cdot}3{:}m$ & $1$, $3(2{\perp})$, $3(\ob{2}{\perp})$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$ & 12 & $\sg{4}$, $\sg{5}$, $\sg{6}$ \\
+Hexagonal & $6/mmm$ & $6/mmm$ & $D_{6h}$ & $m{\cdot}6{:}m$ & $1$, $\ob{1}$, $6(2{\perp})$, $2_z$, $6(\ob{2}{\perp})$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{3}_z$, $\pm 6_z$, $\pm\ob{6}_z$ & 24 & $\sg{1}$, $\sg{2}$, $\sg{3}$, $\sg{6}$ \\
+\addlinespace
+Cubic & $23$ & $23$ & $T$ & $3/2$ & $1$, $3(2)$, $4(\pm 3)$ & 12 & $\sg{3}$, $\sg{9}$ \\
+Cubic & $m\ob{3}$ & $m\ob{3}$ & $T_h$ & $\ob{6}/2$ & $1$, $\ob{1}$, $3(2)$, $3(\ob{2})$, $4(\pm 3)$, $4(\pm\ob{3})$ & 24 & $\sg{1}$, $\sg{3}$, $\sg{9}$ \\
+Cubic & $432$ & $432$ & $O$ & $3/4$ & $1$, $9(2)$, $4(\pm 3)$, $3(\pm 4)$ & 24 & $\sg{7}$, $\sg{9}$ \\
+Cubic & $\ob{4}3m$ & $\ob{4}3m$ & $T_d$ & $3/\ob{4}$ & $1$, $3(2)$, $6(\ob{2})$, $4(\pm 3)$, $3(\pm\ob{4})$ & 24 & $\sg{8}$, $\sg{9}$ \\
+Cubic & $m\ob{3}m$ & $m\ob{3}m$ & $O_h$ & $\ob{6}/4$ & $1$, $\ob{1}$, $9(2)$, $9(\ob{2})$, $4(\pm 3)$, $4(\pm\ob{3})$, $3(\pm 4)$, $3(\pm\ob{4})$ & 48 & $\sg{1}$, $\sg{7}$, $\sg{9}$ \\
+\end{longtable}
+\end{landscape}
+
+%=============================================================================
+\newpage
+\section*{Table 4a: Tensor Symbol Classes for the 32 Point Groups}
+\addcontentsline{toc}{section}{Table 4a: Tensor Symbol Classes}
+\label{sec:table4a}
+\vspace{-2mm}
+{\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}l l l c c c c@{}}
+\toprule
+System & \shortstack{Intl.\\symbol} & \shortstack{Reference\\axes} &
+  \shortstack{Polar\\even $m$} & \shortstack{Axial\\even $m$} &
+  \shortstack{Polar\\odd $n$} & \shortstack{Axial\\odd $n$} \\
+\midrule
+Triclinic & $1$            & any                                     & $A_m$ & $A_m$ & $A_n$ & $A_n$ \\
+Triclinic & $\ob{1}$       & any                                     & $A_m$ & ---   & ---   & $A_n$ \\
+\addlinespace
+Monoclinic & $2$           & $2 \!\parallel\! z$                     & $B_m$ & $B_m$ & $B_n$ & $B_n$ \\
+Monoclinic & $m$           & $\ob{2} \!\parallel\! z$                & $B_m$ & $C_m$ & $C_n$ & $B_n$ \\
+Monoclinic & $2/m$         & $2 \!\parallel\! z$                     & $B_m$ & ---   & ---   & $B_n$ \\
+\addlinespace
+Orthorhombic & $222$       & $2 \!\parallel\! x$, $2 \!\parallel\! y$ & $D_m$ & $D_m$ & $D_n$ & $D_n$ \\
+Orthorhombic & $mm2$       & $\ob{2} \!\parallel\! x$, $\ob{2} \!\parallel\! y$ & $D_m$ & $E_m$ & $E_n$ & $D_n$ \\
+Orthorhombic & $mmm$       & $2 \!\parallel\! x$, $2 \!\parallel\! y$ & $D_m$ & ---   & ---   & $D_n$ \\
+\addlinespace
+Tetragonal & $4$           & $4 \!\parallel\! z$                     & $F_m$ & $F_m$ & $F_n$ & $F_n$ \\
+Tetragonal & $\ob{4}$      & $\ob{4} \!\parallel\! z$                & $F_m$ & $G_m$ & $G_n$ & $F_n$ \\
+Tetragonal & $4/m$         & $4 \!\parallel\! z$                     & $F_m$ & ---   & ---   & $F_n$ \\
+Tetragonal & $422$         & $4 \!\parallel\! z$, $2 \!\parallel\! y$ & $H_m$ & $H_m$ & $H_n$ & $H_n$ \\
+Tetragonal & $4mm$         & $4 \!\parallel\! z$, $\ob{2} \!\parallel\! y$ & $H_m$ & $I_m$ & $I_n$ & $H_n$ \\
+Tetragonal & $\ob{4}2m$    & $\ob{4} \!\parallel\! z$, $2 \!\parallel\! y$ & $H_m$ & $J_m$ & $J_n$ & $H_n$ \\
+Tetragonal & $4/mmm$       & $4 \!\parallel\! z$, $2 \!\parallel\! y$ & $H_m$ & ---   & ---   & $H_n$ \\
+\addlinespace
+Trigonal & $3$             & $3 \!\parallel\! z$                     & $K_m$ & $K_m$ & $K_n$ & $K_n$ \\
+Trigonal & $\ob{3}$        & $\ob{3} \!\parallel\! z$                & $K_m$ & ---   & ---   & $K_n$ \\
+Trigonal & $32$            & $3 \!\parallel\! z$, $2 \!\parallel\! y$ & $L_m$ & $L_m$ & $L_n$ & $L_n$ \\
+Trigonal & $3m$            & $3 \!\parallel\! z$, $\ob{2} \!\parallel\! y$ & $L_m$ & $M_m$ & $M_n$ & $L_n$ \\
+Trigonal & $\ob{3}m$       & $\ob{3} \!\parallel\! z$, $2 \!\parallel\! y$ & $L_m$ & ---   & ---   & $L_n$ \\
+\addlinespace
+Hexagonal & $6$            & $6 \!\parallel\! z$                     & $N_m$ & $N_m$ & $N_n$ & $N_n$ \\
+Hexagonal & $\ob{6}$       & $\ob{3} \!\parallel\! z$                & $N_m$ & $O_m$ & $O_n$ & $N_n$ \\
+Hexagonal & $6/m$          & $6 \!\parallel\! z$                     & $N_m$ & ---   & ---   & $N_n$ \\
+Hexagonal & $622$          & $6 \!\parallel\! z$, $2 \!\parallel\! y$ & $P_m$ & $P_m$ & $P_n$ & $P_n$ \\
+Hexagonal & $6mm$          & $6 \!\parallel\! z$, $\ob{2} \!\parallel\! y$ & $P_m$ & $Q_m$ & $Q_n$ & $P_n$ \\
+Hexagonal & $\ob{6}m2$     & $3 \!\parallel\! z$, $\ob{2} \!\parallel\! y$ & $P_m$ & $R_m$ & $R_n$ & $P_n$ \\
+Hexagonal & $6/mmm$        & $6 \!\parallel\! z$, $2 \!\parallel\! y$ & $P_m$ & ---   & ---   & $P_n$ \\
+\addlinespace
+Cubic & $23$               & $2 \!\parallel\! x$, $2 \!\parallel\! y$ & $S_m$ & $S_m$ & $S_n$ & $S_n$ \\
+Cubic & $m\ob{3}$          & $2 \!\parallel\! x$, $2 \!\parallel\! y$ & $S_m$ & ---   & ---   & $S_n$ \\
+Cubic & $432$              & $4 \!\parallel\! x$, $4 \!\parallel\! y$ & $T_m$ & $T_m$ & $T_n$ & $T_n$ \\
+Cubic & $\ob{4}3m$         & $\ob{4} \!\parallel\! x$, $\ob{4} \!\parallel\! y$ & $T_m$ & $U_m$ & $U_n$ & $T_n$ \\
+Cubic & $m\ob{3}m$         & $4 \!\parallel\! x$, $4 \!\parallel\! y$ & $T_m$ & ---   & ---   & $T_n$ \\
+\bottomrule
+\end{tabular}
+}
+
+%=============================================================================
+\newpage
+\begin{landscape}
+\section*{Tables 4b, 4c, 4d: Tensor Components --- Ranks 0, 1, 2}
+\addcontentsline{toc}{section}{Tables 4b--4d: Tensor Components (Ranks 0--2)}
+\label{sec:table4bcd}
+\label{sec:table4b}\label{sec:table4c}\label{sec:table4d}
+\vspace{2mm}
+
+{\large
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.30}
+\noindent
+\begin{minipage}[t]{0.13\textwidth}
+\centering
+\textbf{Table 4b}\\[2pt]
+\textit{Rank 0}\\[4pt]
+\begin{tabular}{@{}l c@{}}
+\toprule
+$m\!=\!0$ & $x$ \\
+\midrule
+$A_0$ & $x$ \\
+$B_0$ & $x$ \\
+$C_0$ & $0$ \\
+$D_0$ & $x$ \\
+$E_0$ & $0$ \\
+$F_0$ & $x$ \\
+$G_0$ & $0$ \\
+$H_0$ & $x$ \\
+$I_0$ & $0$ \\
+$J_0$ & $0$ \\
+$K_0$ & $x$ \\
+$L_0$ & $x$ \\
+$M_0$ & $0$ \\
+$N_0$ & $x$ \\
+$O_0$ & $0$ \\
+$P_0$ & $x$ \\
+$Q_0$ & $0$ \\
+$R_0$ & $0$ \\
+$S_0$ & $x$ \\
+$T_0$ & $x$ \\
+$U_0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.22\textwidth}
+\centering
+\textbf{Table 4c}\\[2pt]
+\textit{Rank 1}\\[4pt]
+\begin{tabular}{@{}l c c c@{}}
+\toprule
+$n\!=\!1$ & $x$ & $y$ & $z$ \\
+\midrule
+$A_1$ & $x$ & $y$ & $z$ \\
+$B_1$ & $0$ & $0$ & $z$ \\
+$C_1$ & $x$ & $y$ & $0$ \\
+$D_1$ & $0$ & $0$ & $0$ \\
+$E_1$ & $0$ & $0$ & $z$ \\
+$F_1$ & $0$ & $0$ & $z$ \\
+$G_1$ & $0$ & $0$ & $0$ \\
+$H_1$ & $0$ & $0$ & $0$ \\
+$I_1$ & $0$ & $0$ & $z$ \\
+$J_1$ & $0$ & $0$ & $0$ \\
+$K_1$ & $0$ & $0$ & $z$ \\
+$L_1$ & $0$ & $0$ & $0$ \\
+$M_1$ & $0$ & $0$ & $z$ \\
+$N_1$ & $0$ & $0$ & $z$ \\
+$O_1$ & $0$ & $0$ & $0$ \\
+$P_1$ & $0$ & $0$ & $0$ \\
+$Q_1$ & $0$ & $0$ & $z$ \\
+$R_1$ & $0$ & $0$ & $0$ \\
+$S_1$ & $0$ & $0$ & $0$ \\
+$T_1$ & $0$ & $0$ & $0$ \\
+$U_1$ & $0$ & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.60\textwidth}
+\centering
+\textbf{Table 4d}\\[2pt]
+\textit{Rank 2}\\[4pt]
+\begin{tabular}{@{}l c c c c c c c@{}}
+\toprule
+$m\!=\!2$ & $xx$ & $yy$ & $zz$ & $xy$ & $yx$ & $xz\,(2)$ & $yz\,(2)$ \\
+\midrule
+$A_2$ & $xx$ & $yy$ & $zz$ & $xy$ & $yx$ & $xz$ & $yz$ \\
+$B_2$ & $xx$ & $yy$ & $zz$ & $xy$ & $yx$ & $0$ & $0$ \\
+$C_2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xz$ & $yz$ \\
+$D_2$ & $xx$ & $yy$ & $zz$ & $0$ & $0$ & $0$ & $0$ \\
+$E_2$ & $0$ & $0$ & $0$ & $xy$ & $yx$ & $0$ & $0$ \\
+$F_2$ & $xx$ & $xx$ & $zz$ & $xy$ & $-xy$ & $0$ & $0$ \\
+$G_2$ & $xx$ & $-xx$ & $0$ & $xy$ & $xy$ & $0$ & $0$ \\
+$H_2$ & $xx$ & $xx$ & $zz$ & $0$ & $0$ & $0$ & $0$ \\
+$I_2$ & $0$ & $0$ & $0$ & $xy$ & $-xy$ & $0$ & $0$ \\
+$J_2$ & $xx$ & $-xx$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$K_2$ & $xx$ & $xx$ & $zz$ & $xy$ & $-xy$ & $0$ & $0$ \\
+$L_2$ & $xx$ & $xx$ & $zz$ & $0$ & $0$ & $0$ & $0$ \\
+$M_2$ & $0$ & $0$ & $0$ & $xy$ & $-xy$ & $0$ & $0$ \\
+$N_2$ & $xx$ & $xx$ & $zz$ & $xy$ & $-xy$ & $0$ & $0$ \\
+$O_2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$P_2$ & $xx$ & $xx$ & $zz$ & $0$ & $0$ & $0$ & $0$ \\
+$Q_2$ & $0$ & $0$ & $0$ & $xy$ & $-xy$ & $0$ & $0$ \\
+$R_2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$S_2$ & $xx$ & $xx$ & $xx$ & $0$ & $0$ & $0$ & $0$ \\
+$T_2$ & $xx$ & $xx$ & $xx$ & $0$ & $0$ & $0$ & $0$ \\
+$U_2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+}
+\end{landscape}
+
+%=============================================================================
+\newpage
+\begin{landscape}
+\section*{Table 4e: Tensor Components --- Rank 3}
+\addcontentsline{toc}{section}{Table 4e: Tensor Components (Rank 3)}
+\label{sec:table4e}
+
+{\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}l c c c c c c c c c c c c c c c@{}}
+\toprule
+Row & $xxx$ & $yyy$ & $zzz$ & \shortstack{$xxy$\\$(3)$} & \shortstack{$yyx$\\$(3)$} & \shortstack{$xxz$\\$(3)$} & \shortstack{$yyz$\\$(3)$} & \shortstack{$zzx$\\$(3)$} & \shortstack{$zzy$\\$(3)$} & $xyz$ & $xzy$ & $zxy$ & $yxz$ & $yzx$ & $zyx$ \\
+\midrule
+$A_3$ & $xxx$ & $yyy$ & $zzz$ & $xxy$ & $yyx$ & $xxz$ & $yyz$ & $zzx$ & $zzy$ & $xyz$ & $xzy$ & $zxy$ & $yxz$ & $yzx$ & $zyx$ \\
+$B_3$ & $0$ & $0$ & $zzz$ & $0$ & $0$ & $xxz$ & $yyz$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $yxz$ & $yzx$ & $zyx$ \\
+$C_3$ & $xxx$ & $yyy$ & $0$ & $xxy$ & $yyx$ & $0$ & $0$ & $zzx$ & $zzy$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$D_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $yxz$ & $yzx$ & $zyx$ \\
+$E_3$ & $0$ & $0$ & $zzz$ & $0$ & $0$ & $xxz$ & $yyz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$F_3$ & $0$ & $0$ & $zzz$ & $0$ & $0$ & $xxz$ & $xxz$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $-xyz$ & $-xzy$ & $-zxy$ \\
+$G_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xxz$ & $-xxz$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $xyz$ & $xzy$ & $zxy$ \\
+$H_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $-xyz$ & $-xzy$ & $-zxy$ \\
+$I_3$ & $0$ & $0$ & $zzz$ & $0$ & $0$ & $xxz$ & $xxz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$J_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $xyz$ & $xzy$ & $zxy$ \\
+$K_3$ & $xxx$ & $yyy$ & $zzz$ & $-yyy$ & $-xxx$ & $xxz$ & $xxz$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $-xyz$ & $-xzy$ & $-zxy$ \\
+$L_3$ & $0$ & $yyy$ & $0$ & $-yyy$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $-xyz$ & $-xzy$ & $-zxy$ \\
+$M_3$ & $xxx$ & $0$ & $zzz$ & $0$ & $-xxx$ & $xxz$ & $xxz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$N_3$ & $0$ & $0$ & $zzz$ & $0$ & $0$ & $xxz$ & $xxz$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $-xyz$ & $-xzy$ & $-zxy$ \\
+$O_3$ & $xxx$ & $yyy$ & $0$ & $-yyy$ & $-xxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$P_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xzy$ & $zxy$ & $-xyz$ & $-xzy$ & $-zxy$ \\
+$Q_3$ & $0$ & $0$ & $zzz$ & $0$ & $0$ & $xxz$ & $xxz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$R_3$ & $xxx$ & $0$ & $0$ & $0$ & $-xxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$S_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xzy$ & $xyz$ & $xzy$ & $xyz$ & $xzy$ \\
+$T_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $-xyz$ & $xyz$ & $-xyz$ & $xyz$ & $-xyz$ \\
+$U_3$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xyz$ & $xyz$ & $xyz$ & $xyz$ & $xyz$ & $xyz$ \\
+\bottomrule
+\end{tabular}
+}
+\end{landscape}
+
+%=============================================================================
+\newpage
+\begin{landscape}
+\section*{Table 4f, Part I: Tensor Components --- Rank 4 (columns 1--11)}
+\addcontentsline{toc}{section}{Table 4f: Tensor Components (Rank 4)}
+\label{sec:table4f}
+
+{\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}l c c c c c c c c c c c@{}}
+\toprule
+Row & $xxxx$ & $yyyy$ & $zzzz$ & $xxxy$ & \shortstack{$yxxx$\\$(x{\cdot}3)$} & $yyyx$ & \shortstack{$xyyy$\\$(y{\cdot}3)$} & \shortstack{$xxxz$\\$(4)$} & \shortstack{$yyyz$\\$(4)$} & \shortstack{$zzzx$\\$(4)$} & \shortstack{$zzzy$\\$(4)$} \\
+\midrule
+$A_4$ & $xxxx$ & $yyyy$ & $zzzz$ & $xxxy$ & $yxxx$ & $yyyx$ & $xyyy$ & $xxxz$ & $yyyz$ & $zzzx$ & $zzzy$ \\
+$B_4$ & $xxxx$ & $yyyy$ & $zzzz$ & $xxxy$ & $yxxx$ & $yyyx$ & $xyyy$ & $0$ & $0$ & $0$ & $0$ \\
+$C_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xxxz$ & $yyyz$ & $zzzx$ & $zzzy$ \\
+$D_4$ & $xxxx$ & $yyyy$ & $zzzz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$E_4$ & $0$ & $0$ & $0$ & $xxxy$ & $yxxx$ & $yyyx$ & $xyyy$ & $0$ & $0$ & $0$ & $0$ \\
+$F_4$ & $xxxx$ & $xxxx$ & $zzzz$ & $xxxy$ & $yxxx$ & $-xxxy$ & $-yxxx$ & $0$ & $0$ & $0$ & $0$ \\
+$G_4$ & $xxxx$ & $-xxxx$ & $0$ & $xxxy$ & $yxxx$ & $xxxy$ & $yxxx$ & $0$ & $0$ & $0$ & $0$ \\
+$H_4$ & $xxxx$ & $xxxx$ & $zzzz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$I_4$ & $0$ & $0$ & $0$ & $xxxy$ & $yxxx$ & $-xxxy$ & $-yxxx$ & $0$ & $0$ & $0$ & $0$ \\
+$J_4$ & $xxxx$ & $-xxxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$K_4$ & \footnotesize$yyxx{+}xyyx{+}yxyx$ & $xxxx$ & $zzzz$ & \footnotesize$yyxy{+}xyyy{+}yxyy$ & $yxxx$ & $-xxxy$ & $-yxxx$ & $xxxz$ & $yyyz$ & $0$ & $0$ \\
+$L_4$ & \footnotesize$yyxx{+}xyyx{+}yxyx$ & $xxxx$ & $zzzz$ & $0$ & $0$ & $0$ & $0$ & $xxxz$ & $0$ & $0$ & $0$ \\
+$M_4$ & $0$ & $0$ & $0$ & \footnotesize$yyxy{+}xyyy{+}yxyy$ & $yxxx$ & $-xxxy$ & $-yxxx$ & $0$ & $yyyz$ & $0$ & $0$ \\
+$N_4$ & \footnotesize$yyxx{+}xyyx{+}yxyx$ & $xxxx$ & $zzzz$ & \footnotesize$yyxy{+}xyyy{+}yxyy$ & $yxxx$ & $-xxxy$ & $-yxxx$ & $0$ & $0$ & $0$ & $0$ \\
+$O_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xxxz$ & $yyyz$ & $0$ & $0$ \\
+$P_4$ & \footnotesize$yyxx{+}xyyx{+}yxyx$ & $xxxx$ & $zzzz$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$Q_4$ & $0$ & $0$ & $0$ & \footnotesize$yyxy{+}xyyy{+}yxyy$ & $yxxx$ & $-xxxy$ & $-yxxx$ & $0$ & $0$ & $0$ & $0$ \\
+$R_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $yyyz$ & $0$ & $0$ \\
+$S_4$ & $xxxx$ & $xxxx$ & $xxxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$T_4$ & $xxxx$ & $xxxx$ & $xxxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$U_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+}
+\end{landscape}
+
+%=============================================================================
+\newpage
+\begin{landscape}
+\section*{Table 4f, Part II: Tensor Components --- Rank 4 (columns 12--25)}
+
+{\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}l c c c c c c c c c c c c c c@{}}
+\toprule
+Row & \shortstack{$xxyy$\\$(x{:}3)$} & \shortstack{$yyxx$\\$(y{:}3)$} & \shortstack{$xxzz$\\$(x{:}3)$} & \shortstack{$zzxx$\\$(z{:}3)$} & \shortstack{$yyzz$\\$(y{:}3)$} & \shortstack{$zzyy$\\$(z{:}3)$} & \shortstack{$xxyz$\\$(c4)$} & \shortstack{$yxzz$\\$(c4)$} & \shortstack{$yxxx$\\$(c4)$} & \shortstack{$yyxz$\\$(c4)$} & \shortstack{$yxyz$\\$(c4)$} & \shortstack{$xyyz$\\$(c4)$} & \shortstack{$zzxy$\\$(xy{:}6)$} & \shortstack{$zzyx$\\$(yx{:}6)$} \\
+\midrule
+$A_4$ & $xxyy$ & $yyxx$ & $xxzz$ & $zzxx$ & $yyzz$ & $zzyy$ & $xxyz$ & $yxzz$ & $yxxx$ & $yyxz$ & $yxyz$ & $xyyz$ & $zzxy$ & $zzyx$ \\
+$B_4$ & $xxyy$ & $yyxx$ & $xxzz$ & $zzxx$ & $yyzz$ & $zzyy$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $zzyx$ \\
+$C_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $xxyz$ & $yxzz$ & $yxxx$ & $yyxz$ & $yxyz$ & $xyyz$ & $0$ & $0$ \\
+$D_4$ & $xxyy$ & $yyxx$ & $xxzz$ & $zzxx$ & $yyzz$ & $zzyy$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$E_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $zzyx$ \\
+$F_4$ & $xxyy$ & $xxyy$ & $xxzz$ & $zzxx$ & $xxzz$ & $zzxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $-zzxy$ \\
+$G_4$ & $xxyy$ & $-xxyy$ & $xxzz$ & $zzxx$ & $-xxzz$ & $-zzxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $zzxy$ \\
+$H_4$ & $xxyy$ & $xxyy$ & $xxzz$ & $zzxx$ & $xxzz$ & $zzxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$I_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $-zzxy$ \\
+$J_4$ & $xxyy$ & $-xxyy$ & $xxzz$ & $zzxx$ & $-xxzz$ & $-zzxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$K_4$ & $xxyy$ & $xxyy$ & $xxzz$ & $zzxx$ & $xxzz$ & $zzxx$ & $-yyyy$ & $-yyyy$ & $-yyyy$ & $-xxxx$ & $-xxxx$ & $-xxxx$ & $zzxy$ & $-zzxy$ \\
+$L_4$ & $xxyy$ & $xxyy$ & $xxzz$ & $zzxx$ & $xxzz$ & $zzxx$ & $0$ & $0$ & $0$ & $-xxxx$ & $-xxxx$ & $-xxxx$ & $0$ & $0$ \\
+$M_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $-yyyy$ & $-yyyy$ & $-yyyy$ & $0$ & $0$ & $0$ & $zzxy$ & $-zzxy$ \\
+$N_4$ & $xxyy$ & $xxyy$ & $xxzz$ & $zzxx$ & $xxzz$ & $zzxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $-zzxy$ \\
+$O_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $-yyyy$ & $-yyyy$ & $-yyyy$ & $-xxxx$ & $-xxxx$ & $-xxxx$ & $0$ & $0$ \\
+$P_4$ & $xxyy$ & $xxyy$ & $xxzz$ & $zzxx$ & $xxzz$ & $zzxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$Q_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $zzxy$ & $-zzxy$ \\
+$R_4$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $-yyyy$ & $-yyyy$ & $-yyyy$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$S_4$ & $xxyy$ & $yyxx$ & $yyxx$ & $xxyy$ & $xxyy$ & $yyxx$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$T_4$ & $xxyy$ & $xxyy$ & $xxyy$ & $xxyy$ & $xxyy$ & $xxyy$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+$U_4$ & $xxyy$ & $-xxyy$ & $-xxyy$ & $xxyy$ & $xxyy$ & $-xxyy$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+}
+\end{landscape}
+
+%=============================================================================
+\newpage
+\begin{landscape}
+\section*{Table 6: The 90 Magnetic Point Groups (Types I and III)}
+\addcontentsline{toc}{section}{Table 6: The 90 Magnetic Point Groups (Types I and III)}
+\label{sec:table6}
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{l l l l l p{9.5cm} l l}
+\toprule
+System & \shortstack{Magnetic\\point group} & Shubnikov & \shortstack{Classical\\subgroup} & \shortstack{Shubnikov\\(subgr.)} & Symmetry operators & \shortstack{Gen.\ matrices\\(subgroup)} & \shortstack{Additional\\gen.\ matrix} \\
+\midrule
+\endfirsthead
+\toprule
+System & \shortstack{Magnetic\\point group} & Shubnikov & \shortstack{Classical\\subgroup} & \shortstack{Shubnikov\\(subgr.)} & Symmetry operators & \shortstack{Gen.\ matrices\\(subgroup)} & \shortstack{Additional\\gen.\ matrix} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{r}{\footnotesize\itshape continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+% ==== PAGE 1: Triclinic + Monoclinic + Orthorhombic + Tetragonal through 4'/m' ====
+Triclinic & $1$ & $1$ & --- & --- & $1$ & $\sg{0}$ & --- \\
+Triclinic & $\ob{1}$ & $\ob{2}$ & --- & --- & $1$, $\ob{1}$ & $\sg{1}$ & --- \\
+Triclinic & $\ob{1}'$ & $\ob{2}'$ & $1$ & $1$ & $1$, $\ob{1}'$ & $\sg{0}$ & $\sgp{1}$ \\
+\addlinespace
+Monoclinic & $2$ & $2$ & --- & --- & $1$, $2_z$ & $\sg{3}$ & --- \\
+Monoclinic & $2'$ & $2'$ & $1$ & $1$ & $1$, $2'_z$ & $\sg{0}$ & $\sgp{3}$ \\
+Monoclinic & $m$ & $m$ & --- & --- & $1$, $\ob{2}_z$ & $\sg{5}$ & --- \\
+Monoclinic & $m'$ & $m'$ & $1$ & $1$ & $1$, $\ob{2}'_z$ & $\sg{0}$ & $\sgp{5}$ \\
+Monoclinic & $2/m$ & $2{:}m$ & --- & --- & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$ & $\sg{1}$, $\sg{3}$ & --- \\
+Monoclinic & $2'/m'$ & $2'{:}m'$ & $\ob{1}$ & $\ob{2}$ & $1$, $\ob{1}$, $2'_z$, $\ob{2}'_z$ & $\sg{1}$ & $\sgp{3}$ \\
+Monoclinic & $2/m'$ & $2{:}m'$ & $2$ & $2$ & $1$, $2_z$, $\ob{1}'$, $\ob{2}'_z$ & $\sg{3}$ & $\sgp{1}$ \\
+Monoclinic & $2'/m$ & $2'{:}m$ & $m$ & $m$ & $1$, $\ob{2}_z$, $\ob{1}'$, $2'_z$ & $\sg{5}$ & $\sgp{1}$ \\
+\addlinespace
+Orthorhombic & $222$ & $2{:}2$ & --- & --- & $1$, $2_x$, $2_y$, $2_z$ & $\sg{2}$, $\sg{3}$ & --- \\
+Orthorhombic & $2'2'2$ & $2{:}2'$ & $2$ & $2$ & $1$, $2_z$, $2'_x$, $2'_y$ & $\sg{3}$ & $\sgp{2}$ \\
+Orthorhombic & $mm2$ & $2{\cdot}m$ & --- & --- & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$ & $\sg{3}$, $\sg{4}$ & --- \\
+Orthorhombic & $m'm'2$ & $2{\cdot}m'$ & $2$ & $2$ & $1$, $2_z$, $\ob{2}'_x$, $\ob{2}'_y$ & $\sg{3}$ & $\sgp{4}$ \\
+Orthorhombic & $2'm'm$ & $2'{\cdot}m$ & $m$ & $m$ & $1$, $\ob{2}_z$, $2'_x$, $\ob{2}'_y$ & $\sg{5}$ & $\sgp{4}$ \\
+Orthorhombic & $mmm$ & $m{\cdot}2{:}m$ & --- & --- & $1$, $\ob{1}$, $2_x$, $2_y$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_z$ & $\sg{1}$, $\sg{2}$, $\sg{3}$ & --- \\
+Orthorhombic & $m'm'm$ & $m'{\cdot}2{:}m$ & $2/m$ & $2{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $2'_x$, $2'_y$, $\ob{2}'_x$, $\ob{2}'_y$ & $\sg{1}$, $\sg{3}$ & $\sgp{2}$ \\
+Orthorhombic & $m'm'm'$ & $m'{\cdot}2{:}m'$ & $222$ & $2{:}2$ & $1$, $2_x$, $2_y$, $2_z$, $\ob{1}'$, $\ob{2}'_x$, $\ob{2}'_y$, $\ob{2}'_z$ & $\sg{2}$, $\sg{3}$ & $\sgp{1}$ \\
+Orthorhombic & $mmm'$ & $m{\cdot}2{:}m'$ & $mm2$ & $2{\cdot}m$ & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{1}'$, $2'_x$, $2'_y$, $\ob{2}'_z$ & $\sg{3}$, $\sg{4}$ & $\sgp{1}$ \\
+\addlinespace
+Tetragonal & $4$ & $4$ & --- & --- & $1$, $2_z$, $\pm 4_z$ & $\sg{7}$ & --- \\
+Tetragonal & $4'$ & $4'$ & $2$ & $2$ & $1$, $2_z$, $\pm 4'_z$ & $\sg{3}$ & $\sgp{7}$ \\
+Tetragonal & $\ob{4}$ & $\ob{4}$ & --- & --- & $1$, $2_z$, $\pm\ob{4}_z$ & $\sg{8}$ & --- \\
+Tetragonal & $\ob{4}'$ & $\ob{4}'$ & $2$ & $2$ & $1$, $2_z$, $\pm\ob{4}'_z$ & $\sg{3}$ & $\sgp{8}$ \\
+Tetragonal & $4/m$ & $4{:}m$ & --- & --- & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 4_z$, $\pm\ob{4}_z$ & $\sg{1}$, $\sg{7}$ & --- \\
+Tetragonal & $4'/m$ & $4'{:}m$ & $2/m$ & $2{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 4'_z$, $\pm\ob{4}'_z$ & $\sg{1}$, $\sg{3}$ & $\sgp{7}$ \\
+Tetragonal & $4/m'$ & $4{:}m'$ & $4$ & $4$ & $1$, $2_z$, $\pm 4_z$, $\ob{1}'$, $\ob{2}'_z$, $\pm\ob{4}'_z$ & $\sg{7}$ & $\sgp{1}$ \\
+Tetragonal & $4'/m'$ & $4'{:}m'$ & $\ob{4}$ & $\ob{4}$ & $1$, $2_z$, $\pm\ob{4}_z$, $\ob{1}'$, $\ob{2}'_z$, $\pm 4'_z$ & $\sg{8}$ & $\sgp{1}$ \\
+% ==== PAGE BREAK ====
+\newpage
+% ==== PAGE 2: Tetragonal 422 through Trigonal ====
+Tetragonal & $422$ & $4{:}2$ & --- & --- & $1$, $2_x$, $2_y$, $2_z$, $2_{xy}$, $2_{-xy}$, $\pm 4_z$ & $\sg{2}$, $\sg{7}$ & --- \\
+Tetragonal & $4'22'$ & $4'{:}2$ & $222$ & $2{:}2$ & $1$, $2_x$, $2_y$, $2_z$, $2'_{xy}$, $2'_{-xy}$, $\pm 4'_z$ & $\sg{2}$, $\sg{3}$ & $\sgp{7}$ \\
+Tetragonal & $42'2'$ & $4{:}2'$ & $4$ & $4$ & $1$, $2_z$, $\pm 4_z$, $2'_x$, $2'_y$, $2'_{xy}$, $2'_{-xy}$ & $\sg{7}$ & $\sgp{2}$ \\
+Tetragonal & $4mm$ & $4{\cdot}m$ & --- & --- & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm 4_z$ & $\sg{4}$, $\sg{7}$ & --- \\
+Tetragonal & $4'mm'$ & $4'{\cdot}m$ & $mm2$ & $2{\cdot}m$ & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$, $\pm 4'_z$ & $\sg{3}$, $\sg{4}$ & $\sgp{7}$ \\
+Tetragonal & $4m'm'$ & $4{\cdot}m'$ & $4$ & $4$ & $1$, $2_z$, $\pm 4_z$, $\ob{2}'_x$, $\ob{2}'_y$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$ & $\sg{7}$ & $\sgp{4}$ \\
+Tetragonal & $\ob{4}2m$ & $\ob{4}{\cdot}m$ & --- & --- & $1$, $2_x$, $2_y$, $2_z$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm\ob{4}_z$ & $\sg{2}$, $\sg{8}$ & --- \\
+Tetragonal & $\ob{4}'2m'$ & $\ob{4}'{\cdot}m'$ & $222$ & $2{:}2$ & $1$, $2_x$, $2_y$, $2_z$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$, $\pm\ob{4}'_z$ & $\sg{2}$, $\sg{3}$ & $\sgp{8}$ \\
+Tetragonal & $\ob{4}'m2'$ & $\ob{4}'{\cdot}m$ & $mm2$ & $2{\cdot}m$ & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $2'_{xy}$, $2'_{-xy}$, $\pm\ob{4}'_z$ & $\sg{3}$, $\sg{4}$ & $\sgp{8}$ \\
+Tetragonal & $\ob{4}2'm'$ & $\ob{4}{\cdot}m'$ & $\ob{4}$ & $\ob{4}$ & $1$, $2_z$, $\pm\ob{4}_z$, $2'_x$, $2'_y$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$ & $\sg{8}$ & $\sgp{2}$ \\
+Tetragonal & $4/mmm$ & $m{\cdot}4{:}m$ & --- & --- & $1$, $\ob{1}$, $2_x$, $2_y$, $2_z$, $2_{xy}$, $2_{-xy}$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_z$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm 4_z$, $\pm\ob{4}_z$ & $\sg{1}$, $\sg{2}$, $\sg{7}$ & --- \\
+Tetragonal & $4'/mmm'$ & $m{\cdot}4'{:}m$ & $mmm$ & $m{\cdot}2{:}m$ & $1$, $\ob{1}$, $2_x$, $2_y$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_z$, $2'_{xy}$, $2'_{-xy}$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$, $\pm 4'_z$, $\pm\ob{4}'_z$ & $\sg{1}$, $\sg{2}$, $\sg{3}$ & $\sgp{7}$ \\
+Tetragonal & $4/mm'm'$ & $m{\cdot}4{:}m'$ & $4/m$ & $4{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 4_z$, $\pm\ob{4}_z$, $2'_x$, $2'_y$, $2'_{xy}$, $2'_{-xy}$, $\ob{2}'_x$, $\ob{2}'_y$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$ & $\sg{1}$, $\sg{7}$ & $\sgp{2}$ \\
+Tetragonal & $4/m'm'm'$ & $m'{\cdot}4{:}m'$ & $422$ & $4{:}2$ & $1$, $2_x$, $2_y$, $2_z$, $2_{xy}$, $2_{-xy}$, $\pm 4_z$, $\ob{1}'$, $\ob{2}'_x$, $\ob{2}'_y$, $\ob{2}'_z$, $\ob{2}'_{xy}$, $\ob{2}'_{-xy}$, $\pm\ob{4}'_z$ & $\sg{2}$, $\sg{7}$ & $\sgp{1}$ \\
+Tetragonal & $4/m'mm$ & $m'{\cdot}4{:}m$ & $4mm$ & $4{\cdot}m$ & $1$, $2_z$, $\ob{2}_x$, $\ob{2}_y$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm 4_z$, $\ob{1}'$, $2'_x$, $2'_y$, $\ob{2}'_z$, $2'_{xy}$, $2'_{-xy}$, $\pm\ob{4}'_z$ & $\sg{4}$, $\sg{7}$ & $\sgp{1}$ \\
+Tetragonal & $4'/m'm'm$ & $m'{\cdot}4'{:}m'$ & $\ob{4}2m$ & $\ob{4}{\cdot}m$ & $1$, $2_x$, $2_y$, $2_z$, $\ob{2}_{xy}$, $\ob{2}_{-xy}$, $\pm\ob{4}_z$, $\ob{1}'$, $\ob{2}'_x$, $\ob{2}'_y$, $\ob{2}'_z$, $2'_{xy}$, $2'_{-xy}$, $\pm 4'_z$ & $\sg{2}$, $\sg{8}$ & $\sgp{1}$ \\
+\addlinespace
+Trigonal & $3$ & $3$ & --- & --- & $1$, $\pm 3_z$ & $\sg{6}$ & --- \\
+Trigonal & $\ob{3}$ & $\ob{6}$ & --- & --- & $1$, $\ob{1}$, $\pm 3_z$, $\pm\ob{3}_z$ & $\sg{1}$, $\sg{6}$ & --- \\
+Trigonal & $\ob{3}'$ & $\ob{6}'$ & $3$ & $3$ & $1$, $\pm 3_z$, $\ob{1}'$, $\pm\ob{3}'_z$ & $\sg{6}$ & $\sgp{1}$ \\
+Trigonal & $32$ & $3{:}2$ & --- & --- & $1$, $3(2{\perp})$, $\pm 3_z$ & $\sg{2}$, $\sg{6}$ & --- \\
+Trigonal & $32'$ & $3{:}2'$ & $3$ & $3$ & $1$, $\pm 3_z$, $3(2'{\perp})$ & $\sg{6}$ & $\sgp{2}$ \\
+Trigonal & $3m$ & $3{\cdot}m$ & --- & --- & $1$, $3(\ob{2}{\perp})$, $\pm 3_z$ & $\sg{4}$, $\sg{6}$ & --- \\
+Trigonal & $3m'$ & $3{\cdot}m'$ & $3$ & $3$ & $1$, $\pm 3_z$, $3(\ob{2}'{\perp})$ & $\sg{6}$ & $\sgp{4}$ \\
+Trigonal & $\ob{3}m$ & $\ob{6}{\cdot}m$ & --- & --- & $1$, $\ob{1}$, $3(2{\perp})$, $3(\ob{2}{\perp})$, $\pm 3_z$, $\pm\ob{3}_z$ & $\sg{1}$, $\sg{2}$, $\sg{6}$ & --- \\
+Trigonal & $\ob{3}m'$ & $\ob{6}{\cdot}m'$ & $\ob{3}$ & $\ob{6}$ & $1$, $\ob{1}$, $\pm 3_z$, $\pm\ob{3}_z$, $3(2'{\perp})$, $3(\ob{2}'{\perp})$ & $\sg{1}$, $\sg{6}$ & $\sgp{2}$ \\
+Trigonal & $\ob{3}'m'$ & $\ob{6}'{\cdot}m'$ & $32$ & $3{:}2$ & $1$, $3(2{\perp})$, $\pm 3_z$, $\ob{1}'$, $3(\ob{2}'{\perp})$, $\pm\ob{3}'_z$ & $\sg{2}$, $\sg{6}$ & $\sgp{1}$ \\
+Trigonal & $\ob{3}'m$ & $\ob{6}'{\cdot}m$ & $3m$ & $3{\cdot}m$ & $1$, $\pm 3_z$, $3(\ob{2}{\perp})$, $\ob{1}'$, $3(2'{\perp})$, $\pm\ob{3}'_z$ & $\sg{4}$, $\sg{6}$ & $\sgp{1}$ \\
+% ==== PAGE BREAK ====
+\newpage
+% ==== PAGE 3: Hexagonal + Cubic ====
+Hexagonal & $6$ & $6$ & --- & --- & $1$, $2_z$, $\pm 3_z$, $\pm 6_z$ & $\sg{3}$, $\sg{6}$ & --- \\
+Hexagonal & $6'$ & $6'$ & $3$ & $3$ & $1$, $\pm 3_z$, $2'_z$, $\pm 6'_z$ & $\sg{6}$ & $\sgp{3}$ \\
+Hexagonal & $\ob{6}$ & $3{:}m$ & --- & --- & $1$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$ & $\sg{5}$, $\sg{6}$ & --- \\
+Hexagonal & $\ob{6}'$ & $3{:}m'$ & $3$ & $3$ & $1$, $\pm 3_z$, $\ob{2}'_z$, $\pm\ob{6}'_z$ & $\sg{6}$ & $\sgp{5}$ \\
+Hexagonal & $6/m$ & $6{:}m$ & --- & --- & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{3}_z$, $\pm 6_z$, $\pm\ob{6}_z$ & $\sg{1}$, $\sg{3}$, $\sg{6}$ & --- \\
+Hexagonal & $6'/m'$ & $6'{:}m'$ & $\ob{3}$ & $\ob{6}$ & $1$, $\ob{1}$, $\pm 3_z$, $\pm\ob{3}_z$, $2'_z$, $\ob{2}'_z$, $\pm 6'_z$, $\pm\ob{6}'_z$ & $\sg{1}$, $\sg{6}$ & $\sgp{3}$ \\
+Hexagonal & $6/m'$ & $6{:}m'$ & $6$ & $6$ & $1$, $2_z$, $\pm 3_z$, $\pm 6_z$, $\ob{1}'$, $\ob{2}'_z$, $\pm\ob{3}'_z$, $\pm\ob{6}'_z$ & $\sg{3}$, $\sg{6}$ & $\sgp{1}$ \\
+Hexagonal & $6'/m$ & $6'{:}m$ & $\ob{6}$ & $3{:}m$ & $1$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$, $\ob{1}'$, $2'_z$, $\pm\ob{3}'_z$, $\pm 6'_z$ & $\sg{5}$, $\sg{6}$ & $\sgp{1}$ \\
+Hexagonal & $622$ & $6{:}2$ & --- & --- & $1$, $6(2{\perp})$, $2_z$, $\pm 3_z$, $\pm 6_z$ & $\sg{2}$, $\sg{3}$, $\sg{6}$ & --- \\
+Hexagonal & $6'22'$ & $6'{:}2$ & $32$ & $3{:}2$ & $1$, $3(2{\perp})$, $\pm 3_z$, $3(2'{\perp})$, $2'_z$, $\pm 6'_z$ & $\sg{2}$, $\sg{6}$ & $\sgp{3}$ \\
+Hexagonal & $62'2'$ & $6{:}2'$ & $6$ & $6$ & $1$, $2_z$, $\pm 3_z$, $\pm 6_z$, $6(2'{\perp})$ & $\sg{3}$, $\sg{6}$ & $\sgp{2}$ \\
+Hexagonal & $6mm$ & $6{\cdot}m$ & --- & --- & $1$, $2_z$, $6(\ob{2}{\perp})$, $\pm 3_z$, $\pm 6_z$ & $\sg{3}$, $\sg{4}$, $\sg{6}$ & --- \\
+Hexagonal & $6'mm'$ & $6'{\cdot}m$ & $3m$ & $3{\cdot}m$ & $1$, $3(\ob{2}{\perp})$, $\pm 3_z$, $2'_z$, $\pm 6'_z$, $3(\ob{2}'{\perp})$ & $\sg{4}$, $\sg{6}$ & $\sgp{3}$ \\
+Hexagonal & $6m'm'$ & $6{\cdot}m'$ & $6$ & $6$ & $1$, $2_z$, $\pm 3_z$, $\pm 6_z$, $6(\ob{2}'{\perp})$ & $\sg{3}$, $\sg{6}$ & $\sgp{4}$ \\
+Hexagonal & $\ob{6}m2$ & $m{\cdot}3{:}m$ & --- & --- & $1$, $3(2{\perp})$, $3(\ob{2}{\perp})$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$ & $\sg{4}$, $\sg{5}$, $\sg{6}$ & --- \\
+Hexagonal & $\ob{6}'2m'$ & $m'{\cdot}3{:}m'$ & $32$ & $3{:}2$ & $1$, $3(2{\perp})$, $\pm 3_z$, $\ob{2}'_z$, $\pm\ob{6}'_z$, $3(\ob{2}'{\perp})$ & $\sg{2}$, $\sg{6}$ & $\sgp{5}$ \\
+Hexagonal & $\ob{6}'m2'$ & $m{\cdot}3{:}m'$ & $3m$ & $3{\cdot}m$ & $1$, $3(\ob{2}{\perp})$, $\pm 3_z$, $3(2'{\perp})$, $\ob{2}'_z$, $\pm\ob{6}'_z$ & $\sg{4}$, $\sg{6}$ & $\sgp{5}$ \\
+Hexagonal & $\ob{6}m'2'$ & $m'{\cdot}3{:}m$ & $\ob{6}$ & $3{:}m$ & $1$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$, $3(2'{\perp})$, $3(\ob{2}'{\perp})$ & $\sg{5}$, $\sg{6}$ & $\sgp{4}$ \\
+Hexagonal & $6/mmm$ & $m{\cdot}6{:}m$ & --- & --- & $1$, $\ob{1}$, $6(2{\perp})$, $2_z$, $6(\ob{2}{\perp})$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{3}_z$, $\pm 6_z$, $\pm\ob{6}_z$ & $\sg{1}$, $\sg{2}$, $\sg{3}$, $\sg{6}$ & --- \\
+Hexagonal & $6'/m'mm'$ & $m'{\cdot}6'{:}m'$ & $\ob{3}m$ & $\ob{6}{\cdot}m$ & $1$, $\ob{1}$, $3(2{\perp})$, $3(\ob{2}{\perp})$, $\pm 3_z$, $\pm\ob{3}_z$, $3(2'{\perp})$, $2'_z$, $3(\ob{2}'{\perp})$, $\ob{2}'_z$, $\pm 6'_z$, $\pm\ob{6}'_z$ & $\sg{1}$, $\sg{2}$, $\sg{6}$ & $\sgp{3}$ \\
+Hexagonal & $6/mm'm'$ & $m'{\cdot}6{:}m$ & $6/m$ & $6{:}m$ & $1$, $\ob{1}$, $2_z$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{3}_z$, $\pm 6_z$, $\pm\ob{6}_z$, $6(2'{\perp})$, $6(\ob{2}'{\perp})$ & $\sg{1}$, $\sg{3}$, $\sg{6}$ & $\sgp{2}$ \\
+Hexagonal & $6/m'm'm'$ & $m'{\cdot}6{:}m'$ & $622$ & $6{:}2$ & $1$, $6(2{\perp})$, $2_z$, $\pm 3_z$, $\pm 6_z$, $\ob{1}'$, $\ob{2}'_z$, $\pm\ob{3}'_z$, $\pm\ob{6}'_z$, $6(\ob{2}'{\perp})$ & $\sg{2}$, $\sg{3}$, $\sg{6}$ & $\sgp{1}$ \\
+Hexagonal & $6/m'mm$ & $m{\cdot}6{:}m'$ & $6mm$ & $6{\cdot}m$ & $1$, $2_z$, $6(\ob{2}{\perp})$, $\pm 3_z$, $\pm 6_z$, $\ob{1}'$, $\ob{2}'_z$, $6(2'{\perp})$, $\pm\ob{3}'_z$, $\pm\ob{6}'_z$ & $\sg{3}$, $\sg{4}$, $\sg{6}$ & $\sgp{1}$ \\
+Hexagonal & $6'/mm'm$ & $m{\cdot}6'{:}m$ & $\ob{6}m2$ & $m{\cdot}3{:}m$ & $1$, $3(2{\perp})$, $3(\ob{2}{\perp})$, $\ob{2}_z$, $\pm 3_z$, $\pm\ob{6}_z$, $\ob{1}'$, $2'_z$, $3(2'{\perp})$, $3(\ob{2}'{\perp})$, $\pm\ob{3}'_z$, $\pm 6'_z$ & $\sg{4}$, $\sg{5}$, $\sg{6}$ & $\sgp{1}$ \\
+\addlinespace
+Cubic & $23$ & $3/2$ & --- & --- & $1$, $3(2)$, $4(\pm 3)$ & $\sg{3}$, $\sg{9}$ & --- \\
+Cubic & $m\ob{3}$ & $\ob{6}/2$ & --- & --- & $1$, $\ob{1}$, $3(2)$, $3(\ob{2})$, $4(\pm 3)$, $4(\pm\ob{3})$ & $\sg{1}$, $\sg{3}$, $\sg{9}$ & --- \\
+Cubic & $m'\ob{3}$ & $\ob{6}'/2$ & $23$ & $3/2$ & $1$, $3(2)$, $4(\pm 3)$, $\ob{1}'$, $3(\ob{2}')$, $4(\pm\ob{3}')$ & $\sg{3}$, $\sg{9}$ & $\sgp{1}$ \\
+Cubic & $432$ & $3/4$ & --- & --- & $1$, $9(2)$, $4(\pm 3)$, $3(\pm 4)$ & $\sg{7}$, $\sg{9}$ & --- \\
+Cubic & $4'32'$ & $3/4'$ & $23$ & $3/2$ & $1$, $3(2)$, $4(\pm 3)$, $6(2')$, $3(\pm 4')$ & $\sg{3}$, $\sg{9}$ & $\sgp{7}$ \\
+Cubic & $\ob{4}3m$ & $3/\ob{4}$ & --- & --- & $1$, $3(2)$, $6(\ob{2})$, $4(\pm 3)$, $3(\pm\ob{4})$ & $\sg{8}$, $\sg{9}$ & --- \\
+Cubic & $\ob{4}'3m'$ & $3/\ob{4}'$ & $23$ & $3/2$ & $1$, $3(2)$, $4(\pm 3)$, $6(\ob{2}')$, $3(\pm\ob{4}')$ & $\sg{3}$, $\sg{9}$ & $\sgp{8}$ \\
+Cubic & $m\ob{3}m$ & $\ob{6}/4$ & --- & --- & $1$, $\ob{1}$, $9(2)$, $9(\ob{2})$, $4(\pm 3)$, $4(\pm\ob{3})$, $3(\pm 4)$, $3(\pm\ob{4})$ & $\sg{1}$, $\sg{7}$, $\sg{9}$ & --- \\
+Cubic & $m\ob{3}m'$ & $\ob{6}/4'$ & $m\ob{3}$ & $\ob{6}/2$ & $1$, $\ob{1}$, $3(2)$, $3(\ob{2})$, $4(\pm 3)$, $4(\pm\ob{3})$, $6(2')$, $6(\ob{2}')$, $3(\pm 4')$, $3(\pm\ob{4}')$ & $\sg{1}$, $\sg{3}$, $\sg{9}$ & $\sgp{7}$ \\
+Cubic & $m'\ob{3}m'$ & $\ob{6}'/4'$ & $432$ & $3/4$ & $1$, $9(2)$, $4(\pm 3)$, $3(\pm 4)$, $\ob{1}'$, $9(\ob{2}')$, $4(\pm\ob{3}')$, $3(\pm\ob{4}')$ & $\sg{7}$, $\sg{9}$ & $\sgp{1}$ \\
+Cubic & $m'\ob{3}m$ & $\ob{6}'/4$ & $\ob{4}3m$ & $3/\ob{4}$ & $1$, $3(2)$, $6(\ob{2})$, $4(\pm 3)$, $3(\pm\ob{4})$, $\ob{1}'$, $3(\ob{2}')$, $6(2')$, $4(\pm\ob{3}')$, $3(\pm 4')$ & $\sg{8}$, $\sg{9}$ & $\sgp{1}$ \\
+\end{longtable}
+\end{landscape}
+
+%=============================================================================
+\newpage
+\begin{landscape}
+\section*{Table 7: Tensor Symbol Classes for the Magnetic Point Groups}
+\addcontentsline{toc}{section}{Table 7: Tensor Symbol Classes (Magnetic)}
+\label{sec:table7}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{longtable}{l l l l *{4}{c} *{4}{c}}
+\toprule
+& & & & \multicolumn{4}{c}{\textbf{i-tensor}} & \multicolumn{4}{c}{\textbf{c-tensor}} \\
+\cmidrule(lr){5-8} \cmidrule(lr){9-12}
+System & \shortstack{Magnetic\\point group} & \shortstack{Assoc.\\group $A$} & \shortstack{Assoc.\\group $B$} &
+  \shortstack{Polar\\even $m$} & \shortstack{Axial\\even $m$} & \shortstack{Polar\\odd $n$} & \shortstack{Axial\\odd $n$} &
+  \shortstack{Polar\\even $m$} & \shortstack{Axial\\even $m$} & \shortstack{Polar\\odd $n$} & \shortstack{Axial\\odd $n$} \\
+\midrule
+\endfirsthead
+\toprule
+& & & & \multicolumn{4}{c}{\textbf{i-tensor}} & \multicolumn{4}{c}{\textbf{c-tensor}} \\
+\cmidrule(lr){5-8} \cmidrule(lr){9-12}
+System & \shortstack{Magnetic\\point group} & \shortstack{Assoc.\\group $A$} & \shortstack{Assoc.\\group $B$} &
+  \shortstack{Polar\\even $m$} & \shortstack{Axial\\even $m$} & \shortstack{Polar\\odd $n$} & \shortstack{Axial\\odd $n$} &
+  \shortstack{Polar\\even $m$} & \shortstack{Axial\\even $m$} & \shortstack{Polar\\odd $n$} & \shortstack{Axial\\odd $n$} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{12}{r}{\footnotesize\itshape continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+% ==== PAGE 1: Triclinic + Monoclinic + Orthorhombic + Tetragonal through 4'/m' ====
+Triclinic & $1$ & --- & --- & $A_m$ & $A_m$ & $A_n$ & $A_n$ & $A_m$ & $A_m$ & $A_n$ & $A_n$ \\
+Triclinic & $\ob{1}$ & --- & --- & $A_m$ & --- & --- & $A_n$ & $A_m$ & --- & --- & $A_n$ \\
+Triclinic & $\ob{1}'$ & $1$ & $\ob{1}$ & $A_m$ & --- & --- & $A_n$ & --- & $A_m$ & $A_n$ & --- \\
+\addlinespace
+Monoclinic & $2$ & --- & --- & $B_m$ & $B_m$ & $B_n$ & $B_n$ & $B_m$ & $B_m$ & $B_n$ & $B_n$ \\
+Monoclinic & $2'$ & $m$ & $m$ & $B_m$ & $B_m$ & $B_n$ & $B_n$ & $C_m$ & $C_m$ & $C_n$ & $C_n$ \\
+Monoclinic & $m$ & --- & --- & $B_m$ & $C_m$ & $C_n$ & $B_n$ & $B_m$ & $C_m$ & $C_n$ & $B_n$ \\
+Monoclinic & $m'$ & $2$ & $m$ & $B_m$ & $C_m$ & $C_n$ & $B_n$ & $C_m$ & $B_m$ & $B_n$ & $C_n$ \\
+Monoclinic & $2/m$ & --- & --- & $B_m$ & --- & --- & $B_n$ & $B_m$ & --- & --- & $B_n$ \\
+Monoclinic & $2'/m'$ & $2/m$ & $m$ & $B_m$ & --- & --- & $B_n$ & $C_m$ & --- & --- & $C_n$ \\
+Monoclinic & $2/m'$ & $2$ & $2/m$ & $B_m$ & --- & --- & $B_n$ & --- & $B_m$ & $B_n$ & --- \\
+Monoclinic & $2'/m$ & $m$ & $2/m$ & $B_m$ & --- & --- & $B_n$ & --- & $C_m$ & $C_n$ & --- \\
+\addlinespace
+Orthorhombic & $222$ & --- & --- & $D_m$ & $D_m$ & $D_n$ & $D_n$ & $D_m$ & $D_m$ & $D_n$ & $D_n$ \\
+Orthorhombic & $2'2'2$ & $mm2$ & $mm2$ & $D_m$ & $D_m$ & $D_n$ & $D_n$ & $E_m$ & $E_m$ & $E_n$ & $E_n$ \\
+Orthorhombic & $mm2$ & --- & --- & $D_m$ & $E_m$ & $E_n$ & $D_n$ & $D_m$ & $E_m$ & $E_n$ & $D_n$ \\
+Orthorhombic & $m'm'2$ & $222$ & $mm2$ & $D_m$ & $E_m$ & $E_n$ & $D_n$ & $E_m$ & $D_m$ & $D_n$ & $E_n$ \\
+Orthorhombic & $(2'm'm)$ & $(m2m)$ & $mm2$ & $D_m$ & $(E_m)$ & $(E_n)$ & $D_n$ & $E_m$ & $(E_m)$ & $(E_n)$ & $E_n$ \\
+Orthorhombic & $mmm$ & --- & --- & $D_m$ & --- & --- & $D_n$ & $D_m$ & --- & --- & $D_n$ \\
+Orthorhombic & $m'm'm$ & $mmm$ & $mm2$ & $D_m$ & --- & --- & $D_n$ & $E_m$ & --- & --- & $E_n$ \\
+Orthorhombic & $m'm'm'$ & $222$ & $mmm$ & $D_m$ & --- & --- & $D_n$ & --- & $D_m$ & $D_n$ & --- \\
+Orthorhombic & $mmm'$ & $mm2$ & $mmm$ & $D_m$ & --- & --- & $D_n$ & --- & $E_m$ & $E_n$ & --- \\
+\addlinespace
+Tetragonal & $4$ & --- & --- & $F_m$ & $F_m$ & $F_n$ & $F_n$ & $F_m$ & $F_m$ & $F_n$ & $F_n$ \\
+Tetragonal & $4'$ & $\ob{4}$ & $\ob{4}$ & $F_m$ & $F_m$ & $F_n$ & $F_n$ & $G_m$ & $G_m$ & $G_n$ & $G_n$ \\
+Tetragonal & $\ob{4}$ & --- & --- & $F_m$ & $G_m$ & $G_n$ & $F_n$ & $F_m$ & $G_m$ & $G_n$ & $F_n$ \\
+Tetragonal & $\ob{4}'$ & $4$ & $\ob{4}$ & $F_m$ & $G_m$ & $G_n$ & $F_n$ & $G_m$ & $F_m$ & $F_n$ & $G_n$ \\
+Tetragonal & $4/m$ & --- & --- & $F_m$ & --- & --- & $F_n$ & $F_m$ & --- & --- & $F_n$ \\
+Tetragonal & $4'/m$ & $4/m$ & $\ob{4}$ & $F_m$ & --- & --- & $F_n$ & $G_m$ & --- & --- & $G_n$ \\
+Tetragonal & $4/m'$ & $4$ & $4/m$ & $F_m$ & --- & --- & $F_n$ & --- & $F_m$ & $F_n$ & --- \\
+Tetragonal & $4'/m'$ & $\ob{4}$ & $4/m$ & $F_m$ & --- & --- & $F_n$ & --- & $G_m$ & $G_n$ & --- \\
+% ==== PAGE BREAK ====
+\newpage
+% ==== PAGE 2: Tetragonal 422 through Trigonal ====
+Tetragonal & $422$ & --- & --- & $H_m$ & $H_m$ & $H_n$ & $H_n$ & $H_m$ & $H_m$ & $H_n$ & $H_n$ \\
+Tetragonal & $4'22'$ & $\ob{4}2m$ & $\ob{4}2m$ & $H_m$ & $H_m$ & $H_n$ & $H_n$ & $J_m$ & $J_m$ & $J_n$ & $J_n$ \\
+Tetragonal & $42'2'$ & $4mm$ & $4mm$ & $H_m$ & $H_m$ & $H_n$ & $H_n$ & $I_m$ & $I_m$ & $I_n$ & $I_n$ \\
+Tetragonal & $4mm$ & --- & --- & $H_m$ & $I_m$ & $I_n$ & $H_n$ & $H_m$ & $I_m$ & $I_n$ & $H_n$ \\
+Tetragonal & $4'mm'$ & $(\ob{4}m2)$ & $\ob{4}2m$ & $H_m$ & $I_m$ & $I_n$ & $H_n$ & $J_m$ & $(J_m)$ & $(J_n)$ & $J_n$ \\
+Tetragonal & $4m'm'$ & $422$ & $4mm$ & $H_m$ & $I_m$ & $I_n$ & $H_n$ & $I_m$ & $H_m$ & $H_n$ & $I_n$ \\
+Tetragonal & $\ob{4}2m$ & --- & --- & $H_m$ & $J_m$ & $J_n$ & $H_n$ & $H_m$ & $J_m$ & $J_n$ & $H_n$ \\
+Tetragonal & $\ob{4}'2m'$ & $422$ & $\ob{4}2m$ & $H_m$ & $J_m$ & $J_n$ & $H_n$ & $J_m$ & $H_m$ & $H_n$ & $J_n$ \\
+Tetragonal & $(\ob{4}'m2')$ & $4mm$ & $\ob{4}2m$ & $H_m$ & $(J_m)$ & $(J_n)$ & $H_n$ & $J_m$ & $I_m$ & $I_n$ & $J_n$ \\
+Tetragonal & $\ob{4}2'm'$ & $(\ob{4}2m)$ & $4mm$ & $H_m$ & $J_m$ & $J_n$ & $H_n$ & $I_m$ & $(J_m)$ & $(J_n)$ & $I_n$ \\
+Tetragonal & $4/mmm$ & --- & --- & $H_m$ & --- & --- & $H_n$ & $H_m$ & --- & --- & $H_n$ \\
+Tetragonal & $4'/mmm'$ & $4/mmm$ & $\ob{4}2m$ & $H_m$ & --- & --- & $H_n$ & $J_m$ & --- & --- & $J_n$ \\
+Tetragonal & $4/mm'm'$ & $4/mmm$ & $4mm$ & $H_m$ & --- & --- & $H_n$ & $I_m$ & --- & --- & $I_n$ \\
+Tetragonal & $4/m'm'm'$ & $422$ & $4/mmm$ & $H_m$ & --- & --- & $H_n$ & --- & $H_m$ & $H_n$ & --- \\
+Tetragonal & $4/m'mm$ & $4mm$ & $4/mmm$ & $H_m$ & --- & --- & $H_n$ & --- & $I_m$ & $I_n$ & --- \\
+Tetragonal & $4'/m'm'm$ & $\ob{4}2m$ & $4/mmm$ & $H_m$ & --- & --- & $H_n$ & --- & $J_m$ & $J_n$ & --- \\
+\addlinespace
+Trigonal & $3$ & --- & --- & $K_m$ & $K_m$ & $K_n$ & $K_n$ & $K_m$ & $K_m$ & $K_n$ & $K_n$ \\
+Trigonal & $\ob{3}$ & --- & --- & $K_m$ & --- & --- & $K_n$ & $K_m$ & --- & --- & $K_n$ \\
+Trigonal & $\ob{3}'$ & $3$ & $\ob{3}$ & $K_m$ & --- & --- & $K_n$ & --- & $K_m$ & $K_n$ & --- \\
+Trigonal & $32$ & --- & --- & $L_m$ & $L_m$ & $L_n$ & $L_n$ & $L_m$ & $L_m$ & $L_n$ & $L_n$ \\
+Trigonal & $32'$ & $3m$ & $3m$ & $L_m$ & $L_m$ & $L_n$ & $L_n$ & $M_m$ & $M_m$ & $M_n$ & $M_n$ \\
+Trigonal & $3m$ & --- & --- & $L_m$ & $M_m$ & $M_n$ & $L_n$ & $L_m$ & $M_m$ & $M_n$ & $L_n$ \\
+Trigonal & $3m'$ & $32$ & $3m$ & $L_m$ & $M_m$ & $M_n$ & $L_n$ & $M_m$ & $L_m$ & $L_n$ & $M_n$ \\
+Trigonal & $\ob{3}m$ & --- & --- & $L_m$ & --- & --- & $L_n$ & $L_m$ & --- & --- & $L_n$ \\
+Trigonal & $\ob{3}m'$ & $\ob{3}m$ & $3m$ & $L_m$ & --- & --- & $L_n$ & $M_m$ & --- & --- & $M_n$ \\
+Trigonal & $\ob{3}'m'$ & $32$ & $\ob{3}m$ & $L_m$ & --- & --- & $L_n$ & --- & $L_m$ & $L_n$ & --- \\
+Trigonal & $\ob{3}'m$ & $3m$ & $\ob{3}m$ & $L_m$ & --- & --- & $L_n$ & --- & $M_m$ & $M_n$ & --- \\
+% ==== PAGE BREAK ====
+\newpage
+% ==== PAGE 3: Hexagonal + Cubic ====
+Hexagonal & $6$ & --- & --- & $N_m$ & $N_m$ & $N_n$ & $N_n$ & $N_m$ & $N_m$ & $N_n$ & $N_n$ \\
+Hexagonal & $6'$ & $\ob{6}$ & $\ob{6}$ & $N_m$ & $N_m$ & $N_n$ & $N_n$ & $O_m$ & $O_m$ & $O_n$ & $O_n$ \\
+Hexagonal & $\ob{6}$ & --- & --- & $N_m$ & $O_m$ & $O_n$ & $N_n$ & $N_m$ & $O_m$ & $O_n$ & $N_n$ \\
+Hexagonal & $\ob{6}'$ & $6$ & $\ob{6}$ & $N_m$ & $O_m$ & $O_n$ & $N_n$ & $O_m$ & $N_m$ & $N_n$ & $O_n$ \\
+Hexagonal & $6/m$ & --- & --- & $N_m$ & --- & --- & $N_n$ & $N_m$ & --- & --- & $N_n$ \\
+Hexagonal & $6'/m'$ & $6/m$ & $\ob{6}$ & $N_m$ & --- & --- & $N_n$ & $O_m$ & --- & --- & $O_n$ \\
+Hexagonal & $6/m'$ & $6$ & $6/m$ & $N_m$ & --- & --- & $N_n$ & --- & $N_m$ & $N_n$ & --- \\
+Hexagonal & $6'/m$ & $\ob{6}$ & $6/m$ & $N_m$ & --- & --- & $N_n$ & --- & $O_m$ & $O_n$ & --- \\
+Hexagonal & $622$ & --- & --- & $P_m$ & $P_m$ & $P_n$ & $P_n$ & $P_m$ & $P_m$ & $P_n$ & $P_n$ \\
+Hexagonal & $6'22'$ & $(\ob{6}2m)$ & $(\ob{6}2m)$ & $P_m$ & $P_m$ & $P_n$ & $P_n$ & $(R_m)$ & $(R_m)$ & $(R_n)$ & $(R_n)$ \\
+Hexagonal & $62'2'$ & $6mm$ & $6mm$ & $P_m$ & $P_m$ & $P_n$ & $P_n$ & $Q_m$ & $Q_m$ & $Q_n$ & $Q_n$ \\
+Hexagonal & $6mm$ & --- & --- & $P_m$ & $Q_m$ & $Q_n$ & $P_n$ & $P_m$ & $Q_m$ & $Q_n$ & $P_n$ \\
+Hexagonal & $6'mm'$ & $\ob{6}m2$ & $(\ob{6}2m)$ & $P_m$ & $Q_m$ & $Q_n$ & $P_n$ & $(R_m)$ & $R_m$ & $R_n$ & $(R_n)$ \\
+Hexagonal & $6m'm'$ & $622$ & $6mm$ & $P_m$ & $Q_m$ & $Q_n$ & $P_n$ & $Q_m$ & $P_m$ & $P_n$ & $Q_n$ \\
+Hexagonal & $\ob{6}m2$ & --- & --- & $P_m$ & $R_m$ & $R_n$ & $P_n$ & $P_m$ & $R_m$ & $R_n$ & $P_n$ \\
+Hexagonal & $(\ob{6}'2m')$ & $622$ & $(\ob{6}2m)$ & $P_m$ & $R_m$ & $R_n$ & $P_n$ & $(R_m)$ & $P_m$ & $P_n$ & $(R_n)$ \\
+Hexagonal & $\ob{6}'m2'$ & $6mm$ & $(\ob{6}2m)$ & $P_m$ & $R_m$ & $R_n$ & $P_n$ & $(R_m)$ & $Q_m$ & $Q_n$ & $(R_n)$ \\
+Hexagonal & $\ob{6}m'2'$ & $\ob{6}m2$ & $6mm$ & $P_m$ & $R_m$ & $R_n$ & $P_n$ & $Q_m$ & $R_m$ & $R_n$ & $Q_n$ \\
+Hexagonal & $6/mmm$ & --- & --- & $P_m$ & --- & --- & $P_n$ & $P_m$ & --- & --- & $P_n$ \\
+Hexagonal & $6'/m'mm'$ & $6/mmm$ & $(\ob{6}2m)$ & $P_m$ & --- & --- & $P_n$ & $(R_m)$ & --- & --- & $(R_n)$ \\
+Hexagonal & $6/mm'm'$ & $6/mmm$ & $6mm$ & $P_m$ & --- & --- & $P_n$ & $Q_m$ & --- & --- & $Q_n$ \\
+Hexagonal & $6/m'm'm'$ & $622$ & $6/mmm$ & $P_m$ & --- & --- & $P_n$ & --- & $P_m$ & $P_n$ & --- \\
+Hexagonal & $6/m'mm$ & $6mm$ & $6/mmm$ & $P_m$ & --- & --- & $P_n$ & --- & $Q_m$ & $Q_n$ & --- \\
+Hexagonal & $6'/mm'm$ & $(\ob{6}2m)$ & $6/mmm$ & $P_m$ & --- & --- & $P_n$ & --- & $(R_m)$ & $(R_n)$ & --- \\
+\addlinespace
+Cubic & $23$ & --- & --- & $S_m$ & $S_m$ & $S_n$ & $S_n$ & $S_m$ & $S_m$ & $S_n$ & $S_n$ \\
+Cubic & $m\ob{3}$ & --- & --- & $S_m$ & --- & --- & $S_n$ & $S_m$ & --- & --- & $S_n$ \\
+Cubic & $m'\ob{3}$ & $23$ & $m\ob{3}$ & $S_m$ & --- & --- & $S_n$ & --- & $S_m$ & $S_n$ & --- \\
+Cubic & $432$ & --- & --- & $T_m$ & $T_m$ & $T_n$ & $T_n$ & $T_m$ & $T_m$ & $T_n$ & $T_n$ \\
+Cubic & $4'32'$ & $\ob{4}3m$ & $\ob{4}3m$ & $T_m$ & $T_m$ & $T_n$ & $T_n$ & $U_m$ & $U_m$ & $U_n$ & $U_n$ \\
+Cubic & $\ob{4}3m$ & --- & --- & $T_m$ & $U_m$ & $U_n$ & $T_n$ & $T_m$ & $U_m$ & $U_n$ & $T_n$ \\
+Cubic & $\ob{4}'3m'$ & $432$ & $\ob{4}3m$ & $T_m$ & $U_m$ & $U_n$ & $T_n$ & $U_m$ & $T_m$ & $T_n$ & $U_n$ \\
+Cubic & $m\ob{3}m$ & --- & --- & $T_m$ & --- & --- & $T_n$ & $T_m$ & --- & --- & $T_n$ \\
+Cubic & $m\ob{3}m'$ & $m\ob{3}m$ & $\ob{4}3m$ & $T_m$ & --- & --- & $T_n$ & $U_m$ & --- & --- & $U_n$ \\
+Cubic & $m'\ob{3}m'$ & $432$ & $m\ob{3}m$ & $T_m$ & --- & --- & $T_n$ & --- & $T_m$ & $T_n$ & --- \\
+Cubic & $m'\ob{3}m$ & $\ob{4}3m$ & $m\ob{3}m$ & $T_m$ & --- & --- & $T_n$ & --- & $U_m$ & $U_n$ & --- \\
+\end{longtable}
+\end{landscape}
+
+\end{document}

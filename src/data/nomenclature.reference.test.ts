@@ -6,14 +6,14 @@ import { POINT_GROUPS } from './pointGroups';
 
 /**
  * Step 1 of BIRSS-APP-CONVENTIONS-REFERENCE.md: the app's key set, per-group `type`,
- * and `schoenflies` must equal docs/references/table-nomenclature.md (Table A = 90
+ * and `schoenflies` must equal birss-tables/table-nomenclature.md (Table A = 90
  * non-grey, Table C = 32 grey), parsed here at test time rather than hand-copied, so
  * the reference doc stays the single source of truth. Anti-circular: expected values
  * come from the doc, never from POINT_GROUPS itself.
  */
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REFERENCE_PATH = path.resolve(__dirname, '../../docs/references/table-nomenclature.md');
+const REFERENCE_PATH = path.resolve(__dirname, '../../birss-tables/table-nomenclature.md');
 const content = readFileSync(REFERENCE_PATH, 'utf-8');
 
 function stripSub(s: string): string {
@@ -85,7 +85,7 @@ const tableA = parseTableWithType('## Table A', '## Table B', ['System', 'Schoen
 const tableC = parseGreyTable('## Table C', ['System', 'Schoenflies', 'App key', 'HM full', 'Shubnikov', 'Parent']);
 const REFERENCE_GROUPS = [...tableA, ...tableC];
 
-describe('nomenclature.reference — POINT_GROUPS matches docs/references/table-nomenclature.md', () => {
+describe('nomenclature.reference — POINT_GROUPS matches birss-tables/table-nomenclature.md', () => {
   it('parses exactly 90 Table A rows and 32 Table C rows (122 total)', () => {
     expect(tableA.length).toBe(90);
     expect(tableC.length).toBe(32);

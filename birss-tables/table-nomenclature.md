@@ -2,7 +2,7 @@
 
 A self-contained reference for all **122** magnetic point groups: the app's group key, the ITC **Schoenflies** and **full Hermann–Mauguin** notation (the two variants absent from `birss-tables`), the Birss **Shubnikov** symbol, and the Birss **symmetry operators** and **generating matrices** (from Table 6 for the 90 non-grey groups; derived by the ⊗{1,1′} rule for the 32 grey). Table A is the nomenclature; Table B lists operators/generators separately so neither table wraps badly.
 
-This table is one of the **two central convention references** for `birss-app`; its companion is **[`BIRSS-APP-CONVENTIONS-REFERENCE.md`](./BIRSS-APP-CONVENTIONS-REFERENCE.md)** (the convention contract & verification ladder). The operator/generator notation and the σ(N) pool are explained there and in the Reading guide below.
+This table is one of the **two central convention references** for `birss-app`; its companion is **[`BIRSS-APP-CONVENTIONS-REFERENCE.md`](../docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md)** (the convention contract & verification ladder). The operator/generator notation and the σ(N) pool are explained there and in the Reading guide below.
 
 ## Reading guide
 
