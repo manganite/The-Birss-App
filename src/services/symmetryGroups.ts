@@ -337,7 +337,7 @@ const ORTHO_CYCLIC: Matrix3x3 = { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] };
 const ORTHO_REVERSE: Matrix3x3 = { m: [[0, 1, 0], [0, 0, 1], [1, 0, 0]] };
 const MONO_YZ_SWAP: Matrix3x3 = { m: [[-1, 0, 0], [0, 0, 1], [0, 1, 0]] };
 
-const ALTERNATE_SETTINGS: Record<string, SettingDef[]> = {
+export const ALTERNATE_SETTINGS: Record<string, SettingDef[]> = {
   // Phase 1 — Mechanism B (time-reversal-broken equivalence)
   // Labels are the distinct magnetic HM symbol for the alternate setting, derived from
   // each entry's own computed operations (getSymmetryOperations) — see B2.3 derivation
