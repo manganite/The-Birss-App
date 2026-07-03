@@ -1,8 +1,13 @@
 # Roadmap Status
 
-_Last updated: 2026-07-01. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-02. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
-files for derivation details, file:line anchors, and acceptance criteria._
+files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
+two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
+Birss reference tables now live in-repo under `birss-tables/`, full history preserved) and
+the nomenclature generator + CI drift guard (PR #49 —
+`birss-tables/tools/generate_nomenclature.py` regenerates `table-nomenclature.md`, CI fails
+on drift)._
 
 ---
 
@@ -58,7 +63,14 @@ class rather than per group.
 **Action items (once scope is decided).**
 - Generalize form generator to arbitrary rank ≤4 and type (polar/axial, i/c).
 - Reproduce Birss notation (symbol classes A–U, permutation shorthand).
-- Wire `birss-tables/` transcriptions as golden-fixture validation.
+- ~~Wire `birss-tables/` transcriptions as golden-fixture validation.~~ **Done** —
+  the convention audit (`docs/findings/AUDIT-convention-references.md`) wired this in
+  generally: ~150 table-anchored golden fixtures (`goldenTensors.fixtures.ts`), plus
+  the nomenclature and operator-set reference tests, which parse
+  `birss-tables/table-nomenclature.md` / `table-6.md` directly at test time. B15
+  itself still needs the rank ≤4 / symbol-class generalization above — Table 4f (EQ)
+  is not yet print-verified, so this only closes the anti-circular-validation
+  *infrastructure*, not the full B15 feature.
 - Cross-link group ↔ symbol class ↔ form.
 
 ---

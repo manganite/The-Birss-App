@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Default, and Setting 2 now carries the `-42m`-diagonal-mirror form instead
     (Default and Setting 2 swap).
   - All six wrong since v0.1.1. Anchored to `birss-tables` pass-5 book-scan
-    corrections; `docs/references/table-nomenclature.md` Table B regenerated
+    corrections; `birss-tables/table-nomenclature.md` Table B regenerated
     accordingly.
 
 ## [0.13.1] - 2026-07-01
