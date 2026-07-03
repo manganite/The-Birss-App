@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-07-02
+
+### Added
+
+- The complete transcribed Birss (1966) reference tables now ship in this repo under
+  `birss-tables/` (merged from `manganite/birss-tables` with full history, PR #48), including the
+  convention guide, the Birss–ITC comparison, the typeset PDF, and the 122-group nomenclature
+  table.
+- `birss-tables/tools/generate_nomenclature.py` + a CI step that regenerates
+  `table-nomenclature.md` and fails on drift (PR #49).
+- Audit guardrail tests: nomenclature & operator-set reference tests, grey-c≡0,
+  particularization, and three hand-Birss end-to-end tests; coverage matrix in
+  `docs/findings/AUDIT-convention-references.md`.
+
 ### Fixed
 
 - Corrected the generators of six magnetic point groups, verified against Birss,
@@ -474,7 +488,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help & Documentation page covering physics background, math derivations, and usage instructions.
 - MIT license, repository description, topics, and homepage link.
 
-[Unreleased]: https://github.com/manganite/birss-app/compare/v0.13.1...HEAD
+[Unreleased]: https://github.com/manganite/birss-app/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/manganite/birss-app/compare/v0.13.1...v0.14.0
 [0.13.1]: https://github.com/manganite/birss-app/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/manganite/birss-app/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/manganite/birss-app/compare/v0.11.0...v0.12.0
