@@ -1,5 +1,8 @@
 # Birss Symmetry & Magnetism — Transcription Project
 
+These are the transcribed Birss (1966) reference tables that back the app; see the app's own
+[README](../README.md) for the tool itself.
+
 Markdown transcriptions of selected tables from:
 
 > R. R. Birss, *Symmetry and Magnetism*, North-Holland / Elsevier, 1966.

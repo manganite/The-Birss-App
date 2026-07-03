@@ -512,6 +512,20 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                     </li>
                   ))}
                 </ul>
+                <p className="text-sm opacity-70">
+                  <span className="font-medium">Sources & reference.</span> The same Birss tables and
+                  convention notes the app is built on are available in full in the project
+                  repository under{' '}
+                  <a
+                    href="https://github.com/manganite/birss-app/tree/main/birss-tables"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    birss-tables/
+                  </a>
+                  .
+                </p>
               </div>
             </section>
           )}

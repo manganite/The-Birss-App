@@ -26,7 +26,7 @@ import { sigma, sigmaPrime, refClose, refSetsEqual, type RefMatrix3x3 } from '..
  */
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REFERENCE_PATH = path.resolve(__dirname, '../../docs/references/table-nomenclature.md');
+const REFERENCE_PATH = path.resolve(__dirname, '../../birss-tables/table-nomenclature.md');
 const content = readFileSync(REFERENCE_PATH, 'utf-8');
 
 function stripBackticks(s: string): string {

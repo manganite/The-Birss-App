@@ -6,7 +6,7 @@
  * operation queries derived from the closed groups.
  *
  * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md — axis / generator conventions
- *      (Steps 2–4) and docs/references/table-nomenclature.md — per-group operators &
+ *      (Steps 2–4) and birss-tables/table-nomenclature.md — per-group operators &
  *      generators σ(N)/σ'(N). Birss wins over ITC where they diverge.
  */
 

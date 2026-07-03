@@ -2,9 +2,9 @@
 
 **Purpose.** Guarantee that, for every **Default group**, `manganite/birss-app` reproduces the Birss tables *in every respect* — name, axes, generators, operation set, and tensor components, and specify a safe, table-anchored test for each link in the chain.
 
-**Central app references.** This document and its companion **[`table-nomenclature.md`](./table-nomenclature.md)** (the 122-group Schoenflies / full-HM / Shubnikov / operator / generator table) are the two central convention references for the app. This document is **self-contained**: all conventions are explained here in full. It references the frozen Birss **data tables** (`table-3`, `table-4a`, `table-4e/4f`, `table-6`, `table-7`) and `table-nomenclature.md` for *data* (symbols, matrices, forms), and the Birss book for equation numbers, but no explanation is deferred to another narrative document.
+**Central app references.** This document and its companion **[`table-nomenclature.md`](../../birss-tables/table-nomenclature.md)** (the 122-group Schoenflies / full-HM / Shubnikov / operator / generator table) are the two central convention references for the app. This document is **self-contained**: all conventions are explained here in full. It references the frozen Birss **data tables** (`table-3`, `table-4a`, `table-4e/4f`, `table-6`, `table-7`) and `table-nomenclature.md` for *data* (symbols, matrices, forms), and the Birss book for equation numbers, but no explanation is deferred to another narrative document.
 
-**Authority.** R. R. Birss, *Symmetry and Magnetism* (1966); the frozen transcriptions in `manganite/birss-tables`. Where Birss and ITC diverge, **Birss wins** (see Step 1).
+**Authority.** R. R. Birss, *Symmetry and Magnetism* (1966); the frozen transcriptions in `birss-tables/` (this repo). Where Birss and ITC diverge, **Birss wins** (see Step 1).
 
 **Scope.** Default (setting-1) groups only. Birss tabulates a single setting per group; alternative axis settings (the orthorhombic setting taxonomy) are a separate concern and are explicitly out of scope here.
 
@@ -50,7 +50,7 @@ The app **must** carry `m'm'm` (2_z) and **must not** introduce `mm'm'`. This is
 - **Inversion = leading `-`** (`-1`, `-4`, `-3`).
 - **Cubic:** keep the inversion bar on the 3 (`-3`) and its prime where present (`-3'`), e.g. `m-3`, `m'-3'm'`, `m'-3'm` — standard HM usage, **unlike** Birss Table 6's bare `m3` / `m'3m'`. (This is an app-vs-Birss short-symbol difference, not a group difference.)
 
-**Data source.** Full HM and pure-magnetic-group **Schoenflies** are not in `birss-tables`; both are provided for all 122 groups in **[`table-nomenclature.md`](./table-nomenclature.md)**, transcribed from ITC Table 1.5.2.3 and joined to the app keys by abstract group `G(H)`. Notes:
+**Data source.** Full HM and pure-magnetic-group **Schoenflies** are not in `birss-tables`; both are provided for all 122 groups in **[`table-nomenclature.md`](../../birss-tables/table-nomenclature.md)**, transcribed from ITC Table 1.5.2.3 and joined to the app keys by abstract group `G(H)`. Notes:
 - Grey (Type II) Schoenflies use the ITC **subscript R** (D<sub>4R</sub>); HM uses `…1'`.
 - Full HM is given in the **app (Birss) setting** (monoclinic z∥c ⇒ `112`, not ITC b-unique `121`; D<sub>2h</sub>(C<sub>2h</sub>) ⇒ `2'/m' 2'/m' 2/m`); the ITC form is recorded per-row.
 
@@ -190,7 +190,7 @@ For each (group, tensor, i/c): (1) look up the class in Table 7 / 4a; (2) look u
 | 5 | tensor form = particularize(class form); grey c ≡ 0 | table-7, table-4a, table-4e/4f | form equality (anti-circular) |
 
 ## Scope & recorded decisions
-- **Canonical group key** = the short Hermann–Mauguin symbol in the app's notation (Step 1). The full HM and magnetic Schoenflies notation for all 122 groups are in [`table-nomenclature.md`](./table-nomenclature.md).
+- **Canonical group key** = the short Hermann–Mauguin symbol in the app's notation (Step 1). The full HM and magnetic Schoenflies notation for all 122 groups are in [`table-nomenclature.md`](../../birss-tables/table-nomenclature.md).
 - **Alternative axis settings are out of scope here** — this document covers the Default (setting-1) group only. For reference, the orthorhombic setting scheme is: Default = c-unique, `ORTHO_CYCLIC` = a-unique, `ORTHO_REVERSE` = b-unique; 7 groups have three meaningful settings, 5 have none (maximum 3, never 4). Settings are realized via similarity transforms (Step 3), never hand-written generators.
 
 ## Changelog

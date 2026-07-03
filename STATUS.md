@@ -50,7 +50,7 @@ class rather than per group.
 - New top-level nav tab vs. Explorer sub-tab vs. both?
 
 **Dependencies.**
-- `manganite/birss-tables` repo: the transcribed tables serve as golden fixtures
+- `birss-tables/` (in-repo): the transcribed tables serve as golden fixtures
   (anti-circular: engine-generated output validated against tables, not the reverse).
 - The engine already projects onto the symmetry-invariant subspace; verify how
   rank-parametrized the current generator is vs. hardcoded to rank-3 SHG.
@@ -58,7 +58,7 @@ class rather than per group.
 **Action items (once scope is decided).**
 - Generalize form generator to arbitrary rank ≤4 and type (polar/axial, i/c).
 - Reproduce Birss notation (symbol classes A–U, permutation shorthand).
-- Wire `birss-tables` transcriptions as golden-fixture validation.
+- Wire `birss-tables/` transcriptions as golden-fixture validation.
 - Cross-link group ↔ symbol class ↔ form.
 
 ---
@@ -203,8 +203,9 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
 - **Pre-1.0 / no backwards-compatibility promise.** SemVer: MINOR for features +
   data corrections; PATCH for display-only fixes. Data-affecting changes take a
   CHANGELOG data flag.
-- **`birss-tables` integration:** submodule or pinned commit hash; build step to
-  typed JSON; CI row-count assertion. B15 depends on this.
+- **`birss-tables/` integration:** ✅ done — merged in-repo via `git subtree` (full
+  history preserved), superseding the submodule/pinned-commit-hash plan. Build step
+  to typed JSON and a CI row-count assertion remain open; B15 depends on those.
 - **Setting counts:** geometric vs. user-facing; monoclinic = 2 (b/c; a-unique not
   standard); orthorhombic = 3. Max 3, never 4.
 - **Mobile / desktop split:** mobile = read-and-lookup; desktop = manipulate-and-
@@ -220,7 +221,7 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
   output. For any data/math item, extend the relevant fixture first and require it
   green, then change the code.
 - **Authoritative convention references:** `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`
-  (convention contract & verification ladder) and `docs/references/table-nomenclature.md`
+  (convention contract & verification ladder) and `birss-tables/table-nomenclature.md`
   (122-group nomenclature + operators/generators) are the two central, cross-linked
   references. Any change to group keys, generators, or tensor forms is validated against
   them and their Birss/ITC table anchors, not against app output.

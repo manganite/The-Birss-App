@@ -33,11 +33,24 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
 
 The tensor component output follows the conventions of **Birss, *Symmetry and Magnetism* (1966)**: the y-axis secondary convention for trigonal and hexagonal groups (σ(2)=[2_y], σ(4)=[-2_y]), and the z-unique monoclinic setting. The app's rank-3 polar tensor output has been verified against all 21 rows of Birss Table 4e. Point group names use Hermann–Mauguin notation with ITC-style rendering (overbars for roto-inversions, primes for time-reversed operations).
 
-- **App convention references** (this repo): the **[convention contract & verification ladder](docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md)** and the **[122-group nomenclature table](docs/references/table-nomenclature.md)** — how each group's key maps to its Schoenflies / full-HM / Shubnikov notation and to its Birss operators, generators, and tensor form (App↔Birss↔ITC divergences flagged).
-- **[Birss, R. R. (1966). Symmetry and Magnetism](https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf)**: Authoritative source for magnetic point groups and tensor component calculation. Reference tables typeset in [manganite/birss-tables](https://github.com/manganite/birss-tables).
+- **App convention references** (this repo): the **[convention contract & verification ladder](docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md)** and the **[122-group nomenclature table](birss-tables/table-nomenclature.md)** — how each group's key maps to its Schoenflies / full-HM / Shubnikov notation and to its Birss operators, generators, and tensor form (App↔Birss↔ITC divergences flagged).
+- **[Birss, R. R. (1966). Symmetry and Magnetism](https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf)**: Authoritative source for magnetic point groups and tensor component calculation. Reference tables included in this repo under [`birss-tables/`](./birss-tables/).
 - **[International Tables for Crystallography](https://doi.org/10.1107/97809553602060000114)**: General crystal symmetry aspects. See [DISCREPANCIES.md](docs/findings/DISCREPANCIES.md) for a detailed comparison of Birss vs ITC conventions.
 - **[Pershan, P. S. (1963). Nonlinear Optical Properties of Solids](https://doi.org/10.1103/PhysRev.130.919)**: Nonlinear optical multipole contributions.
 - **[Fröhlich, D., et al. (1999). Nonlinear spectroscopy of antiferromagnetics](https://doi.org/10.1007/s003400050650)**: Source term calculation.
+
+## Reference & Original Birss Sources
+
+Beyond the app itself, this repo provides the complete transcribed Birss (1966) reference
+tables and didactic guidance under **[`birss-tables/`](./birss-tables/)**:
+
+- The tables: [`table-3`](birss-tables/table-3.md), [`table-4a`](birss-tables/table-4a.md)–[`table-4f`](birss-tables/table-4f.md), [`table-6`](birss-tables/table-6.md), [`table-7`](birss-tables/table-7.md), [`table-nomenclature`](birss-tables/table-nomenclature.md).
+- **[`conventions-reference.md`](birss-tables/conventions-reference.md)** — axes, nomenclature, bracketed settings, z∥c.
+- **[`birss-itc-comparison.md`](birss-tables/birss-itc-comparison.md)** — divergences from the International Tables (S′/Cₙᵢ, type numbering).
+- The typeset **[`birss-tables.pdf`](birss-tables/birss-tables.pdf)**.
+
+These are the same tables the app is built on — see [`birss-tables/README.md`](birss-tables/README.md)
+for the full index and how to use them.
 
 ## Validation & Testing
 The tensor-calculation engine (`src/services/`) is covered by a Vitest suite of 490+ tests, organized in tiers of increasing specificity:
