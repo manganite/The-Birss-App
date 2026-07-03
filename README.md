@@ -30,7 +30,7 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
   - Comprehensive physics background, mathematics behind the intensity calculations, and usage instructions.
 - **Birss Reference Tables**:
   - The complete, transcribed reference tables from Birss, *Symmetry and Magnetism* (1966) ship in this repo under [`birss-tables/`](./birss-tables/) — usable standalone, independent of the app.
-  - Every table is verified against the printed book (documented per-file changelogs and errata); the app's tensor output is pinned to them by ~150 golden-fixture tests and a CI drift guard.
+  - Most tables are verified against the printed book (documented per-file changelogs and errata; Table 4f is a documented exception, not yet print-verified); the app's tensor output is pinned to them by ~150 golden-fixture tests and a CI drift guard.
 
 ## Conventions & References
 

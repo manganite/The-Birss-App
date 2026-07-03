@@ -5,8 +5,9 @@ _Last updated: 2026-07-02. Synthesises open points from `docs/planning/ROADMAP-n
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
 Birss reference tables now live in-repo under `birss-tables/`, full history preserved) and
-the nomenclature generator + CI drift guard (PR #49 — `birss-tables/tools/
-generate_nomenclature.py` regenerates `table-nomenclature.md`, CI fails on drift)._
+the nomenclature generator + CI drift guard (PR #49 —
+`birss-tables/tools/generate_nomenclature.py` regenerates `table-nomenclature.md`, CI fails
+on drift)._
 
 ---
 
