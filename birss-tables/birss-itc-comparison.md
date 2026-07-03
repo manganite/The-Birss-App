@@ -1,7 +1,7 @@
 # Birss vs International Tables: Comparison of Point Group Conventions
 
 Comparison of point group names, axis conventions, and magnetic group symbols
-between R. R. Birss, *Symmetry and Magnetism* (1964) — as transcribed in this
+between R. R. Birss, *Symmetry and Magnetism* (1966) — as transcribed in this
 repository — and the *International Tables for Crystallography* (ITC):
 - ITC Vol. A, Chapter 3.2 (ch3o2.pdf): the 32 crystallographic point groups
 - ITC Vol. D, Section 1.5 (ch1o5.pdf): the 122 magnetic point groups
