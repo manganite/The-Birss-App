@@ -66,7 +66,7 @@ const REFERENCES: { href: string; title: string; description: string; openAccess
   {
     href: 'https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf',
     title: 'Symmetry and Magnetism',
-    description: 'Birss, R. R. (1966). Comprehensive derivation of magnetic point groups and tensor properties.',
+    description: 'Birss, R. R. (1966). Comprehensive derivation of magnetic point groups and tensor properties. The tables used by this app are transcribed, print-verified and included in the project repository (birss-tables/).',
     openAccess: true,
   },
   {
