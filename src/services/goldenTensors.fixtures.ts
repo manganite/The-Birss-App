@@ -965,15 +965,15 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: "Similarity transform Rz(30°) applied to the corrected (H=32, symbol class L3) setting-1 form; matches the \"3m'\" setting-2 fixture's form exactly, as expected since both reduce to an i-type-of-32 relation.",
   },
   {
-    group: "-3m'", tensor: 'MD', tr: 'i', setting: 1,
+    group: "-3m'", tensor: 'MD', tr: 'i',
     expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
-    source: "Fiebig et al., JOSA B 22, 96 (2005), Sec. 3, chi^{m(i)} for Cr2O3 (their 3-bar-m' = -3'm', anchored to Birss ref. 50): chi_yyy = -chi_yxx = -chi_xyx = -chi_xxy and chi_xyz = chi_xzy = -chi_yxz = -chi_yzx. MD-i is time-even, so it depends only on the spatial symmetry -3m, which -3'm' and -3m' share; the form is identical for -3m'. The yyy-family (mirror perpendicular to y) fixes the standard setting; a 30deg-rotated setting gives the xxx-family.",
+    source: "Fiebig et al., JOSA B 22, 96 (2005), Sec. 3, chi^{m(i)} for Cr2O3 (their 3-bar-m' = -3'm', anchored to Birss ref. 50): chi_yyy = -chi_yxx = -chi_xyx = -chi_xxy and chi_xyz = chi_xzy = -chi_yxz = -chi_yzx. MD-i is time-even, so it depends only on the spatial symmetry -3m, which -3'm' and -3m' share; the form is identical for -3m'. The yyy-family (mirror perpendicular to y) fixes the standard setting; a 30°-rotated setting gives the xxx-family.",
     // VERIFY: pending human sign-off against Fiebig et al. (2005) / printed Birss tables.
   },
   {
     group: "-3m'", tensor: 'MD', tr: 'i', setting: 2,
     expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
-    source: "Rz(30deg) rotation of the Fiebig/Birss-anchored -3m' MD-i default form above into the -31m' setting. Pure tensor algebra; verified to reproduce the app's transformed-operator projection.",
+    source: "Rz(30°) rotation of the Fiebig/Birss-anchored -3m' MD-i default form above into the -31m' setting. Pure tensor algebra; verified to reproduce the app's transformed-operator projection.",
     // VERIFY: pending human sign-off against Fiebig et al. (2005) / printed Birss tables.
   },
 
@@ -1338,7 +1338,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
   {
     group: "4'/m'm'm", tensor: 'ED', tr: 'c', setting: 2,
     expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
-    source: "Default 4'/m'm'm ED-c form (table-anchored, Table 4e via SIX_GENERATOR_FIX_DERIVATION: chi_xyz=chi_xzy=chi_yxz=chi_yzx, chi_zxy=chi_zyx) rotated by Rz(45deg) into the 4'/m'mm' setting. Pure tensor algebra; independent projection over the transformed operators reproduces it.",
+    source: "Default 4'/m'm'm ED-c form (table-anchored, Table 4e via SIX_GENERATOR_FIX_DERIVATION: chi_xyz=chi_xzy=chi_yxz=chi_yzx, chi_zxy=chi_zyx) rotated by Rz(45°) into the 4'/m'mm' setting. Pure tensor algebra; independent projection over the transformed operators reproduces it.",
     // VERIFY: pending human sign-off against the printed Birss tables.
   },
 
