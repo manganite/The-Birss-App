@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Search, Github } from 'lucide-react';
 import { POINT_GROUPS, PointGroupData } from './data/pointGroups';
@@ -13,10 +13,11 @@ import {
 } from './services/tensorCalculator';
 import type { Convention } from './services/conventionMapping';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
-import { HelpPage } from './components/HelpPage';
-import { SimulatorPage } from './components/SimulatorPage';
-import { CalculatorPage } from './components/CalculatorPage';
 import { FormatPointGroup } from './components/MathComponents';
+
+const HelpPage = lazy(() => import('./components/HelpPage').then((m) => ({ default: m.HelpPage })));
+const SimulatorPage = lazy(() => import('./components/SimulatorPage').then((m) => ({ default: m.SimulatorPage })));
+const CalculatorPage = lazy(() => import('./components/CalculatorPage').then((m) => ({ default: m.CalculatorPage })));
 
 const normalizeString = (str: string) => {
   return str
@@ -247,9 +248,7 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto p-8 md:p-12">
-        {currentView === 'help' ? (
-          <HelpPage activeTab={helpActiveTab} onTabChange={setHelpActiveTab} />
-        ) : currentView === 'explorer' ? (
+        {currentView === 'explorer' ? (
           <PointGroupExplorer
             convention={convention}
             onSelectGroupForCalculator={(group) => {
@@ -261,21 +260,27 @@ export default function App() {
               setCurrentView('simulator');
             }}
           />
-        ) : currentView === 'simulator' ? (
-          <SimulatorPage
-            selectedGroup={selectedGroup}
-            tensorConfig={tensorConfig}
-            orientation={orientation}
-            simulation={simulation}
-            onNavigate={handleNavigate}
-          />
         ) : (
-          <CalculatorPage
-            selectedGroup={selectedGroup}
-            tensorConfig={tensorConfig}
-            presetAngles={{ thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0 }}
-            onNavigate={handleNavigate}
-          />
+          <Suspense fallback={<div className="text-center text-[10px] uppercase tracking-widest opacity-50 py-24">Loading…</div>}>
+            {currentView === 'help' ? (
+              <HelpPage activeTab={helpActiveTab} onTabChange={setHelpActiveTab} />
+            ) : currentView === 'simulator' ? (
+              <SimulatorPage
+                selectedGroup={selectedGroup}
+                tensorConfig={tensorConfig}
+                orientation={orientation}
+                simulation={simulation}
+                onNavigate={handleNavigate}
+              />
+            ) : (
+              <CalculatorPage
+                selectedGroup={selectedGroup}
+                tensorConfig={tensorConfig}
+                presetAngles={{ thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0 }}
+                onNavigate={handleNavigate}
+              />
+            )}
+          </Suspense>
         )}
       </main>
 
