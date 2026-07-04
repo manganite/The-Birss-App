@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-02. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-04. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -11,7 +11,29 @@ on drift)._
 
 ---
 
-## Current release: v0.13.1 (2026-07-01)
+## Current release: v0.15.0 (2026-07-04)
+
+Adds the Birss/ITC symbol-convention toggle (setting labels, standard badges,
+group-string synonyms, convention-aware axis display, in-app Birss↔ITC
+explanations) and ITC Table 1.5.7.1 as an independent MD-c (piezomagnetic)
+verification anchor (15 literature-anchored golden fixtures, 71-entry
+cross-validation test). Both display/verification-only — no computed output
+changes. See `CHANGELOG.md` `[0.15.0]` for details.
+
+### v0.14.1 (2026-07-04)
+
+Patch: corrected the generators of `6'/mm'm` (default-setting frame was
+rotated 30° from Birss); ED-c default now yyy-family per Birss Table 7,
+anchored by a new VERIFIED golden fixture. See `CHANGELOG.md` `[0.14.1]`.
+
+### v0.14.0 (2026-07-02)
+
+The complete transcribed Birss (1966) reference tables now ship in-repo under
+`birss-tables/` (merged from `manganite/birss-tables`, PR #48), plus the
+nomenclature generator + CI drift guard (PR #49). See `CHANGELOG.md`
+`[0.14.0]`.
+
+### v0.13.1 (2026-07-01)
 
 Patch on top of v0.13.0: corrected two orthorhombic Type-III data bugs — `mmm'`/
 `m'm'm` had each other's generator/operator sets (unprimed vs. primed inversion
