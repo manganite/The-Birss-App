@@ -892,9 +892,16 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: 'Similarity transform Rz(30°); swaps d₂₂→d₁₁ family.',
   },
   {
-    group: "6'/mm'm", tensor: 'ED', tr: 'c', setting: 2,
+    group: "6'/mm'm", tensor: 'ED', tr: 'c',
     expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}'],
-    source: 'Similarity transform Rz(30°); swaps d₁₁→d₂₂ family.',
+    source: "Birss Table 7, row 6'/mm'm: c-polar-odd = (R_n) — Table 4e row R3 referred to the " +
+            "(-62m) axes, i.e. R3 rotated 30° (yyy-family). Brackets per Birss's bracket note " +
+            "(text after Table 6). Book scan re-verified 2026-07-04. VERIFIED.",
+  },
+  {
+    group: "6'/mm'm", tensor: 'ED', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}'],
+    source: 'Similarity transform Rz(30°) from the Table-7-anchored default; swaps d₁₁→d₂₂ family.',
   },
 
   // Alternate-setting fixtures — Phase 2, Mechanism A (classical setting ambiguity)

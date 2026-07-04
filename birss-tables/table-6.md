@@ -104,7 +104,7 @@ black-and-white (primed) rows from Table 3.
 | Hexagonal | 6/mm'm' | m'.6:m | 6/m | 6:m | 1, -1, 2_z, -2_z, ±3_z, ±-3_z, ±6_z, ±-6_z, 6(2'⊥), 6(-2'⊥) | σ(1), σ(3), σ(6) | σ'(2) |
 | Hexagonal | 6/m'm'm' | m'.6:m' | 622 | 6:2 | 1, 6(2⊥), 2_z, ±3_z, ±6_z, -1', -2'_z, ±-3'_z, ±-6'_z, 6(-2'⊥) | σ(2), σ(3), σ(6) | σ'(1) |
 | Hexagonal | 6/m'mm | m.6:m' | 6mm | 6.m | 1, 2_z, 6(-2⊥), ±3_z, ±6_z, -1', -2'_z, 6(2'⊥), ±-3'_z, ±-6'_z | σ(3), σ(4), σ(6) | σ'(1) |
-| Hexagonal | 6'/mm'm | m.6':m | -6m2 | m.3:m | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z, -1', 2'_z, 3(2'⊥), 3(-2'⊥), ±-3'_z, ±6'_z | σ(4), σ(5), σ(6) | σ'(1) |
+| Hexagonal | 6'/mm'm | m.6':m | -6m2 | m.3:m | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z, -1', 2'_z, 3(2'⊥), 3(-2'⊥), ±-3'_z, ±6'_z | σ(2), σ(5), σ(6) | σ'(1) |
 | Cubic | 23 | 3/2 | - | - | 1, 3(2), 4(±3) | σ(3), σ(9) | - |
 | Cubic | m3 | -6/2 | - | - | 1, -1, 3(2), 3(-2), 4(±3), 4(±-3) | σ(1), σ(3), σ(9) | - |
 | Cubic | m'3 | -6'/2 | 23 | 3/2 | 1, 3(2), 4(±3), -1', 3(-2'), 4(±-3') | σ(3), σ(9) | σ'(1) |
@@ -255,10 +255,18 @@ fresh scans of the printed book pages. Fixes:
   **book itself misprints** σ̲(2): 2'_y collides with the unprimed 2_y ∈ H = `-3m`, and closing the
   printed generators yields the grey group `-3m1'` rather than a type-III group. New book misprint,
   analogous to the two documented in `conventions-reference.md`.
-- `6'/mm'm` (documentation only, no change): the book prints generators σ(2), σ(5), σ(6); the
-  transcribed σ(4), σ(5), σ(6) is the correct reading. σ(2) = 2_y would place an unprimed 2-fold on
-  y, contradicting the row's full HM `6'/m 2'/m 2/m'` (position 2 = primed 2-fold, unprimed mirror
-  ⊥y → generator σ(4) = m⊥y). Same σ(2)↔σ(4) misprint pattern as Table 3's documented `-6m2` case.
+- `6'/mm'm` (**corrected 2026-07-04**, reversing the 2026-07-02 reading): the book prints
+  generators σ(2), σ(5), σ(6) — and that IS the correct reading. The earlier override to σ(4)
+  argued from the nomenclature full-HM `6'/m 2'/m 2/m'`, which is transcribed from ITC Table
+  1.5.2.3 and carries **ITC's** position convention (position 2 = a-axes), not Birss's
+  (position 2 = y); reading it in Birss positions inverted the frame. Three book-internal data
+  points confirm σ(2): (i) the printed generator itself (scan re-verified 2026-07-04);
+  (ii) Table 7's associated group **A = (-62m)**, parenthesized — since `-1' ∈ M`,
+  A = H ∪ (「c」)H = H, so the book directly names H's setting; (iii) Table 7's parenthesized
+  c-tensor symbols (R_m), (R_n), whose rotated-R3 form is reproduced by closing the σ(2)
+  generators (numerically verified) and contradicted by σ(4). The Birss short symbol
+  `6'/mm'm` is likewise consistent with σ(2) under Birss's position rule (position 2 = y:
+  the y-family carries {2, m′} → letter m′).
 
 After this pass, closing each row's σ(N)/σ'(N) generators reproduces its operator column exactly
 for all 90 rows (verified computationally).
@@ -294,3 +302,6 @@ correction.
   `6'22'`, `6'mm'`, `-6m'2'`, `6'/m'mm'`.
 - **2026-07-02** (`bbe2355`): Folded a standalone independent verification of the 11 trigonal rows
   (no errors found) into this section as an inline pass note; removed the redundant standalone file.
+- **2026-07-04** (PR pending): Corrected `6'/mm'm` generator column σ(4)→σ(2), reversing the
+  2026-07-02 pass-5 override; book scan re-verified 2026-07-04; see rewritten pass-5 note
+  (evidence: Table 7 A=(-62m), (R_n), printed σ(2)).

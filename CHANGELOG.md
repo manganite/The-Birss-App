@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Corrected the generators of `6'/mm'm`: the default-setting frame was rotated 30° from Birss
+  (generator σ(4) instead of the book's σ(2)); ED-c default now yyy-family per Birss Table 7
+  (A = (-62m), c-polar-odd = (R_n)); setting 2 correspondingly now xxx-family. Anchored by a new
+  VERIFIED golden fixture. All other tensors of this group re-checked (i-tensors and zero cells
+  unaffected by the flip).
+
 ## [0.14.0] - 2026-07-02
 
 ### Added

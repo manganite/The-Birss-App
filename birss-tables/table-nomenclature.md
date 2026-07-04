@@ -36,8 +36,9 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | C<sub>2v</sub>(C<sub>s</sub>) = `(2'm'm)` | 2-fold ∥ a | 2-fold ∥ a (rotated) | standard | **axis setting** (same symbol, rotated frame) |
 | D<sub>4R</sub> (grey, e.g. of D<sub>4</sub>) | `4221'` | `4221'` | Schoenflies `D`<sub>`4R`</sub>, HM `4221'` | grey **Schoenflies** = subscript R; HM = `…1'` |
 | C<sub>3i</sub> ≡ S<sub>6</sub> (`-3` family) | Schoenflies **C₃ᵢ** | C₃ᵢ — table-3 `C3i(S6)`, C3i primary | S₆ | **Schoenflies name** for the same abstract group: app/Birss = C₃ᵢ, ITC = S₆ (HM `-3` identical). Sole Schoenflies-naming divergence. |
+| D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` (σ(2) = 2⊥y) | `6'/mm'm` (full `6'/m 2/m' 2'/m`) | `6'/mmm'` (full `6'/m 2'/m 2/m'`) | **Same orientation, different short string**: both name the σ(2) (y-family) setting; the strings differ only by the position-2 convention (Birss: y-family; ITC: a-axes). Distinct from the `m'm'm`/`mm'm'` row above, where the *default frames themselves* differ. |
 
-*(The last row reproduces ITC Table 1.5.2.1: `D`<sub>`4R`</sub> = `4221'`, `D`<sub>`4`</sub> = `422`, `D`<sub>`4`</sub>`(C`<sub>`4`</sub>`)` = `42'2'`, `D`<sub>`4`</sub>`(D`<sub>`2`</sub>`)` = `4'22'`.)*
+*(The last row before this one reproduces ITC Table 1.5.2.1: `D`<sub>`4R`</sub> = `4221'`, `D`<sub>`4`</sub> = `422`, `D`<sub>`4`</sub>`(C`<sub>`4`</sub>`)` = `42'2'`, `D`<sub>`4`</sub>`(D`<sub>`2`</sub>`)` = `4'22'`.)*
 
 ## App notation conventions
 
@@ -129,7 +130,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | Hexagonal | D<sub>6h</sub>(C<sub>6h</sub>) | `6/mm'm'` | 6/m 2'/m' 2'/m' | `m'.6:m` | black-white (III / MP3) |  |
 | Hexagonal | D<sub>6h</sub>(D<sub>6</sub>) | `6/m'm'm'` | 6/m' 2/m' 2/m' | `m'.6:m'` | black-white (III / MP3) |  |
 | Hexagonal | D<sub>6h</sub>(C<sub>6v</sub>) | `6/m'mm` | 6/m' 2'/m 2'/m | `m.6:m'` | black-white (III / MP3) |  |
-| Hexagonal | D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 6'/m 2'/m 2/m' | `m.6':m` | black-white (III / MP3) |  |
+| Hexagonal | D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 6'/m 2/m' 2'/m | `m.6':m` | black-white (III / MP3) | ITC prints short `6'/mmm'`, full `6'/m 2'/m 2/m'` — same physical orientation as the app default; the strings differ only by the position-2 convention (Birss: y-family; ITC: a-axes). |
 | Cubic | T | `23` | 23 | `3/2` | colourless (I / MP2) |  |
 | Cubic | T<sub>h</sub> | `m-3` | 2/m -3 | `-6/2` | colourless (I / MP2) | Birss Table 6 short = m3 (barless); app keeps bar |
 | Cubic | T<sub>h</sub>(T) | `m'-3'` | 2/m' -3' | `-6'/2` | black-white (III / MP3) | Birss Table 6 short = m'3; app keeps bar+prime |
@@ -224,7 +225,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | D<sub>6h</sub>(C<sub>6h</sub>) | `6/mm'm'` | 1, -1, 2_z, -2_z, ±3_z, ±-3_z, ±6_z, ±-6_z, 6(2'⊥), 6(-2'⊥) | σ(1), σ(3), σ(6)  /  σ'(2) |
 | D<sub>6h</sub>(D<sub>6</sub>) | `6/m'm'm'` | 1, 6(2⊥), 2_z, ±3_z, ±6_z, -1', -2'_z, ±-3'_z, ±-6'_z, 6(-2'⊥) | σ(2), σ(3), σ(6)  /  σ'(1) |
 | D<sub>6h</sub>(C<sub>6v</sub>) | `6/m'mm` | 1, 2_z, 6(-2⊥), ±3_z, ±6_z, -1', -2'_z, 6(2'⊥), ±-3'_z, ±-6'_z | σ(3), σ(4), σ(6)  /  σ'(1) |
-| D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z, -1', 2'_z, 3(2'⊥), 3(-2'⊥), ±-3'_z, ±6'_z | σ(4), σ(5), σ(6)  /  σ'(1) |
+| D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z, -1', 2'_z, 3(2'⊥), 3(-2'⊥), ±-3'_z, ±6'_z | σ(2), σ(5), σ(6)  /  σ'(1) |
 | T | `23` | 1, 3(2), 4(±3) | σ(3), σ(9)  /  — |
 | T<sub>h</sub> | `m-3` | 1, -1, 3(2), 3(-2), 4(±3), 4(±-3) | σ(1), σ(3), σ(9)  /  — |
 | T<sub>h</sub>(T) | `m'-3'` | 1, 3(2), 4(±3), -1', 3(-2'), 4(±-3') | σ(3), σ(9)  /  σ'(1) |
@@ -287,3 +288,4 @@ Not in ITC 1.5.2.3 or Birss Table 6. Each = classical parent ⊗ {1,1'}: Schoenf
 - **2026-07-01**: Initial version — 122 groups (Table A nomenclature, Table B operators/generators, Table C grey), reading guide, type scheme, App↔Birss↔ITC comparison.
 - **2026-07-02**: Schoenflies naming of the `-3` family changed S₆ → C₃ᵢ per the app's Birss-wins rule (Birss Table 3 lists `C3i(S6)`, C3i primary); ITC's S₆ spelling noted per row; C₃ᵢ≡S₆ added to the comparison table. Sole Schoenflies-naming divergence between the two sources.
 - **2026-07-02**: Table B regenerated after `birss-tables` table-6 pass-5 book-scan corrections — five rows updated: `-4'm2'` (operator column was transcribed in the wrong axis frame), `6'22'` (two missing time-reversal primes), `6'mm'`/`-6m'2'`/`6'/m'mm'` (σ' generator entries). See table-6.md pass-5 notes for evidence.
+- **2026-07-04**: Full HM of `6'/mm'm` corrected to `6'/m 2/m' 2'/m` (Birss positions, frame corrected per table-6.md's σ(2) reading); ITC-divergence note added (same orientation, different short string). Table B regenerated after table-6.md's σ(4)→σ(2) correction for this row. Added a Full-HM → app-key collapse guard covering all 122 rows (this was the only genuine collapse discrepancy found); added a new comparison-table row for the same-orientation-different-string divergence class.

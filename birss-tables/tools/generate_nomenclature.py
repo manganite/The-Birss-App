@@ -101,7 +101,7 @@ rows = [
 ("Hexagonal","6/mm'm'","D6h(C6h)","6/m 2'/m' 2'/m'",""),
 ("Hexagonal","6/m'm'm'","D6h(D6)","6/m' 2/m' 2/m'",""),
 ("Hexagonal","6/m'mm","D6h(C6v)","6/m' 2'/m 2'/m",""),
-("Hexagonal","6'/mm'm","D6h(D3h)","6'/m 2'/m 2/m'",""),
+("Hexagonal","6'/mm'm","D6h(D3h)","6'/m 2/m' 2'/m","ITC prints short `6'/mmm'`, full `6'/m 2'/m 2/m'` — same physical orientation as the app default; the strings differ only by the position-2 convention (Birss: y-family; ITC: a-axes)."),
 # Cubic: app KEEPS inversion bar (-3) and prime on 3 where present (m'-3'); full-HM from hi-res image 2
 ("Cubic","23","T","23",""),
 ("Cubic","m-3","Th","2/m -3","Birss Table 6 short = m3 (barless); app keeps bar"),
@@ -117,6 +117,59 @@ rows = [
 ]
 if len(rows) != 90:
     raise ValueError(f"expected 90 ITC rows, got {len(rows)}")
+
+# ---- 1b. Full-HM -> app-key collapse guard (catches ITC/Birss position-convention errors like ----
+# the 6'/mm'm frame bug: a Full-HM string transcribed with the wrong position-2 convention still
+# LOOKS plausible but collapses to a different short symbol than the app key). Session-verified
+# against all 122 rows, 2026-07-04.
+def _mirror(tok):
+    """'2/m' -> 'm', '2\'/m' -> 'm', '2/m\'' -> 'm\'', '2\'/m\'' -> 'm\''. None if not an N/m fraction."""
+    m = re.match(r"^\d+'?/m('?)$", tok)
+    return ("m" + m.group(1)) if m else None
+
+def collapse_full_hm(system, hm_full):
+    if system == "Triclinic":
+        return hm_full  # bare "1", "-1", "-1'" -- already the short form
+    if system == "Monoclinic":
+        # strip the literal "11" placeholder prefix (positions 1,2); the remaining single
+        # token IS the short form (never collapsed further, e.g. "2/m" stays "2/m", not "m").
+        s = hm_full
+        if s.startswith("11 "):
+            s = s[3:]
+        elif s.startswith("11"):
+            s = s[2:]
+        return s
+    if system == "Cubic":
+        # cubic short symbols never show a position-1 fraction (m-3m, not 4/m-3m); every
+        # N/m token collapses regardless of N.
+        return "".join(_mirror(t) or t for t in hm_full.split(" "))
+    if system == "Trigonal":
+        # strip a single trailing placeholder "1" (e.g. "321" -> "32", "-3 2/m 1" -> "-3 2/m")
+        s = hm_full
+        if s.endswith("1"):
+            s = s[:-1].rstrip()
+        return "".join(_mirror(t) or t for t in (s.split(" ") if s else [""]))
+    # Orthorhombic, Tetragonal, Hexagonal: position 1 keeps its fraction when N>=3 (4/m, 6'/m',
+    # ...), collapses to the mirror letter when N=2 (orthorhombic 2/m 2/m 2/m -> mmm); positions
+    # 2/3 always collapse.
+    out = []
+    for i, t in enumerate(hm_full.split(" ")):
+        m = _mirror(t)
+        if m is None:
+            out.append(t)
+        elif i == 0 and int(re.match(r"^(\d+)", t).group(1)) >= 3:
+            out.append(t)
+        else:
+            out.append(m)
+    return "".join(out)
+
+_collapse_errors = []
+for (_s, _k, _sf, _hf, _note) in rows:
+    _got = collapse_full_hm(_s, _hf)
+    if _got != _k:
+        _collapse_errors.append(f"{_k}: Full-HM {_hf!r} collapses to {_got!r}, expected {_k!r}")
+if _collapse_errors:
+    raise ValueError("Full-HM -> app-key collapse mismatch(es):\n" + "\n".join(_collapse_errors))
 
 # ---- 2. Parse Birss table-6 for Shubnikov / operators / generators (same order) ----
 t6=[]
@@ -172,8 +225,9 @@ L+=["## Notation at a glance — where App, Birss and ITC differ","",
 "| C<sub>2v</sub>(C<sub>s</sub>) = `(2'm'm)` | 2-fold ∥ a | 2-fold ∥ a (rotated) | standard | **axis setting** (same symbol, rotated frame) |",
 "| D<sub>4R</sub> (grey, e.g. of D<sub>4</sub>) | `4221'` | `4221'` | Schoenflies `D`<sub>`4R`</sub>, HM `4221'` | grey **Schoenflies** = subscript R; HM = `…1'` |",
 "| C<sub>3i</sub> ≡ S<sub>6</sub> (`-3` family) | Schoenflies **C₃ᵢ** | C₃ᵢ — table-3 `C3i(S6)`, C3i primary | S₆ | **Schoenflies name** for the same abstract group: app/Birss = C₃ᵢ, ITC = S₆ (HM `-3` identical). Sole Schoenflies-naming divergence. |",
+"| D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` (σ(2) = 2⊥y) | `6'/mm'm` (full `6'/m 2/m' 2'/m`) | `6'/mmm'` (full `6'/m 2'/m 2/m'`) | **Same orientation, different short string**: both name the σ(2) (y-family) setting; the strings differ only by the position-2 convention (Birss: y-family; ITC: a-axes). Distinct from the `m'm'm`/`mm'm'` row above, where the *default frames themselves* differ. |",
 "",
-"*(The last row reproduces ITC Table 1.5.2.1: `D`<sub>`4R`</sub> = `4221'`, `D`<sub>`4`</sub> = `422`, `D`<sub>`4`</sub>`(C`<sub>`4`</sub>`)` = `42'2'`, `D`<sub>`4`</sub>`(D`<sub>`2`</sub>`)` = `4'22'`.)*",""]
+"*(The last row before this one reproduces ITC Table 1.5.2.1: `D`<sub>`4R`</sub> = `4221'`, `D`<sub>`4`</sub> = `422`, `D`<sub>`4`</sub>`(C`<sub>`4`</sub>`)` = `42'2'`, `D`<sub>`4`</sub>`(D`<sub>`2`</sub>`)` = `4'22'`.)*",""]
 
 # ---- Conventions (app) ----
 L+=["## App notation conventions","",
@@ -202,6 +256,20 @@ for (r,t) in zip(rows,t6):
 
 # ---- Grey ----
 classical=[(s,k,sf,hf,t) for ((s,k,sf,hf,n),t) in zip(rows,t6) if "(" not in sf]
+if len(classical) != 32:
+    raise ValueError(f"expected 32 grey-derived (classical) rows, got {len(classical)}")
+# Grey collapse check: HM full = parent + "1'", app key = parent key + "1'" (mechanically
+# guaranteed given the 90-row check above, but validated explicitly for full 122-row coverage).
+_grey_collapse_errors = []
+for (_s, _k, _sf, _hf, _t) in classical:
+    _grey_hf = _hf + "1'"
+    _expected = _k + "1'"
+    _got = collapse_full_hm(_s, _hf) + "1'"
+    if _got != _expected:
+        _grey_collapse_errors.append(f"{_expected}: Full-HM '{_grey_hf}' collapses to '{_got}', expected '{_expected}'")
+if _grey_collapse_errors:
+    raise ValueError("Grey Full-HM -> app-key collapse mismatch(es):\n" + "\n".join(_grey_collapse_errors))
+
 L+=["","## Table C — The 32 grey groups (Type II / ITC MP1), derived","",
 "Not in ITC 1.5.2.3 or Birss Table 6. Each = classical parent ⊗ {1,1'}: Schoenflies = parent<sub>R</sub>, HM/Shubnikov = parent + `1'`. Operators = the parent's operators **plus their time-reversed (×1') copies**; generators = the parent's σ(N) **plus** the pure time-reversal generator `1'`.","",
 "| System | Schoenflies | App key | HM full | Shubnikov | Parent |",
@@ -215,7 +283,8 @@ L+=["","**Totals:** 90 (ITC 1.5.2.3: 32 colourless + 58 black-white) + 32 grey =
 "## Changelog","",
 "- **2026-07-01**: Initial version — 122 groups (Table A nomenclature, Table B operators/generators, Table C grey), reading guide, type scheme, App↔Birss↔ITC comparison.",
 "- **2026-07-02**: Schoenflies naming of the `-3` family changed S₆ → C₃ᵢ per the app's Birss-wins rule (Birss Table 3 lists `C3i(S6)`, C3i primary); ITC's S₆ spelling noted per row; C₃ᵢ≡S₆ added to the comparison table. Sole Schoenflies-naming divergence between the two sources.",
-"- **2026-07-02**: Table B regenerated after `birss-tables` table-6 pass-5 book-scan corrections — five rows updated: `-4'm2'` (operator column was transcribed in the wrong axis frame), `6'22'` (two missing time-reversal primes), `6'mm'`/`-6m'2'`/`6'/m'mm'` (σ' generator entries). See table-6.md pass-5 notes for evidence."]
+"- **2026-07-02**: Table B regenerated after `birss-tables` table-6 pass-5 book-scan corrections — five rows updated: `-4'm2'` (operator column was transcribed in the wrong axis frame), `6'22'` (two missing time-reversal primes), `6'mm'`/`-6m'2'`/`6'/m'mm'` (σ' generator entries). See table-6.md pass-5 notes for evidence.",
+"- **2026-07-04**: Full HM of `6'/mm'm` corrected to `6'/m 2/m' 2'/m` (Birss positions, frame corrected per table-6.md's σ(2) reading); ITC-divergence note added (same orientation, different short string). Table B regenerated after table-6.md's σ(4)→σ(2) correction for this row. Added a Full-HM → app-key collapse guard covering all 122 rows (this was the only genuine collapse discrepancy found); added a new comparison-table row for the same-orientation-different-string divergence class."]
 
 (TABLES / "table-nomenclature.md").write_text("\n".join(L) + "\n", encoding="utf-8")
 print(f"Wrote {TABLES/'table-nomenclature.md'}: Table A+B (90) + Table C grey ({len(classical)}) = 122")
