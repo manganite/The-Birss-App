@@ -302,3 +302,6 @@ correction.
   `6'22'`, `6'mm'`, `-6m'2'`, `6'/m'mm'`.
 - **2026-07-02** (`bbe2355`): Folded a standalone independent verification of the 11 trigonal rows
   (no errors found) into this section as an inline pass note; removed the redundant standalone file.
+- **2026-07-04** (PR pending): Corrected `6'/mm'm` generator column σ(4)→σ(2), reversing the
+  2026-07-02 pass-5 override; book scan re-verified 2026-07-04; see rewritten pass-5 note
+  (evidence: Table 7 A=(-62m), (R_n), printed σ(2)).

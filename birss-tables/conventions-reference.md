@@ -1018,3 +1018,11 @@ The detailed application of (a)–(e) to specific effects — analogous to the
 pyroelectricity/pyromagnetism discussion in §10, but for magnetically ordered crystals
 — is carried out in Birss Chapters 4 and 5 (ferro-/ferrimagnetic and antiferromagnetic
 materials).
+
+## Changelog
+
+- **2026-07-04** (PR pending): Extended the documented-misprint inventory with two further book
+  errors found by a full 58-row Table 7 rank-3 audit (rows `(-6'2m')` and `-6m'2'`), the
+  bracket-spelling caveat (`(-4m2)` vs `(-42m)` for the identical group), and the methodological
+  lesson that generator disputes must be arbitrated by Table 7's own parenthesization. All five
+  documented book errors re-verified against maintainer book scans.
