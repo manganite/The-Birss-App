@@ -121,7 +121,7 @@ the numeric path but never the other way round:
 ## Key Conventions
 
 ### Convention references (authoritative — read before touching group data or tensor logic)
-Two cross-linked documents are the single source of truth for how the
+The following cross-linked documents are the single source of truth for how the
 app maps onto the Birss/ITC conventions:
 - **`docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`** — the convention contract &
   verification ladder. Self-contained: axis orientation per crystal system, the σ(0)–σ(9)
@@ -130,6 +130,12 @@ app maps onto the Birss/ITC conventions:
 - **`birss-tables/table-nomenclature.md`** — the 122-group table: app key → Schoenflies
   → full HM → Shubnikov → symmetry operators → generators σ(N)/σ'(N) → type, with every
   App↔Birss↔ITC divergence flagged.
+- **`docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md`** — authoritative for all
+  Birss↔ITC symbol/orientation questions: the two string divergences, the 30° position-2
+  offset (trigonal/hexagonal), monoclinic c-vs-b, and Birss's Table-7 parenthesis
+  (rotated-axes) semantics. Consult before interpreting ITC sources or any user report of
+  a "wrong" symbol/component. Evidence record:
+  `docs/findings/SESSION-FINDINGS-2026-07-04-6pmmpm-and-table7.md`.
 
 Together they trace the chain **app key → Schoenflies / full HM → operators / generators →
 tensor form**. All expected values are anchored to the frozen Birss tables (`birss-tables/`,
