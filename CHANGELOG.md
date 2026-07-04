@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- PWA build config (`vite-plugin-pwa`'s `includeAssets`) referenced `favicon.ico`,
+  `apple-touch-icon.png`, and `mask-icon.svg`, none of which exist in `public/`. Now lists
+  the SVG icons that actually ship (`favicon.svg`, `icon-192.svg`, `icon-512.svg`), matching
+  the manifest's own icon list.
+
 ## [0.15.0] - 2026-07-04
 
 ### Added

@@ -15,7 +15,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.svg', 'icon-192.svg', 'icon-512.svg'],
       manifest: {
         name: 'The Birss App',
         short_name: 'BirssApp',
