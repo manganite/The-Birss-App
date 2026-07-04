@@ -230,7 +230,7 @@ export const GENERATORS: Record<string, Matrix3x3[]> = {
   "6/m'm'm'": [getRotationZ(60), getRotationY(180), multiply(inversion, timeReversal)],
   "6/m'mm": [getRotationZ(60), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, multiply(inversion, timeReversal)],
   "6'/m'mm'": [multiply(getRotationZ(60), timeReversal), getRotationY(180), inversion],
-  "6'/mm'm": [multiply(getRotationZ(60), timeReversal), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, multiply(inversion, timeReversal)],
+  "6'/mm'm": [multiply(getRotationZ(60), timeReversal), getRotationY(180), multiply(inversion, timeReversal)],
   "6/mm'm'": [getRotationZ(60), inversion, multiply(getRotationY(180), timeReversal)],
   "m'-3'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(inversion, timeReversal)],
   "4'32'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(getRotationZ(90), timeReversal)],
