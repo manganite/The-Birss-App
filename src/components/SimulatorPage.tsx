@@ -25,7 +25,7 @@ export function SimulatorPage({
 }: SimulatorPageProps) {
   const { thetaX, thetaY, psi0, phiX, phiY, psi } = orientation;
   const { amplitudes, setAmplitudes, phases, setPhases } = simulation;
-  const { type: selectedTensorType, timeReversal: selectedTimeReversal, setting: selectedSetting } = tensorConfig;
+  const { type: selectedTensorType, timeReversal: selectedTimeReversal, setting: selectedSetting, convention } = tensorConfig;
 
   const { labFrame, sourceTerms, sourceTermsExEy, expandedFormulas, independentComponents, simulationData } =
     useSimulatorState(selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY, psi0, phiX, phiY, psi, selectedSetting, amplitudes, setAmplitudes, phases, setPhases);
@@ -47,7 +47,7 @@ export function SimulatorPage({
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="hidden md:block">
-        <GroupIdentityHeader group={selectedGroup} setting={selectedSetting} onNavigate={onNavigate} />
+        <GroupIdentityHeader group={selectedGroup} setting={selectedSetting} convention={convention} onNavigate={onNavigate} />
       </div>
 
       <SimulatorSetupPanel

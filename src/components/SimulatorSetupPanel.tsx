@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { FormatPointGroup, getPresetsForSystem, KDirectionSelector } from './MathComponents';
-import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl } from './TensorSetupControls';
+import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl, ConventionControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig, OrientationState } from '../types';
@@ -23,7 +23,7 @@ export function SimulatorSetupPanel({
   labFrame,
   onNavigate,
 }: SimulatorSetupPanelProps) {
-  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting } = tensorConfig;
+  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting, convention, setConvention } = tensorConfig;
   const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0, phiX, setPhiX, phiY, setPhiY, psi, setPsi } = orientation;
   const [mobileSetupExpanded, setMobileSetupExpanded] = useState(false);
   const [showRotation, setShowRotation] = useState(phiX !== 0 || phiY !== 0 || psi !== 0);
@@ -68,11 +68,19 @@ export function SimulatorSetupPanel({
           />
         </div>
 
+        <div className="border-t border-ink border-opacity-10 pt-6 mt-8">
+          <ConventionControl
+            value={convention}
+            onChange={setConvention}
+            onNavigate={onNavigate}
+          />
+        </div>
+
         <CrystalSettingControl
           groupName={selectedGroup.name}
-          crystalSystem={selectedGroup.crystalSystem}
           value={selectedSetting}
           onChange={setSelectedSetting}
+          convention={convention}
           onNavigate={onNavigate}
           className="border-t border-ink border-opacity-10 pt-6 mt-8"
         />

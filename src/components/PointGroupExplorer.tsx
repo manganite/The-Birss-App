@@ -3,6 +3,7 @@ import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
 import { FormatPointGroup, getCrystalIcon, AxisOrientationInfo } from './MathComponents';
 import { OperationsModal } from './OperationsModal';
 import { AnimatePresence } from 'motion/react';
+import type { Convention } from '../services/conventionMapping';
 
 const CRYSTAL_SYSTEMS = [
   "Triclinic",
@@ -15,11 +16,12 @@ const CRYSTAL_SYSTEMS = [
 ];
 
 interface PointGroupExplorerProps {
+  convention: Convention;
   onSelectGroupForCalculator?: (group: PointGroupData) => void;
   onSelectGroupForSimulator?: (group: PointGroupData) => void;
 }
 
-export const PointGroupExplorer = ({ onSelectGroupForCalculator, onSelectGroupForSimulator }: PointGroupExplorerProps) => {
+export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onSelectGroupForSimulator }: PointGroupExplorerProps) => {
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
   const [activeSystem, setActiveSystem] = useState(CRYSTAL_SYSTEMS[0]);
 
@@ -149,13 +151,14 @@ export const PointGroupExplorer = ({ onSelectGroupForCalculator, onSelectGroupFo
 
       {/* Crystal system reference panel */}
       <div className="mt-6">
-        <AxisOrientationInfo crystalSystem={activeSystem} />
+        <AxisOrientationInfo crystalSystem={activeSystem} convention={convention} />
       </div>
 
       <AnimatePresence>
         {selectedGroup && (
           <OperationsModal
             group={selectedGroup}
+            convention={convention}
             onClose={() => setSelectedGroup(null)}
             onOpenInCalculator={onSelectGroupForCalculator ? () => onSelectGroupForCalculator(selectedGroup) : undefined}
             onOpenInSimulator={onSelectGroupForSimulator ? () => onSelectGroupForSimulator(selectedGroup) : undefined}

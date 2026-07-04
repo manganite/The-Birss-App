@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { TensorType, TensorTimeReversal } from './services/tensorCalculator';
+import type { Convention } from './services/conventionMapping';
 
 export const TENSOR_META = {
   ED: { label: 'Electric Dipole', rank: '3', type: 'POLAR' },
@@ -14,6 +15,8 @@ export interface TensorConfig {
   setTimeReversal: (t: TensorTimeReversal) => void;
   setting: number;
   setSetting: (s: number) => void;
+  convention: Convention;
+  setConvention: (c: Convention) => void;
 }
 
 export interface OrientationState {

@@ -2,22 +2,26 @@ import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { X, Calculator, Activity } from 'lucide-react';
 import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
+import { getFrameDisplayName } from '../services/conventionMapping';
+import type { Convention } from '../services/conventionMapping';
 import { FormatPointGroup, SymmetryOperation } from './MathComponents';
 import { PointGroupData } from '../data/pointGroups';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
 interface OperationsModalProps {
   group: PointGroupData;
+  convention: Convention;
   onClose: () => void;
   onOpenInCalculator?: () => void;
   onOpenInSimulator?: () => void;
 }
 
-export const OperationsModal = ({ group, onClose, onOpenInCalculator, onOpenInSimulator }: OperationsModalProps) => {
+export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator, onOpenInSimulator }: OperationsModalProps) => {
   const operations = getSymmetryOperations(group.name);
   const generators = getGeneratorSymbols(group.name);
   const altSettings = getAlternateSettings(group.name);
   const futureSettingCount = getFutureSettingCount(group.name);
+  const displayName = getFrameDisplayName(group.name, 1, convention);
   const containerRef = useRef<HTMLDivElement>(null);
   useDialogA11y({ onClose, containerRef });
 
@@ -38,9 +42,15 @@ export const OperationsModal = ({ group, onClose, onOpenInCalculator, onOpenInSi
         <div className="flex items-center justify-between p-4 border-b border-ink shrink-0">
           <div className="flex items-center gap-4">
             <h2 id="operations-modal-title" className="text-xl font-medium tracking-tight">
-              <FormatPointGroup name={group.name} />
+              <FormatPointGroup name={displayName.primary} />
             </h2>
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 hidden sm:flex">
+              {displayName.synonym && (
+                <>
+                  <span className="normal-case">{convention === 'birss' ? 'ITC' : 'Birss'}: {displayName.synonym}</span>
+                  <span>•</span>
+                </>
+              )}
               <span>{group.crystalSystem}</span>
               <span>•</span>
               <span>Type {group.type}</span>

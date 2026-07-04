@@ -11,6 +11,7 @@ import {
   TensorTimeReversal,
   TensorType,
 } from './services/tensorCalculator';
+import type { Convention } from './services/conventionMapping';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
 import { HelpPage } from './components/HelpPage';
 import { SimulatorPage } from './components/SimulatorPage';
@@ -43,6 +44,7 @@ export default function App() {
   const [selectedTensorType, setSelectedTensorType] = useState<TensorType>('ED');
   const [selectedTimeReversal, setSelectedTimeReversal] = useState<TensorTimeReversal>('i');
   const [selectedSetting, setSelectedSetting] = useState<number>(1);
+  const [convention, setConvention] = useState<Convention>('birss');
   const [amplitudes, setAmplitudes] = useState<Record<string, number>>({});
   const [phases, setPhases] = useState<Record<string, number>>({});
 
@@ -87,6 +89,7 @@ export default function App() {
     type: selectedTensorType, setType: setSelectedTensorType,
     timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal,
     setting: selectedSetting, setSetting: setSelectedSetting,
+    convention, setConvention,
   };
 
   const orientation = {
@@ -248,6 +251,7 @@ export default function App() {
           <HelpPage activeTab={helpActiveTab} onTabChange={setHelpActiveTab} />
         ) : currentView === 'explorer' ? (
           <PointGroupExplorer
+            convention={convention}
             onSelectGroupForCalculator={(group) => {
               setSelectedGroup(group);
               setCurrentView('calculator');

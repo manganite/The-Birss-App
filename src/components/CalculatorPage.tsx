@@ -10,7 +10,7 @@ import {
   getLabFrameVectors,
 } from '../services/tensorCalculator';
 import { TensorTerm, KDirectionSelector, GroupIdentityHeader } from './MathComponents';
-import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl } from './TensorSetupControls';
+import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl, ConventionControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
 import { TENSOR_META } from '../types';
 import type { TensorConfig, PresetAnglesState } from '../types';
@@ -28,7 +28,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
   const [mobileSetupExpanded, setMobileSetupExpanded] = useState(false);
 
   const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0 } = presetAngles;
-  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting } = tensorConfig;
+  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting, convention, setConvention } = tensorConfig;
 
   const currentComponents = useMemo(() => {
     if (!selectedGroup) return [];
@@ -70,6 +70,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
       <GroupIdentityHeader
         group={selectedGroup}
         setting={selectedSetting}
+        convention={convention}
         onNavigate={onNavigate}
       />
 
@@ -111,13 +112,20 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                 onNavigate={onNavigate}
               />
             </div>
+            <div className="pt-6">
+              <ConventionControl
+                value={convention}
+                onChange={setConvention}
+                onNavigate={onNavigate}
+              />
+            </div>
           </div>
 
           <CrystalSettingControl
             groupName={selectedGroup.name}
-            crystalSystem={selectedGroup.crystalSystem}
             value={selectedSetting}
             onChange={setSelectedSetting}
+            convention={convention}
             onNavigate={onNavigate}
           />
         </div>

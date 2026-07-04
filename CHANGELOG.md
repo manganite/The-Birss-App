@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a Birss/ITC symbol-convention toggle: setting labels, standard badges, group-string
+  synonyms (`6'/mm'm`/`6'/mmm'`), convention-aware axis display, and in-app explanations of the
+  Birss↔ITC divergences. Display-only — no computed output changes.
+
 ## [0.14.1] - 2026-07-04
 
 ### Fixed

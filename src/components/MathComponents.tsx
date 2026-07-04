@@ -4,6 +4,8 @@ import 'katex/dist/katex.min.css';
 import { Box, Hexagon, Triangle, Layers, Compass, Info, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { hklToPresetAngles } from '../services/orientation';
 import { isCentrosymmetric, getParentGroup, getHalvingSubgroup, getSHGConsequence, getAlternateSettings } from '../services/tensorCalculator';
+import { getFrameDisplayName } from '../services/conventionMapping';
+import type { Convention } from '../services/conventionMapping';
 import { PointGroupData } from '../data/pointGroups';
 import { TermInfo } from './TermInfo';
 
@@ -227,7 +229,7 @@ export const SymmetryOperation = ({ symbol }: { symbol: string }) => {
   );
 };
 
-export function AxisOrientationInfo({ crystalSystem }: { crystalSystem: string }) {
+export function AxisOrientationInfo({ crystalSystem, convention }: { crystalSystem: string; convention?: Convention }) {
   let content = null;
   switch (crystalSystem) {
     case 'Triclinic':
@@ -271,6 +273,11 @@ export function AxisOrientationInfo({ crystalSystem }: { crystalSystem: string }
           <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" /> / <InlineMath math="[0001]" /> (c-axis)<br/>
           <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" /> / <InlineMath math="[2\bar{1}\bar{1}0]" /> (a-axis)<br/>
           <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[120]" /> / <InlineMath math="[01\bar{1}0]" />
+          {convention === 'itc' && (
+            <span className="block mt-2 opacity-80">
+              HM position 2: ITC = a-axis (<span className="font-mono">x</span>); Birss = <span className="font-mono">y</span>.
+            </span>
+          )}
         </>
       );
       break;
@@ -294,10 +301,11 @@ export function AxisOrientationInfo({ crystalSystem }: { crystalSystem: string }
 interface GroupIdentityHeaderProps {
   group: PointGroupData;
   setting: number;
+  convention: Convention;
   onNavigate?: (view: string, tab?: string) => void;
 }
 
-export function GroupIdentityHeader({ group, setting, onNavigate }: GroupIdentityHeaderProps) {
+export function GroupIdentityHeader({ group, setting, convention, onNavigate }: GroupIdentityHeaderProps) {
   const [expanded, setExpanded] = useState(false);
   const centro = isCentrosymmetric(group.name);
   const parent = getParentGroup(group.name);
@@ -305,6 +313,7 @@ export function GroupIdentityHeader({ group, setting, onNavigate }: GroupIdentit
   const shgLine = getSHGConsequence(group.name);
   const settings = getAlternateSettings(group.name);
   const settingCount = settings ? settings.length + 1 : 1;
+  const displayName = getFrameDisplayName(group.name, setting, convention);
 
   const panelId = `group-identity-panel-${group.name.replace(/[^a-zA-Z0-9]/g, '')}`;
 
@@ -320,7 +329,10 @@ export function GroupIdentityHeader({ group, setting, onNavigate }: GroupIdentit
         <div className="flex items-center gap-3">
           {getCrystalIcon(group.crystalSystem)}
           <div className="text-left flex items-center flex-wrap gap-x-2 gap-y-1">
-            <span className="text-lg font-serif italic"><FormatPointGroup name={group.name} /></span>
+            <span className="text-lg font-serif italic"><FormatPointGroup name={displayName.primary} /></span>
+            {displayName.synonym && (
+              <span className="text-xs opacity-50">({convention === 'birss' ? 'ITC' : 'Birss'}: {displayName.synonym})</span>
+            )}
             {group.schoenflies && <span className="text-xs opacity-50">({group.schoenflies})</span>}
             <span className="text-xs opacity-50">{group.crystalSystem}</span>
             <span className="text-xs opacity-50">· Type {group.type}</span>
@@ -328,6 +340,7 @@ export function GroupIdentityHeader({ group, setting, onNavigate }: GroupIdentit
             {settingCount > 1 && (
               <span className="text-xs opacity-50">· Setting {setting}/{settingCount}</span>
             )}
+            <span className="text-xs opacity-50">· {convention === 'birss' ? 'Birss' : 'ITC'}</span>
           </div>
         </div>
         {expanded ? <ChevronUp className="w-4 h-4 opacity-50" /> : <ChevronDown className="w-4 h-4 opacity-50" />}
@@ -337,7 +350,10 @@ export function GroupIdentityHeader({ group, setting, onNavigate }: GroupIdentit
         <section id={panelId} className="border border-ink border-opacity-10 border-t-0 p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <h2 className="text-4xl font-serif italic"><FormatPointGroup name={group.name} /></h2>
+              <h2 className="text-4xl font-serif italic"><FormatPointGroup name={displayName.primary} /></h2>
+              {displayName.synonym && (
+                <p className="text-xs opacity-50 mt-1">{convention === 'birss' ? 'ITC' : 'Birss'}: {displayName.synonym}</p>
+              )}
               {group.schoenflies && (
                 <p className="text-sm opacity-60 mt-1">{group.schoenflies}</p>
               )}
@@ -357,7 +373,7 @@ export function GroupIdentityHeader({ group, setting, onNavigate }: GroupIdentit
               <p className="text-sm font-medium">{centro ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</p>
               <p className={`text-[10px] uppercase tracking-widest ${centro ? 'opacity-70' : 'opacity-50'}`}>Symmetry Type</p>
             </div>
-            <AxisOrientationInfo crystalSystem={group.crystalSystem} />
+            <AxisOrientationInfo crystalSystem={group.crystalSystem} convention={convention} />
           </div>
 
           <div className="text-xs opacity-60 leading-relaxed">{shgLine}</div>
