@@ -20,6 +20,8 @@ jobs:
         run: npm install
       - name: Lint (type-check)
         run: npm run lint
+      - name: Build
+        run: npm run build
       - name: Nomenclature table is reproducible
         run: |
           python3 birss-tables/tools/generate_nomenclature.py
