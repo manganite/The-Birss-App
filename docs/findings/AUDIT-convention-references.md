@@ -328,8 +328,10 @@ real. This report presents the fully-source-verified breakdown in place of the s
   structural fact, not a gap — see Phase 3). MD-c's achievable range is wider (up to 21
   letters, reachable only through specific black-white groups' cross-formula) and was not
   separately audited; any MD-c-specific gap-filling is left to a future pass.
-- No open `VERIFY:` markers remain in `goldenTensors.fixtures.ts` (Part 0b: all 11 flipped to
-  `VERIFIED:`, signed off against the printed Birss Table 4e, 2026-07-02).
+- Part 0b flipped 11 markers to `VERIFIED:`, signed off against the printed Birss Table 4e
+  (2026-07-02). 7 `VERIFY:` markers remain open in `goldenTensors.fixtures.ts` as of this
+  writing (lines 978, 984, 1343, 1349, 1360, 1366, 1372), pending human sign-off against
+  Fiebig et al. (2005) / the printed Birss tables — not yet resolved.
 
 **Final gates** (this commit, `main`): `npx tsc --noEmit` — clean. `npx vite build` — clean.
 `npx vitest run` — **1331/1331 passing** (13 test files), up from 1183 at the start of this
