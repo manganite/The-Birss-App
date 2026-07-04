@@ -227,6 +227,7 @@ Carried from `ROADMAP.md § Ideas / Parking Lot`. No commitment or priority orde
 | **Voigt notation (d-tensor)** | Display χ⁽²⁾_ijk in contracted 3×6 d_iα notation. Pure display change — engine already computes the full tensor. Open decisions: include the factor ½ (Boyd convention)? 3×6 matrix grid or component list? Extend to rank-4 EQ? |
 | **Accessibility pass** | Focus states for preset/toggle buttons; `aria-label`s for lucide icons; keyboard operation of sliders. Currently absent. |
 | **PWA enhancement** | App is already installable via `vite-plugin-pwa`. A discreet install prompt and explicit offline support would benefit lab use without network. |
+| **Major dependency upgrades** | `npm outdated` (2026-07-04) shows several packages capped below `Latest` by `package.json` ranges: `vite` 6→8, `react`/`react-dom` 19.0→19.2, `typescript` 5.8→6, `tailwindcss`/`@tailwindcss/vite` 4.1→4.3, `lucide-react` 0.546→1.23, `@vitejs/plugin-react` 5→6, `@types/node` 22→26, `katex` 0.16→0.17, `motion` 12.23→12.42, `recharts` 3.8→3.9, `autoprefixer` 10.4→10.5. `npm audit` is clean (no known vulnerabilities), so this is a planned modernization chore, not a security fix — batch and test major-version bumps (esp. `vite` 8, `typescript` 6, `lucide-react` 1.x) separately from routine patch bumps. |
 
 ---
 
