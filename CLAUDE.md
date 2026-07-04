@@ -7,7 +7,7 @@
 - **Never commit directly to `main`.** Always create a feature/fix/refactor branch first.
 - **Branch prefixes:** `feature/`, `fix/`, `hotfix/`, `refactor/`, `docs/`, `chore/`
 - **Conventional Commits:** `type(scope): lowercase summary` (e.g. `feat(simulator): add polarimetry tooltip`)
-- **Quality gates before merging:** `npm run lint && npm run test`
+- **Quality gates before merging:** `npm run lint && npm run test` (CI also runs `npm run build`)
 - **Merge method:** `--no-ff` for local merges; pull request for physics/tensor changes
 - **CHANGELOG.md:** Update `[Unreleased]` for user-facing changes
 

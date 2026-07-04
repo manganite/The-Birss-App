@@ -38,7 +38,7 @@ The tensor component output follows the conventions of **Birss, *Symmetry and Ma
 
 - **App convention references** (this repo): the **[convention contract & verification ladder](docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md)** and the **[122-group nomenclature table](birss-tables/table-nomenclature.md)** — how each group's key maps to its Schoenflies / full-HM / Shubnikov notation and to its Birss operators, generators, and tensor form (App↔Birss↔ITC divergences flagged; see *Reference & Original Birss Sources* below for the full table set).
 - **[Birss, R. R. (1966). Symmetry and Magnetism](https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf)**: Authoritative source for magnetic point groups and tensor component calculation. Reference tables included in this repo under [`birss-tables/`](./birss-tables/).
-- **[International Tables for Crystallography](https://doi.org/10.1107/97809553602060000114)**: General crystal symmetry aspects. See [DISCREPANCIES.md](docs/findings/DISCREPANCIES.md) for a detailed comparison of Birss vs ITC conventions.
+- **[International Tables for Crystallography](https://doi.org/10.1107/97809553602060000114)**: General crystal symmetry aspects. See [BIRSS-ITC-CONVENTION-DIVERGENCES.md](docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md) for a detailed comparison of Birss vs ITC conventions.
 - **[Pershan, P. S. (1963). Nonlinear Optical Properties of Solids](https://doi.org/10.1103/PhysRev.130.919)**: Nonlinear optical multipole contributions.
 - **[Fröhlich, D., et al. (1999). Nonlinear spectroscopy of antiferromagnetics](https://doi.org/10.1007/s003400050650)**: Source term calculation.
 
@@ -60,11 +60,11 @@ These are the same tables the app is built on — see [`birss-tables/README.md`]
 for the full index and how to use them.
 
 ## Validation & Testing
-The tensor-calculation engine (`src/services/`) is covered by a Vitest suite of 490+ tests, organized in tiers of increasing specificity:
+The tensor-calculation engine (`src/services/`) is covered by a Vitest suite of 1500+ tests, organized in tiers of increasing specificity:
 - **Tier 1 — group order**: for all 122 magnetic point groups, `getSymmetryOperations` returns a group of the expected order.
 - **Tier 1b — true closure**: for all 122 groups, every pairwise product of elements in the closed group is itself a member, independently verifying the floating-point-hardened closure algorithm in `symmetryGroups.ts`.
 - **Tier 2 — parity invariants**: for all 122 groups, structural invariants such as "ED vanishes for centrosymmetric groups", "EQ never vanishes", and "grey groups `G1'` reproduce `G` for i-type tensors".
-- **Tier 3 — golden component relations**: 40+ fixtures pinning down the exact independent-component relations for specific (group, tensor type, time-reversal) combinations. Includes all 21 Birss Table 4e symbol classes (A3–U3) at rank 3, every Type-III crystal family, c-type ED (e.g. the canonical Cr₂O₃ `-3'm'` magnetoelectric tensor), axial (MD) tensors, and rank-4 EQ. See `src/services/goldenTensors.fixtures.ts` for sources and citations.
+- **Tier 3 — golden component relations**: 150+ fixtures pinning down the exact independent-component relations for specific (group, tensor type, time-reversal) combinations. Includes all 21 Birss Table 4e symbol classes (A3–U3) at rank 3, every Type-III crystal family, c-type ED (e.g. the canonical Cr₂O₃ `-3'm'` magnetoelectric tensor), axial (MD) tensors, and rank-4 EQ. See `src/services/goldenTensors.fixtures.ts` for sources and citations.
 
 ## Tech Stack
 - **React 19** + **Vite**
