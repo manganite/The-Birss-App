@@ -1371,4 +1371,107 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: "Grey rule: ED-i identical to parent -6m2 (setting 2), table-anchored.",
     // VERIFY: pending human sign-off against the printed Birss tables.
   },
+
+  // --- ITC Table 1.5.7.1 piezomagnetic anchors: independent second-source MD-c coverage ---
+  // Each `expected` below is independently derived from the ITC Voigt Lambda matrix transcribed
+  // in docs/references/ITC-table-1.5.7.1-piezomagnetic.md: raw component = ITC coefficient,
+  // halved for shear (off-diagonal) Voigt columns 4-6 (the standard Lambda_i,alpha =
+  // 2*Lambda_ijk Voigt contraction identity), then listed in the app's own canonical
+  // (alphabetical) term order. The derivation was done from the ITC matrix first and then
+  // cross-checked against calculateTensorComponents output -- never the reverse -- and is
+  // additionally cross-checked by src/services/itcPiezomagnetic.reference.test.ts, which
+  // independently confirms the app's MD-c projection matches this same ITC matrix at the cited
+  // setting.
+  {
+    group: '2/m', tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxy} = \\chi_{xyx}', '\\chi_{xyz} = \\chi_{xzy}', '\\chi_{yxx}', '\\chi_{yxz} = \\chi_{yzx}', '\\chi_{yyy}', '\\chi_{yzz}', '\\chi_{zxy} = \\chi_{zyx}', '\\chi_{zyz} = \\chi_{zzy}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 2 main table (b-unique = app setting 2).',
+    note: 'Clears the 2/m entry from alternateSettings.coverage.test.ts NO_ANCHOR.',
+  },
+  {
+    group: "2'/m'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx}', '\\chi_{xxz} = \\chi_{xzx}', '\\chi_{xyy}', '\\chi_{xzz}', '\\chi_{yxy} = \\chi_{yyx}', '\\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx}', '\\chi_{zxz} = \\chi_{zzx}', '\\chi_{zyy}', '\\chi_{zzz}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 3 main table (b-unique = app setting 2).',
+    note: "Clears the 2'/m' entry from alternateSettings.coverage.test.ts NO_ANCHOR.",
+  },
+  {
+    group: '-3m', tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 12 (D3/C3v/D3d, all-unitary).',
+    note: "Clears the -3m entry from alternateSettings.coverage.test.ts NO_ANCHOR. Frame divergence: ITC's position-2=x matches the app's alternate (30°-rotated) setting for this single-3-fold trigonal family.",
+  },
+  {
+    group: '32', tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 12 (D3/C3v/D3d, all-unitary).',
+    note: 'Byte-identical to the pre-existing Table-4a ED-i setting-2 fixture for 32, independently confirming ITC/app/Birss agreement.',
+  },
+  {
+    group: '3m', tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 12 (D3/C3v/D3d, all-unitary).',
+  },
+  {
+    group: "32'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx} = \\chi_{zyy}', '\\chi_{zzz}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 13 (D3/C3v/D3d, primed lateral).',
+  },
+  {
+    group: "3m'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx} = \\chi_{zyy}', '\\chi_{zzz}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 13 (D3/C3v/D3d, primed lateral).',
+  },
+  {
+    group: "-3m'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx} = \\chi_{zyy}', '\\chi_{zzz}'],
+    source: 'ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 13 (D3/C3v/D3d, primed lateral).',
+  },
+  {
+    group: "6'22'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 15, the \"(R_n)\" hexagonal D-type group.",
+    note: "One of the five (R_n) groups; ITC's frame (position-2=a-axis) is the 30°-rotated xxx-family, matching the app's alternate setting.",
+  },
+  {
+    group: "6'mm'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 15, the \"(R_n)\" hexagonal D-type group.",
+  },
+  {
+    group: "-6'2m'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 15, the \"(R_n)\" hexagonal D-type group.",
+  },
+  {
+    group: "-6'm2'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 15, the \"(R_n)\" hexagonal D-type group.",
+  },
+  {
+    group: "6'/m'mm'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 15, the \"(R_n)\" hexagonal D-type group.",
+    note: "Clears the 6'/m'mm' entry from alternateSettings.coverage.test.ts NO_ANCHOR.",
+  },
+
+  // --- ITC-rooted setting-2 anchors via table-verified default + known transform ---
+  // Unlike the 13 fixtures above, ITC's own matrix for these two groups matches the app's
+  // DEFAULT setting 1 (not setting 2) -- ITC's frame coincides with the app's default here.
+  // Setting 2 is anchored the same way as the pre-existing `4'/m'm'm` ED-c setting-2 fixture
+  // above (`goldenTensors.fixtures.ts`, ~line 1348): apply the group's own ALTERNATE_SETTINGS
+  // transform to the ITC-anchored default value via independent rank-3 tensor algebra (rotation
+  // matrix contraction / axis-permutation, implemented from scratch, no app projection code
+  // involved), and confirm the result reproduces the app's actual setting-2 output structurally.
+  {
+    group: "4'/mmm'", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 10 default (setting 1: chi_xyz=chi_xzy=chi_yxz=chi_yzx, chi_zxy=chi_zyx) rotated by Rz(45°) per ALTERNATE_SETTINGS. Independent rank-3 rotation-matrix contraction (implemented from scratch) reproduces this exactly.",
+    note: "Clears the 4'/mmm' entry from alternateSettings.coverage.test.ts NO_ANCHOR.",
+  },
+  {
+    group: "m'm'm", tensor: 'MD', tr: 'c', setting: 2,
+    expected: ['\\chi_{xxx}', '\\chi_{xyy}', '\\chi_{xzz}', '\\chi_{yxy} = \\chi_{yyx}', '\\chi_{zxz} = \\chi_{zzx}'],
+    source: "ITC Vol. D, Table 1.5.7.1 (p. 135), VERIFIED -- Block 5 default (setting 1: chi_xxz=chi_xzx, chi_yyz=chi_yzy, chi_zxx, chi_zyy, chi_zzz, five independent params) permuted via ORTHO_CYCLIC (x→y→z→x) per ALTERNATE_SETTINGS. Independent axis-permutation check (implemented from scratch) reproduces this exactly.",
+    note: "Clears the m'm'm entry from alternateSettings.coverage.test.ts NO_ANCHOR.",
+  },
 ];
