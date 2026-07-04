@@ -84,9 +84,10 @@ function parseTable7(): Row[] {
     if (f.length < 14 || f[2].startsWith('--') || /Magnetic/.test(f[2]) || f[3] === '-') return;
     const cell = (s: string): { letter: string | null; br: boolean } => {
       if (s === '-') return { letter: null, br: false };
-      const mm = s.match(/^(\()?([A-U])_n\)?$/);
+      // Parens must be balanced -- (X_n) or X_n only, not the mismatched X_n) / (X_n.
+      const mm = s.match(/^(?:\(([A-U])_n\)|([A-U])_n)$/);
       if (!mm) throw new Error(`table-7.md: bad tensor cell grammar "${s}" (line ${li + 1})`);
-      return { letter: mm[2], br: !!mm[1] };
+      return { letter: mm[1] ?? mm[2], br: mm[1] !== undefined };
     };
     const M = strip(f[2]), A = strip(f[3]), B = strip(f[4]);
     rows.push({
@@ -137,13 +138,23 @@ function projector(els: { R: number[][]; sgn: number }[]) {
     }
     return acc;
   };
-  let trace = 0;
-  for (let i = 0; i < 27; i++) {
-    const u = new Array(27).fill(0);
-    u[i] = 1;
-    trace += apply(u)[i];
-  }
-  return { apply, trace };
+  // trace is only needed for cells printed as '-'; compute lazily so the 27 extra apply()
+  // calls aren't paid for the (much more common) lettered cells.
+  let cachedTrace: number | undefined;
+  return {
+    apply,
+    get trace() {
+      if (cachedTrace === undefined) {
+        cachedTrace = 0;
+        for (let i = 0; i < 27; i++) {
+          const u = new Array(27).fill(0);
+          u[i] = 1;
+          cachedTrace += apply(u)[i];
+        }
+      }
+      return cachedTrace;
+    },
+  };
 }
 const inImage = (P: { apply: (v: Vec) => Vec }, v: Vec) => {
   const w = P.apply(v);
