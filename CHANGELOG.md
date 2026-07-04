@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-07-04
+
 ### Added
 
 - Added a Birss/ITC symbol-convention toggle: setting labels, standard badges, group-string
   synonyms (`6'/mm'm`/`6'/mmm'`), convention-aware axis display, and in-app explanations of the
   Birss↔ITC divergences. Display-only — no computed output changes.
+- Added ITC Table 1.5.7.1 as an independent (non-Birss) verification anchor for the MD-c
+  (piezomagnetic) tensor class: a transcribed reference table
+  (`docs/references/ITC-table-1.5.7.1-piezomagnetic.md`), a cross-validation test over 71
+  group/setting entries, and 15 literature-anchored golden fixtures. Shrinks the un-anchored
+  `NO_ANCHOR` set to the two grey groups (`2/m1'`, `-3m1'`, which have no MD-c tensor).
+  Verification only -- no computed output changes.
 
 ## [0.14.1] - 2026-07-04
 
