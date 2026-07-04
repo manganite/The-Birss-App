@@ -43,6 +43,12 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     helpTab: 'conventions',
   },
   {
+    id: 'convention',
+    term: 'Symbol Convention (Birss vs ITC)',
+    brief: 'Which source’s Hermann-Mauguin naming rule labels the current frame. Never changes the physics or the selected setting -- only which symbol/badge is shown.',
+    helpTab: 'deeper',
+  },
+  {
     id: 'type-i',
     term: 'Type I -- Ordinary',
     brief: 'Standard crystallographic point group with no time-reversal operation among its elements.',

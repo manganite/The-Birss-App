@@ -493,6 +493,33 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               </div>
 
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Symbol Conventions: Birss vs ITC</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  <strong>Convention</strong> is a separate choice from <strong>setting</strong> above: setting picks <em>which</em> physical frame is selected; convention only picks <em>which naming rule</em> labels that frame. Switching convention never changes the selected frame or any computed tensor value — only which symbol and which "standard" badge are displayed.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The two rules disagree on one point: for trigonal/hexagonal groups, Birss reads HM position 2 from the <InlineMath math="y" />-axis family, while ITC reads it from the <InlineMath math="x" /> (a-axis) family — the two families are 30° apart. This has three distinct effects:
+                </p>
+                <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
+                  <li><strong>Mechanism-B trigonal/hexagonal pairs swap names:</strong> for a group like <InlineMath math="6'mm'" /> (Mechanism B above), the app's default frame is Birss's <InlineMath math="6'mm'" /> and ITC's <InlineMath math="6'm'm" />; the alternate setting is Birss's <InlineMath math="6'm'm" /> and ITC's <InlineMath math="6'mm'" />. The physics is identical (labels swap, the "ITC standard" badge moves to the setting ITC would call by the group's key); this covers the trigonal <InlineMath math="32/3m/\bar{3}m" /> family and the seven affected hexagonal groups.</li>
+                  <li><strong>Tetragonal Mechanism-A pairs are convention-neutral:</strong> for groups like <InlineMath math="\bar{4}2m" />, the 4-fold makes the <InlineMath math="x" /> and <InlineMath math="y" /> secondary families equivalent, so Birss's and ITC's position-2 readings always agree — no label or badge change in either mode.</li>
+                  <li><strong>Two Sec.-7A groups are exceptions to the swap:</strong> <InlineMath math="m'm'm" /> already uses the identical string in both conventions (only its ITC-standard badge moves, to the a-unique setting, which carries ITC's <InlineMath math="mm'm'" /> orientation); <InlineMath math="6'/mm'm" /> swaps names exactly like the Mechanism-B groups (setting 1: Birss <InlineMath math="6'/mm'm" /> / ITC <InlineMath math="6'/mmm'" />), but uniquely keeps its "ITC standard" badge on setting 1, because both conventions' tabulated standard is the same physical frame for this one group.</li>
+                </ul>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  Monoclinic groups keep the same short symbol in both conventions (Mechanism "Axis convention" above already labels the two settings <em>First</em>/<em>Second</em>); only the ITC-standard badge moves, to the b-unique (Second) setting.
+                </p>
+                <div className="p-4 bg-ink/5 border border-ink border-opacity-10 space-y-2">
+                  <h4 className="font-medium text-sm">Reading Birss's parentheses</h4>
+                  <p className="text-xs opacity-70 leading-relaxed">
+                    Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-[11px]">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
+                  </p>
+                  <p className="text-xs opacity-70 leading-relaxed">
+                    Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}'2m')" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
                   References
