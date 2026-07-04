@@ -129,7 +129,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | Hexagonal | D<sub>6h</sub>(C<sub>6h</sub>) | `6/mm'm'` | 6/m 2'/m' 2'/m' | `m'.6:m` | black-white (III / MP3) |  |
 | Hexagonal | D<sub>6h</sub>(D<sub>6</sub>) | `6/m'm'm'` | 6/m' 2/m' 2/m' | `m'.6:m'` | black-white (III / MP3) |  |
 | Hexagonal | D<sub>6h</sub>(C<sub>6v</sub>) | `6/m'mm` | 6/m' 2'/m 2'/m | `m.6:m'` | black-white (III / MP3) |  |
-| Hexagonal | D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 6'/m 2'/m 2/m' | `m.6':m` | black-white (III / MP3) |  |
+| Hexagonal | D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 6'/m 2/m' 2'/m | `m.6':m` | black-white (III / MP3) | ITC prints short `6'/mmm'`, full `6'/m 2'/m 2/m'` — same physical orientation as the app default; the strings differ only by the position-2 convention (Birss: y-family; ITC: a-axes). |
 | Cubic | T | `23` | 23 | `3/2` | colourless (I / MP2) |  |
 | Cubic | T<sub>h</sub> | `m-3` | 2/m -3 | `-6/2` | colourless (I / MP2) | Birss Table 6 short = m3 (barless); app keeps bar |
 | Cubic | T<sub>h</sub>(T) | `m'-3'` | 2/m' -3' | `-6'/2` | black-white (III / MP3) | Birss Table 6 short = m'3; app keeps bar+prime |
@@ -224,7 +224,7 @@ Join is always by the **abstract group (Schoenflies `G(H)`)**, never the HM stri
 | D<sub>6h</sub>(C<sub>6h</sub>) | `6/mm'm'` | 1, -1, 2_z, -2_z, ±3_z, ±-3_z, ±6_z, ±-6_z, 6(2'⊥), 6(-2'⊥) | σ(1), σ(3), σ(6)  /  σ'(2) |
 | D<sub>6h</sub>(D<sub>6</sub>) | `6/m'm'm'` | 1, 6(2⊥), 2_z, ±3_z, ±6_z, -1', -2'_z, ±-3'_z, ±-6'_z, 6(-2'⊥) | σ(2), σ(3), σ(6)  /  σ'(1) |
 | D<sub>6h</sub>(C<sub>6v</sub>) | `6/m'mm` | 1, 2_z, 6(-2⊥), ±3_z, ±6_z, -1', -2'_z, 6(2'⊥), ±-3'_z, ±-6'_z | σ(3), σ(4), σ(6)  /  σ'(1) |
-| D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z, -1', 2'_z, 3(2'⊥), 3(-2'⊥), ±-3'_z, ±6'_z | σ(4), σ(5), σ(6)  /  σ'(1) |
+| D<sub>6h</sub>(D<sub>3h</sub>) | `6'/mm'm` | 1, 3(2⊥), 3(-2⊥), -2_z, ±3_z, ±-6_z, -1', 2'_z, 3(2'⊥), 3(-2'⊥), ±-3'_z, ±6'_z | σ(2), σ(5), σ(6)  /  σ'(1) |
 | T | `23` | 1, 3(2), 4(±3) | σ(3), σ(9)  /  — |
 | T<sub>h</sub> | `m-3` | 1, -1, 3(2), 3(-2), 4(±3), 4(±-3) | σ(1), σ(3), σ(9)  /  — |
 | T<sub>h</sub>(T) | `m'-3'` | 1, 3(2), 4(±3), -1', 3(-2'), 4(±-3') | σ(3), σ(9)  /  σ'(1) |
