@@ -514,7 +514,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                     Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-[11px]">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
                   </p>
                   <p className="text-xs opacity-70 leading-relaxed">
-                    Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}2m)" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
+                    Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}'2m')" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
                   </p>
                 </div>
               </div>

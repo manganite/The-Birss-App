@@ -1,4 +1,4 @@
-import { ALTERNATE_SETTINGS } from './symmetryGroups';
+import { ALTERNATE_SETTINGS, EPSILON } from './symmetryGroups';
 
 /**
  * Birss/ITC symbol-convention mapping. Pure labelling/mapping layer -- see
@@ -18,7 +18,7 @@ const ROT_Z_30_COS = Math.cos(Math.PI / 6);
 function isRotZ30(group: string): boolean {
   const defs = ALTERNATE_SETTINGS[group];
   if (!defs) return false;
-  return Math.abs(defs[0].rotation.m[0][0] - ROT_Z_30_COS) < 1e-6;
+  return Math.abs(defs[0].rotation.m[0][0] - ROT_Z_30_COS) < EPSILON;
 }
 
 /**
