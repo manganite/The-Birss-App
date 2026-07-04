@@ -24,6 +24,45 @@ table, but referred to the alternate (rotated) reference-axis setting. For Table
 counterpart; a derived tensor symbol is itself written in parentheses whenever it is derived from a
 parenthesized A, B, or column-2 group symbol.
 
+**Meaning of the brackets** (Birss's own explanation, text following Table 6, re-verified against
+the scan 2026-07-04): a parenthesized *group* symbol is referred to reference axes that are
+**not** the standard axes of that symbol family — rotated by π/4 (45°) for the tetragonal
+`(-4m2)`/`(-42m)` pair vs. `-42m`, by π/6 (30°) for the hexagonal `(-62m)` vs. `-6m2`, or an axis
+permutation for the orthorhombic `(m2m)`, `(2mm)` vs. `mm2`. A parenthesized *tensor* symbol such
+as `(R_n)` means the corresponding Table-4x form is valid **in those rotated axes**; expressed in
+the row's own fixed frame, the components are the correspondingly transformed form (e.g. `(R_n)`
+at rank 3 = R3's standard-frame form rotated 30° = the yyy-family for a row whose standard-frame
+form would be the xxx-family, or vice versa). The class letter itself (Table 4a) is unaffected —
+for Table-4a lookups a bracketed symbol is equivalent to its unbracketed counterpart.
+
+**Propagation rule** (verified against all 58 black-white rows at rank 3; orthorhombic/tetragonal
+bracket placement scan-verified 2026-07-04): a tensor cell is parenthesized iff its source group —
+G = unprime(column 2) for the i-columns, A for c-Axial-even/c-Polar-odd, B for
+c-Polar-even/c-Axial-odd — is parenthesized **and** the letter's form actually changes under that
+source's transform. Frame-neutral letters (D under axis permutations; H, I at 45°; P, Q at 30°;
+rank 3) remain unparenthesized even for bracketed sources — see rows `(2'm'm)` (D_n) and
+`(-4'm2')` (H_n). The book itself violates this rule in exactly two places, both hexagonal,
+documented as book errors below (rows `(-6'2m')` and `-6m'2'`).
+
+**Spelling caveat** (scan-verified 2026-07-04): the letter order *inside* a bracketed group
+symbol is not reliable in the book — `4'mm'` prints A = `(-4m2)` while `-42'm'` prints
+A = `(-42m)` for the physically identical group (same rotated D<sub>2d</sub>, confirmed by both
+rows printing `(J_n)`). The physical statement is carried by the bracket plus the tensor symbols,
+not by the letter order within the brackets.
+
+**Application tables** (Table 9 magnetoelectric, Table 10 piezomagnetic, …): these are derived
+views of Table 7 with the same bracket semantics relocated onto the group symbols — there being
+no per-group tensor cell in those tables, a group is parenthesized whenever the Table-7 cell
+governing that effect was parenthesized (or the group is itself column-2-parenthesized). Where
+bracketed and unbracketed groups share one printed matrix, the matrix is the standard class form
+and applies to the bracketed groups only in their rotated axes (ground-truth verified against the
+app's own generators: `4'22'` ME = printed diag(Q₁₁, −Q₁₁, 0) as-is; `4'mm'`/`-42'm'` ME = its
+45°-rotation; `2'm'm` ME = its A-permutation). Where a form class contains only bracketed groups,
+Birss prints the already-rotated components (Table 10's piezomagnetic row for the five
+c-Axial-odd-(R_n) groups uses the yyy-family with parameter Q₁₄) and keeps the brackets as a
+provenance flag. Groups whose governing cell is a null form are simply absent from these tables
+(R₃ ≡ 0 explains the missing hexagonal (R_m) groups in Table 9; verified by projection).
+
 | System | Magnetic point group (International) | Associated classical group A (International) | Associated classical group B (International) | i-tensor: Polar even rank m | i-tensor: Axial even rank m | i-tensor: Polar odd rank n | i-tensor: Axial odd rank n | c-tensor: Polar even rank m | c-tensor: Axial even rank m | c-tensor: Polar odd rank n | c-tensor: Axial odd rank n |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Triclinic | 1 | - | - | A_m | A_m | A_n | A_n | A_m | A_m | A_n | A_n |
@@ -192,6 +231,36 @@ columns 3-4 against scans of the original source, R. R. Birss, *Proc. Phys. Soc.
 `(A,B) = (-,-) -> (-3m,3m) -> (32,-3m) -> (3m,-3m)`. No errors found — all 11 rows match both the
 cross-formula and the original source. This confirms, independently of the "2026-06 pass" above
 (which covers the same rows), that the trigonal block needs no correction.
+
+**2026-07-04 book-error findings (rows `(-6'2m')` and `-6m'2'`)**: a full audit of all 58 BW rows'
+rank-3 columns against the app's own generators (see `src/services/table7RankThree.audit.test.ts`)
+found two further book errors, both hexagonal, both scan-verified against the maintainer's copy of
+the printed book:
+
+- Row `(-6'2m')` (row 71): the book prints the i-cells `R_m`, `R_n` **without** parentheses,
+  although column 2 is itself parenthesized and R is frame-sensitive under the π/6 rotation — the
+  orthorhombic `(2'm'm)` and tetragonal `(-4'm2')` analogues DO bracket their i-cells. This is a
+  bracket omission, not a transcription fault: the cells are transcribed faithfully as printed. No
+  physical consequence — the group's own bracketed column 2 already forces the rotated setting, and
+  the app's i-ED (yyy-family) is correct. Left as printed; tracked as a documented exception in the
+  guard test's print-pattern check.
+- Row `-6m'2'`: the book prints A = `-6m2` and the c-cells `R_m`, `R_n` **without** parentheses.
+  This contradicts the row's own Table 6 generator σ'(4) = m'⊥y (scan-verified): with the primed
+  mirror on the y-family, A = H ∪ (coset representative)·H forces the rotated D<sub>3h</sub>
+  setting (the 2-folds on the y-family), and the c-type ED condition under m'⊥y kills the xxx
+  component and keeps yyy — the rotated R3 form, not the printed standard R_n. Both facts were
+  confirmed numerically. The structurally mirrored neighbour row `-6'm2'` is printed correctly
+  (`(-62m)`, `(R_m)`, `(R_n)`). Left as printed (faithful transcription of a book error); the app
+  is verified correct (default ED-c = yyy-family; existing setting-2 fixtures are coherent with
+  this). Tracked as a documented exception in the guard test, which overrides the expected
+  transform to the rotated form this row's own generator forces.
+
+Methodological note: generator disputes must be arbitrated by Table 7 itself — the A-column
+parenthesization plus the tensor-cell parenthesization — not by σ-symbol plausibility or
+cross-table pattern-matching alone. The 2026-07-02 pass-5 override of `6'/mm'm`'s generator (see
+`table-6.md`) over-generalized the σ(2)↔σ(4) misprint pattern documented for Table 3's `-6m2` row
+to a case where three independent book-internal signals (the printed generator, Table 7's
+`A = (-62m)`, and Table 7's `(R_n)`) said otherwise; see `table-6.md`'s corrected pass-5 note.
 
 ## Changelog
 

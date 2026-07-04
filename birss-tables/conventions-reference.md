@@ -317,6 +317,43 @@ independently lists generators for the same 32 classical groups):
   consistent with Table 4a's `3//z, -2//y`. With σ(4) the inconsistency between Table 3
   and Table 4a disappears entirely. Corrected in table-3.md.
 
+**Further book errors found in Table 7 (scan-verified 2026-07-04).** A full audit of all 58
+black-white rows' rank-3 columns against the app's own generators (see
+`src/services/table7RankThree.audit.test.ts`) found two book errors in `table-7.md`'s printed
+parenthesization, both hexagonal:
+
+- **Table 7, row `(-6'2m')`**: the i-cells `R_m`, `R_n` are printed **without** parentheses,
+  although column 2 is itself parenthesized and R is frame-sensitive — the orthorhombic
+  `(2'm'm)` and tetragonal `(-4'm2')` analogues DO bracket their i-cells. A bracket omission, not
+  a transcription fault (transcribed faithfully as printed); no physical consequence, since the
+  bracketed column 2 already forces the rotated setting. Left as printed in `table-7.md`.
+- **Table 7, row `-6m'2'`**: A is printed `-6m2` and the c-cells `R_m`, `R_n` are printed
+  **without** parentheses, contradicting the row's own Table 6 generator σ'(4) (which forces the
+  rotated A and the yyy-family c-ED). Left as printed in `table-7.md`; the app is verified correct
+  here.
+
+**Bracket-spelling caveat** (scan-verified 2026-07-04): the letter order *inside* a bracketed
+group symbol is not reliable in the book — `4'mm'` prints A = `(-4m2)` while `-42'm'` prints
+A = `(-42m)` for the physically identical group (same rotated D<sub>2d</sub>, confirmed by both
+rows printing `(J_n)`). The physical statement is carried by the bracket plus the tensor symbols,
+not by the letter order within the brackets.
+
+**Methodological lesson.** Generator disputes must be arbitrated by Table 7 itself — the
+A-column parenthesization plus the tensor-cell parenthesization — not by σ-symbol plausibility or
+cross-table pattern-matching alone. The 2026-07-02 pass-5 override of `6'/mm'm`'s Table 6
+generator (σ(2) → σ(4)) over-generalized the σ(2)↔σ(4) misprint pattern documented above for
+Table 3's `-6m2` row to a case where three independent book-internal signals — the printed
+generator itself, Table 7's `A = (-62m)`, and Table 7's `(R_n)` — all said otherwise; the
+override was reversed 2026-07-04 (see `table-6.md`'s corrected pass-5 note). The Table 3 `-6m2`
+misprint correction documented above is itself unaffected, and was re-confirmed by the 2026-07-04
+scan of Table 6's classical `-6m2` row (σ(4), σ(5), σ(6)).
+
+**All five documented book errors** (two in Table 3, one in Table 6, two in Table 7 above) were
+re-verified first-hand against maintainer-provided book scans on 2026-07-04: Table 3 `6mm` and
+`-6m2` generator cells; Table 6 `6'/m'mm'` σ'-cell (σ'(2) misprint of σ'(3) — 2'_y collides with
+the unprimed 2_y ∈ H = `-3m`, closing the printed generators wrongly yields the grey group
+`-3m1'`; see `table-6.md`'s own note); Table 7 `(-6'2m')` i-cells; Table 7 `-6m'2'` A- and c-cells.
+
 **Relation to Point Group Symbols:** The generating matrices provide the actual mathematical
 implementation of the symmetry operations denoted by Hermann–Mauguin and Schoenflies symbols.
 
