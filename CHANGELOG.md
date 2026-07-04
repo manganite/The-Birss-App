@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Route-level code splitting: the Help, Simulator, and Calculator pages are now lazy-loaded
+  (`React.lazy`/`Suspense`), and vendor libraries (`react`/`react-dom`, `katex`/`react-katex`,
+  `motion`) build into their own chunks. The single ~1,089 kB production bundle is now several
+  chunks, each under Vite's 500 kB warning threshold, and vendor code can cache independently
+  of app code across deploys.
+
 ### Fixed
 
 - PWA build config (`vite-plugin-pwa`'s `includeAssets`) referenced `favicon.ico`,
