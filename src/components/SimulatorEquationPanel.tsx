@@ -22,7 +22,7 @@ export function SimulatorEquationPanel({
     <div className="mt-12 border-t border-ink border-opacity-10 pt-8">
       <button
         onClick={() => setShowEquations(!showEquations)}
-        className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity mx-auto"
+        className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-ink/70 hover:text-ink transition-opacity mx-auto"
       >
         {showEquations ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         {showEquations ? 'Hide Mathematical Details' : 'Show Mathematical Details'}
@@ -39,7 +39,7 @@ export function SimulatorEquationPanel({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50">1. Incident Field</h4>
+              <h4 className="text-xs uppercase tracking-[0.2em] text-ink/70">1. Incident Field</h4>
               <p className="text-sm opacity-70 leading-relaxed">
                 The incident light propagates along the Lab Z-axis. The electric field vector is defined by the polarizer angle <InlineMath math="\theta_{pol}" />:
               </p>
@@ -49,13 +49,13 @@ export function SimulatorEquationPanel({
             </div>
 
             <div className="space-y-4 md:col-span-2">
-              <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50">2. Source Terms (Lab Frame)</h4>
+              <h4 className="text-xs uppercase tracking-[0.2em] text-ink/70">2. Source Terms (Lab Frame)</h4>
               <p className="text-sm opacity-70 leading-relaxed">
                 For the selected point group and crystal orientation, the source terms evaluate to:
               </p>
               <div className="bg-ink/5 p-4 overflow-x-auto space-y-6">
                 <div className="space-y-4">
-                  <div className="text-xs font-bold uppercase tracking-widest opacity-50 mb-2">As functions of <InlineMath math="E_X, E_Y" /></div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70 mb-2">As functions of <InlineMath math="E_X, E_Y" /></div>
                   {sourceTermsExEy.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
                     <div key={`exey-${i}`} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
                       <div><TensorTerm term={term.component} isNull={term.expression === '0'} /></div>
@@ -65,7 +65,7 @@ export function SimulatorEquationPanel({
                   ))}
                 </div>
                 <div className="space-y-4 pt-4 border-t border-ink/10">
-                  <div className="text-xs font-bold uppercase tracking-widest opacity-50 mb-2">As functions of <InlineMath math="\theta_{pol}" /></div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70 mb-2">As functions of <InlineMath math="\theta_{pol}" /></div>
                   {sourceTerms.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
                     <div key={`theta-${i}`} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
                       <div><TensorTerm term={`${term.component}(\\theta_{pol})`} isNull={term.expression === '0'} /></div>
@@ -79,10 +79,10 @@ export function SimulatorEquationPanel({
 
             <div className="space-y-4 md:col-span-2">
               <div className="flex items-center justify-between">
-                <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50">3. Detected Intensity Formulas</h4>
+                <h4 className="text-xs uppercase tracking-[0.2em] text-ink/70">3. Detected Intensity Formulas</h4>
                 <button
                   onClick={() => setVerboseFormulas(!verboseFormulas)}
-                  className="text-[10px] uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity flex items-center gap-1"
+                  className="text-xs uppercase tracking-widest text-ink/70 hover:text-ink transition-opacity flex items-center gap-1"
                 >
                   {verboseFormulas ? 'Show Short' : 'Show Expanded'}
                 </button>
@@ -92,7 +92,7 @@ export function SimulatorEquationPanel({
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-ink/5 p-4 space-y-4">
-                  <div className="text-xs font-bold uppercase tracking-widest opacity-50">Anisotropy</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70">Anisotropy</div>
                   <div className="space-y-2">
                     <div className="text-xs opacity-70">Parallel (<InlineMath math="\theta_{pol} = \theta_{ana} = \theta" />):</div>
                     <div className="overflow-x-auto pb-2"><BlockMath math={verboseFormulas && expandedFormulas ? expandedFormulas.aniPar : "I_{\\parallel} = |S_X(\\theta) \\cos\\theta + S_Y(\\theta) \\sin\\theta|^2"} /></div>
@@ -104,7 +104,7 @@ export function SimulatorEquationPanel({
                 </div>
 
                 <div className="bg-ink/5 p-4 space-y-4">
-                  <div className="text-xs font-bold uppercase tracking-widest opacity-50">Polarizer</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70">Polarizer</div>
                   <div className="space-y-2">
                     <div className="text-xs opacity-70">Analyzer 0° (<InlineMath math="\theta_{ana} = 0^\circ, \theta_{pol} = \theta" />):</div>
                     <div className="overflow-x-auto pb-2"><BlockMath math={verboseFormulas && expandedFormulas ? expandedFormulas.polA0 : "I = |S_X(\\theta)|^2"} /></div>
@@ -116,7 +116,7 @@ export function SimulatorEquationPanel({
                 </div>
 
                 <div className="bg-ink/5 p-4 space-y-4">
-                  <div className="text-xs font-bold uppercase tracking-widest opacity-50">Analyzer</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70">Analyzer</div>
                   <div className="space-y-2">
                     <div className="text-xs opacity-70">Polarizer 0° (<InlineMath math="\theta_{pol} = 0^\circ, \theta_{ana} = \theta" />):</div>
                     <div className="overflow-x-auto pb-2"><BlockMath math={verboseFormulas && expandedFormulas ? expandedFormulas.anaP0 : "I = |S_X(0^\\circ) \\cos\\theta + S_Y(0^\\circ) \\sin\\theta|^2"} /></div>

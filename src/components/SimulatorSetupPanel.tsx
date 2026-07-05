@@ -102,12 +102,12 @@ export function SimulatorSetupPanel({
             type="button"
             aria-expanded={showRotation}
             onClick={() => setShowRotation(!showRotation)}
-            className="flex flex-1 items-center gap-2 text-[10px] uppercase tracking-[0.2em] opacity-50 hover:opacity-100 transition-opacity"
+            className="flex flex-1 items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/70 hover:text-ink transition-opacity"
           >
             {showRotation ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             <span>Crystal Rotation</span>
             {rotationActive && !showRotation && (
-              <span className="normal-case tracking-normal text-[11px] ml-2 opacity-70">
+              <span className="normal-case tracking-normal text-xs ml-2">
                 ({phiX !== 0 ? `φ_x = ${phiX}°` : ''}{phiX !== 0 && (phiY !== 0 || psi !== 0) ? ', ' : ''}{phiY !== 0 ? `φ_y = ${phiY}°` : ''}{(phiX !== 0 || phiY !== 0) && psi !== 0 ? ', ' : ''}{psi !== 0 ? `ψ = ${psi}°` : ''})
               </span>
             )}
@@ -149,14 +149,14 @@ export function SimulatorSetupPanel({
                     }}
                     className="w-16 text-right text-xs font-mono bg-white/50 border border-ink/20 px-2 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
                   />
-                  <span className="text-xs opacity-50">°</span>
+                  <span className="text-xs text-ink/70">°</span>
                 </div>
               </div>
             ))}
             <button
               onClick={() => { setPhiX(0); setPhiY(0); setPsi(0); }}
               disabled={!rotationActive}
-              className="flex items-center gap-1.5 text-xs opacity-50 hover:opacity-100 disabled:opacity-20 disabled:cursor-default transition-opacity mt-1"
+              className="flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-20 disabled:cursor-default transition-opacity mt-1"
             >
               <RotateCcw className="w-3 h-3" />
               Reset rotation

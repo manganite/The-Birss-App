@@ -37,14 +37,14 @@ export function TermInfo({ id, onNavigate }: TermInfoProps) {
             className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute top-5 left-0 z-20 w-56 bg-paper border border-ink/20 shadow-md p-3 space-y-2 text-left">
-            <p className="text-[11px] font-semibold opacity-80">{term.term}</p>
-            <p className="text-[11px] opacity-60 leading-relaxed">{term.brief}</p>
+          <div className="absolute top-5 left-0 z-20 w-56 bg-paper border border-ink shadow-xl normal-case tracking-normal p-3 space-y-2 text-left">
+            <p className="text-xs font-semibold opacity-80">{term.term}</p>
+            <p className="text-xs text-ink/70 leading-relaxed">{term.brief}</p>
             {term.helpTab && onNavigate && (
               <button
                 type="button"
                 onClick={() => { onNavigate('help', term.helpTab); setOpen(false); }}
-                className="text-[10px] uppercase tracking-wider opacity-50 hover:opacity-100 transition-opacity"
+                className="text-xs uppercase tracking-wider text-ink/70 hover:text-ink transition-opacity"
               >
                 Learn more →
               </button>

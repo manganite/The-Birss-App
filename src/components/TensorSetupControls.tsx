@@ -4,7 +4,7 @@ import type { TensorType, TensorTimeReversal } from '../services/tensorCalculato
 import { getSettingLabels, getConventionNote, getBookErrorWarning, CONVENTION_NOTES } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 import { TENSOR_META } from '../types';
-import { SectionHeader } from './MathComponents';
+import { SectionHeader, FormatGroupLabel } from './MathComponents';
 import { TermInfo } from './TermInfo';
 
 interface NavigateProp {
@@ -34,7 +34,7 @@ export function ConventionControl({
             className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
               value === c
                 ? 'bg-ink text-paper'
-                : 'hover:bg-ink/5 opacity-50 hover:opacity-100 border-opacity-20'
+                : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
             }`}
           >
             {c === 'birss' ? 'Birss (app default)' : 'ITC'}
@@ -50,7 +50,7 @@ function ConventionNote({ groupName }: { groupName: string }) {
   const bookErrorWarning = getBookErrorWarning(groupName);
   if (!noteKey) return null;
   return (
-    <p className="text-xs opacity-60 leading-relaxed flex items-start gap-1.5">
+    <p className="text-xs text-ink/70 leading-relaxed flex items-start gap-1.5">
       <BookOpen className="w-3 h-3 mt-0.5 shrink-0 opacity-60" />
       <span>
         {CONVENTION_NOTES[noteKey]}
@@ -63,7 +63,7 @@ function ConventionNote({ groupName }: { groupName: string }) {
 function SettingBadge({ badge }: { badge?: 'birss-standard' | 'itc-standard' }) {
   if (!badge) return null;
   return (
-    <span className="opacity-60 normal-case tracking-normal">
+    <span className="normal-case tracking-normal">
       {' '}— {badge === 'birss-standard' ? 'Birss default' : 'ITC standard'}
     </span>
   );
@@ -90,7 +90,7 @@ export function TensorClassificationControl({
               className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
                 value === type
                   ? 'bg-ink text-paper'
-                  : 'hover:bg-ink/5 opacity-50 hover:opacity-100 border-opacity-20'
+                  : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
               }`}
             >
               {TENSOR_META[type].label}
@@ -124,7 +124,7 @@ export function TimeReversalControl({
               className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
                 value === tr
                   ? 'bg-ink text-paper'
-                  : 'hover:bg-ink/5 opacity-50 hover:opacity-100 border-opacity-20'
+                  : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
               }`}
             >
               {tr === 'i' ? 'i-type (Time-Even)' : 'c-type (Time-Odd)'}
@@ -169,13 +169,13 @@ export function CrystalSettingControl({
                 type="button"
                 aria-pressed={value === setting}
                 onClick={() => onChange(setting)}
-                className={`px-4 py-2 text-[10px] uppercase tracking-[0.2em] transition-all border border-ink ${
+                className={`px-4 py-2 text-xs transition-all border border-ink ${
                   value === setting
                     ? 'bg-ink text-paper'
-                    : 'hover:bg-ink hover:text-paper opacity-50 hover:opacity-100 border-opacity-20'
+                    : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
                 }`}
               >
-                {label}
+                <FormatGroupLabel label={label} />
                 <SettingBadge badge={badge} />
               </button>
             ))}
@@ -184,7 +184,7 @@ export function CrystalSettingControl({
         </>
       ) : (
         <>
-          <p className="text-xs opacity-40 italic">{futureCount} settings — selection coming</p>
+          <p className="text-xs text-ink/70 italic">{futureCount} settings — selection coming</p>
           <ConventionNote groupName={groupName} />
         </>
       )}

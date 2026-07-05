@@ -11,7 +11,7 @@ import { TermInfo } from './TermInfo';
 
 export function SectionHeader({ icon, children }: { icon?: ReactNode; children: ReactNode }) {
   return (
-    <h4 className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+    <h4 className="text-xs uppercase tracking-[0.2em] text-ink/70 flex items-center gap-2">
       {icon}
       {children}
     </h4>
@@ -92,7 +92,7 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
         </SectionHeader>
         <div className="flex items-center gap-1">
           <button type="button" onClick={() => setShowInverse(v => !v)}
-            className="text-[9px] opacity-40 hover:opacity-80 transition-opacity px-1.5 py-0.5 border border-ink/10 rounded-sm"
+            className="text-xs opacity-70 hover:opacity-100 transition-opacity px-1.5 py-0.5 border border-ink/10 rounded-sm"
             title={showInverse ? 'Show crystal → lab' : 'Show lab → crystal'}
           >{showInverse ? '↔ crystal' : '↔ inverse'}</button>
           <button type="button" onClick={() => setShowLegend(v => !v)}
@@ -117,7 +117,7 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
         )}
       </div>
       {showLegend && (
-        <div className="mt-3 pt-3 border-t border-ink/10 text-[10px] opacity-60 leading-relaxed space-y-1">
+        <div className="mt-3 pt-3 border-t border-ink/10 text-xs text-ink/70 leading-relaxed space-y-1">
           <p><strong>x, y, z</strong> (crys) — crystal Cartesian axes (z∥c, y∥b*, x per system convention)</p>
           <p><strong>X, Y, Z</strong> (LAB) — lab axes: Z = beam direction (k), X/Y = polarization plane (0°/90°)</p>
           <p>At zero tilt, the selected crystal cut normal is aligned with Z (the beam).</p>
@@ -149,7 +149,7 @@ export function KDirectionSelector({ crystalSystem, thetaX, thetaY, psi0, setThe
         </SectionHeader>
       )}
       {compact && (
-        <span className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-1">
+        <span className="text-xs uppercase tracking-[0.2em] text-ink/70 flex items-center gap-1">
           <Compass className="w-3 h-3" />
           Crystal Cut
           <TermInfo id="crystal-cut" onNavigate={onNavigate} />
@@ -160,10 +160,10 @@ export function KDirectionSelector({ crystalSystem, thetaX, thetaY, psi0, setThe
           <button
             key={ori.label}
             onClick={() => { setThetaX(ori.tx); setThetaY(ori.ty); setPsi0(ori.psi0); }}
-            className={`${compact ? 'px-3 py-1.5 text-[11px]' : 'px-4 py-2 text-[12px]'} tracking-[0.1em] transition-all border border-ink ${
+            className={`${compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-xs'} tracking-[0.1em] transition-all border border-ink ${
               thetaX === ori.tx && thetaY === ori.ty && psi0 === ori.psi0
                 ? 'bg-ink text-paper'
-                : `${compact ? '' : 'hover:bg-ink hover:text-paper'} opacity-50 ${compact ? '' : 'hover:opacity-100'} border-opacity-20`
+                : `${compact ? '' : 'hover:bg-ink hover:text-paper'} text-ink/70 ${compact ? '' : 'hover:text-ink'} border-opacity-20`
             }`}
           >
             <InlineMath math={ori.math} />
@@ -191,6 +191,24 @@ export const TensorTerm = ({ term, isNull }: { term?: string; isNull: boolean })
 
 export const FormatPointGroup = ({ name }: { name: string }) => {
   const latex = name.replace(/-([1-6])/g, '\\bar{$1}');
+  return <InlineMath math={latex} />;
+};
+
+const HM_SYMBOL_PATTERN = /^[-\d/m']+$/;
+
+export const FormatGroupLabel = ({ label }: { label: string }) => (
+  HM_SYMBOL_PATTERN.test(label) ? <FormatPointGroup name={label} /> : <>{label}</>
+);
+
+export const FormatSchoenflies = ({ symbol }: { symbol: string }) => {
+  const formatOne = (s: string) => {
+    const m = s.match(/^([A-Z])(.+)$/);
+    return m ? `${m[1]}_{${m[2]}}` : s;
+  };
+  const match = symbol.match(/^([A-Za-z0-9]+)(?:\(([A-Za-z0-9]+)\))?$/);
+  if (!match) return <InlineMath math={symbol} />;
+  const [, main, sub] = match;
+  const latex = sub ? `${formatOne(main)}(${formatOne(sub)})` : formatOne(main);
   return <InlineMath math={latex} />;
 };
 
@@ -287,7 +305,7 @@ export function AxisOrientationInfo({ crystalSystem, convention }: { crystalSyst
 
   return (
     <div className="p-4 border border-ink border-opacity-10 space-y-2 bg-ink/5">
-      <p className="text-[10px] uppercase tracking-widest opacity-50 flex items-center gap-1.5">
+      <p className="text-xs uppercase tracking-widest text-ink/70 flex items-center gap-1.5">
         <Compass className="w-3 h-3" />
         Axis Orientation
       </p>
@@ -331,16 +349,16 @@ export function GroupIdentityHeader({ group, setting, convention, onNavigate }: 
           <div className="text-left flex items-center flex-wrap gap-x-2 gap-y-1">
             <span className="text-lg font-serif italic"><FormatPointGroup name={displayName.primary} /></span>
             {displayName.synonym && (
-              <span className="text-xs opacity-50">({convention === 'birss' ? 'ITC' : 'Birss'}: {displayName.synonym})</span>
+              <span className="text-xs text-ink/70">({convention === 'birss' ? 'ITC' : 'Birss'}: <FormatPointGroup name={displayName.synonym} />)</span>
             )}
-            {group.schoenflies && <span className="text-xs opacity-50">({group.schoenflies})</span>}
-            <span className="text-xs opacity-50">{group.crystalSystem}</span>
-            <span className="text-xs opacity-50">· Type {group.type}</span>
-            <span className="text-xs opacity-50">· {centro ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</span>
+            {group.schoenflies && <span className="text-xs text-ink/70">(<FormatSchoenflies symbol={group.schoenflies} />)</span>}
+            <span className="text-xs text-ink/70">{group.crystalSystem}</span>
+            <span className="text-xs text-ink/70">· Type {group.type}</span>
+            <span className="text-xs text-ink/70">· {centro ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</span>
             {settingCount > 1 && (
-              <span className="text-xs opacity-50">· Setting {setting}/{settingCount}</span>
+              <span className="text-xs text-ink/70">· Setting {setting}/{settingCount}</span>
             )}
-            <span className="text-xs opacity-50">· {convention === 'birss' ? 'Birss' : 'ITC'}</span>
+            <span className="text-xs text-ink/70">· {convention === 'birss' ? 'Birss' : 'ITC'}</span>
           </div>
         </div>
         {expanded ? <ChevronUp className="w-4 h-4 opacity-50" /> : <ChevronDown className="w-4 h-4 opacity-50" />}
@@ -352,12 +370,12 @@ export function GroupIdentityHeader({ group, setting, convention, onNavigate }: 
             <div>
               <h2 className="text-4xl font-serif italic"><FormatPointGroup name={displayName.primary} /></h2>
               {displayName.synonym && (
-                <p className="text-xs opacity-50 mt-1">{convention === 'birss' ? 'ITC' : 'Birss'}: {displayName.synonym}</p>
+                <p className="text-xs text-ink/70 mt-1">{convention === 'birss' ? 'ITC' : 'Birss'}: <FormatPointGroup name={displayName.synonym} /></p>
               )}
               {group.schoenflies && (
-                <p className="text-sm opacity-60 mt-1">{group.schoenflies}</p>
+                <p className="text-sm text-ink/70 mt-1"><FormatSchoenflies symbol={group.schoenflies} /></p>
               )}
-              <p className="text-[10px] uppercase tracking-widest opacity-50 mt-1 flex items-center gap-1">
+              <p className="text-xs uppercase tracking-widest text-ink/70 mt-1 flex items-center gap-1">
                 {group.type === 'I' ? 'Standard' : group.type === 'II' ? 'Gray' : 'Magnetic'} Point Group
                 <TermInfo id={`type-${group.type.toLowerCase()}`} onNavigate={onNavigate} />
               </p>
@@ -366,23 +384,32 @@ export function GroupIdentityHeader({ group, setting, convention, onNavigate }: 
               {getCrystalIcon(group.crystalSystem)}
               <div>
                 <p className="text-sm font-medium">{group.crystalSystem}</p>
-                <p className="text-[10px] uppercase tracking-widest opacity-50">Crystal System</p>
+                <p className="text-xs uppercase tracking-widest text-ink/70">Crystal System</p>
               </div>
             </div>
             <div className={`p-4 border border-ink ${centro ? 'bg-ink text-paper' : 'border-opacity-10'}`}>
               <p className="text-sm font-medium">{centro ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</p>
-              <p className={`text-[10px] uppercase tracking-widest ${centro ? 'opacity-70' : 'opacity-50'}`}>Symmetry Type</p>
+              <p className="text-xs uppercase tracking-widest opacity-70">Symmetry Type</p>
             </div>
             <AxisOrientationInfo crystalSystem={group.crystalSystem} convention={convention} />
           </div>
 
-          <div className="text-xs opacity-60 leading-relaxed">{shgLine}</div>
+          <div className="text-xs text-ink/70 leading-relaxed">{shgLine}</div>
 
           {parent && (
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs opacity-60">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-ink/70">
               <span>Parent group: <span className="font-serif italic"><FormatPointGroup name={parent} /></span></span>
               {halvingOps && (
-                <span>H = {'{'}{halvingOps.join(', ')}{'}'}</span>
+                <span className="inline-flex items-center flex-wrap gap-1">
+                  H = {'{'}
+                  {halvingOps.map((op, idx) => (
+                    <span key={op} className="inline-flex items-center">
+                      <SymmetryOperation symbol={op} />
+                      {idx < halvingOps.length - 1 && ','}
+                    </span>
+                  ))}
+                  {'}'}
+                </span>
               )}
             </div>
           )}
@@ -391,7 +418,7 @@ export function GroupIdentityHeader({ group, setting, convention, onNavigate }: 
             <button
               type="button"
               onClick={() => onNavigate('explorer')}
-              className="flex items-center gap-1 text-xs opacity-50 hover:opacity-100 transition-opacity"
+              className="flex items-center gap-1 text-xs text-ink/70 hover:text-ink transition-opacity"
             >
               <ExternalLink className="w-3 h-3" />
               Open in Explorer

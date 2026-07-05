@@ -62,7 +62,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
             className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-[0.15em] whitespace-nowrap border border-ink transition-all shrink-0 ${
               activeSystem === system
                 ? 'bg-ink text-paper'
-                : 'hover:bg-ink hover:text-paper opacity-50 hover:opacity-100 border-opacity-20'
+                : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
             }`}
           >
             {getCrystalIcon(system)}
@@ -82,15 +82,15 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
           {/* Column Headers */}
           <div className="hidden md:block p-4 border-b border-ink bg-white/30">
             <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type I (Ordinary)</h3>
-            <p className="text-[10px] opacity-60 mt-1">{systemGroups.I.length} {systemGroups.I.length === 1 ? 'group' : 'groups'}</p>
+            <p className="text-xs text-ink/70 mt-1">{systemGroups.I.length} {systemGroups.I.length === 1 ? 'group' : 'groups'}</p>
           </div>
           <div className="hidden md:block p-4 border-b border-ink bg-white/30">
             <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type II (Gray)</h3>
-            <p className="text-[10px] opacity-60 mt-1">{systemGroups.II.length} {systemGroups.II.length === 1 ? 'group' : 'groups'}</p>
+            <p className="text-xs text-ink/70 mt-1">{systemGroups.II.length} {systemGroups.II.length === 1 ? 'group' : 'groups'}</p>
           </div>
           <div className="hidden md:block p-4 border-b border-ink bg-white/30">
             <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type III (Black & White)</h3>
-            <p className="text-[10px] opacity-60 mt-1">{systemGroups.III.length} {systemGroups.III.length === 1 ? 'group' : 'groups'}</p>
+            <p className="text-xs text-ink/70 mt-1">{systemGroups.III.length} {systemGroups.III.length === 1 ? 'group' : 'groups'}</p>
           </div>
 
           {/* Type I Column */}

@@ -52,8 +52,8 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
           <Layers className="w-8 h-8 opacity-20" />
         </div>
         <div className="space-y-2">
-          <p className="text-xl font-serif italic opacity-40">Select a point group to begin analysis</p>
-          <p className="text-[10px] uppercase tracking-[0.3em] opacity-30">International Notation (Hermann-Mauguin)</p>
+          <p className="text-xl font-serif italic text-ink/70">Select a point group to begin analysis</p>
+          <p className="text-xs uppercase tracking-[0.3em] opacity-30">International Notation (Hermann-Mauguin)</p>
         </div>
       </div>
     );
@@ -86,7 +86,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
               onClick={() => setMobileSetupExpanded(true)}
               className="md:hidden flex items-center justify-between p-3 border border-ink/10 bg-white/30 text-xs"
             >
-              <span className="opacity-60">Electric Dipole · i-type (Time-Even)</span>
+              <span className="text-ink/70">Electric Dipole · i-type (Time-Even)</span>
               <ChevronDown className="w-3.5 h-3.5 opacity-50" />
             </button>
           )}
@@ -170,11 +170,11 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
             <div className={activeResultTab !== 'components' ? 'md:hidden' : ''}>
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-ink border-opacity-10 pb-4">
-                  <div className="text-xs uppercase tracking-[0.2em] opacity-50 font-semibold flex items-center gap-2">
+                  <div className="text-xs uppercase tracking-[0.2em] text-ink/70 font-semibold flex items-center gap-2">
                     <Zap className="w-3 h-3" />
                     {TENSOR_META[selectedTensorType].label} Tensor ({TENSOR_META[selectedTensorType].type})
                   </div>
-                  <div className="text-[10px] font-mono opacity-50">RANK {TENSOR_META[selectedTensorType].rank}</div>
+                  <div className="text-xs font-mono text-ink/70">RANK {TENSOR_META[selectedTensorType].rank}</div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
@@ -186,7 +186,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                           <div className="text-lg font-mono tracking-tighter opacity-30">
                             {comp}
                           </div>
-                          <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
+                          <div className="text-xs uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
                             Null State
                           </div>
                         </div>
@@ -205,7 +205,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                             </div>
                           ))}
                         </div>
-                        <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
+                        <div className="text-xs uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
                           Active Component
                         </div>
                       </div>
@@ -214,9 +214,9 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                 </div>
 
                 {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && (
-                  <div className="p-6 border border-ink border-dashed flex items-center gap-4 opacity-50 mt-8">
-                    <Info className="w-5 h-5" />
-                    <p className="text-xs leading-relaxed italic">
+                  <div className="p-6 border border-ink/50 border-dashed flex items-center gap-4 mt-8">
+                    <Info className="w-5 h-5 opacity-50" />
+                    <p className="text-xs leading-relaxed italic text-ink/70">
                       In centrosymmetric point groups, all components of the second-order nonlinear susceptibility
                       tensor <InlineMath math="\chi^{(2)}" /> (Electric Dipole) vanish under the inversion operation.
                     </p>
@@ -229,11 +229,11 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
             <div className={activeResultTab !== 'induced' ? 'md:hidden' : ''}>
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-ink border-opacity-10 pb-4 pt-4 md:pt-0 border-t md:border-t-0 border-ink/10">
-                  <div className="text-xs uppercase tracking-[0.2em] opacity-50 font-semibold flex items-center gap-2">
+                  <div className="text-xs uppercase tracking-[0.2em] text-ink/70 font-semibold flex items-center gap-2">
                     <Compass className="w-3 h-3" />
                     {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'} (CRYSTAL FRAME)
                   </div>
-                  <div className="text-[10px] font-mono opacity-50">FULL FIELD COMPONENTS</div>
+                  <div className="text-xs font-mono text-ink/70">FULL FIELD COMPONENTS</div>
                 </div>
 
                 <div className="space-y-6">
@@ -253,7 +253,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                   })}
                 </div>
 
-                <div className="p-4 border border-ink border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed mt-8">
+                <div className="p-4 border border-ink/60 border-dashed text-xs uppercase tracking-widest text-ink/70 leading-relaxed mt-8">
                   Note: This calculation assumes two identical input fields <InlineMath math="E(\omega)" />.
                   The full electric field vector is considered for the induced response.
                 </div>
@@ -268,7 +268,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                 onClick={() => setMobileSourceExpanded(!mobileSourceExpanded)}
                 className="md:hidden flex items-center justify-between w-full pt-4 border-t border-ink/10 pb-2"
               >
-                <span className="text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2">
+                <span className="text-xs uppercase tracking-[0.2em] text-ink/70 flex items-center gap-2">
                   <Compass className="w-3 h-3" />
                   Source Terms (Lab Frame)
                 </span>
@@ -278,11 +278,11 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
               <div className={!mobileSourceExpanded ? 'hidden md:block' : ''}>
                 <div className="space-y-6">
                   <div className="hidden md:flex justify-between items-center border-b border-ink border-opacity-10 pb-4">
-                    <div className="text-xs uppercase tracking-[0.2em] opacity-50 font-semibold flex items-center gap-2">
+                    <div className="text-xs uppercase tracking-[0.2em] text-ink/70 font-semibold flex items-center gap-2">
                       <Compass className="w-3 h-3" />
                       Source Terms (Lab Frame)
                     </div>
-                    <div className="text-[10px] font-mono opacity-50">
+                    <div className="text-xs font-mono text-ink/70">
                       {selectedTensorType === 'ED' ? <InlineMath math="S \propto P" /> : selectedTensorType === 'MD' ? <InlineMath math="S \propto \nabla \times M" /> : <InlineMath math="S \propto \nabla \cdot Q" />}
                     </div>
                   </div>
@@ -363,7 +363,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                     </div>
                   )}
 
-                  <div className="p-4 border border-ink border-dashed text-[10px] uppercase tracking-widest opacity-60 leading-relaxed mt-8">
+                  <div className="p-4 border border-ink/60 border-dashed text-xs uppercase tracking-widest text-ink/70 leading-relaxed mt-8">
                     Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse: <InlineMath math="\vec{E} = (E_X, E_Y, 0)" />.
                   </div>
                 </div>
@@ -379,12 +379,12 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
           </h4>
           <div>
             {(selectedTensorType === 'MD' || selectedTensorType === 'EQ') && (
-              <p className="text-xs opacity-60 leading-relaxed">
+              <p className="text-xs text-ink/70 leading-relaxed">
                 {selectedTensorType === 'MD' && "Note: Magnetic Dipole (Axial 3rd rank) tensors do not necessarily vanish in centrosymmetric groups."}
                 {selectedTensorType === 'EQ' && "Note: Electric Quadrupole (Polar 4th rank) tensors survive inversion symmetry."}
               </p>
             )}
-            <p className="text-xs opacity-60 leading-relaxed mt-2">
+            <p className="text-xs text-ink/70 leading-relaxed mt-2">
               For more details on conventions, physics background, and references, please see the <button onClick={() => onNavigate('help')} className="underline hover:opacity-100 font-medium">Help page</button>.
             </p>
           </div>

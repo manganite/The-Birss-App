@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `motion`) build into their own chunks. The single ~1,089 kB production bundle is now several
   chunks, each under Vite's 500 kB warning threshold, and vendor code can cache independently
   of app code across deploys.
+- All group symbols, Schoenflies symbols, setting-button labels, and symmetry-operation lists now
+  render through the LaTeX formatter (previously plain text in several places).
+- Raised the minimum UI font size and the minimum secondary-text contrast app-wide (decorative
+  elements unchanged).
 
 ### Fixed
 
@@ -21,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `apple-touch-icon.png`, and `mask-icon.svg`, none of which exist in `public/`. Now lists
   the SVG icons that actually ship (`favicon.svg`, `icon-192.svg`, `icon-512.svg`), matching
   the manifest's own icon list.
+- Section-header info tooltips (Symbol Convention, Crystal Setting) were rendered uppercase,
+  over-tracked, and at 50% opacity because they were nested inside a dimmed section header; they
+  are now legible, matching the other tooltips.
 
 ## [0.15.0] - 2026-07-04
 

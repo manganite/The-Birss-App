@@ -99,7 +99,7 @@ export function PolarimetrySection({
         {/* Tab Content */}
         <div className="p-4 md:p-6">
           {independentComponents.length === 0 ? (
-            <div className="h-[400px] flex flex-col items-center justify-center gap-4 text-sm opacity-50">
+            <div className="h-[400px] flex flex-col items-center justify-center gap-4 text-sm text-ink/70">
               <span className="italic">Zero intensity</span>
               <span className="text-xs">
                 {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && selectedTimeReversal === 'i'
@@ -116,11 +116,11 @@ export function PolarimetrySection({
                 <div className="flex justify-center border border-ink/20 rounded-sm overflow-hidden w-fit mx-auto">
                   <button
                     onClick={() => setMobilePlotVariant('primary')}
-                    className={`px-3 py-1.5 text-xs transition-colors ${mobilePlotVariant === 'primary' ? 'bg-ink text-paper' : 'opacity-50 hover:opacity-100'}`}
+                    className={`px-3 py-1.5 text-xs transition-colors ${mobilePlotVariant === 'primary' ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'}`}
                   >{mobileMap.primaryLabel}</button>
                   <button
                     onClick={() => setMobilePlotVariant('secondary')}
-                    className={`px-3 py-1.5 text-xs border-l border-ink/20 transition-colors ${mobilePlotVariant === 'secondary' ? 'bg-ink text-paper' : 'opacity-50 hover:opacity-100'}`}
+                    className={`px-3 py-1.5 text-xs border-l border-ink/20 transition-colors ${mobilePlotVariant === 'secondary' ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'}`}
                   >{mobileMap.secondaryLabel}</button>
                 </div>
                 <PolarimetryPlot
@@ -212,7 +212,7 @@ export function PolarimetrySection({
               )}
 
               {independentComponents.length > 0 && (
-                <div className="mt-6 text-center text-xs opacity-50">
+                <div className="mt-6 text-center text-xs text-ink/70">
                   Note: The angle shown in the plots represents the {activePolarimetryTab === 'analyzer' ? 'analyzer' : 'polarizer'} angle. 0° corresponds to the Lab X-axis, and 90° corresponds to the Lab Y-axis.
                 </div>
               )}
