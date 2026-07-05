@@ -11,40 +11,6 @@ interface NavigateProp {
   onNavigate?: (view: string, tab?: string) => void;
 }
 
-export function ConventionControl({
-  value,
-  onChange,
-  onNavigate,
-}: {
-  value: Convention;
-  onChange: (c: Convention) => void;
-} & NavigateProp) {
-  return (
-    <div className="flex-1 space-y-4">
-      <SectionHeader>
-        Symbol Convention <TermInfo id="convention" onNavigate={onNavigate} />
-      </SectionHeader>
-      <div className="flex flex-wrap gap-2">
-        {(['birss', 'itc'] as const).map((c) => (
-          <button
-            key={c}
-            type="button"
-            aria-pressed={value === c}
-            onClick={() => onChange(c)}
-            className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
-              value === c
-                ? 'bg-ink text-paper'
-                : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
-            }`}
-          >
-            {c === 'birss' ? 'Birss (app default)' : 'ITC'}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function ConventionNote({ groupName }: { groupName: string }) {
   const noteKey = getConventionNote(groupName);
   const bookErrorWarning = getBookErrorWarning(groupName);

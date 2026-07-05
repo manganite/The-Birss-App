@@ -16,7 +16,6 @@ export interface TensorConfig {
   setting: number;
   setSetting: (s: number) => void;
   convention: Convention;
-  setConvention: (c: Convention) => void;
 }
 
 export interface OrientationState {

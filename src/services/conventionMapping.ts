@@ -68,6 +68,12 @@ function getStandardSetting(group: string, convention: Convention): number | nul
   return 2;
 }
 
+/** The setting a newly-opened group should default to under the active convention: the
+ * convention's standard setting if this group has one, otherwise setting 1. */
+export function getDefaultSetting(group: string, convention: Convention): number {
+  return getStandardSetting(group, convention) ?? 1;
+}
+
 export interface FrameName {
   primary: string;
   synonym?: string;
