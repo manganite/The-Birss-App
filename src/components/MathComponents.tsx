@@ -247,7 +247,50 @@ export const SymmetryOperation = ({ symbol }: { symbol: string }) => {
   );
 };
 
-export function AxisOrientationInfo({ crystalSystem, convention }: { crystalSystem: string; convention?: Convention }) {
+export type MonoclinicFrame = 'c-unique' | 'b-unique';
+
+/**
+ * Which monoclinic setting's frame to display: the explicit setting wins when known
+ * (Calculator/Simulator, where a group is open); otherwise falls back to the active convention's
+ * standard setting (Explorer, where no per-group setting is selected yet).
+ */
+export function getMonoclinicFrame(setting: number | undefined, convention: Convention): MonoclinicFrame {
+  if (setting !== undefined) return setting === 2 ? 'b-unique' : 'c-unique';
+  return convention === 'itc' ? 'b-unique' : 'c-unique';
+}
+
+/**
+ * Verified Cartesian-axis labels for each monoclinic setting (Haussuehl / IRE 1949 convention;
+ * handedness X = Y x Z). Display-only -- the tensor is unaffected by which in-plane axis about the
+ * unique axis is labelled which.
+ */
+export const MONOCLINIC_FRAMES: Record<MonoclinicFrame, { unique: 'y' | 'z'; x: string; y: string; z: string }> = {
+  'c-unique': { unique: 'z', z: 'c', x: 'a', y: 'b^*' },
+  'b-unique': { unique: 'y', y: 'b', z: 'c', x: 'a^*' },
+};
+
+const AXIS_TOOLTIP_ID: Record<string, string> = {
+  Triclinic: 'axis-triclinic',
+  Monoclinic: 'axis-monoclinic',
+  Orthorhombic: 'axis-orthorhombic',
+  Tetragonal: 'axis-orthorhombic',
+  Cubic: 'axis-orthorhombic',
+  Trigonal: 'axis-trigonal',
+  Hexagonal: 'axis-trigonal',
+};
+
+/** The glossary id for this crystal system's axis-orientation tooltip, or null if the system has
+ * no axis-orientation box at all (keeps the id map and the box's own switch in one place). */
+export function getAxisTooltipId(crystalSystem: string): string | null {
+  return AXIS_TOOLTIP_ID[crystalSystem] ?? null;
+}
+
+export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavigate }: {
+  crystalSystem: string;
+  convention?: Convention;
+  setting?: number;
+  onNavigate?: (view: string, tab?: string) => void;
+}) {
   let content = null;
   switch (crystalSystem) {
     case 'Triclinic':
@@ -259,22 +302,24 @@ export function AxisOrientationInfo({ crystalSystem, convention }: { crystalSyst
         </>
       );
       break;
-    case 'Monoclinic':
-      content = (
+    case 'Monoclinic': {
+      const frame = MONOCLINIC_FRAMES[getMonoclinicFrame(setting, convention ?? 'birss')];
+      const qualifier = ' (unique axis: ∥ 2-fold or ⊥ mirror)';
+      content = frame.unique === 'z' ? (
         <>
-          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="c" /> (unique axis: ∥ 2-fold or ⊥ mirror)<br/>
-          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="a" /><br/>
-          <span className="font-mono font-medium">y</span> ∥ <InlineMath math="b^*" /> (completing the right-handed frame)<br/>
-          <span className="block mt-2 opacity-80">
-            Every monoclinic group below has two <strong>settings</strong> — not two
-            different groups, but two conventions for the same one: <em>First</em>{' '}
-            (<InlineMath math="c" />-unique, Birss, shown above) and <em>Second</em>{' '}
-            (<InlineMath math="b" />-unique, ITC). Pick whichever matches the
-            convention your crystal data was published in.
-          </span>
+          <span className="font-mono font-medium">z</span> ∥ <InlineMath math={frame.z} />{qualifier}<br/>
+          <span className="font-mono font-medium">x</span> ∥ <InlineMath math={frame.x} /><br/>
+          <span className="font-mono font-medium">y</span> ∥ <InlineMath math={frame.y} /> (completing the right-handed frame)
+        </>
+      ) : (
+        <>
+          <span className="font-mono font-medium">y</span> ∥ <InlineMath math={frame.y} />{qualifier}<br/>
+          <span className="font-mono font-medium">z</span> ∥ <InlineMath math={frame.z} /><br/>
+          <span className="font-mono font-medium">x</span> ∥ <InlineMath math={frame.x} /> (completing the right-handed frame)
         </>
       );
       break;
+    }
     case 'Orthorhombic':
     case 'Tetragonal':
     case 'Cubic':
@@ -291,11 +336,6 @@ export function AxisOrientationInfo({ crystalSystem, convention }: { crystalSyst
           <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" /> / <InlineMath math="[0001]" /> (c-axis)<br/>
           <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" /> / <InlineMath math="[2\bar{1}\bar{1}0]" /> (a-axis)<br/>
           <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[120]" /> / <InlineMath math="[01\bar{1}0]" />
-          {convention === 'itc' && (
-            <span className="block mt-2 opacity-80">
-              HM position 2: ITC = a-axis (<span className="font-mono">x</span>); Birss = <span className="font-mono">y</span>.
-            </span>
-          )}
         </>
       );
       break;
@@ -303,12 +343,15 @@ export function AxisOrientationInfo({ crystalSystem, convention }: { crystalSyst
 
   if (!content) return null;
 
+  const tooltipId = getAxisTooltipId(crystalSystem);
+
   return (
     <div className="p-4 border border-ink border-opacity-10 space-y-2 bg-ink/5">
-      <p className="text-xs uppercase tracking-widest text-ink/70 flex items-center gap-1.5">
+      <div className="text-xs uppercase tracking-widest text-ink/70 flex items-center gap-1.5">
         <Compass className="w-3 h-3" />
         Axis Orientation
-      </p>
+        {tooltipId && <TermInfo id={tooltipId} onNavigate={onNavigate} />}
+      </div>
       <p className="text-xs leading-relaxed opacity-70">
         {content}
       </p>
@@ -391,7 +434,7 @@ export function GroupIdentityHeader({ group, setting, convention, onNavigate }: 
               <p className="text-sm font-medium">{centro ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</p>
               <p className="text-xs uppercase tracking-widest opacity-70">Symmetry Type</p>
             </div>
-            <AxisOrientationInfo crystalSystem={group.crystalSystem} convention={convention} />
+            <AxisOrientationInfo crystalSystem={group.crystalSystem} convention={convention} setting={setting} onNavigate={onNavigate} />
           </div>
 
           <div className="text-xs text-ink/70 leading-relaxed">{shgLine}</div>

@@ -285,6 +285,7 @@ export default function App() {
         {currentView === 'explorer' ? (
           <PointGroupExplorer
             convention={convention}
+            onNavigate={handleNavigate}
             onSelectGroupForCalculator={(group) => {
               setSelectedGroup(group);
               setSelectedSetting(getDefaultSetting(group.name, convention));

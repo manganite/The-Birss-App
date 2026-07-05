@@ -45,8 +45,32 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     id: 'convention',
     term: 'Symbol Convention (Birss vs ITC)',
-    brief: 'Which source’s Hermann-Mauguin naming rule labels the current frame. Never changes the physics or the selected setting -- only which symbol/badge is shown.',
+    brief: 'Which source’s Hermann-Mauguin naming rule labels the current frame. Never changes the physics or the selected setting -- only which symbol is shown.',
     helpTab: 'deeper',
+  },
+  {
+    id: 'axis-triclinic',
+    term: 'Axis Orientation (Triclinic)',
+    brief: 'Crystal-physics standard frame (Haussuehl / IRE 1949): z∥c, y∥b*, x completes the right-handed set. Birss and ITC agree.',
+    helpTab: 'conventions',
+  },
+  {
+    id: 'axis-monoclinic',
+    term: 'Axis Orientation (Monoclinic)',
+    brief: 'Two settings of the same group: c-unique (Birss standard) and b-unique (ITC standard). The unique axis (2-fold / mirror-normal) lies along c or b respectively; the displayed frame follows the selected setting.',
+    helpTab: 'conventions',
+  },
+  {
+    id: 'axis-orthorhombic',
+    term: 'Axis Orientation',
+    brief: 'x∥a, y∥b, z∥c ([100]/[010]/[001]). Birss and ITC agree.',
+    helpTab: 'conventions',
+  },
+  {
+    id: 'axis-trigonal',
+    term: 'Axis Orientation (Trigonal/Hexagonal)',
+    brief: 'z∥c, x∥a-axis [100], y∥[120] -- the same in both conventions. Only the HM position-2 reading differs: ITC reads it from the a-axis (x), Birss from y (30° apart). That is why one symbol can name two 30°-rotated frames (the xxx- vs yyy-family); the axes themselves do not move.',
+    helpTab: 'conventions',
   },
   {
     id: 'type-i',
