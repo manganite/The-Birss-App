@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Setting buttons now show the frame's Hermann-Mauguin symbol (with an axis qualifier for
   monoclinic/orthorhombic); the previous "Default"/"standard" badges were removed — the selected
   setting is the standard. Orthorhombic frame symbols are now shown (verified, stored).
+- The axis-convention explanations (trigonal/hexagonal HM position-2 rule; monoclinic c-/b-unique
+  settings) moved from mode-only inline notes into an info tooltip on the AXIS ORIENTATION header,
+  available for every crystal system in both conventions.
 
 ### Fixed
 
@@ -36,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Section-header info tooltips (Symbol Convention, Crystal Setting) were rendered uppercase,
   over-tracked, and at 50% opacity because they were nested inside a dimmed section header; they
   are now legible, matching the other tooltips.
+- The monoclinic AXIS ORIENTATION display now follows the active setting: it showed a fixed
+  c-unique frame (z∥c) even in the ITC / b-unique setting, where the unique axis is b (y∥b,
+  x∥a*). Corrected for both the Calculator/Simulator (selected setting) and the Explorer
+  (convention's standard setting).
 
 ## [0.15.0] - 2026-07-04
 

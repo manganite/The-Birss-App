@@ -20,9 +20,10 @@ interface PointGroupExplorerProps {
   convention: Convention;
   onSelectGroupForCalculator?: (group: PointGroupData) => void;
   onSelectGroupForSimulator?: (group: PointGroupData) => void;
+  onNavigate?: (view: string, tab?: string) => void;
 }
 
-export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onSelectGroupForSimulator }: PointGroupExplorerProps) => {
+export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onSelectGroupForSimulator, onNavigate }: PointGroupExplorerProps) => {
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
   const [activeSystem, setActiveSystem] = useState(CRYSTAL_SYSTEMS[0]);
 
@@ -152,7 +153,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
 
       {/* Crystal system reference panel */}
       <div className="mt-6">
-        <AxisOrientationInfo crystalSystem={activeSystem} convention={convention} />
+        <AxisOrientationInfo crystalSystem={activeSystem} convention={convention} onNavigate={onNavigate} />
       </div>
 
       <AnimatePresence>
