@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-07-05
+
 ### Changed
 
 - Route-level code splitting: the Help, Simulator, and Calculator pages are now lazy-loaded
@@ -561,7 +563,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help & Documentation page covering physics background, math derivations, and usage instructions.
 - MIT license, repository description, topics, and homepage link.
 
-[Unreleased]: https://github.com/manganite/birss-app/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/manganite/birss-app/compare/v0.16.0...HEAD
+[0.16.0]: https://github.com/manganite/birss-app/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/manganite/birss-app/compare/v0.14.1...v0.15.0
 [0.14.1]: https://github.com/manganite/birss-app/compare/v0.14.0...v0.14.1
 [0.14.0]: https://github.com/manganite/birss-app/compare/v0.13.1...v0.14.0
