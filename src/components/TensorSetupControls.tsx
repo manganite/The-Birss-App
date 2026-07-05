@@ -1,29 +1,11 @@
-import { Activity, Zap, BookOpen } from 'lucide-react';
-import { getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
+import { Activity, Zap } from 'lucide-react';
 import type { TensorType, TensorTimeReversal } from '../services/tensorCalculator';
-import { getSettingLabels, getConventionNote, getBookErrorWarning, CONVENTION_NOTES } from '../services/conventionMapping';
-import type { Convention } from '../services/conventionMapping';
 import { TENSOR_META } from '../types';
-import { SectionHeader, FormatPointGroup } from './MathComponents';
+import { SectionHeader } from './MathComponents';
 import { TermInfo } from './TermInfo';
 
 interface NavigateProp {
   onNavigate?: (view: string, tab?: string) => void;
-}
-
-function ConventionNote({ groupName }: { groupName: string }) {
-  const noteKey = getConventionNote(groupName);
-  const bookErrorWarning = getBookErrorWarning(groupName);
-  if (!noteKey) return null;
-  return (
-    <p className="text-xs text-ink/70 leading-relaxed flex items-start gap-1.5">
-      <BookOpen className="w-3 h-3 mt-0.5 shrink-0 opacity-60" />
-      <span>
-        {CONVENTION_NOTES[noteKey]}
-        {bookErrorWarning && <span className="block mt-1">{bookErrorWarning}</span>}
-      </span>
-    </p>
-  );
 }
 
 export function TensorClassificationControl({
@@ -90,61 +72,6 @@ export function TimeReversalControl({
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-export function CrystalSettingControl({
-  groupName,
-  value,
-  onChange,
-  onNavigate,
-  className = '',
-  convention,
-}: {
-  groupName: string;
-  value: number;
-  onChange: (s: number) => void;
-  className?: string;
-  convention: Convention;
-} & NavigateProp) {
-  const altSettings = getAlternateSettings(groupName);
-  const futureCount = getFutureSettingCount(groupName);
-  if (!altSettings && !futureCount) return null;
-  const settingLabels = getSettingLabels(groupName, convention);
-  return (
-    <div className={`space-y-3${className ? ` ${className}` : ''}`}>
-      <SectionHeader>
-        Crystal Setting <TermInfo id="crystal-setting" onNavigate={onNavigate} />
-      </SectionHeader>
-      {altSettings ? (
-        <>
-          <div className="flex flex-wrap gap-3">
-            {settingLabels.map(({ setting, axisWord, hm }) => (
-              <button
-                key={setting}
-                type="button"
-                aria-pressed={value === setting}
-                onClick={() => onChange(setting)}
-                className={`px-4 py-2 text-xs transition-all border border-ink ${
-                  value === setting
-                    ? 'bg-ink text-paper'
-                    : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
-                }`}
-              >
-                {axisWord && <span className="normal-case tracking-normal">{axisWord} </span>}
-                <FormatPointGroup name={hm} />
-              </button>
-            ))}
-          </div>
-          <ConventionNote groupName={groupName} />
-        </>
-      ) : (
-        <>
-          <p className="text-xs text-ink/70 italic">{futureCount} settings — selection coming</p>
-          <ConventionNote groupName={groupName} />
-        </>
-      )}
     </div>
   );
 }

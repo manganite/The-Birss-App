@@ -328,6 +328,12 @@ export function getSHGConsequence(groupName: string): string {
     : 'Non-centrosymmetric → ED SHG allowed';
 }
 
+/** The part of `getSHGConsequence` after the arrow, for display alongside a Centro/Non-Centro
+ * label that already states the premise. */
+export function getSHGConsequenceShort(groupName: string): string {
+  return getSHGConsequence(groupName).split('→')[1].trim();
+}
+
 export interface SettingDef {
   name: string;
   rotation: Matrix3x3;
