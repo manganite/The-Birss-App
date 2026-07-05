@@ -1,6 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { GENERATORS, getCachedFullGroup, multiply, isSameMatrix, snapMatrix, getAlternateSettings, identity, transpose } from './symmetryGroups';
+import { GENERATORS, getCachedFullGroup, multiply, isSameMatrix, snapMatrix, getAlternateSettings, identity, transpose, getSHGConsequenceShort } from './symmetryGroups';
 import { POINT_GROUPS } from '../data/pointGroups';
+
+describe('getSHGConsequenceShort', () => {
+  it('returns the consequence for a centrosymmetric group, without the premise or the arrow', () => {
+    expect(getSHGConsequenceShort('-1')).toBe('ED SHG forbidden (bulk); EQ/MD can contribute');
+  });
+
+  it('returns the consequence for a non-centrosymmetric group, without the premise or the arrow', () => {
+    expect(getSHGConsequenceShort('1')).toBe('ED SHG allowed');
+  });
+});
 
 /**
  * Tier 1b: true closure. getFullGroup() builds each group by repeatedly multiplying

@@ -10,7 +10,7 @@ import {
   getLabFrameVectors,
 } from '../services/tensorCalculator';
 import { TensorTerm, KDirectionSelector, GroupIdentityHeader } from './MathComponents';
-import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl } from './TensorSetupControls';
+import { TensorClassificationControl, TimeReversalControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
 import { TENSOR_META } from '../types';
 import type { TensorConfig, PresetAnglesState } from '../types';
@@ -71,6 +71,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
         group={selectedGroup}
         setting={selectedSetting}
         convention={convention}
+        onSettingChange={setSelectedSetting}
         onNavigate={onNavigate}
       />
 
@@ -113,14 +114,6 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
               />
             </div>
           </div>
-
-          <CrystalSettingControl
-            groupName={selectedGroup.name}
-            value={selectedSetting}
-            onChange={setSelectedSetting}
-            convention={convention}
-            onNavigate={onNavigate}
-          />
         </div>
 
         {/* Mobile-only preset strip — always visible */}

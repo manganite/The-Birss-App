@@ -29,6 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The axis-convention explanations (trigonal/hexagonal HM position-2 rule; monoclinic c-/b-unique
   settings) moved from mode-only inline notes into an info tooltip on the AXIS ORIENTATION header,
   available for every crystal system in both conventions.
+- Group info header reworked: the title now shows the group name (constant across settings, only
+  convention-dependent) and the redundant cross-convention synonym was removed; the Crystal
+  System / Symmetry Type / Axis Orientation boxes share a uniform title-on-top layout (Symmetry
+  Type gains an icon and the ED-SHG consequence); the Crystal Setting selector moved into the
+  info box for both Calculator and Simulator; minor alignment fixes; the info header is now shown
+  on mobile in the Simulator too, so the setting selector is reachable there.
 
 ### Fixed
 

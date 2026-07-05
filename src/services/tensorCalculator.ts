@@ -16,6 +16,7 @@ export {
   getParentGroup,
   getHalvingSubgroup,
   getSHGConsequence,
+  getSHGConsequenceShort,
   type SettingDef,
 } from './symmetryGroups';
 export {
