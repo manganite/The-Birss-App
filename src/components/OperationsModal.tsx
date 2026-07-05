@@ -1,8 +1,7 @@
 import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { X, Calculator, Activity } from 'lucide-react';
-import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
-import { isCentrosymmetric } from '../services/symmetryGroups';
+import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, isCentrosymmetric } from '../services/tensorCalculator';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 import { FormatPointGroup, FormatSchoenflies, SymmetryOperation } from './MathComponents';
