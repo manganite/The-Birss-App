@@ -418,11 +418,11 @@ export const ALTERNATE_SETTINGS: Record<string, SettingDef[]> = {
   "21'":    [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
   "m1'":    [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
   "2/m1'":  [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "-42m1'": [{ name: "-4m2", rotation: getRotationZ(45) }],
-  "321'":   [{ name: "312",  rotation: getRotationZ(30) }],
-  "3m1'":   [{ name: "31m",  rotation: getRotationZ(30) }],
-  "-3m1'":  [{ name: "-31m", rotation: getRotationZ(30) }],
-  "-6m21'": [{ name: "-62m", rotation: getRotationZ(30) }],
+  "-42m1'": [{ name: "-4m21'", rotation: getRotationZ(45) }],
+  "321'":   [{ name: "3121'",  rotation: getRotationZ(30) }],
+  "3m1'":   [{ name: "31m1'",  rotation: getRotationZ(30) }],
+  "-3m1'":  [{ name: "-31m1'", rotation: getRotationZ(30) }],
+  "-6m21'": [{ name: "-62m1'", rotation: getRotationZ(30) }],
 };
 
 const GROUPS_WITH_FUTURE_SETTINGS: Record<string, number> = {
