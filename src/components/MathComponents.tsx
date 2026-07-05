@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-import { Box, Hexagon, Triangle, Layers, Compass, Info, ChevronDown, ChevronUp, ExternalLink, FlipHorizontal2, BookOpen } from 'lucide-react';
+import { Box, Hexagon, Triangle, Layers, Compass, Info, ChevronDown, ChevronUp, FlipHorizontal2, BookOpen } from 'lucide-react';
 import { hklToPresetAngles } from '../services/orientation';
 import { isCentrosymmetric, getParentGroup, getHalvingSubgroup, getSHGConsequenceShort, getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels, getConventionNote, getBookErrorWarning, CONVENTION_NOTES } from '../services/conventionMapping';
@@ -395,7 +395,7 @@ export function CrystalSettingControl({
   const settingLabels = getSettingLabels(groupName, convention);
   return (
     <div className={`space-y-2${className ? ` ${className}` : ''}`}>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <SectionHeader>
           Crystal Setting <TermInfo id="crystal-setting" onNavigate={onNavigate} />
         </SectionHeader>
@@ -531,17 +531,6 @@ export function GroupIdentityHeader({ group, setting, convention, onSettingChang
               className="lg:ml-auto"
             />
           </div>
-
-          {onNavigate && (
-            <button
-              type="button"
-              onClick={() => onNavigate('explorer')}
-              className="flex items-center gap-1 text-xs text-ink/70 hover:text-ink transition-colors"
-            >
-              <ExternalLink className="w-3 h-3" />
-              Open in Explorer
-            </button>
-          )}
         </section>
       )}
     </div>
