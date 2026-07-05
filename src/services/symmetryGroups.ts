@@ -322,16 +322,20 @@ export function getHalvingSubgroup(groupName: string): string[] | null {
   });
 }
 
+const SHG_CONSEQUENCE = {
+  centro: { premise: 'Centrosymmetric', consequence: 'ED SHG forbidden (bulk); EQ/MD can contribute' },
+  nonCentro: { premise: 'Non-centrosymmetric', consequence: 'ED SHG allowed' },
+} as const;
+
 export function getSHGConsequence(groupName: string): string {
-  return isCentrosymmetric(groupName)
-    ? 'Centrosymmetric → ED SHG forbidden (bulk); EQ/MD can contribute'
-    : 'Non-centrosymmetric → ED SHG allowed';
+  const { premise, consequence } = isCentrosymmetric(groupName) ? SHG_CONSEQUENCE.centro : SHG_CONSEQUENCE.nonCentro;
+  return `${premise} → ${consequence}`;
 }
 
-/** The part of `getSHGConsequence` after the arrow, for display alongside a Centro/Non-Centro
- * label that already states the premise. */
+/** The consequence half of `getSHGConsequence`, for display alongside a Centro/Non-Centro label
+ * that already states the premise -- shares the same source strings, no string parsing. */
 export function getSHGConsequenceShort(groupName: string): string {
-  return getSHGConsequence(groupName).split('→')[1].trim();
+  return (isCentrosymmetric(groupName) ? SHG_CONSEQUENCE.centro : SHG_CONSEQUENCE.nonCentro).consequence;
 }
 
 export interface SettingDef {

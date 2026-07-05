@@ -46,7 +46,7 @@ export function SimulatorPage({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <GroupIdentityHeader group={selectedGroup} setting={selectedSetting} convention={convention} onSettingChange={setSelectedSetting} onNavigate={onNavigate} />
+      <GroupIdentityHeader key={selectedGroup.name} group={selectedGroup} setting={selectedSetting} convention={convention} onSettingChange={setSelectedSetting} onNavigate={onNavigate} />
 
       <SimulatorSetupPanel
         selectedGroup={selectedGroup}
