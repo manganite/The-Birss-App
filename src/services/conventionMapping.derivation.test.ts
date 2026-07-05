@@ -4,8 +4,13 @@ import { POINT_GROUPS } from '../data/pointGroups';
 import {
   NAME_SWAP_GROUPS,
   MONOCLINIC_GROUPS,
+  ORTHO_AXIS_GROUPS,
+  ORTHO_FRAME_HM,
+  deriveOrthoFrameHM,
   getFrameDisplayName,
   getSettingLabels,
+  getGroupDisplayName,
+  getDefaultSetting,
 } from './conventionMapping';
 
 /**
@@ -55,10 +60,18 @@ describe('conventionMapping.derivation — classification re-derived from group 
     expect([...derived].sort()).toEqual([...MONOCLINIC_GROUPS].sort());
   });
 
+  it('ORTHO_AXIS_GROUPS = every Orthorhombic group with an alternate setting', () => {
+    const derived = new Set(
+      Object.keys(ALTERNATE_SETTINGS).filter(group => crystalSystemOf(group) === 'Orthorhombic'),
+    );
+    expect([...derived].sort()).toEqual([...ORTHO_AXIS_GROUPS].sort());
+  });
+
   it("the two Sec.-7A groups (m'm'm, 6'/mm'm) are asserted explicitly", () => {
     expect(NAME_SWAP_GROUPS.has("6'/mm'm")).toBe(true);
     expect(NAME_SWAP_GROUPS.has("m'm'm")).toBe(false);
     expect(MONOCLINIC_GROUPS.has("m'm'm")).toBe(false);
+    expect(ORTHO_AXIS_GROUPS.has("m'm'm")).toBe(true);
   });
 
   it('for every NAME_SWAP_GROUPS member, the ITC label at each setting equals the Birss label of the other setting', () => {
@@ -79,37 +92,57 @@ describe('conventionMapping.derivation — classification re-derived from group 
     }
   });
 
-  it('getFrameDisplayName is consistent with getSettingLabels for every NAME_SWAP_GROUPS (group, setting, convention) triple', () => {
-    // Only NAME_SWAP_GROUPS use the HM name as their button label; other groups intentionally
-    // keep descriptive labels ("First (c-unique, Birss)", "a-unique", ...) unrelated to
-    // getFrameDisplayName, which always returns the group key for them.
-    for (const group of NAME_SWAP_GROUPS) {
+  it('getFrameDisplayName is consistent with getSettingLabels for every ALTERNATE_SETTINGS (group, setting, convention) triple', () => {
+    for (const group of Object.keys(ALTERNATE_SETTINGS)) {
       for (const convention of ['birss', 'itc'] as const) {
         const labels = getSettingLabels(group, convention);
-        for (const { setting, label } of labels) {
-          expect(label).toBe(getFrameDisplayName(group, setting, convention).primary);
+        for (const { setting, hm } of labels) {
+          expect(hm).toBe(getFrameDisplayName(group, setting, convention).primary);
         }
       }
     }
   });
 
-  it('badge placement: Birss mode is always setting 1; ITC mode is setting 2 for naming-conflict/monoclinic/m\'m\'m groups and setting 1 for 6\'/mm\'m and all unaffected groups', () => {
+  it('only ORTHO_AXIS_GROUPS and MONOCLINIC_GROUPS setting labels carry an axis word; every other alternate-setting group has axisWord: null', () => {
     for (const group of Object.keys(ALTERNATE_SETTINGS)) {
-      const birssLabels = getSettingLabels(group, 'birss');
-      const itcLabels = getSettingLabels(group, 'itc');
-      const isAffected = NAME_SWAP_GROUPS.has(group) || MONOCLINIC_GROUPS.has(group) || group === "m'm'm";
-
-      if (!isAffected) {
-        expect(birssLabels.every(l => l.badge === undefined)).toBe(true);
-        expect(itcLabels.every(l => l.badge === undefined)).toBe(true);
-        continue;
+      const labels = getSettingLabels(group, 'birss');
+      const expectAxisWord = ORTHO_AXIS_GROUPS.has(group) || MONOCLINIC_GROUPS.has(group);
+      for (const { axisWord } of labels) {
+        expect(axisWord !== null).toBe(expectAxisWord);
       }
+    }
+  });
 
-      const birssBadgeSetting = birssLabels.find(l => l.badge === 'birss-standard')?.setting;
-      expect(birssBadgeSetting).toBe(1);
+  it('the standard (default) setting: Birss is always setting 1; ITC is setting 2 for naming-conflict/monoclinic/m\'m\'m groups and setting 1 for 6\'/mm\'m and all unaffected groups', () => {
+    for (const group of Object.keys(ALTERNATE_SETTINGS)) {
+      expect(getDefaultSetting(group, 'birss')).toBe(1);
 
-      const itcBadgeSetting = itcLabels.find(l => l.badge === 'itc-standard')?.setting;
-      expect(itcBadgeSetting).toBe(group === "6'/mm'm" ? 1 : 2);
+      const isAffected = NAME_SWAP_GROUPS.has(group) || MONOCLINIC_GROUPS.has(group) || group === "m'm'm";
+      const expectedItcDefault = !isAffected ? 1 : group === "6'/mm'm" ? 1 : 2;
+      expect(getDefaultSetting(group, 'itc')).toBe(expectedItcDefault);
+    }
+  });
+
+  it('ORTHO_FRAME_HM matches the mechanical token-permutation derivation for every row (anti-drift guard)', () => {
+    for (const group of Object.keys(ORTHO_FRAME_HM)) {
+      expect(deriveOrthoFrameHM(group)).toEqual(ORTHO_FRAME_HM[group]);
+    }
+  });
+
+  it('getGroupDisplayName: Birss mode always returns the group key, for every one of the 122 point groups', () => {
+    for (const pg of POINT_GROUPS) {
+      expect(getGroupDisplayName(pg.name, 'birss')).toBe(pg.name);
+    }
+  });
+
+  it("getGroupDisplayName: ITC mode returns the group key for every point group EXCEPT the two Sec. 7A divergent groups (m'm'm -> mm'm'; 6'/mm'm -> 6'/mmm')", () => {
+    const divergent: Record<string, string> = {
+      "m'm'm": "mm'm'",
+      "6'/mm'm": "6'/mmm'",
+    };
+    for (const pg of POINT_GROUPS) {
+      const expected = divergent[pg.name] ?? pg.name;
+      expect(getGroupDisplayName(pg.name, 'itc')).toBe(expected);
     }
   });
 });

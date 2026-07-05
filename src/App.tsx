@@ -11,7 +11,7 @@ import {
   TensorTimeReversal,
   TensorType,
 } from './services/tensorCalculator';
-import { getDefaultSetting } from './services/conventionMapping';
+import { getDefaultSetting, getGroupDisplayName } from './services/conventionMapping';
 import type { Convention } from './services/conventionMapping';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
 import { FormatPointGroup } from './components/MathComponents';
@@ -84,12 +84,12 @@ export default function App() {
     if (searchQuery) {
       const normalizedQuery = normalizeString(searchQuery);
       groups = groups.filter(pg =>
-        normalizeString(pg.name).includes(normalizedQuery) ||
+        normalizeString(getGroupDisplayName(pg.name, convention)).includes(normalizedQuery) ||
         normalizeString(pg.crystalSystem).includes(normalizedQuery)
       );
     }
     return groups;
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, convention]);
 
   const handleSelect = (group: PointGroupData) => {
     setSelectedGroup(group);
@@ -256,7 +256,7 @@ export default function App() {
                           onClick={() => handleSelect(group)}
                           className={`w-full text-left px-3 py-2 hover:bg-ink hover:text-paper transition-colors flex justify-between items-center group rounded-md ${idx === highlightedIndex ? 'bg-ink/10' : ''}`}
                         >
-                          <span className="text-sm font-serif italic"><FormatPointGroup name={group.name} /></span>
+                          <span className="text-sm font-serif italic"><FormatPointGroup name={getGroupDisplayName(group.name, convention)} /></span>
                           <span className="text-xs uppercase tracking-widest opacity-70 group-hover:opacity-100">{group.crystalSystem}</span>
                         </button>
                       )) : (

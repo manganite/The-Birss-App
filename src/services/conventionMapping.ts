@@ -6,9 +6,10 @@ import { ALTERNATE_SETTINGS, EPSILON } from './symmetryGroups';
  * NEVER touches generators, frames, or tensor computation; `convention` must not be passed into
  * tensorProjection.ts or any tensor service.
  *
- * Classification is computed once here from `ALTERNATE_SETTINGS` (the rotation angle already
- * encodes which mechanism applies) rather than hand-maintained per group; the derivation-guard
- * test re-derives every set from the app's own operator algebra and asserts no drift.
+ * Classification is computed once here from `ALTERNATE_SETTINGS` (the rotation angle and/or the
+ * setting-name shape already encode which mechanism applies) rather than hand-maintained per
+ * group; the derivation-guard test re-derives every set from the app's own operator algebra (and,
+ * for the orthorhombic frame strings, from a token-permutation rule) and asserts no drift.
  */
 
 export type Convention = 'birss' | 'itc';
@@ -25,46 +26,69 @@ function isRotZ30(group: string): boolean {
  * Groups whose displayed HM name swaps between setting 1 and setting 2 under the convention
  * toggle (Sec. 7C naming-conflict class, plus `6'/mm'm` from Sec. 7A -- same swap mechanism,
  * computed 2026-07-04 from the app's operator sets; its only difference from the other 19 is
- * badge placement, not the name logic). Mechanically: every `ALTERNATE_SETTINGS` entry using a
- * 30 deg-about-z rotation (the trigonal/hexagonal secondary-family rotation) -- all 20 such
- * groups have a trigonal-only (no proper unprimed 6-fold) unitary part, so there is no
+ * standard-setting placement, not the name logic). Mechanically: every `ALTERNATE_SETTINGS` entry
+ * using a 30 deg-about-z rotation (the trigonal/hexagonal secondary-family rotation) -- all 20
+ * such groups have a trigonal-only (no proper unprimed 6-fold) unitary part, so there is no
  * group-specific exception here.
  */
 export const NAME_SWAP_GROUPS = new Set<string>(
   Object.keys(ALTERNATE_SETTINGS).filter(isRotZ30),
 );
 
-/** The sole Sec.-7A exception: the name swaps like any other NAME_SWAP_GROUPS member, but both
- * conventions' tabulated standard is the same physical frame (setting 1), so the badge does not
- * move in ITC mode. */
-const BADGE_FIXED_AT_SETTING_1 = "6'/mm'm";
+/**
+ * Orthorhombic axis-setting groups (Sec. 3 "axis-permutation settings"): identified by the
+ * `ALTERNATE_SETTINGS` entries' own axis-word names ("a-unique"/"b-unique"), which is how these
+ * 7 groups are hand-labelled in `symmetryGroups.ts` -- distinct in shape from both the
+ * 30 deg-rotation trig/hex swap groups and the monoclinic "Second (b-unique, ITC)" groups.
+ */
+export const ORTHO_AXIS_GROUPS = new Set<string>(
+  Object.keys(ALTERNATE_SETTINGS).filter(group => {
+    const defs = ALTERNATE_SETTINGS[group];
+    return defs.length === 2 && defs[0].name === 'a-unique' && defs[1].name === 'b-unique';
+  }),
+);
 
-/** Monoclinic groups (Sec. 7B): short symbol identical in both conventions; only the
- * "standard" badge moves, to the b-unique setting (setting 2), in ITC mode. */
+/** Monoclinic groups (Sec. 7B): short symbol identical in both conventions; only which setting
+ * is standard moves, to the b-unique setting (setting 2), in ITC mode. */
 export const MONOCLINIC_GROUPS = new Set<string>([
   '2', 'm', '2/m', "2'", "m'", "2'/m", "2'/m'", "2/m'", "21'", "m1'", "2/m1'",
 ]);
 
-/** `m'm'm` (Sec. 7A): string identical in both conventions; badge moves to the a-unique
- * setting (setting 2), which carries ITC's `mm'm'` orientation (unprimed 2-fold on x). */
-const ORTHO_BADGE_GROUP = "m'm'm";
+/**
+ * The residual `ALTERNATE_SETTINGS` entries: the tetragonal 45 deg-setting groups (Mechanism A/B).
+ * These are NOT Birss<->ITC divergent (Birss's position-2 = y lies inside ITC's secondary
+ * direction set for tetragonal, per the session findings), so their setting names are shown
+ * as-is, identically in both conventions -- no swap, no axis word, just the setting's own HM name.
+ */
+const OTHER_SETTING_GROUPS = new Set<string>(
+  Object.keys(ALTERNATE_SETTINGS).filter(
+    group => !NAME_SWAP_GROUPS.has(group) && !ORTHO_AXIS_GROUPS.has(group) && !MONOCLINIC_GROUPS.has(group),
+  ),
+);
 
-/** Groups that show any convention-related badge at all, in either mode. Everything else
- * ("groups outside the affected classes") renders exactly as today -- no badge. */
+/** The sole Sec.-7A exception: the name swaps like any other NAME_SWAP_GROUPS member, but both
+ * conventions' tabulated standard is the same physical frame (setting 1), so the standard setting
+ * does not move in ITC mode. */
+const STANDARD_STAYS_AT_SETTING_1 = "6'/mm'm";
+
+/** `m'm'm` (Sec. 7A): string identical in both conventions; the standard setting moves to the
+ * a-unique setting (setting 2), which carries ITC's `mm'm'` orientation (unprimed 2-fold on x). */
+const ORTHO_STANDARD_DIVERGES = "m'm'm";
+
+/** Groups whose "standard setting" depends on the active convention at all. Everything else
+ * (groups outside the affected classes) has the same standard setting (1) in both conventions. */
 const CONVENTION_AFFECTED = new Set<string>([
   ...NAME_SWAP_GROUPS,
   ...MONOCLINIC_GROUPS,
-  ORTHO_BADGE_GROUP,
+  ORTHO_STANDARD_DIVERGES,
 ]);
 
-export type Badge = 'birss-standard' | 'itc-standard';
-
-/** Which setting number carries the "standard" badge for this group, under this convention.
- * Returns null for groups with no convention-related badge at all. */
+/** Which setting number is standard for this group, under this convention. Returns null for
+ * groups whose standard setting doesn't depend on convention (always setting 1). */
 function getStandardSetting(group: string, convention: Convention): number | null {
   if (!CONVENTION_AFFECTED.has(group)) return null;
   if (convention === 'birss') return 1;
-  if (group === BADGE_FIXED_AT_SETTING_1) return 1;
+  if (group === STANDARD_STAYS_AT_SETTING_1) return 1;
   return 2;
 }
 
@@ -74,6 +98,59 @@ export function getDefaultSetting(group: string, convention: Convention): number
   return getStandardSetting(group, convention) ?? 1;
 }
 
+/**
+ * Verified orthorhombic frame HM strings (Sec. 2.1 derivation, orthorhombic positions x=a, y=b,
+ * z=c agree in both conventions so these are convention-independent). Setting 1 = the group key
+ * (c-unique); setting 2 = a-unique; setting 3 = b-unique. Verified 2026-07-04 by key-token
+ * permutation, cross-checked against the ITC Table 1.5.7.1 scan (`mm2 [2mm; m2m]`) and against
+ * operator projection for the non-centrosymmetric groups; see the derivation-guard test, which
+ * re-derives every row from `deriveOrthoFrameHM` and asserts equality so this table cannot drift.
+ */
+export const ORTHO_FRAME_HM: Record<string, [string, string, string]> = {
+  "2'2'2": ["2'2'2", "22'2'", "2'22'"],
+  "2'm'm": ["2'm'm", "m2'm'", "m'm2'"],
+  "m'm'2": ["m'm'2", "2m'm'", "m'2m'"],
+  "m'm'm": ["m'm'm", "mm'm'", "m'mm'"],
+  "mmm'": ["mmm'", "m'mm", "mm'm"],
+  "mm2": ["mm2", "2mm", "m2m"],
+  "mm21'": ["mm21'", "2mm1'", "m2m1'"],
+};
+
+/**
+ * Mechanically re-derives a group's 3 orthorhombic frame HM strings by permuting its key's
+ * position tokens: a-unique = [t_z, t_x, t_y], b-unique = [t_y, t_z, t_x] (the token at position i
+ * names the symmetry element parallel/perpendicular to axis i = x,y,z respectively). Exported
+ * solely for the derivation-guard test -- `ORTHO_FRAME_HM` above is the source of truth used at
+ * runtime.
+ */
+export function deriveOrthoFrameHM(group: string): [string, string, string] {
+  const suffix = group.endsWith("1'") ? "1'" : '';
+  const core = suffix ? group.slice(0, -suffix.length) : group;
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < core.length) {
+    const base = core[i];
+    if (base !== '2' && base !== 'm') {
+      throw new Error(`deriveOrthoFrameHM: unexpected token start "${base}" in "${group}"`);
+    }
+    i++;
+    if (core[i] === "'") {
+      tokens.push(base + "'");
+      i++;
+    } else {
+      tokens.push(base);
+    }
+  }
+  if (tokens.length !== 3) {
+    throw new Error(`deriveOrthoFrameHM: expected 3 position tokens in "${group}", got ${tokens.length}`);
+  }
+  const [tx, ty, tz] = tokens;
+  const setting1 = group;
+  const setting2 = `${tz}${tx}${ty}${suffix}`;
+  const setting3 = `${ty}${tz}${tx}${suffix}`;
+  return [setting1, setting2, setting3];
+}
+
 export interface FrameName {
   primary: string;
   synonym?: string;
@@ -81,66 +158,86 @@ export interface FrameName {
 
 /**
  * The HM name of the currently selected physical frame under the active convention.
- * For NAME_SWAP_GROUPS, the Birss/ITC names swap between setting 1 and setting 2: setting 1's
- * ITC name is exactly setting 2's Birss name (`ALTERNATE_SETTINGS[group][0].name`), and vice
- * versa -- the mechanical swap already present in the settings data, no group-specific text.
- * For every other group, both conventions show the group key (no synonym).
+ * - NAME_SWAP_GROUPS: the Birss/ITC names swap between setting 1 and setting 2 -- setting 1's ITC
+ *   name is exactly setting 2's Birss name (`ALTERNATE_SETTINGS[group][0].name`), and vice versa.
+ * - ORTHO_AXIS_GROUPS: the setting's frame HM string from `ORTHO_FRAME_HM`, convention-independent
+ *   (no synonym).
+ * - OTHER_SETTING_GROUPS (tetragonal 45 deg pairs): the setting's own HM name (setting 1 = group key,
+ *   setting 2 = the alternate setting's name), convention-independent (no synonym).
+ * - Every other group (monoclinic, and groups with no alternate settings): the group key at every
+ *   setting (no synonym) -- monoclinic's short HM is identical at both settings (Sec. 7B).
  */
 export function getFrameDisplayName(group: string, setting: number, convention: Convention): FrameName {
-  if (!NAME_SWAP_GROUPS.has(group)) {
-    return { primary: group };
+  if (NAME_SWAP_GROUPS.has(group)) {
+    const altSettings = ALTERNATE_SETTINGS[group];
+    const birssName1 = group;
+    const birssName2 = altSettings[0].name;
+    const birssName = setting === 1 ? birssName1 : birssName2;
+    const itcName = setting === 1 ? birssName2 : birssName1;
+    const primary = convention === 'birss' ? birssName : itcName;
+    const synonym = convention === 'birss' ? itcName : birssName;
+    return primary === synonym ? { primary } : { primary, synonym };
   }
-  const altSettings = ALTERNATE_SETTINGS[group];
-  const birssName1 = group;
-  const birssName2 = altSettings[0].name;
-  const birssName = setting === 1 ? birssName1 : birssName2;
-  const itcName = setting === 1 ? birssName2 : birssName1;
-  const primary = convention === 'birss' ? birssName : itcName;
-  const synonym = convention === 'birss' ? itcName : birssName;
-  return primary === synonym ? { primary } : { primary, synonym };
-}
-
-export interface SettingLabel {
-  setting: number;
-  label: string;
-  badge?: Badge;
+  if (ORTHO_AXIS_GROUPS.has(group)) {
+    return { primary: ORTHO_FRAME_HM[group][setting - 1] };
+  }
+  if (OTHER_SETTING_GROUPS.has(group)) {
+    const altSettings = ALTERNATE_SETTINGS[group];
+    return { primary: setting === 1 ? group : altSettings[setting - 2].name };
+  }
+  return { primary: group };
 }
 
 /**
- * Setting-selector button labels and badge placement for the given group/convention, built on
- * top of `ALTERNATE_SETTINGS`. Returns [] for groups with no alternate settings (nothing to
- * label). Label text: NAME_SWAP_GROUPS get the convention-correct HM name at every setting;
- * monoclinic/other groups keep their existing descriptive labels ("First (c-unique, Birss)" /
- * "Default", or the `ALTERNATE_SETTINGS` entry's own `name`) unchanged by convention.
+ * The setting-independent group-standard display name: the standard setting's frame name. No
+ * per-group special-casing -- this yields a divergent name for EXACTLY `6'/mm'm` (`6'/mmm'` in
+ * ITC) and `m'm'm` (`mm'm'` in ITC); every other group (incl. all Sec. 7C and all monoclinic
+ * groups) returns the same string in both conventions.
+ */
+export function getGroupDisplayName(group: string, convention: Convention): string {
+  return getFrameDisplayName(group, getStandardSetting(group, convention) ?? 1, convention).primary;
+}
+
+const ORTHO_AXIS_WORDS = ['c-unique', 'a-unique', 'b-unique'];
+const MONOCLINIC_AXIS_WORDS = ['c-unique', 'b-unique'];
+
+export interface SettingLabel {
+  setting: number;
+  /** Plain-text axis qualifier ("c-unique", "a-unique", "b-unique"), or null for groups with no
+   * axis-choice concept (trig/hex name-swap and tetragonal groups: HM name alone). */
+  axisWord: string | null;
+  /** The HM symbol to render (through the LaTeX formatter); always a real HM string. */
+  hm: string;
+}
+
+/**
+ * Setting-selector button labels for the given group/convention, built on top of
+ * `ALTERNATE_SETTINGS`. Returns [] for groups with no alternate settings. The selected (highlighted)
+ * button IS the standard setting -- no separate badge/text marks it.
  */
 export function getSettingLabels(group: string, convention: Convention): SettingLabel[] {
   const altSettings = ALTERNATE_SETTINGS[group];
   if (!altSettings) return [];
 
-  const standardSetting = getStandardSetting(group, convention);
-  const badgeKind: Badge = convention === 'birss' ? 'birss-standard' : 'itc-standard';
   const totalSettings = altSettings.length + 1;
+  const axisWords = ORTHO_AXIS_GROUPS.has(group)
+    ? ORTHO_AXIS_WORDS
+    : MONOCLINIC_GROUPS.has(group)
+    ? MONOCLINIC_AXIS_WORDS
+    : null;
 
   const labels: SettingLabel[] = [];
   for (let setting = 1; setting <= totalSettings; setting++) {
-    let label: string;
-    if (NAME_SWAP_GROUPS.has(group)) {
-      label = getFrameDisplayName(group, setting, convention).primary;
-    } else if (setting === 1) {
-      label = MONOCLINIC_GROUPS.has(group) ? 'First (c-unique, Birss)' : 'Default';
-    } else {
-      label = altSettings[setting - 2].name;
-    }
     labels.push({
       setting,
-      label,
-      badge: setting === standardSetting ? badgeKind : undefined,
+      axisWord: axisWords ? axisWords[setting - 1] : null,
+      hm: getFrameDisplayName(group, setting, convention).primary,
     });
   }
   return labels;
 }
 
-export type NoteKey = 'naming-conflict' | 'same-frame-different-string' | 'orthorhombic-badge' | 'monoclinic';
+export type NoteKey = 'naming-conflict' | 'same-frame-different-string' | 'orthorhombic-frame' | 'monoclinic';
 
 /** Groups with a documented Birss Table-7 printing error (app is correct; see the session
  * findings doc Finding D) -- get an extra warning line appended to their convention note. */
@@ -151,10 +248,10 @@ export const CONVENTION_NOTES: Record<NoteKey, string> = {
     "Birss and ITC assign this symbol to frames 30° apart. Current display uses the active convention's reading; toggle to compare.",
   'same-frame-different-string':
     "Birss `6'/mm'm` = ITC `6'/mmm'` -- same frame, different string.",
-  'orthorhombic-badge':
-    "Birss and ITC use the same string for this group's default frame, but disagree on which axis carries the unprimed 2-fold; the ITC-standard badge marks ITC's `mm'm'` orientation (a-unique).",
+  'orthorhombic-frame':
+    "Birss and ITC use the same string for this group's default frame, but disagree on which axis carries the unprimed 2-fold; ITC's standard is the `mm'm'` orientation (a-unique).",
   monoclinic:
-    "Birss (c-unique) and ITC (b-unique) name this group identically; the ITC-standard badge marks the b-unique setting.",
+    "Birss (c-unique) and ITC (b-unique) name this group identically; ITC's standard is the b-unique setting.",
 };
 
 export const BOOK_ERROR_WARNING =
@@ -162,9 +259,9 @@ export const BOOK_ERROR_WARNING =
 
 /** Which explanation note applies to this group, if any. */
 export function getConventionNote(group: string): NoteKey | null {
-  if (group === BADGE_FIXED_AT_SETTING_1) return 'same-frame-different-string';
+  if (group === STANDARD_STAYS_AT_SETTING_1) return 'same-frame-different-string';
   if (NAME_SWAP_GROUPS.has(group)) return 'naming-conflict';
-  if (group === ORTHO_BADGE_GROUP) return 'orthorhombic-badge';
+  if (group === ORTHO_STANDARD_DIVERGES) return 'orthorhombic-frame';
   if (MONOCLINIC_GROUPS.has(group)) return 'monoclinic';
   return null;
 }

@@ -4,7 +4,7 @@ import type { TensorType, TensorTimeReversal } from '../services/tensorCalculato
 import { getSettingLabels, getConventionNote, getBookErrorWarning, CONVENTION_NOTES } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 import { TENSOR_META } from '../types';
-import { SectionHeader, FormatGroupLabel } from './MathComponents';
+import { SectionHeader, FormatPointGroup } from './MathComponents';
 import { TermInfo } from './TermInfo';
 
 interface NavigateProp {
@@ -23,15 +23,6 @@ function ConventionNote({ groupName }: { groupName: string }) {
         {bookErrorWarning && <span className="block mt-1">{bookErrorWarning}</span>}
       </span>
     </p>
-  );
-}
-
-function SettingBadge({ badge }: { badge?: 'birss-standard' | 'itc-standard' }) {
-  if (!badge) return null;
-  return (
-    <span className="normal-case tracking-normal">
-      {' '}— {badge === 'birss-standard' ? 'Birss default' : 'ITC standard'}
-    </span>
   );
 }
 
@@ -129,7 +120,7 @@ export function CrystalSettingControl({
       {altSettings ? (
         <>
           <div className="flex flex-wrap gap-3">
-            {settingLabels.map(({ setting, label, badge }) => (
+            {settingLabels.map(({ setting, axisWord, hm }) => (
               <button
                 key={setting}
                 type="button"
@@ -141,8 +132,8 @@ export function CrystalSettingControl({
                     : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
                 }`}
               >
-                <FormatGroupLabel label={label} />
-                <SettingBadge badge={badge} />
+                {axisWord && <span className="normal-case tracking-normal">{axisWord} </span>}
+                <FormatPointGroup name={hm} />
               </button>
             ))}
           </div>

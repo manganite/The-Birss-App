@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { FormatPointGroup, getPresetsForSystem, KDirectionSelector } from './MathComponents';
 import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
+import { getFrameDisplayName } from '../services/conventionMapping';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig, OrientationState } from '../types';
 import type { useSimulatorState } from '../hooks/useSimulatorState';
@@ -42,7 +43,7 @@ export function SimulatorSetupPanel({
         className="md:hidden flex items-center justify-between w-full"
       >
         <span className="text-sm font-medium">
-          <span className="font-serif italic"><FormatPointGroup name={selectedGroup.name} /></span>
+          <span className="font-serif italic"><FormatPointGroup name={getFrameDisplayName(selectedGroup.name, selectedSetting, convention).primary} /></span>
           <span className="opacity-50 mx-1">·</span>
           <span className="text-xs">{selectedTensorType === 'ED' ? 'ED' : selectedTensorType === 'MD' ? 'MD' : 'EQ'}</span>
           <span className="opacity-50 mx-1">·</span>

@@ -3,6 +3,7 @@ import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
 import { FormatPointGroup, getCrystalIcon, AxisOrientationInfo } from './MathComponents';
 import { OperationsModal } from './OperationsModal';
 import { AnimatePresence } from 'motion/react';
+import { getGroupDisplayName } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 
 const CRYSTAL_SYSTEMS = [
@@ -105,7 +106,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
                   onClick={() => setSelectedGroup(group)}
                   className="px-3 py-2 border border-ink hover:bg-ink hover:text-paper transition-colors text-lg min-w-[3rem]"
                 >
-                  <FormatPointGroup name={group.name} />
+                  <FormatPointGroup name={getGroupDisplayName(group.name, convention)} />
                 </button>
               ))}
             </div>
@@ -123,7 +124,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
                   onClick={() => setSelectedGroup(group)}
                   className="px-3 py-2 border border-ink hover:bg-ink hover:text-paper transition-colors text-lg min-w-[3rem]"
                 >
-                  <FormatPointGroup name={group.name} />
+                  <FormatPointGroup name={getGroupDisplayName(group.name, convention)} />
                 </button>
               ))}
             </div>
@@ -141,7 +142,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
                   onClick={() => setSelectedGroup(group)}
                   className="px-3 py-2 border border-ink hover:bg-ink hover:text-paper transition-colors text-lg min-w-[3rem]"
                 >
-                  <FormatPointGroup name={group.name} />
+                  <FormatPointGroup name={getGroupDisplayName(group.name, convention)} />
                 </button>
               ))}
             </div>
