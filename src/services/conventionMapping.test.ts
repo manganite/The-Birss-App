@@ -9,6 +9,7 @@ import {
   getGroupDisplayName,
   getDefaultSetting,
 } from './conventionMapping';
+import { ALTERNATE_SETTINGS } from './symmetryGroups';
 
 describe('conventionMapping — label behaviour for representative groups', () => {
   it("'32' (naming-conflict, swap): names swap between settings", () => {
@@ -148,5 +149,17 @@ describe('conventionMapping — architectural rule: convention never reaches ten
     const compA = calculateTensorComponents(group, tensorType, tr, setting);
     const compB = calculateTensorComponents(group, tensorType, tr, setting);
     expect(compA).toEqual(compB);
+  });
+});
+
+describe('grey (Type II) groups — every setting label carries the 1\' suffix', () => {
+  const greyGroupsWithSettings = Object.keys(ALTERNATE_SETTINGS).filter(k => k.endsWith("1'"));
+
+  it.each(greyGroupsWithSettings)('%s: all setting labels end with 1\' in both conventions', (group) => {
+    for (const convention of ['birss', 'itc'] as const) {
+      for (const { hm } of getSettingLabels(group, convention)) {
+        expect(hm.endsWith("1'")).toBe(true);
+      }
+    }
   });
 });

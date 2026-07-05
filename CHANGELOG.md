@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Grey (Type II) trigonal/hexagonal/tetragonal groups showed their alternate crystal-setting
+  symbol without the `1'` grey suffix (e.g. `-31m` instead of `-31m1'` for `-3m1'`). Corrected for
+  `-42m1'`, `321'`, `3m1'`, `-3m1'`, `-6m21'`. Display-only; no tensor output changes.
 - PWA build config (`vite-plugin-pwa`'s `includeAssets`) referenced `favicon.ico`,
   `apple-touch-icon.png`, and `mask-icon.svg`, none of which exist in `public/`. Now lists
   the SVG icons that actually ship (`favicon.svg`, `icon-192.svg`, `icon-512.svg`), matching
