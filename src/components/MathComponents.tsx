@@ -418,7 +418,7 @@ export function GroupIdentityHeader({ group, setting, convention, onNavigate }: 
             <button
               type="button"
               onClick={() => onNavigate('explorer')}
-              className="flex items-center gap-1 text-xs text-ink/70 hover:text-ink transition-opacity"
+              className="flex items-center gap-1 text-xs text-ink/70 hover:text-ink transition-colors"
             >
               <ExternalLink className="w-3 h-3" />
               Open in Explorer

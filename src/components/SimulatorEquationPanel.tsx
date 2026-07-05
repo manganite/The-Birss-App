@@ -22,7 +22,7 @@ export function SimulatorEquationPanel({
     <div className="mt-12 border-t border-ink border-opacity-10 pt-8">
       <button
         onClick={() => setShowEquations(!showEquations)}
-        className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-ink/70 hover:text-ink transition-opacity mx-auto"
+        className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-ink/70 hover:text-ink transition-colors mx-auto"
       >
         {showEquations ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         {showEquations ? 'Hide Mathematical Details' : 'Show Mathematical Details'}
@@ -82,7 +82,7 @@ export function SimulatorEquationPanel({
                 <h4 className="text-xs uppercase tracking-[0.2em] text-ink/70">3. Detected Intensity Formulas</h4>
                 <button
                   onClick={() => setVerboseFormulas(!verboseFormulas)}
-                  className="text-xs uppercase tracking-widest text-ink/70 hover:text-ink transition-opacity flex items-center gap-1"
+                  className="text-xs uppercase tracking-widest text-ink/70 hover:text-ink transition-colors flex items-center gap-1"
                 >
                   {verboseFormulas ? 'Show Short' : 'Show Expanded'}
                 </button>

@@ -44,7 +44,7 @@ export function TermInfo({ id, onNavigate }: TermInfoProps) {
               <button
                 type="button"
                 onClick={() => { onNavigate('help', term.helpTab); setOpen(false); }}
-                className="text-xs uppercase tracking-wider text-ink/70 hover:text-ink transition-opacity"
+                className="text-xs uppercase tracking-wider text-ink/70 hover:text-ink transition-colors"
               >
                 Learn more →
               </button>

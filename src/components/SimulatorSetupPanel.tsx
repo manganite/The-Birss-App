@@ -102,7 +102,7 @@ export function SimulatorSetupPanel({
             type="button"
             aria-expanded={showRotation}
             onClick={() => setShowRotation(!showRotation)}
-            className="flex flex-1 items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/70 hover:text-ink transition-opacity"
+            className="flex flex-1 items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/70 hover:text-ink transition-colors"
           >
             {showRotation ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             <span>Crystal Rotation</span>
@@ -156,7 +156,7 @@ export function SimulatorSetupPanel({
             <button
               onClick={() => { setPhiX(0); setPhiY(0); setPsi(0); }}
               disabled={!rotationActive}
-              className="flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-20 disabled:cursor-default transition-opacity mt-1"
+              className="flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-20 disabled:cursor-default transition-colors transition-opacity mt-1"
             >
               <RotateCcw className="w-3 h-3" />
               Reset rotation
