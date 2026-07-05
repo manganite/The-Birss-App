@@ -364,7 +364,7 @@ function ConventionNote({ groupName }: { groupName: string }) {
   const bookErrorWarning = getBookErrorWarning(groupName);
   if (!noteKey) return null;
   return (
-    <p className="text-xs text-ink/70 leading-relaxed flex items-start gap-1.5">
+    <p className="text-xs text-ink/70 leading-relaxed flex items-start gap-1.5 w-0 min-w-full">
       <BookOpen className="w-3 h-3 mt-0.5 shrink-0 opacity-60" />
       <span>
         {CONVENTION_NOTES[noteKey]}
@@ -395,7 +395,7 @@ export function CrystalSettingControl({
   const settingLabels = getSettingLabels(groupName, convention);
   return (
     <div className={`space-y-2${className ? ` ${className}` : ''}`}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <SectionHeader>
           Crystal Setting <TermInfo id="crystal-setting" onNavigate={onNavigate} />
         </SectionHeader>
