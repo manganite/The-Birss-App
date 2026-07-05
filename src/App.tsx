@@ -113,7 +113,7 @@ export default function App() {
             <h1 className="text-2xl font-serif italic tracking-tight leading-none">
               The Birss App
             </h1>
-            <span className="hidden md:inline-block text-xs opacity-60 ml-4 border-l border-ink border-opacity-20 pl-4">
+            <span className="hidden md:inline-block text-xs text-ink/70 ml-4 border-l border-ink border-opacity-20 pl-4">
               Nonlinear optical tensors for magnetic point groups
             </span>
           </div>
@@ -154,7 +154,7 @@ export default function App() {
                 <input
                   type="text"
                   placeholder="Search groups (e.g., 4/m, 4'/m, 11')"
-                  className="bg-transparent border-none outline-none w-full text-xs ml-2 placeholder:opacity-40"
+                  className="bg-transparent border-none outline-none w-full text-xs ml-2 placeholder:opacity-70"
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); setHighlightedIndex(-1); }}
                   onFocus={() => setIsSearchFocused(true)}
@@ -194,7 +194,7 @@ export default function App() {
                     exit={{ opacity: 0, y: 5 }}
                     className="absolute top-[calc(100%+8px)] right-0 w-full lg:w-80 bg-paper border border-ink rounded-lg z-50 shadow-xl flex flex-col max-h-[400px] overflow-hidden"
                   >
-                    <div className="p-3 border-b border-ink border-opacity-10 bg-white/30 text-[10px] opacity-60 leading-tight">
+                    <div className="p-3 border-b border-ink border-opacity-10 bg-white/30 text-xs text-ink/70 leading-tight">
                       Use an apostrophe (') for time-reversed elements (Black & White) and append 1' for Gray groups.
                     </div>
 
@@ -204,7 +204,7 @@ export default function App() {
                           key={cat}
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={() => setActiveCategory(cat)}
-                          className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full transition-colors ${activeCategory === cat ? 'bg-ink text-paper' : 'bg-transparent text-ink hover:bg-ink/10'}`}
+                          className={`text-xs uppercase tracking-wider px-2 py-1 rounded-full transition-colors ${activeCategory === cat ? 'bg-ink text-paper' : 'bg-transparent text-ink hover:bg-ink/10'}`}
                         >
                           {cat}
                         </button>
@@ -223,10 +223,10 @@ export default function App() {
                           className={`w-full text-left px-3 py-2 hover:bg-ink hover:text-paper transition-colors flex justify-between items-center group rounded-md ${idx === highlightedIndex ? 'bg-ink/10' : ''}`}
                         >
                           <span className="text-sm font-serif italic"><FormatPointGroup name={group.name} /></span>
-                          <span className="text-[10px] uppercase tracking-widest opacity-50 group-hover:opacity-100">{group.crystalSystem}</span>
+                          <span className="text-xs uppercase tracking-widest opacity-70 group-hover:opacity-100">{group.crystalSystem}</span>
                         </button>
                       )) : (
-                        <div className="p-4 text-center text-xs opacity-50">No groups found</div>
+                        <div className="p-4 text-center text-xs text-ink/70">No groups found</div>
                       )}
                     </div>
                   </motion.div>
@@ -261,7 +261,7 @@ export default function App() {
             }}
           />
         ) : (
-          <Suspense fallback={<div className="text-center text-[10px] uppercase tracking-widest opacity-50 py-24">Loading…</div>}>
+          <Suspense fallback={<div className="text-center text-xs uppercase tracking-widest text-ink/70 py-24">Loading…</div>}>
             {currentView === 'help' ? (
               <HelpPage activeTab={helpActiveTab} onTabChange={setHelpActiveTab} />
             ) : currentView === 'simulator' ? (
@@ -286,10 +286,10 @@ export default function App() {
 
       {/* Footer */}
       <footer className="mt-24 border-t border-ink p-8 text-center space-y-2">
-        <p className="text-[10px] uppercase tracking-[0.5em] opacity-30">
+        <p className="text-xs uppercase tracking-[0.5em] opacity-30">
           The Birss App &copy; 2026
         </p>
-        <p className="text-[10px] uppercase tracking-[0.2em] opacity-30">
+        <p className="text-xs uppercase tracking-[0.2em] opacity-30">
           By{' '}
           <a
             href="https://github.com/manganite"
@@ -300,7 +300,7 @@ export default function App() {
             Thomas Lottermoser
           </a>
         </p>
-        <p className="text-[10px] uppercase tracking-[0.2em] opacity-30">
+        <p className="text-xs uppercase tracking-[0.2em] opacity-30">
           <a
             href={`https://github.com/manganite/birss-app/releases/tag/v${__APP_VERSION__}`}
             target="_blank"

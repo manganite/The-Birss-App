@@ -136,7 +136,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
       {/* Header */}
       <div className="space-y-4">
         <h1 className="text-4xl font-serif italic">Help & Documentation</h1>
-        <p className="text-sm opacity-60 leading-relaxed max-w-2xl">
+        <p className="text-sm text-ink/70 leading-relaxed max-w-2xl">
           An overview of the features, conventions, and physical background used in the Tensor Calculator.
         </p>
       </div>
@@ -163,7 +163,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-[10px] font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${i > 0 ? 'border-l border-ink border-opacity-10' : ''} ${
+              className={`px-4 py-3 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${i > 0 ? 'border-l border-ink border-opacity-10' : ''} ${
                 activeTab === tab.id ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'
               }`}
             >
@@ -511,7 +511,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                 <div className="p-4 bg-ink/5 border border-ink border-opacity-10 space-y-2">
                   <h4 className="font-medium text-sm">Reading Birss's parentheses</h4>
                   <p className="text-xs opacity-70 leading-relaxed">
-                    Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-[11px]">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
+                    Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-xs">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
                   </p>
                   <p className="text-xs opacity-70 leading-relaxed">
                     Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}'2m')" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
@@ -531,7 +531,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                         <span className="font-medium underline">
                           {reference.title}
                           {reference.openAccess && (
-                            <span className="ml-2 text-[10px] uppercase tracking-widest opacity-50 no-underline">Open Access</span>
+                            <span className="ml-2 text-xs uppercase tracking-widest text-ink/70 no-underline">Open Access</span>
                           )}
                         </span>
                         <span className="block opacity-80 text-xs">{reference.description}</span>

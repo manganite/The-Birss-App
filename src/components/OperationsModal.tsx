@@ -4,7 +4,7 @@ import { X, Calculator, Activity } from 'lucide-react';
 import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
 import { getFrameDisplayName } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
-import { FormatPointGroup, SymmetryOperation } from './MathComponents';
+import { FormatPointGroup, FormatSchoenflies, FormatGroupLabel, SymmetryOperation } from './MathComponents';
 import { PointGroupData } from '../data/pointGroups';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
@@ -44,10 +44,10 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             <h2 id="operations-modal-title" className="text-xl font-medium tracking-tight">
               <FormatPointGroup name={displayName.primary} />
             </h2>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 hidden sm:flex">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink/70 hidden sm:flex">
               {displayName.synonym && (
                 <>
-                  <span className="normal-case">{convention === 'birss' ? 'ITC' : 'Birss'}: {displayName.synonym}</span>
+                  <span className="normal-case">{convention === 'birss' ? 'ITC' : 'Birss'}: <FormatPointGroup name={displayName.synonym} /></span>
                   <span>•</span>
                 </>
               )}
@@ -57,7 +57,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               {group.schoenflies && (
                 <>
                   <span>•</span>
-                  <span className="normal-case">{group.schoenflies}</span>
+                  <span className="normal-case"><FormatSchoenflies symbol={group.schoenflies} /></span>
                 </>
               )}
               {altSettings && (
@@ -65,7 +65,12 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                   <span>•</span>
                   <span className="normal-case">
                     {altSettings.length + 1} settings — also expressible as{' '}
-                    {altSettings.map(s => s.name).join(', ')}
+                    {altSettings.map((s, idx) => (
+                      <span key={s.name}>
+                        <FormatGroupLabel label={s.name} />
+                        {idx < altSettings.length - 1 && ', '}
+                      </span>
+                    ))}
                   </span>
                 </>
               )}
@@ -89,7 +94,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
         <div className="p-6 overflow-y-auto space-y-6">
           {generators.length > 0 && (
             <div>
-              <h3 className="text-xs uppercase tracking-[0.2em] opacity-50 mb-4">Generators ({generators.length})</h3>
+              <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">Generators ({generators.length})</h3>
               <div className="flex flex-wrap gap-2">
                 {generators.map((gen, idx) => (
                   <SymmetryOperation key={idx} symbol={gen} />
@@ -98,7 +103,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             </div>
           )}
           <div>
-            <h3 className="text-xs uppercase tracking-[0.2em] opacity-50 mb-4">Symmetry Operations ({operations.length})</h3>
+            <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">Symmetry Operations ({operations.length})</h3>
             <div className="flex flex-wrap gap-2">
               {operations.map((op, idx) => (
                 <SymmetryOperation key={idx} symbol={op} />

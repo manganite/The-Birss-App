@@ -37,8 +37,8 @@ export function SimulatorPage({
           <Activity className="w-8 h-8 opacity-20" />
         </div>
         <div className="space-y-2">
-          <p className="text-xl font-serif italic opacity-40">Select a point group to begin simulation</p>
-          <p className="text-[10px] uppercase tracking-[0.3em] opacity-30">Go to Explorer or use Search</p>
+          <p className="text-xl font-serif italic text-ink/70">Select a point group to begin simulation</p>
+          <p className="text-xs uppercase tracking-[0.3em] opacity-30">Go to Explorer or use Search</p>
         </div>
       </div>
     );

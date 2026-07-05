@@ -72,11 +72,11 @@ export function TensorComponentControls({
                 key={comp}
                 onClick={() => setMobileActiveComponent(comp)}
                 className={`px-2 py-1 text-xs border border-ink/20 transition-colors flex items-center gap-1 ${
-                  mobileActiveComponent === comp ? 'bg-ink text-paper' : 'opacity-60 hover:opacity-100'
+                  mobileActiveComponent === comp ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'
                 }`}
               >
                 <TensorTerm term={comp} isNull={false} />
-                <span className="font-mono text-[10px] opacity-70">
+                <span className="font-mono text-xs opacity-70">
                   {(amplitudes[comp] ?? 1).toFixed(2)}
                 </span>
               </button>
@@ -109,7 +109,7 @@ export function TensorComponentControls({
                     disabled={singleComponent} />
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-16 shrink-0 text-right text-xs opacity-60">Phase</div>
+                  <div className="w-16 shrink-0 text-right text-xs text-ink/70">Phase</div>
                   <input type="range" min="0" max="360" step="1"
                     value={phaseVal}
                     onChange={(e) => setPhases(p => ({ ...p, [comp]: snapValue(parseInt(e.target.value, 10), PHASE_DETENTS) }))}
@@ -120,7 +120,7 @@ export function TensorComponentControls({
                       onChange={(e) => { const v = parseInt(e.target.value, 10); if (!isNaN(v)) setPhases(p => ({ ...p, [comp]: Math.max(0, Math.min(360, v)) })); }}
                       className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
                       disabled={singleComponent} />
-                    <span className="text-xs opacity-50">°</span>
+                    <span className="text-xs text-ink/70">°</span>
                   </div>
                 </div>
               </div>
@@ -208,14 +208,14 @@ export function TensorComponentControls({
                     {[0, 0.5, 1].map(tick => (
                       <button key={tick} type="button" disabled={singleComponent}
                         onClick={() => setAmplitudes(p => ({ ...p, [comp]: tick }))}
-                        className="text-[9px] opacity-30 hover:opacity-80 transition-opacity"
+                        className="text-xs opacity-30 hover:opacity-80 transition-opacity"
                       >{tick}</button>
                     ))}
                   </div>
                   <div className="w-14 shrink-0" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-20 shrink-0 text-right text-xs opacity-60">Phase</div>
+                  <div className="w-20 shrink-0 text-right text-xs text-ink/70">Phase</div>
                   <input
                     type="range"
                     min="0" max="360" step="1"
@@ -243,7 +243,7 @@ export function TensorComponentControls({
                       className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
                       disabled={singleComponent}
                     />
-                    <span className="text-xs opacity-50">°</span>
+                    <span className="text-xs text-ink/70">°</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ export function TensorComponentControls({
                     {[0, 90, 180, 270, 360].map(tick => (
                       <button key={tick} type="button" disabled={singleComponent}
                         onClick={() => setPhases(p => ({ ...p, [comp]: tick }))}
-                        className="text-[9px] opacity-30 hover:opacity-80 transition-opacity"
+                        className="text-xs opacity-30 hover:opacity-80 transition-opacity"
                       >{tick}</button>
                     ))}
                   </div>

@@ -42,7 +42,7 @@ export function PolarimetryPlot({
   return (
     <div className="flex flex-col items-center space-y-2">
       <h3 className="text-lg font-serif italic text-center">{title}</h3>
-      <div className="text-[10px] uppercase tracking-widest opacity-50">{subtitle}</div>
+      <div className="text-xs uppercase tracking-widest text-ink/70">{subtitle}</div>
       <div className="w-full aspect-square max-w-[450px]">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data} startAngle={0} endAngle={360}>
@@ -58,7 +58,7 @@ export function PolarimetryPlot({
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      <div className="text-[10px] font-mono opacity-50">Max: {displayMax.toFixed(4)}</div>
+      <div className="text-xs font-mono text-ink/70">Max: {displayMax.toFixed(4)}</div>
     </div>
   );
 }
