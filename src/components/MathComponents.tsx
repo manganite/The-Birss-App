@@ -504,35 +504,33 @@ export function GroupIdentityHeader({ group, setting, convention, onSettingChang
             <AxisOrientationInfo crystalSystem={group.crystalSystem} convention={convention} setting={setting} onNavigate={onNavigate} />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <div className="lg:col-start-4">
-              <CrystalSettingControl
-                groupName={group.name}
-                value={setting}
-                onChange={onSettingChange}
-                convention={convention}
-                onNavigate={onNavigate}
-              />
-            </div>
+          <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+            {parent && (
+              <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-xs text-ink/70">
+                <span>Parent group: <span className="font-serif italic"><FormatPointGroup name={parent} /></span></span>
+                {halvingOps && (
+                  <span className="inline-flex items-baseline flex-wrap gap-1">
+                    H = {'{'}
+                    {halvingOps.map((op, idx) => (
+                      <span key={op} className="inline-flex items-baseline">
+                        <SymmetryOperation symbol={op} />
+                        {idx < halvingOps.length - 1 && ','}
+                      </span>
+                    ))}
+                    {'}'}
+                  </span>
+                )}
+              </div>
+            )}
+            <CrystalSettingControl
+              groupName={group.name}
+              value={setting}
+              onChange={onSettingChange}
+              convention={convention}
+              onNavigate={onNavigate}
+              className="lg:ml-auto"
+            />
           </div>
-
-          {parent && (
-            <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-xs text-ink/70">
-              <span>Parent group: <span className="font-serif italic"><FormatPointGroup name={parent} /></span></span>
-              {halvingOps && (
-                <span className="inline-flex items-baseline flex-wrap gap-1">
-                  H = {'{'}
-                  {halvingOps.map((op, idx) => (
-                    <span key={op} className="inline-flex items-baseline">
-                      <SymmetryOperation symbol={op} />
-                      {idx < halvingOps.length - 1 && ','}
-                    </span>
-                  ))}
-                  {'}'}
-                </span>
-              )}
-            </div>
-          )}
 
           {onNavigate && (
             <button

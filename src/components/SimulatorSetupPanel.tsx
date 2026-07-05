@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
-import { FormatPointGroup, getPresetsForSystem, KDirectionSelector } from './MathComponents';
+import { getPresetsForSystem, KDirectionSelector } from './MathComponents';
 import { TensorClassificationControl, TimeReversalControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
-import { getFrameDisplayName } from '../services/conventionMapping';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig, OrientationState } from '../types';
 import type { useSimulatorState } from '../hooks/useSimulatorState';
@@ -24,7 +23,7 @@ export function SimulatorSetupPanel({
   labFrame,
   onNavigate,
 }: SimulatorSetupPanelProps) {
-  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, convention } = tensorConfig;
+  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal } = tensorConfig;
   const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0, phiX, setPhiX, phiY, setPhiY, psi, setPsi } = orientation;
   const [mobileSetupExpanded, setMobileSetupExpanded] = useState(false);
   const [showRotation, setShowRotation] = useState(phiX !== 0 || phiY !== 0 || psi !== 0);
@@ -43,8 +42,6 @@ export function SimulatorSetupPanel({
         className="md:hidden flex items-center justify-between w-full"
       >
         <span className="text-sm font-medium">
-          <span className="font-serif italic"><FormatPointGroup name={getFrameDisplayName(selectedGroup.name, selectedSetting, convention).primary} /></span>
-          <span className="opacity-50 mx-1">·</span>
           <span className="text-xs">{selectedTensorType === 'ED' ? 'ED' : selectedTensorType === 'MD' ? 'MD' : 'EQ'}</span>
           <span className="opacity-50 mx-1">·</span>
           <span className="text-xs">{selectedTimeReversal}-type</span>
