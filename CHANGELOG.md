@@ -33,7 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   convention-dependent) and the redundant cross-convention synonym was removed; the Crystal
   System / Symmetry Type / Axis Orientation boxes share a uniform title-on-top layout (Symmetry
   Type gains an icon and the ED-SHG consequence); the Crystal Setting selector moved into the
-  info box for both Calculator and Simulator; minor alignment fixes.
+  info box for both Calculator and Simulator; minor alignment fixes; the info header is now shown
+  on mobile in the Simulator too, so the setting selector is reachable there.
 
 ### Fixed
 
