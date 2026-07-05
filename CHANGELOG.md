@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   render through the LaTeX formatter (previously plain text in several places).
 - Raised the minimum UI font size and the minimum secondary-text contrast app-wide (decorative
   elements unchanged).
+- The Birss/ITC symbol convention is now a global mode (header toggle) instead of a per-group
+  control. It relabels group names app-wide (Explorer, search, Calculator, Simulator) for the two
+  groups whose standard symbol differs between conventions (`m'm'm`/`mm'm'`, `6'/mm'm`/`6'/mmm'`),
+  opens groups on the active convention's standard frame, and persists across reloads. This
+  supersedes the v0.15.0 "`m'm'm` badge-only, no relabel" decision.
+- Setting buttons now show the frame's Hermann-Mauguin symbol (with an axis qualifier for
+  monoclinic/orthorhombic); the previous "Default"/"standard" badges were removed — the selected
+  setting is the standard. Orthorhombic frame symbols are now shown (verified, stored).
 
 ### Fixed
 

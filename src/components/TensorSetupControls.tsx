@@ -4,45 +4,11 @@ import type { TensorType, TensorTimeReversal } from '../services/tensorCalculato
 import { getSettingLabels, getConventionNote, getBookErrorWarning, CONVENTION_NOTES } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 import { TENSOR_META } from '../types';
-import { SectionHeader, FormatGroupLabel } from './MathComponents';
+import { SectionHeader, FormatPointGroup } from './MathComponents';
 import { TermInfo } from './TermInfo';
 
 interface NavigateProp {
   onNavigate?: (view: string, tab?: string) => void;
-}
-
-export function ConventionControl({
-  value,
-  onChange,
-  onNavigate,
-}: {
-  value: Convention;
-  onChange: (c: Convention) => void;
-} & NavigateProp) {
-  return (
-    <div className="flex-1 space-y-4">
-      <SectionHeader>
-        Symbol Convention <TermInfo id="convention" onNavigate={onNavigate} />
-      </SectionHeader>
-      <div className="flex flex-wrap gap-2">
-        {(['birss', 'itc'] as const).map((c) => (
-          <button
-            key={c}
-            type="button"
-            aria-pressed={value === c}
-            onClick={() => onChange(c)}
-            className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
-              value === c
-                ? 'bg-ink text-paper'
-                : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
-            }`}
-          >
-            {c === 'birss' ? 'Birss (app default)' : 'ITC'}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 function ConventionNote({ groupName }: { groupName: string }) {
@@ -57,15 +23,6 @@ function ConventionNote({ groupName }: { groupName: string }) {
         {bookErrorWarning && <span className="block mt-1">{bookErrorWarning}</span>}
       </span>
     </p>
-  );
-}
-
-function SettingBadge({ badge }: { badge?: 'birss-standard' | 'itc-standard' }) {
-  if (!badge) return null;
-  return (
-    <span className="normal-case tracking-normal">
-      {' '}— {badge === 'birss-standard' ? 'Birss default' : 'ITC standard'}
-    </span>
   );
 }
 
@@ -163,7 +120,7 @@ export function CrystalSettingControl({
       {altSettings ? (
         <>
           <div className="flex flex-wrap gap-3">
-            {settingLabels.map(({ setting, label, badge }) => (
+            {settingLabels.map(({ setting, axisWord, hm }) => (
               <button
                 key={setting}
                 type="button"
@@ -175,8 +132,8 @@ export function CrystalSettingControl({
                     : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
                 }`}
               >
-                <FormatGroupLabel label={label} />
-                <SettingBadge badge={badge} />
+                {axisWord && <span className="normal-case tracking-normal">{axisWord} </span>}
+                <FormatPointGroup name={hm} />
               </button>
             ))}
           </div>

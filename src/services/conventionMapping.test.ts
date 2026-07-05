@@ -1,7 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { calculateTensorBasisResults } from './tensorProjection';
 import { calculateTensorComponents } from './tensorCalculator';
-import { getFrameDisplayName, getSettingLabels, getConventionNote, getBookErrorWarning } from './conventionMapping';
+import {
+  getFrameDisplayName,
+  getSettingLabels,
+  getConventionNote,
+  getBookErrorWarning,
+  getGroupDisplayName,
+  getDefaultSetting,
+} from './conventionMapping';
 
 describe('conventionMapping — label behaviour for representative groups', () => {
   it("'32' (naming-conflict, swap): names swap between settings", () => {
@@ -12,52 +19,68 @@ describe('conventionMapping — label behaviour for representative groups', () =
     expect(getConventionNote('32')).toBe('naming-conflict');
   });
 
-  it("6'mm' (naming-conflict, swap): names swap, badge moves to setting 2 in ITC mode", () => {
+  it("6'mm' (naming-conflict, swap): names swap, standard setting moves to setting 2 in ITC mode", () => {
     expect(getFrameDisplayName("6'mm'", 1, 'itc')).toEqual({ primary: "6'm'm", synonym: "6'mm'" });
     expect(getFrameDisplayName("6'mm'", 2, 'itc')).toEqual({ primary: "6'mm'", synonym: "6'm'm" });
-    const birssLabels = getSettingLabels("6'mm'", 'birss');
-    const itcLabels = getSettingLabels("6'mm'", 'itc');
-    expect(birssLabels.find(l => l.badge)?.setting).toBe(1);
-    expect(itcLabels.find(l => l.badge)?.setting).toBe(2);
+    expect(getDefaultSetting("6'mm'", 'birss')).toBe(1);
+    expect(getDefaultSetting("6'mm'", 'itc')).toBe(2);
+    expect(getGroupDisplayName("6'mm'", 'birss')).toBe("6'mm'");
+    expect(getGroupDisplayName("6'mm'", 'itc')).toBe("6'mm'");
   });
 
-  it("-42m (tetragonal 45° pair): no label change, no badge, in either convention", () => {
+  it("-42m (tetragonal 45° pair): setting-dependent HM name, identical in both conventions, no standard-setting divergence", () => {
     expect(getFrameDisplayName('-42m', 1, 'birss')).toEqual({ primary: '-42m' });
     expect(getFrameDisplayName('-42m', 1, 'itc')).toEqual({ primary: '-42m' });
-    expect(getFrameDisplayName('-42m', 2, 'itc')).toEqual({ primary: '-42m' });
+    expect(getFrameDisplayName('-42m', 2, 'birss')).toEqual({ primary: '-4m2' });
+    expect(getFrameDisplayName('-42m', 2, 'itc')).toEqual({ primary: '-4m2' });
+    expect(getDefaultSetting('-42m', 'birss')).toBe(1);
+    expect(getDefaultSetting('-42m', 'itc')).toBe(1);
     const itcLabels = getSettingLabels('-42m', 'itc');
-    expect(itcLabels.every(l => l.badge === undefined)).toBe(true);
+    expect(itcLabels).toEqual([
+      { setting: 1, axisWord: null, hm: '-42m' },
+      { setting: 2, axisWord: null, hm: '-4m2' },
+    ]);
     expect(getConventionNote('-42m')).toBeNull();
   });
 
-  it("'2' (monoclinic): no name change; badge moves to setting 2 (b-unique) in ITC mode", () => {
+  it("'2' (monoclinic): no name change; standard setting moves to setting 2 (b-unique) in ITC mode", () => {
     expect(getFrameDisplayName('2', 1, 'birss')).toEqual({ primary: '2' });
     expect(getFrameDisplayName('2', 2, 'itc')).toEqual({ primary: '2' });
-    const birssLabels = getSettingLabels('2', 'birss');
+    expect(getDefaultSetting('2', 'birss')).toBe(1);
+    expect(getDefaultSetting('2', 'itc')).toBe(2);
     const itcLabels = getSettingLabels('2', 'itc');
-    expect(birssLabels.find(l => l.badge)?.setting).toBe(1);
-    expect(itcLabels.find(l => l.badge)?.setting).toBe(2);
-    expect(itcLabels.map(l => l.label)).toEqual(['First (c-unique, Birss)', 'Second (b-unique, ITC)']);
+    expect(itcLabels).toEqual([
+      { setting: 1, axisWord: 'c-unique', hm: '2' },
+      { setting: 2, axisWord: 'b-unique', hm: '2' },
+    ]);
     expect(getConventionNote('2')).toBe('monoclinic');
   });
 
-  it("m'm'm (Sec. 7A, different default frames): string identical; badge moves to a-unique (setting 2) in ITC mode", () => {
+  it("m'm'm (Sec. 7A, different default frames): frame name diverges by setting; standard setting moves to a-unique (setting 2) in ITC mode", () => {
     expect(getFrameDisplayName("m'm'm", 1, 'birss')).toEqual({ primary: "m'm'm" });
-    expect(getFrameDisplayName("m'm'm", 2, 'itc')).toEqual({ primary: "m'm'm" });
-    const birssLabels = getSettingLabels("m'm'm", 'birss');
-    const itcLabels = getSettingLabels("m'm'm", 'itc');
-    expect(itcLabels.map(l => l.label)).toEqual(['Default', 'a-unique', 'b-unique']);
-    expect(birssLabels.find(l => l.badge)?.setting).toBe(1);
-    expect(itcLabels.find(l => l.badge)?.setting).toBe(2);
-    expect(getConventionNote("m'm'm")).toBe('orthorhombic-badge');
+    expect(getFrameDisplayName("m'm'm", 2, 'itc')).toEqual({ primary: "mm'm'" });
+    expect(getFrameDisplayName("m'm'm", 3, 'itc')).toEqual({ primary: "m'mm'" });
+    const labels = getSettingLabels("m'm'm", 'itc');
+    expect(labels).toEqual([
+      { setting: 1, axisWord: 'c-unique', hm: "m'm'm" },
+      { setting: 2, axisWord: 'a-unique', hm: "mm'm'" },
+      { setting: 3, axisWord: 'b-unique', hm: "m'mm'" },
+    ]);
+    expect(getDefaultSetting("m'm'm", 'birss')).toBe(1);
+    expect(getDefaultSetting("m'm'm", 'itc')).toBe(2);
+    expect(getGroupDisplayName("m'm'm", 'birss')).toBe("m'm'm");
+    expect(getGroupDisplayName("m'm'm", 'itc')).toBe("mm'm'");
+    expect(getConventionNote("m'm'm")).toBe('orthorhombic-frame');
   });
 
-  it("6'/mm'm (Sec. 7A, same frame different string): name swaps like naming-conflict, but badge stays on setting 1 in ITC mode", () => {
+  it("6'/mm'm (Sec. 7A, same frame different string): name swaps like naming-conflict, but standard setting stays on setting 1 in ITC mode", () => {
     expect(getFrameDisplayName("6'/mm'm", 1, 'birss')).toEqual({ primary: "6'/mm'm", synonym: "6'/mmm'" });
     expect(getFrameDisplayName("6'/mm'm", 1, 'itc')).toEqual({ primary: "6'/mmm'", synonym: "6'/mm'm" });
     expect(getFrameDisplayName("6'/mm'm", 2, 'itc')).toEqual({ primary: "6'/mm'm", synonym: "6'/mmm'" });
-    const itcLabels = getSettingLabels("6'/mm'm", 'itc');
-    expect(itcLabels.find(l => l.badge)?.setting).toBe(1);
+    expect(getDefaultSetting("6'/mm'm", 'birss')).toBe(1);
+    expect(getDefaultSetting("6'/mm'm", 'itc')).toBe(1);
+    expect(getGroupDisplayName("6'/mm'm", 'birss')).toBe("6'/mm'm");
+    expect(getGroupDisplayName("6'/mm'm", 'itc')).toBe("6'/mmm'");
     expect(getConventionNote("6'/mm'm")).toBe('same-frame-different-string');
   });
 
@@ -75,6 +98,23 @@ describe('conventionMapping — label behaviour for representative groups', () =
     expect(getSettingLabels("m-3m'", 'itc')).toEqual([]);
     expect(getConventionNote('1')).toBeNull();
     expect(getConventionNote("m-3m'")).toBeNull();
+    expect(getDefaultSetting('1', 'itc')).toBe(1);
+    expect(getGroupDisplayName('1', 'itc')).toBe('1');
+    expect(getGroupDisplayName("m-3m'", 'itc')).toBe("m-3m'");
+  });
+
+  it('no setting label ever contains "standard" or "Default" text', () => {
+    const groupsToCheck = ['2', "m'm'm", "6'mm'", '-42m', 'mm2', "mm21'"];
+    for (const group of groupsToCheck) {
+      for (const convention of ['birss', 'itc'] as const) {
+        for (const { axisWord, hm } of getSettingLabels(group, convention)) {
+          expect((axisWord ?? '').toLowerCase()).not.toContain('standard');
+          expect((axisWord ?? '').toLowerCase()).not.toContain('default');
+          expect(hm.toLowerCase()).not.toContain('standard');
+          expect(hm.toLowerCase()).not.toContain('default');
+        }
+      }
+    }
   });
 });
 

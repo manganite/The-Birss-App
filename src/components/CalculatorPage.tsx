@@ -10,7 +10,7 @@ import {
   getLabFrameVectors,
 } from '../services/tensorCalculator';
 import { TensorTerm, KDirectionSelector, GroupIdentityHeader } from './MathComponents';
-import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl, ConventionControl } from './TensorSetupControls';
+import { TensorClassificationControl, TimeReversalControl, CrystalSettingControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
 import { TENSOR_META } from '../types';
 import type { TensorConfig, PresetAnglesState } from '../types';
@@ -28,7 +28,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
   const [mobileSetupExpanded, setMobileSetupExpanded] = useState(false);
 
   const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0 } = presetAngles;
-  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting, convention, setConvention } = tensorConfig;
+  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting, convention } = tensorConfig;
 
   const currentComponents = useMemo(() => {
     if (!selectedGroup) return [];
@@ -109,13 +109,6 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
               <TimeReversalControl
                 value={selectedTimeReversal}
                 onChange={setSelectedTimeReversal}
-                onNavigate={onNavigate}
-              />
-            </div>
-            <div className="pt-6">
-              <ConventionControl
-                value={convention}
-                onChange={setConvention}
                 onNavigate={onNavigate}
               />
             </div>

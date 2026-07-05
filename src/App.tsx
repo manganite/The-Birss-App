@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Search, Github } from 'lucide-react';
 import { POINT_GROUPS, PointGroupData } from './data/pointGroups';
@@ -11,9 +11,21 @@ import {
   TensorTimeReversal,
   TensorType,
 } from './services/tensorCalculator';
+import { getDefaultSetting, getGroupDisplayName } from './services/conventionMapping';
 import type { Convention } from './services/conventionMapping';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
 import { FormatPointGroup } from './components/MathComponents';
+import { TermInfo } from './components/TermInfo';
+
+const CONVENTION_STORAGE_KEY = 'birss-app:convention';
+
+function loadStoredConvention(): Convention {
+  try {
+    return localStorage.getItem(CONVENTION_STORAGE_KEY) === 'itc' ? 'itc' : 'birss';
+  } catch {
+    return 'birss';
+  }
+}
 
 const HelpPage = lazy(() => import('./components/HelpPage').then((m) => ({ default: m.HelpPage })));
 const SimulatorPage = lazy(() => import('./components/SimulatorPage').then((m) => ({ default: m.SimulatorPage })));
@@ -45,7 +57,15 @@ export default function App() {
   const [selectedTensorType, setSelectedTensorType] = useState<TensorType>('ED');
   const [selectedTimeReversal, setSelectedTimeReversal] = useState<TensorTimeReversal>('i');
   const [selectedSetting, setSelectedSetting] = useState<number>(1);
-  const [convention, setConvention] = useState<Convention>('birss');
+  const [convention, setConvention] = useState<Convention>(loadStoredConvention);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CONVENTION_STORAGE_KEY, convention);
+    } catch {
+      // localStorage unavailable (private browsing, storage disabled) -- convention still works in-session
+    }
+  }, [convention]);
   const [amplitudes, setAmplitudes] = useState<Record<string, number>>({});
   const [phases, setPhases] = useState<Record<string, number>>({});
 
@@ -64,16 +84,16 @@ export default function App() {
     if (searchQuery) {
       const normalizedQuery = normalizeString(searchQuery);
       groups = groups.filter(pg =>
-        normalizeString(pg.name).includes(normalizedQuery) ||
+        normalizeString(getGroupDisplayName(pg.name, convention)).includes(normalizedQuery) ||
         normalizeString(pg.crystalSystem).includes(normalizedQuery)
       );
     }
     return groups;
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, convention]);
 
   const handleSelect = (group: PointGroupData) => {
     setSelectedGroup(group);
-    setSelectedSetting(1);
+    setSelectedSetting(getDefaultSetting(group.name, convention));
     setSearchQuery('');
     setIsSearchFocused(false);
     if (currentView === 'explorer' || currentView === 'help') {
@@ -146,8 +166,22 @@ export default function App() {
             </button>
           </div>
 
-          {/* Right: Search & GitHub */}
+          {/* Right: Convention, Search & GitHub */}
           <div className="flex items-center gap-4 self-start lg:self-auto w-full lg:w-auto">
+            <div className="flex items-center gap-1 bg-white/40 border border-ink border-opacity-10 rounded-full p-1 shrink-0" role="group" aria-label="Symbol convention">
+              {(['birss', 'itc'] as const).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-pressed={convention === c}
+                  onClick={() => setConvention(c)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide transition-colors ${convention === c ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
+                >
+                  {c === 'birss' ? 'Birss' : 'ITC'}
+                </button>
+              ))}
+              <span className="pl-0.5 pr-1.5"><TermInfo id="convention" onNavigate={handleNavigate} /></span>
+            </div>
             <div className="relative w-full lg:w-64">
               <div className="flex items-center bg-white/50 border border-ink border-opacity-20 rounded-full px-3 py-1.5 focus-within:border-opacity-100 focus-within:bg-white transition-all">
                 <Search className="w-3.5 h-3.5 opacity-50" />
@@ -222,7 +256,7 @@ export default function App() {
                           onClick={() => handleSelect(group)}
                           className={`w-full text-left px-3 py-2 hover:bg-ink hover:text-paper transition-colors flex justify-between items-center group rounded-md ${idx === highlightedIndex ? 'bg-ink/10' : ''}`}
                         >
-                          <span className="text-sm font-serif italic"><FormatPointGroup name={group.name} /></span>
+                          <span className="text-sm font-serif italic"><FormatPointGroup name={getGroupDisplayName(group.name, convention)} /></span>
                           <span className="text-xs uppercase tracking-widest opacity-70 group-hover:opacity-100">{group.crystalSystem}</span>
                         </button>
                       )) : (
@@ -253,10 +287,12 @@ export default function App() {
             convention={convention}
             onSelectGroupForCalculator={(group) => {
               setSelectedGroup(group);
+              setSelectedSetting(getDefaultSetting(group.name, convention));
               setCurrentView('calculator');
             }}
             onSelectGroupForSimulator={(group) => {
               setSelectedGroup(group);
+              setSelectedSetting(getDefaultSetting(group.name, convention));
               setCurrentView('simulator');
             }}
           />
