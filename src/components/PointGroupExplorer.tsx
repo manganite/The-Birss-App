@@ -56,12 +56,12 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
       </div>
 
       {/* Crystal system tab strip */}
-      <div className="flex overflow-x-auto md:overflow-visible gap-1 mb-8 hide-scrollbar">
+      <div className="flex flex-wrap gap-1 mb-8">
         {CRYSTAL_SYSTEMS.map(system => (
           <button
             key={system}
             onClick={() => setActiveSystem(system)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-[0.15em] whitespace-nowrap border border-ink transition-all shrink-0 md:flex-1 md:justify-center ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs uppercase tracking-[0.15em] whitespace-nowrap border border-ink transition-all flex-1 justify-center ${
               activeSystem === system
                 ? 'bg-ink text-paper'
                 : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
