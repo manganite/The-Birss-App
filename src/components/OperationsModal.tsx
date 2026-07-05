@@ -2,9 +2,10 @@ import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { X, Calculator, Activity } from 'lucide-react';
 import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
-import { getFrameDisplayName } from '../services/conventionMapping';
+import { isCentrosymmetric } from '../services/symmetryGroups';
+import { getGroupDisplayName } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
-import { FormatPointGroup, FormatSchoenflies, FormatGroupLabel, SymmetryOperation } from './MathComponents';
+import { FormatPointGroup, FormatSchoenflies, SymmetryOperation } from './MathComponents';
 import { PointGroupData } from '../data/pointGroups';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
@@ -21,7 +22,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   const generators = getGeneratorSymbols(group.name);
   const altSettings = getAlternateSettings(group.name);
   const futureSettingCount = getFutureSettingCount(group.name);
-  const displayName = getFrameDisplayName(group.name, 1, convention);
+  const groupTitle = getGroupDisplayName(group.name, convention);
   const containerRef = useRef<HTMLDivElement>(null);
   useDialogA11y({ onClose, containerRef });
 
@@ -42,36 +43,24 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
         <div className="flex items-center justify-between p-4 border-b border-ink shrink-0">
           <div className="flex items-center gap-4">
             <h2 id="operations-modal-title" className="text-xl font-medium tracking-tight">
-              <FormatPointGroup name={displayName.primary} />
+              <FormatPointGroup name={groupTitle} />
             </h2>
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink/70 hidden sm:flex">
-              {displayName.synonym && (
+              {group.schoenflies && (
                 <>
-                  <span className="normal-case">{convention === 'birss' ? 'ITC' : 'Birss'}: <FormatPointGroup name={displayName.synonym} /></span>
+                  <span className="normal-case"><FormatSchoenflies symbol={group.schoenflies} /></span>
                   <span>•</span>
                 </>
               )}
               <span>{group.crystalSystem}</span>
               <span>•</span>
               <span>Type {group.type}</span>
-              {group.schoenflies && (
-                <>
-                  <span>•</span>
-                  <span className="normal-case"><FormatSchoenflies symbol={group.schoenflies} /></span>
-                </>
-              )}
+              <span>•</span>
+              <span>{isCentrosymmetric(group.name) ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</span>
               {altSettings && (
                 <>
                   <span>•</span>
-                  <span className="normal-case">
-                    {altSettings.length + 1} settings — also expressible as{' '}
-                    {altSettings.map((s, idx) => (
-                      <span key={s.name}>
-                        <FormatGroupLabel label={s.name} />
-                        {idx < altSettings.length - 1 && ', '}
-                      </span>
-                    ))}
-                  </span>
+                  <span className="normal-case">{altSettings.length + 1} settings</span>
                 </>
               )}
               {!altSettings && futureSettingCount && (
@@ -80,6 +69,8 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                   <span className="normal-case">{futureSettingCount} settings — selection coming</span>
                 </>
               )}
+              <span>•</span>
+              <span>{convention === 'birss' ? 'Birss' : 'ITC'}</span>
             </div>
           </div>
           <button

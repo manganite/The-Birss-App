@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Type gains an icon and the ED-SHG consequence); the Crystal Setting selector moved into the
   info box for both Calculator and Simulator; minor alignment fixes; the info header is now shown
   on mobile in the Simulator too, so the setting selector is reachable there.
+- Explorer: crystal-system tabs now span the full width; the group preview popup header matches the
+  Calculator/Simulator info header (group name shown correctly per convention, synonym dropped,
+  symmetry type and convention added).
 
 ### Fixed
 
