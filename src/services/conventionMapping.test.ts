@@ -152,12 +152,18 @@ describe('conventionMapping — architectural rule: convention never reaches ten
   });
 });
 
-describe('grey (Type II) groups — every setting label carries the 1\' suffix', () => {
+describe('grey (Type II) groups WITH alternate settings — every setting label carries the 1\' suffix', () => {
   const greyGroupsWithSettings = Object.keys(ALTERNATE_SETTINGS).filter(k => k.endsWith("1'"));
+
+  it('the fixture itself is non-empty (guards against a silently-vacuous it.each below)', () => {
+    expect(greyGroupsWithSettings.length).toBeGreaterThan(0);
+  });
 
   it.each(greyGroupsWithSettings)('%s: all setting labels end with 1\' in both conventions', (group) => {
     for (const convention of ['birss', 'itc'] as const) {
-      for (const { hm } of getSettingLabels(group, convention)) {
+      const labels = getSettingLabels(group, convention);
+      expect(labels.length).toBeGreaterThan(0);
+      for (const { hm } of labels) {
         expect(hm.endsWith("1'")).toBe(true);
       }
     }
