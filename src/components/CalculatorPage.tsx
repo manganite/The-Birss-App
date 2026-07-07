@@ -120,6 +120,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
         <div className="md:hidden py-3">
           <KDirectionSelector compact
             crystalSystem={selectedGroup.crystalSystem}
+            setting={selectedSetting}
             thetaX={thetaX} thetaY={thetaY} psi0={psi0}
             setThetaX={setThetaX} setThetaY={setThetaY} setPsi0={setPsi0}
             labFrame={labFrameBase}
@@ -276,6 +277,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                   <div className="border-b border-ink border-opacity-10 pb-6">
                     <KDirectionSelector
                       crystalSystem={selectedGroup.crystalSystem}
+                      setting={selectedSetting}
                       thetaX={thetaX} thetaY={thetaY} psi0={psi0}
                       setThetaX={setThetaX} setThetaY={setThetaY} setPsi0={setPsi0}
                       labFrame={labFrameBase}

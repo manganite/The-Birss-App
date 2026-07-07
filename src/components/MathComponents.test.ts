@@ -1,6 +1,64 @@
 import { describe, it, expect } from 'vitest';
-import { getMonoclinicFrame, MONOCLINIC_FRAMES, getAxisTooltipId } from './MathComponents';
+import { getMonoclinicFrame, MONOCLINIC_FRAMES, getAxisTooltipId, getPresetsForSystem } from './MathComponents';
 import { GLOSSARY_TERMS } from '../data/glossary';
+
+describe('getPresetsForSystem', () => {
+  it('Monoclinic setting 1 (c-unique) vs setting 2 (b-unique) return different label sets', () => {
+    const c = getPresetsForSystem('Monoclinic', 1);
+    const b = getPresetsForSystem('Monoclinic', 2);
+    expect(c.map(p => p.label)).toEqual(['[001]', '[100]', 'y']);
+    expect(b.map(p => p.label)).toEqual(['[001]', 'x', '[010]']);
+    expect(c.map(p => p.math)).not.toEqual(b.map(p => p.math));
+  });
+
+  it('defaults to setting 1 (c-unique) when no setting is given', () => {
+    expect(getPresetsForSystem('Monoclinic')).toEqual(getPresetsForSystem('Monoclinic', 1));
+  });
+
+  it('a representative label per system matches the confirmed designation table', () => {
+    expect(getPresetsForSystem('Orthorhombic')[0].math).toBe('k \\parallel [100] \\parallel x \\parallel a');
+    expect(getPresetsForSystem('Tetragonal')[2].math).toBe('k \\parallel [110]');
+    expect(getPresetsForSystem('Cubic')[1].math).toBe('k \\parallel [111]');
+    expect(getPresetsForSystem('Hexagonal')[2].math).toBe('k \\parallel [120] \\parallel y');
+    expect(getPresetsForSystem('Trigonal')[2].math).toBe('k \\parallel [120] \\parallel y');
+    expect(getPresetsForSystem('Triclinic')[1].math).toBe('k \\parallel x \\parallel y \\times z');
+    expect(getPresetsForSystem('Triclinic')[2].math).toBe('k \\parallel y \\parallel b^* \\parallel (c \\times a)');
+    expect(getPresetsForSystem('Monoclinic', 1)[2].math).toBe('k \\parallel y \\parallel b^* \\parallel (c \\times a)');
+    expect(getPresetsForSystem('Monoclinic', 2)[1].math).toBe('k \\parallel x \\parallel a^* \\parallel (b \\times c)');
+  });
+
+  it('tx/ty/psi0 for every preset are unchanged from the pre-edit direction-derived values', () => {
+    const X = { tx: 0, ty: -90, psi0: 0 };
+    const Y = { tx: 90, ty: 0, psi0: 0 };
+    const Z = { tx: 0, ty: 0, psi0: 0 };
+    const D110 = { tx: 90, ty: -45, psi0: 90 };
+    const D111 = { tx: 45, ty: -35.264389682754654, psi0: 120 };
+
+    // atan2-derived angles carry float noise (e.g. -0, 90.00000000000001), so compare with a
+    // tolerance rather than exact equality.
+    const expectAngles = (presets: { tx: number; ty: number; psi0: number }[], expected: { tx: number; ty: number; psi0: number }[]) => {
+      expect(presets).toHaveLength(expected.length);
+      presets.forEach((p, i) => {
+        expect(p.tx).toBeCloseTo(expected[i].tx, 9);
+        expect(p.ty).toBeCloseTo(expected[i].ty, 9);
+        expect(p.psi0).toBeCloseTo(expected[i].psi0, 9);
+      });
+    };
+
+    expectAngles(getPresetsForSystem('Orthorhombic'), [X, Y, Z]);
+    expectAngles(getPresetsForSystem('Tetragonal'), [Z, X, D110]);
+    expectAngles(getPresetsForSystem('Cubic'), [X, D111, D110]);
+    expectAngles(getPresetsForSystem('Hexagonal'), [Z, X, Y]);
+    expectAngles(getPresetsForSystem('Trigonal'), [Z, X, Y]);
+    expectAngles(getPresetsForSystem('Triclinic'), [Z, X, Y]);
+    expectAngles(getPresetsForSystem('Monoclinic', 1), [Z, X, Y]);
+    expectAngles(getPresetsForSystem('Monoclinic', 2), [Z, X, Y]);
+  });
+
+  it('falls back to ORTHO_PRESETS for an unrecognized crystal system', () => {
+    expect(getPresetsForSystem('NotASystem')).toEqual(getPresetsForSystem('Orthorhombic'));
+  });
+});
 
 describe('getMonoclinicFrame', () => {
   it('the explicit setting wins when known (Calculator/Simulator)', () => {

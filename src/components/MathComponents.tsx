@@ -3,6 +3,7 @@ import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { Box, Hexagon, Triangle, Layers, Compass, Info, ChevronDown, ChevronUp, FlipHorizontal2, BookOpen } from 'lucide-react';
 import { hklToPresetAngles } from '../services/orientation';
+import type { Orientation } from '../services/orientation';
 import { isCentrosymmetric, getParentGroup, getHalvingSubgroup, getSHGConsequenceShort, getAlternateSettings, getFutureSettingCount } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels, getConventionNote, getBookErrorWarning, CONVENTION_NOTES } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
@@ -39,42 +40,73 @@ export interface KPreset {
   psi0: number;
 }
 
-function makePreset(label: string, h: number, k: number, l: number): KPreset {
-  const o = hklToPresetAngles(h, k, l)!;
-  return { label, math: `k \\parallel ${label}`, tx: o.tx, ty: o.ty, psi0: o.psi0 };
+function preset(label: string, math: string, o: Orientation): KPreset {
+  return { label, math, tx: o.tx, ty: o.ty, psi0: o.psi0 };
 }
 
-const PRESET_Y = makePreset('[010]', 0, 1, 0);
+// Shared direction angles (Cartesian, per orientation.ts convention) -- every preset below reuses
+// one of these five so tx/ty/psi0 stay tied to the direction, independent of its label(s).
+const ANGLES_X = hklToPresetAngles(1, 0, 0)!;
+const ANGLES_Y = hklToPresetAngles(0, 1, 0)!;
+const ANGLES_Z = hklToPresetAngles(0, 0, 1)!;
+const ANGLES_110 = hklToPresetAngles(1, 1, 0)!;
+const ANGLES_111 = hklToPresetAngles(1, 1, 1)!;
 
 const ORTHO_PRESETS: KPreset[] = [
-  makePreset('[100]', 1, 0, 0),
-  makePreset('[010]', 0, 1, 0),
-  makePreset('[001]', 0, 0, 1),
+  preset('[100]', 'k \\parallel [100] \\parallel x \\parallel a', ANGLES_X),
+  preset('[010]', 'k \\parallel [010] \\parallel y \\parallel b', ANGLES_Y),
+  preset('[001]', 'k \\parallel [001] \\parallel z \\parallel c', ANGLES_Z),
+];
+
+const TETRA_PRESETS: KPreset[] = [
+  preset('[001]', 'k \\parallel [001] \\parallel z \\parallel c', ANGLES_Z),
+  preset('[100]', 'k \\parallel [100] \\parallel x \\parallel a', ANGLES_X),
+  preset('[110]', 'k \\parallel [110]', ANGLES_110),
+];
+
+const CUBIC_PRESETS: KPreset[] = [
+  preset('[100]', 'k \\parallel [100] \\parallel x \\parallel a', ANGLES_X),
+  preset('[111]', 'k \\parallel [111]', ANGLES_111),
+  preset('[110]', 'k \\parallel [110]', ANGLES_110),
 ];
 
 const HEX_TRIG_PRESETS: KPreset[] = [
-  makePreset('[001]', 0, 0, 1),
-  makePreset('[100]', 1, 0, 0),
-  { label: '[120]', math: 'k \\parallel [120]', tx: PRESET_Y.tx, ty: PRESET_Y.ty, psi0: PRESET_Y.psi0 },
+  preset('[001]', 'k \\parallel [001] \\parallel z \\parallel c', ANGLES_Z),
+  preset('[100]', 'k \\parallel [100] \\parallel x \\parallel a', ANGLES_X),
+  preset('[120]', 'k \\parallel [120] \\parallel y', ANGLES_Y),
 ];
 
-const MONO_TRI_PRESETS: KPreset[] = [
-  makePreset('[001]', 0, 0, 1),
-  makePreset('[100]', 1, 0, 0),
-  { label: '[010] ∥ b*', math: 'k \\parallel [010] \\parallel b^*', tx: PRESET_Y.tx, ty: PRESET_Y.ty, psi0: PRESET_Y.psi0 },
+const TRICLINIC_PRESETS: KPreset[] = [
+  preset('[001]', 'k \\parallel [001] \\parallel z \\parallel c', ANGLES_Z),
+  preset('x', 'k \\parallel x \\parallel y \\times z', ANGLES_X),
+  preset('y', 'k \\parallel y \\parallel b^* \\parallel (c \\times a)', ANGLES_Y),
+];
+
+// Setting 1 (c-unique): the standard Birss frame.
+const MONO_C_PRESETS: KPreset[] = [
+  preset('[001]', 'k \\parallel [001] \\parallel z \\parallel c', ANGLES_Z),
+  preset('[100]', 'k \\parallel [100] \\parallel x \\parallel a', ANGLES_X),
+  preset('y', 'k \\parallel y \\parallel b^* \\parallel (c \\times a)', ANGLES_Y),
+];
+
+// Setting 2 (b-unique): the ITC frame -- here y IS the real crystallographic [010]/b axis.
+const MONO_B_PRESETS: KPreset[] = [
+  preset('[001]', 'k \\parallel [001] \\parallel z \\parallel c', ANGLES_Z),
+  preset('x', 'k \\parallel x \\parallel a^* \\parallel (b \\times c)', ANGLES_X),
+  preset('[010]', 'k \\parallel [010] \\parallel y \\parallel b', ANGLES_Y),
 ];
 
 const PRESETS_BY_SYSTEM: Record<string, KPreset[]> = {
-  Cubic: [makePreset('[100]', 1, 0, 0), makePreset('[111]', 1, 1, 1), makePreset('[110]', 1, 1, 0)],
-  Tetragonal: [makePreset('[001]', 0, 0, 1), makePreset('[100]', 1, 0, 0), makePreset('[110]', 1, 1, 0)],
+  Cubic: CUBIC_PRESETS,
+  Tetragonal: TETRA_PRESETS,
   Orthorhombic: ORTHO_PRESETS,
   Hexagonal: HEX_TRIG_PRESETS,
   Trigonal: HEX_TRIG_PRESETS,
-  Monoclinic: MONO_TRI_PRESETS,
-  Triclinic: MONO_TRI_PRESETS,
+  Triclinic: TRICLINIC_PRESETS,
 };
 
-export function getPresetsForSystem(crystalSystem: string): KPreset[] {
+export function getPresetsForSystem(crystalSystem: string, setting: number = 1): KPreset[] {
+  if (crystalSystem === 'Monoclinic') return setting === 2 ? MONO_B_PRESETS : MONO_C_PRESETS;
   return PRESETS_BY_SYSTEM[crystalSystem] ?? ORTHO_PRESETS;
 }
 
@@ -118,7 +150,7 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
       </div>
       {showLegend && (
         <div className="mt-3 pt-3 border-t border-ink/10 text-xs text-ink/70 leading-relaxed space-y-1">
-          <p><strong>x, y, z</strong> (crys) — crystal Cartesian axes (z∥c, y∥b*, x per system convention)</p>
+          <p><strong>x, y, z</strong> (crys) — the crystal Cartesian axes; their orientation relative to the crystallographic axes is defined per crystal system (and setting) in the AXIS ORIENTATION box above.</p>
           <p><strong>X, Y, Z</strong> (LAB) — lab axes: Z = beam direction (k), X/Y = polarization plane (0°/90°)</p>
           <p>At zero tilt, the selected crystal cut normal is aligned with Z (the beam).</p>
         </div>
@@ -129,6 +161,7 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
 
 interface KDirectionSelectorProps {
   crystalSystem: string;
+  setting?: number;
   thetaX: number; thetaY: number; psi0: number;
   setThetaX: (v: number) => void;
   setThetaY: (v: number) => void;
@@ -138,8 +171,8 @@ interface KDirectionSelectorProps {
   onNavigate?: (view: string, tab?: string) => void;
 }
 
-export function KDirectionSelector({ crystalSystem, thetaX, thetaY, psi0, setThetaX, setThetaY, setPsi0, labFrame, compact, onNavigate }: KDirectionSelectorProps) {
-  const presets = getPresetsForSystem(crystalSystem);
+export function KDirectionSelector({ crystalSystem, setting, thetaX, thetaY, psi0, setThetaX, setThetaY, setPsi0, labFrame, compact, onNavigate }: KDirectionSelectorProps) {
+  const presets = getPresetsForSystem(crystalSystem, setting);
   return (
     <div className="space-y-3">
       {!compact && (

@@ -451,14 +451,14 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                     <strong>Preset (<InlineMath math="k \parallel [hkl]" />):</strong> Selects which crystal direction is aligned with the beam axis (lab Z). Defines <InlineMath math="R_{\text{preset}}" />.
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong><InlineMath math="\varphi_x, \varphi_y" /> (tilt):</strong> Tilt the crystal surface away from normal incidence, rotating about the lab X and Y axes. Range: ±90°.
+                    <strong><InlineMath math="\varphi_X, \varphi_Y" /> (tilt):</strong> Tilt the crystal surface away from normal incidence, rotating about the lab X and Y axes. Range: ±90°.
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
                     <strong><InlineMath math="\psi" /> (azimuth):</strong> Rotate the crystal about the beam axis (lab Z). This is the in-plane rotation that sweeps the crystallographic directions through the polarizer plane. Range: ±180°.
                   </p>
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  The full rotation matrix is <InlineMath math="R = R_y(\varphi_y) \cdot R_x(\varphi_x) \cdot R_z(\psi) \cdot R_{\text{preset}}" />, applied right-to-left: the preset alignment first, then the crystal-tied azimuth <InlineMath math="\psi" />, then the lab-fixed tilts <InlineMath math="\varphi_x" /> and <InlineMath math="\varphi_y" />. At <InlineMath math="\varphi_x = \varphi_y = \psi = 0" />, the result is purely the preset alignment.
+                  The full rotation matrix is <InlineMath math="R = R_y(\varphi_Y) \cdot R_x(\varphi_X) \cdot R_z(\psi) \cdot R_{\text{preset}}" />, applied right-to-left: the preset alignment first, then the crystal-tied azimuth <InlineMath math="\psi" />, then the lab-fixed tilts <InlineMath math="\varphi_X" /> and <InlineMath math="\varphi_Y" />. At <InlineMath math="\varphi_X = \varphi_Y = \psi = 0" />, the result is purely the preset alignment.
                 </p>
               </div>
 
