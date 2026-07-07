@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Corrected the triclinic/monoclinic component note (it said "monoclinic" even when a triclinic
+  group was selected) and moved it below the component sliders instead of above. Polarimetry tab
+  tooltips (Anisotropy/Polarizer/Analyzer) no longer render clipped behind the plot. The selected
+  polarimetry tab now highlights its info icon together with the tab instead of leaving it light
+  against the dark tab. Display-only.
+
 - Crystal-rotation sliders/tooltip now label the lab-axis tilts as `φ_X` / `φ_Y` (previously
   `φ_x` / `φ_y`, which read as crystal axes even though the tilt is about the lab frame).
 - Crystal-cut buttons now show every correct designation per direction (`[hkl]` and/or Cartesian

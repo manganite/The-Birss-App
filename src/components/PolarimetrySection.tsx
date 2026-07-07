@@ -61,33 +61,33 @@ export function PolarimetrySection({
         <TermInfo id="shg-polarimetry" onNavigate={onNavigate} />
       </SectionHeader>
 
-      <div className="bg-white/50 border border-ink overflow-hidden">
+      <div className="bg-white/50 border border-ink">
         {/* Tab Menu */}
-        <div className="flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar">
-          <div className="flex items-center">
+        <div className="flex flex-wrap border-b border-ink border-opacity-20 bg-white/30">
+          <div className={`flex items-center ${activePolarimetryTab === 'anisotropy' ? 'bg-ink text-paper' : ''}`}>
             <button
               onClick={() => setActivePolarimetryTab('anisotropy')}
-              className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'anisotropy' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
+              className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'anisotropy' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               <span className="md:hidden">Aniso</span>
               <span className="hidden md:inline">Anisotropy</span>
             </button>
             <span className="px-1"><TermInfo id="anisotropy-config" onNavigate={onNavigate} /></span>
           </div>
-          <div className="flex items-center border-l border-ink border-opacity-10">
+          <div className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'polarizer' ? 'bg-ink text-paper' : ''}`}>
             <button
               onClick={() => setActivePolarimetryTab('polarizer')}
-              className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'polarizer' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
+              className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'polarizer' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               <span className="md:hidden">Pol</span>
               <span className="hidden md:inline">Polarizer</span>
             </button>
             <span className="px-1"><TermInfo id="polarizer-config" onNavigate={onNavigate} /></span>
           </div>
-          <div className="flex items-center border-l border-ink border-opacity-10">
+          <div className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'analyzer' ? 'bg-ink text-paper' : ''}`}>
             <button
               onClick={() => setActivePolarimetryTab('analyzer')}
-              className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'analyzer' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
+              className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'analyzer' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               <span className="md:hidden">Ana</span>
               <span className="hidden md:inline">Analyzer</span>

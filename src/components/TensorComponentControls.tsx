@@ -57,12 +57,6 @@ export function TensorComponentControls({
         </SectionHeader>
       </div>
 
-      {(selectedGroup.crystalSystem === 'Triclinic' || selectedGroup.crystalSystem === 'Monoclinic') && (
-        <div className="hidden md:block p-3 border border-ink border-opacity-10 bg-ink/5 text-xs opacity-70 leading-relaxed">
-          Component values and polarimetry orientations depend on the in-plane Cartesian convention (see Help). Different monoclinic angles are represented by adjusting component values, not a separate control. Birefringence is not modeled.
-        </div>
-      )}
-
       {/* Mobile: component selector + one component's sliders */}
       {independentComponents.length > 0 && (
         <div className="md:hidden space-y-3">
@@ -264,6 +258,12 @@ export function TensorComponentControls({
           </>
         )}
       </div>
+
+      {(selectedGroup.crystalSystem === 'Triclinic' || selectedGroup.crystalSystem === 'Monoclinic') && (
+        <div className="hidden md:block p-3 border border-ink border-opacity-10 bg-ink/5 text-xs opacity-70 leading-relaxed">
+          Component values and polarimetry orientations depend on the in-plane Cartesian convention (see Help). Different unit-cell angles (beta for monoclinic; alpha, beta, gamma for triclinic) are represented by adjusting component values, not a separate control. Birefringence is not modeled.
+        </div>
+      )}
     </div>
   );
 }
