@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Explorer: a per-crystal-system info panel (lattice conditions, defining symmetry, HM symbol
+  positions, settings, Birss-vs-ITC notes, holohedry, example material), with the axis-orientation
+  box integrated into it.
+
 ### Fixed
 
 - Corrected the triclinic/monoclinic component note (it said "monoclinic" even when a triclinic

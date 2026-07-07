@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
-import { FormatPointGroup, getCrystalIcon, AxisOrientationInfo } from './MathComponents';
+import { FormatPointGroup, getCrystalIcon } from './MathComponents';
+import { CrystalSystemInfoPanel } from './CrystalSystemInfoPanel';
 import { OperationsModal } from './OperationsModal';
 import { AnimatePresence } from 'motion/react';
 import { getGroupDisplayName } from '../services/conventionMapping';
@@ -153,7 +154,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
 
       {/* Crystal system reference panel */}
       <div className="mt-6">
-        <AxisOrientationInfo crystalSystem={activeSystem} convention={convention} onNavigate={onNavigate} />
+        <CrystalSystemInfoPanel crystalSystem={activeSystem} convention={convention} onNavigate={onNavigate} />
       </div>
 
       <AnimatePresence>
