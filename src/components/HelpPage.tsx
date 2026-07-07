@@ -48,7 +48,7 @@ const GROUP_TYPES: { title: string; description: React.ReactNode }[] = [
     description: <>No time reversal in the group: the 32 classical (colourless) point groups.</>,
   },
   {
-    title: 'Type II — Grey',
+    title: 'Type II — Gray',
     description: <>Time reversal <InlineMath math="1'" /> is itself a symmetry element (<InlineMath math="G + G1'" />): all c-type (time-odd) tensors vanish; paramagnetic/diamagnetic phases.</>,
   },
   {
