@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Polarimetry tab tooltip title is no longer invisible when its tab is selected.
+- Help: two glossary "Learn more" links now point at the tab that actually contains the topic;
+  added missing Crystal Cut and Group Types sections; updated the Alternate Settings and Symbol
+  Conventions sections to the current UI (global convention toggle, no badges, new setting-button
+  labels). README rotation-control symbols corrected (phi_X/phi_Y/psi) and the global convention
+  toggle documented.
+
 - Corrected the triclinic/monoclinic component note (it said "monoclinic" even when a triclinic
   group was selected) and moved it below the component sliders instead of above. Polarimetry tab
   tooltips (Anisotropy/Polarizer/Analyzer) no longer render clipped behind the plot. The selected

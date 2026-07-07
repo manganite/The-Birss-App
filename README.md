@@ -15,7 +15,7 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
   - Automatic determination of non-zero and independent components for Electric Dipole (ED, $\chi^{(2)}$), Magnetic Dipole (MD), and Electric Quadrupole (EQ) tensors.
   - Supports Time-Reversal symmetry toggles (i-type, c-type).
   - Real-time calculation of induced nonlinear response in the Lab Frame ($S_X, S_Y, S_Z$) with incoming light propagating along the Z-axis ($E_Z = 0$). 
-  - Includes crystal rotation controls ($\theta_X$, $\theta_Y$) to simulate experimental setups.
+  - Includes crystal rotation controls ($\varphi_X$, $\varphi_Y$, azimuth $\psi$) to simulate experimental setups.
 - **Explorer**: 
   - Browse all 122 crystallographic magnetic point groups.
   - Filter by crystal system and group type (Ordinary, Gray, Black & White).
@@ -26,6 +26,7 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
   - Interactive radar charts displaying SHG intensity as the analyzer angle is rotated.
   - Mathematically simplified and summarized expanded formulas using harmonic Fourier series representation (power reduction and multiple-angle formulas).
   - Smart grouping algorithm to automatically pick the most elegant representation (power vs harmonic) and minimize unnecessary minus signs.
+- **Global Birss | ITC symbol-convention toggle**: relabels group symbols and standard settings app-wide (Explorer, search, Calculator, Simulator) — display only, computed output always follows the Birss engine conventions below.
 - **Help & Documentation**: 
   - Comprehensive physics background, mathematics behind the intensity calculations, and usage instructions.
 - **Birss Reference Tables**:
