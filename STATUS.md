@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-04. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-07. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -11,7 +11,18 @@ on drift)._
 
 ---
 
-## Current release: v0.15.0 (2026-07-04)
+## Current release: v0.16.0 (2026-07-05)
+
+Makes the Birss/ITC convention a global mode; adds per-crystal-system axis tooltips, a reworked
+group info header, app-wide LaTeX rendering, and route-level code splitting; fixes the grey
+alternate-setting symbol (missing `1'`) and the monoclinic axis-orientation display.
+Display/verification-only — no computed output changes. See `CHANGELOG.md` `[0.16.0]`.
+
+Unreleased since v0.16.0: corrected crystal-cut/rotation labels, Simulator polarimetry and
+component-note polish, the Explorer per-crystal-system info panel, and the Help/README/tooltip
+review fixes (this work order).
+
+### v0.15.0 (2026-07-04)
 
 Adds the Birss/ITC symbol-convention toggle (setting labels, standard badges,
 group-string synonyms, convention-aware axis display, in-app Birss↔ITC
@@ -120,8 +131,9 @@ genuinely deferred, not done-but-unchecked (marked accordingly where uncertain).
 - Confirm the Mechanism-2 setting set against local ITC Vol. A copy.
 - Extend settings machinery (`S·G·S⁻¹`) to cover the remaining colorless and grey
   multi-setting groups (Type I/II).
-- Add principal-axis rotation transforms (45° about z for `−42m↔−4m2`;
-  30° for hexagonal pairs).
+- ~~Add principal-axis rotation transforms (45° about z for `−42m↔−4m2`;
+  30° for hexagonal pairs).~~ **Done** — these transforms exist in `ALTERNATE_SETTINGS`
+  (the `−42m` family settings ship in the app).
 - Transcribe golden fixtures for at least one colorless and one grey alternate-setting
   group to pin the tensor form.
 
@@ -130,9 +142,11 @@ genuinely deferred, not done-but-unchecked (marked accordingly where uncertain).
   triples with a canonical crystallographic labeling per system.
 - Label presets with standard Miller indices (e.g. `[1̄20]` for the hexagonal
   in-plane direction, `b*` for monoclinic).
-- Triclinic / monoclinic: document what the current conventional-axis presets mean
+- ~~Triclinic / monoclinic: document what the current conventional-axis presets mean
   in terms of the Hausühl Cartesian convention (x ∥ a, y ∥ b*, z ∥ c) — no new
-  controls, just an inline label/tooltip.
+  controls, just an inline label/tooltip.~~ **Done** — delivered by the crystal-cut
+  label rework (buttons show [hkl]/Cartesian/crystallographic designations,
+  setting-aware for monoclinic) and the axis-orientation tooltips.
 
 ### Group-identity header (B27 — lower-priority candidates)
 The high-value fields shipped in v0.12.0 (Schoenflies, parent group, halving

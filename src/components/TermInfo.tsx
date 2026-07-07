@@ -37,7 +37,7 @@ export function TermInfo({ id, onNavigate }: TermInfoProps) {
             className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute top-5 left-0 z-20 w-56 bg-paper border border-ink shadow-xl normal-case tracking-normal p-3 space-y-2 text-left">
+          <div className="absolute top-5 left-0 z-20 w-56 bg-paper text-ink border border-ink shadow-xl normal-case tracking-normal p-3 space-y-2 text-left">
             <p className="text-xs font-semibold opacity-80">{term.term}</p>
             <p className="text-xs text-ink/70 leading-relaxed">{term.brief}</p>
             {term.helpTab && onNavigate && (

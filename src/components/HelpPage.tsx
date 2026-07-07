@@ -42,6 +42,21 @@ const TENSOR_TYPES: { title: string; description: React.ReactNode }[] = [
   },
 ];
 
+const GROUP_TYPES: { title: string; description: React.ReactNode }[] = [
+  {
+    title: 'Type I — Ordinary',
+    description: <>No time reversal in the group: the 32 classical (colourless) point groups.</>,
+  },
+  {
+    title: 'Type II — Grey',
+    description: <>Time reversal <InlineMath math="1'" /> is itself a symmetry element (<InlineMath math="G + G1'" />): all c-type (time-odd) tensors vanish; paramagnetic/diamagnetic phases.</>,
+  },
+  {
+    title: 'Type III — Black & White',
+    description: <>Time reversal appears only combined with rotations/mirrors (primed operations): magnetically ordered phases; time-odd tensor components can survive.</>,
+  },
+];
+
 const SHG_MULTIPOLES: { title: string; description: React.ReactNode }[] = [
   {
     title: 'Electric Dipole (ED)',
@@ -284,6 +299,23 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                 </div>
               </div>
 
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Group Types</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {GROUP_TYPES.map((groupType) => (
+                    <div key={groupType.title} className="p-4 border border-ink border-opacity-10 space-y-2">
+                      <h4 className="font-medium">{groupType.title}</h4>
+                      <p className="text-xs opacity-70 leading-relaxed">
+                        {groupType.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs opacity-70 leading-relaxed italic">
+                  App numbering follows Bradley-Cracknell; colour names are the primary identifier.
+                </p>
+              </div>
+
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest">Nonlinear Optics & SHG</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
@@ -365,6 +397,13 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                   <li><strong>Polarizer:</strong> The analyzer is fixed at <InlineMath math="0^\circ" /> or <InlineMath math="90^\circ" />, and the intensity is plotted as a function of the <strong>polarizer angle</strong>.</li>
                   <li><strong>Analyzer:</strong> The polarizer is fixed at <InlineMath math="0^\circ" /> or <InlineMath math="90^\circ" />, and the intensity is plotted as a function of the <strong>analyzer angle</strong>.</li>
                 </ul>
+              </div>
+
+              <div className="space-y-3 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Crystal Cut</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  <strong>Surface normal ∥ <InlineMath math="k" />.</strong> The cut presets choose which crystal direction faces the beam: the selected direction is aligned with the lab Z axis (<InlineMath math="k" />), the polarization plane is X/Y. Each preset aligns a Cartesian axis (x, y or z) or a symmetry diagonal; the button shows every valid designation (<InlineMath math="[hkl]" />, Cartesian axis, crystallographic axis). Additional tilts (<InlineMath math="\varphi_X, \varphi_Y" />) and the azimuth (<InlineMath math="\psi" />) are applied on top of the preset.
+                </p>
               </div>
 
               <div className="p-6 bg-ink/5 border border-ink border-opacity-10 space-y-4">
@@ -471,7 +510,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                   Some magnetic point groups have multiple settings — distinct orientations of the symmetry elements relative to the crystal axes that produce different tensor forms. For example, <InlineMath math="6'mm'" /> and <InlineMath math="6'm'm" /> are two settings of the same abstract group, related by a 30° rotation that swaps which mirror family is primed.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  The app implements all settings via the similarity transform <InlineMath math="G' = S \cdot G \cdot S^{-1}" /> applied to the base generators. A setting selector appears in the Calculator and the Simulator whenever a group has multiple settings, and the choice persists between the two views. No group has more than 3 settings. The mechanisms, and how each labels its buttons, are:
+                  The app implements all settings via the similarity transform <InlineMath math="G' = S \cdot G \cdot S^{-1}" /> applied to the base generators. A setting selector appears in the group info header, shared by the Calculator and the Simulator, whenever a group has multiple settings, and the choice persists between the two views. No group has more than 3 settings. The mechanisms, and how each labels its buttons, are:
                 </p>
                 <div className="space-y-3 pl-4 border-l-2 border-ink border-opacity-20 my-4">
                   <p className="text-sm opacity-70 leading-relaxed">
@@ -481,10 +520,10 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                     <strong>Mechanism B (time-reversal-broken equivalence):</strong> the two in-plane direction sets carry the <em>same</em> element type, so the non-magnetic parent has only one setting; priming one set but not the other (e.g. <InlineMath math="6'mm'" /> vs. <InlineMath math="6'm'm" />) breaks that equivalence. Buttons are labelled with the distinct magnetic HM symbol, same as Mechanism A.
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Axis orientation (orthorhombic):</strong> three settings (Default = c, plus a- and b-unique) choosing which crystal axis carries the group's distinguished direction — the axis that differs from the other two. The distinction is either classical (the unique polar / 2-fold axis, e.g. <InlineMath math="mm2" />) or time-reversal-driven (the operation whose primed / un-primed status is unique, e.g. the un-primed 2-fold in <InlineMath math="2'2'2" />, or the primed mirror in <InlineMath math="mmm'" />). Groups whose three axes are equivalent — <InlineMath math="222" />, <InlineMath math="mmm" />, <InlineMath math="m'm'm'" />, and the grey forms <InlineMath math="2221'" />, <InlineMath math="mmm1'" /> — have a single setting only.
+                    <strong>Axis orientation (orthorhombic):</strong> three settings (c-unique, a-unique, and b-unique) choosing which crystal axis carries the group's distinguished direction — the axis that differs from the other two. The distinction is either classical (the unique polar / 2-fold axis, e.g. <InlineMath math="mm2" />) or time-reversal-driven (the operation whose primed / un-primed status is unique, e.g. the un-primed 2-fold in <InlineMath math="2'2'2" />, or the primed mirror in <InlineMath math="mmm'" />). Groups whose three axes are equivalent — <InlineMath math="222" />, <InlineMath math="mmm" />, <InlineMath math="m'm'm'" />, and the grey forms <InlineMath math="2221'" />, <InlineMath math="mmm1'" /> — have a single setting only.
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Axis convention (monoclinic, 2 settings):</strong> not a different orientation but a different naming convention for the same physical axis choice — <em>First</em> (<InlineMath math="c" />-unique, Birss) and <em>Second</em> (<InlineMath math="b" />-unique, ITC). Buttons keep these convention names rather than an HM symbol, since both settings share the same symbol.
+                    <strong>Axis convention (monoclinic, 2 settings):</strong> not a different orientation but a different naming convention for the same physical axis choice — <em>First</em> (<InlineMath math="c" />-unique, Birss) and <em>Second</em> (<InlineMath math="b" />-unique, ITC). Buttons read <em>c-unique</em> <InlineMath math="2/m" /> / <em>b-unique</em> <InlineMath math="2/m" /> — the axis word plus the short HM symbol, which is identical for both settings; the axis word disambiguates.
                   </p>
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
@@ -495,18 +534,21 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest">Symbol Conventions: Birss vs ITC</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  <strong>Convention</strong> is a separate choice from <strong>setting</strong> above: setting picks <em>which</em> physical frame is selected; convention only picks <em>which naming rule</em> labels that frame. Switching convention never changes the selected frame or any computed tensor value — only which symbol and which "standard" badge are displayed.
+                  <strong>Convention</strong> is a separate choice from <strong>setting</strong> above: setting picks <em>which</em> physical frame is selected; convention only picks <em>which naming rule</em> labels that frame. Switching convention never changes the selected frame or any computed tensor value — only which symbol is displayed.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The convention is a single global toggle (<strong>BIRSS | ITC</strong>) in the app header. It relabels group names app-wide — Explorer, search, Calculator, and Simulator — and opens newly selected groups on the active convention's standard frame. Toggling it while a group is already open keeps the current physical frame; it only relabels it.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed">
                   The two rules disagree on one point: for trigonal/hexagonal groups, Birss reads HM position 2 from the <InlineMath math="y" />-axis family, while ITC reads it from the <InlineMath math="x" /> (a-axis) family — the two families are 30° apart. This has three distinct effects:
                 </p>
                 <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Mechanism-B trigonal/hexagonal pairs swap names:</strong> for a group like <InlineMath math="6'mm'" /> (Mechanism B above), the app's default frame is Birss's <InlineMath math="6'mm'" /> and ITC's <InlineMath math="6'm'm" />; the alternate setting is Birss's <InlineMath math="6'm'm" /> and ITC's <InlineMath math="6'mm'" />. The physics is identical (labels swap, the "ITC standard" badge moves to the setting ITC would call by the group's key); this covers the trigonal <InlineMath math="32/3m/\bar{3}m" /> family and the seven affected hexagonal groups.</li>
-                  <li><strong>Tetragonal Mechanism-A pairs are convention-neutral:</strong> for groups like <InlineMath math="\bar{4}2m" />, the 4-fold makes the <InlineMath math="x" /> and <InlineMath math="y" /> secondary families equivalent, so Birss's and ITC's position-2 readings always agree — no label or badge change in either mode.</li>
-                  <li><strong>Two Sec.-7A groups are exceptions to the swap:</strong> <InlineMath math="m'm'm" /> already uses the identical string in both conventions (only its ITC-standard badge moves, to the a-unique setting, which carries ITC's <InlineMath math="mm'm'" /> orientation); <InlineMath math="6'/mm'm" /> swaps names exactly like the Mechanism-B groups (setting 1: Birss <InlineMath math="6'/mm'm" /> / ITC <InlineMath math="6'/mmm'" />), but uniquely keeps its "ITC standard" badge on setting 1, because both conventions' tabulated standard is the same physical frame for this one group.</li>
+                  <li><strong>Mechanism-B trigonal/hexagonal pairs swap names:</strong> for a group like <InlineMath math="6'mm'" /> (Mechanism B above), the app's default frame is Birss's <InlineMath math="6'mm'" /> and ITC's <InlineMath math="6'm'm" />; the alternate setting is Birss's <InlineMath math="6'm'm" /> and ITC's <InlineMath math="6'mm'" />. The physics is identical (labels swap; ITC mode opens the group on the setting ITC would call by the group's key); this covers the trigonal <InlineMath math="32/3m/\bar{3}m" /> family and the seven affected hexagonal groups.</li>
+                  <li><strong>Tetragonal Mechanism-A pairs are convention-neutral:</strong> for groups like <InlineMath math="\bar{4}2m" />, the 4-fold makes the <InlineMath math="x" /> and <InlineMath math="y" /> secondary families equivalent, so Birss's and ITC's position-2 readings always agree — no label change in either mode.</li>
+                  <li><strong>Two Sec.-7A groups are exceptions to the swap:</strong> <InlineMath math="m'm'm" /> already uses the identical string in both conventions (opening the group in ITC mode selects the a-unique setting, which carries ITC's <InlineMath math="mm'm'" /> orientation); <InlineMath math="6'/mm'm" /> swaps names exactly like the Mechanism-B groups (setting 1: Birss <InlineMath math="6'/mm'm" /> / ITC <InlineMath math="6'/mmm'" />), but uniquely opens on setting 1 in both conventions, because both conventions' tabulated standard is the same physical frame for this one group.</li>
                 </ul>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  Monoclinic groups keep the same short symbol in both conventions (Mechanism "Axis convention" above already labels the two settings <em>First</em>/<em>Second</em>); only the ITC-standard badge moves, to the b-unique (Second) setting.
+                  Monoclinic groups keep the same short symbol in both conventions (Mechanism "Axis convention" above already labels the two settings <em>First</em>/<em>Second</em>); only which setting opens by default differs — ITC mode opens on the b-unique (Second) setting.
                 </p>
                 <div className="p-4 bg-ink/5 border border-ink border-opacity-10 space-y-2">
                   <h4 className="font-medium text-sm">Reading Birss's parentheses</h4>
