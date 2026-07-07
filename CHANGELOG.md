@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Crystal-rotation sliders/tooltip now label the lab-axis tilts as `φ_X` / `φ_Y` (previously
+  `φ_x` / `φ_y`, which read as crystal axes even though the tilt is about the lab frame).
+- Crystal-cut buttons now show every correct designation per direction (`[hkl]` and/or Cartesian
+  x/y/z and/or crystallographic a/b/c), corrected for triclinic and monoclinic (setting-aware:
+  c-unique vs b-unique) where the old `[hkl]` labels were wrong for a Cartesian axis that has no
+  simple Miller-index expression. Labels and the `getPresetsForSystem` API only — no computed
+  value (tensor, source term, cut direction) changes for a given input.
+- Axis-box legend text now points to the AXIS ORIENTATION box (per crystal system and setting)
+  instead of a single hard-coded convention.
+
 ## [0.16.0] - 2026-07-05
 
 ### Changed
