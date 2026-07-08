@@ -16,8 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Explorer group popup: full Hermann-Mauguin symbol for all groups and Shubnikov symbols for the
   grey groups, both sourced from the canonical `table-nomenclature.md` with entry-for-entry
   anti-drift guard tests.
+- Explorer group popup: a Properties block (Laue class, chirality, and allowed/forbidden flags
+  for polar/pyro-ferroelectric, piezoelectric, ferromagnetic, piezomagnetic and linear
+  magnetoelectric behaviour), each flag anchored against printed references (ITC Tables 1.5.2.4,
+  1.5.7.1, 1.5.8.1; classical property classes; Schmid 1994 counts).
 
 ### Fixed
+
+- The symmetry-type box claimed "ED SHG allowed" for every non-centrosymmetric group; for the
+  432 family the ED SHG tensor vanishes identically. The consequence is now derived from the
+  computed tensor form (wrong text shipped in v0.16.0-v0.17.x).
 
 - Simulator: the "As functions of θ_pol" label no longer uppercases the math symbol.
 
