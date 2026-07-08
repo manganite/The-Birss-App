@@ -392,7 +392,7 @@ export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavi
   );
 }
 
-function ConventionNote({ groupName }: { groupName: string }) {
+export function ConventionNote({ groupName }: { groupName: string }) {
   const noteKey = getConventionNote(groupName);
   const bookErrorWarning = getBookErrorWarning(groupName);
   if (!noteKey) return null;

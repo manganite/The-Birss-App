@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Explorer group popup: Shubnikov symbol (classical and black-and-white groups, from the
+  print-verified Birss tables with anti-drift guard tests), group order, parent group with
+  halving subgroup, per-setting labels with Birss/ITC standards, and the Birss reference-axis
+  orientation of the group's classical family.
+
 ### Fixed
 
 - Simulator: the "As functions of θ_pol" label no longer uppercases the math symbol.
