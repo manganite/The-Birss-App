@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Help page reworked after a content review: settings and symbol-convention documentation moved
+  to Notations & Conventions and crystal rotation to Simulation (Deeper Topics now holds only
+  deep dives, with cross-references); added symmetry-operation notation (subscript/superscript),
+  a components-and-phases box, the Haussuehl reference, and overview mentions of the convention
+  toggle and system info panel; fixed a broken formula, stale rotation-angle symbols, the psi
+  description, and the one-sided monoclinic frame description; unified Gray/grey and
+  crystal-vs-lab axis casing.
+
 ## [0.17.0] - 2026-07-08
 
 ### Added

@@ -6,12 +6,12 @@ const FEATURES: { icon: LucideIcon; title: string; description: string; extra?: 
   {
     icon: Layers,
     title: 'Explorer',
-    description: 'Browse all 122 crystallographic magnetic point groups. Filter by crystal system, group type (Ordinary, Gray, Black & White), and view their symmetry operations and properties.',
+    description: 'Browse all 122 crystallographic magnetic point groups. Filter by crystal system, group type (Ordinary, Gray, Black & White), and view their symmetry operations and properties. Each crystal system shows an info panel with lattice conditions, defining symmetry, and convention notes.',
   },
   {
     icon: Zap,
     title: 'Calculator',
-    description: 'Calculate non-zero tensor components for various physical properties (Electric Dipole, Magnetic Dipole, Electric Quadrupole) under different point group symmetries. Supports time-reversal symmetry toggles for magnetic groups.',
+    description: 'Calculate non-zero tensor components for various physical properties (Electric Dipole, Magnetic Dipole, Electric Quadrupole) under different point group symmetries. Supports time-reversal symmetry toggles for magnetic groups. A global BIRSS | ITC toggle in the header switches the symbol convention app-wide; a setting selector in the group header switches between alternate crystal settings.',
   },
   {
     icon: Activity,
@@ -38,7 +38,7 @@ const TENSOR_TYPES: { title: string; description: React.ReactNode }[] = [
   },
   {
     title: 'Time Reversal',
-    description: <>Tensors can be symmetric (i-type) or anti-symmetric (c-type) under time reversal (<InlineMath math="t \to -t" />). Magnetic properties are typically c-type, while electric properties are i-type.</>,
+    description: <>Tensors can be symmetric (i-type) or anti-symmetric (c-type) under time reversal (<InlineMath math="t \to -t" />). Magnetic properties are typically c-type, while electric properties are i-type.<br/><span className="italic">Deep dive: i-type vs. c-type tensors → Deeper Topics.</span></>,
   },
 ];
 
@@ -89,6 +89,11 @@ const REFERENCES: { href: string; title: string; description: string; openAccess
     title: 'Fundamentals of Crystal Physics',
     description: "Sirotin, Yu. I. & Shaskol'skaya, M. P. (1982). Standard reference tables for tensor properties of crystals under point-group symmetry.",
     openAccess: true,
+  },
+  {
+    href: 'https://doi.org/10.1002/9783527621156',
+    title: 'Physical Properties of Crystals: An Introduction',
+    description: 'Haussühl, S. (2007, Wiley-VCH; German original: Kristallphysik, 1983). Source of the Cartesian axis convention for the triclinic and monoclinic systems (IRE 1949 standard).',
   },
   {
     href: 'https://www.sciencedirect.com/book/9780123694706/nonlinear-optics',
@@ -219,32 +224,92 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                 <p className="text-sm opacity-70 leading-relaxed">
                   The calculator uses the standard Cartesian coordinate system (x, y, z) for tensor components. The orientation of these axes relative to the crystallographic axes (a, b, c) depends on the crystal system:
                 </p>
-                <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
-                  <li>
-                    <strong>Triclinic:</strong> <InlineMath math="z \parallel c" />, <InlineMath math="y \parallel (c \times a)" /> (∥ <InlineMath math="b^*" />), <InlineMath math="x = y \times z" /> (projection of <InlineMath math="a" /> onto the plane ⊥ <InlineMath math="c" />).
-                  </li>
-                  <li>
-                    <strong>Monoclinic:</strong> <InlineMath math="z \parallel c" /> (unique axis: ∥ 2-fold or ⊥ mirror), <InlineMath math="x \parallel a" />, <InlineMath math="y \parallel b^*" />.
-                  </li>
-                  <li><strong>Orthorhombic, Tetragonal, Cubic:</strong> <InlineMath math="x \parallel [100]" />, <InlineMath math="y \parallel [010]" />, <InlineMath math="z \parallel [001]" />.</li>
-                  <li>
-                    <strong>Trigonal & Hexagonal:</strong> The Cartesian axes are orthogonal, while the crystallographic axes (<InlineMath math="a_1, a_2" />) are separated by 120°.
-                    <ul className="list-[circle] list-inside ml-6 mt-2 space-y-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                    <h4 className="font-medium">Triclinic</h4>
+                    <p className="text-xs opacity-70 leading-relaxed">
+                      <InlineMath math="z \parallel c" />, <InlineMath math="y \parallel (c \times a) \parallel b^*" />, <InlineMath math="x = y \times z" /> (projection of <InlineMath math="a" /> onto the plane ⊥ <InlineMath math="c" />).
+                    </p>
+                  </div>
+                  <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                    <h4 className="font-medium">Monoclinic</h4>
+                    <p className="text-xs opacity-70 leading-relaxed">
+                      Two frames, following the selected setting.<br/>
+                      <strong>c-unique:</strong> <InlineMath math="z \parallel c" /> (unique axis), <InlineMath math="x \parallel a" />, <InlineMath math="y \parallel b^*" />.<br/>
+                      <strong>b-unique:</strong> <InlineMath math="y \parallel b" /> (unique axis), <InlineMath math="z \parallel c" />, <InlineMath math="x \parallel a^*" />.
+                    </p>
+                  </div>
+                  <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                    <h4 className="font-medium">Orthorhombic, Tetragonal, Cubic</h4>
+                    <p className="text-xs opacity-70 leading-relaxed">
+                      <InlineMath math="x \parallel [100]" />, <InlineMath math="y \parallel [010]" />, <InlineMath math="z \parallel [001]" />.
+                    </p>
+                  </div>
+                  <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                    <h4 className="font-medium">Trigonal & Hexagonal</h4>
+                    <p className="text-xs opacity-70 leading-relaxed">
+                      The Cartesian axes are orthogonal, while the crystallographic axes (<InlineMath math="a_1, a_2" />) are separated by 120°.
+                    </p>
+                    <ul className="text-xs opacity-70 list-[circle] list-inside space-y-1">
                       <li><InlineMath math="z \parallel [001]" /> / <InlineMath math="[0001]" /> (c-axis)</li>
                       <li><InlineMath math="x \parallel [100]" /> / <InlineMath math="[2\bar{1}\bar{1}0]" /> (a-axis)</li>
                       <li><InlineMath math="y \parallel [120]" /> / <InlineMath math="[01\bar{1}0]" /> (orthogonal to x)</li>
                     </ul>
-                  </li>
-                </ul>
+                  </div>
+                </div>
                 <p className="text-sm opacity-70 leading-relaxed mt-4">
-                  The triclinic and monoclinic conventions follow the standard crystal-physics prescription (Haussühl 1983, based on IRE 1949): <InlineMath math="Z \parallel c" />, <InlineMath math="Y \parallel (c \times a)" />, <InlineMath math="X = Y \times Z" />. The set of independent and zero tensor components does <strong>not</strong> depend on this choice, but the numeric component values — and therefore the orientation of simulated polarimetry patterns — <strong>do</strong>.
+                  The triclinic and monoclinic conventions follow the standard crystal-physics prescription (Haussühl 1983, based on IRE 1949): <InlineMath math="z \parallel c" />, <InlineMath math="y \parallel (c \times a)" />, <InlineMath math="x = y \times z" />. The set of independent and zero tensor components does <strong>not</strong> depend on this choice, but the numeric component values — and therefore the orientation of simulated polarimetry patterns — <strong>do</strong>.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed mt-2">
                   <strong>Why there is no monoclinic-angle control:</strong> The angle <InlineMath math="\beta" /> does not enter the symmetry calculation directly. A crystal with a different <InlineMath math="\beta" /> is a different material with different tensor values, so it is represented by adjusting the relevant in-plane component values — not by a separate geometric control. Linear-optical effects such as birefringence, which do depend on <InlineMath math="\beta" />, are outside the scope of this symmetry calculator.
                 </p>
+                <p className="text-xs opacity-70 leading-relaxed italic">
+                  For lattice conditions and defining symmetry per system, see the Explorer's per-crystal-system info panel.
+                </p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Settings</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  Some magnetic point groups admit more than one valid orientation of their symmetry elements relative to the Cartesian axes; each valid choice is a <strong>setting</strong>. A different setting never changes which tensor components are independent or zero — only which axis labels they carry. Matching the setting of your reference data matters when comparing component values; it never changes whether an effect is allowed. Example: <InlineMath math="6'mm'" /> and <InlineMath math="6'm'm" /> are two settings of the same group, 30° apart.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The app implements all settings via the similarity transform <InlineMath math="G' = S \cdot G \cdot S^{-1}" /> applied to the base generators. A setting selector appears in the group info header, shared by the Calculator and the Simulator, whenever a group has multiple settings, and the choice persists between the two views. No group has more than 3 settings.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  Buttons are labelled with the distinct HM symbol wherever the setting changes it (tetragonal/trigonal/hexagonal pairs, e.g. <InlineMath math="\bar{4}2m/\bar{4}m2" /> or <InlineMath math="6'mm'/6'm'm" />); where the short symbol is identical for every setting (orthorhombic, monoclinic), buttons instead read an axis word — c-unique, a-unique, or b-unique — plus that shared symbol.
+                </p>
+                <p className="text-xs opacity-70 leading-relaxed italic">
+                  Deep dive: the three mechanisms behind these settings → Deeper Topics.
+                </p>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Symbol Conventions: Birss vs ITC</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  <strong>Convention</strong> is a separate choice from <strong>setting</strong> above: setting picks <em>which</em> physical frame is selected; convention only picks <em>which naming rule</em> labels that frame. Switching convention never changes the selected frame or any computed tensor value — only which symbol is displayed.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The convention is a single global toggle (<strong>BIRSS | ITC</strong>) in the app header. It relabels group names app-wide — Explorer, search, Calculator, and Simulator — and opens newly selected groups on the active convention's standard frame. Toggling it while a group is already open keeps the current physical frame; it only relabels it.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The two rules disagree on one point: for trigonal/hexagonal groups, Birss reads HM position 2 from the <InlineMath math="y" />-axis family, while ITC reads it from the <InlineMath math="x" /> (a-axis) family — the two families are 30° apart. This has three distinct effects:
+                </p>
+                <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
+                  <li><strong>Mechanism-B trigonal/hexagonal pairs swap names:</strong> for a group like <InlineMath math="6'mm'" />, the app's default frame is Birss's <InlineMath math="6'mm'" /> and ITC's <InlineMath math="6'm'm" />; the alternate setting is Birss's <InlineMath math="6'm'm" /> and ITC's <InlineMath math="6'mm'" />. The physics is identical (labels swap; ITC mode opens the group on the setting ITC would call by the group's key); this covers the trigonal <InlineMath math="32/3m/\bar{3}m" /> family and the seven affected hexagonal groups.</li>
+                  <li><strong>Tetragonal Mechanism-A pairs are convention-neutral:</strong> for groups like <InlineMath math="\bar{4}2m" />, the 4-fold makes the <InlineMath math="x" /> and <InlineMath math="y" /> secondary families equivalent, so Birss's and ITC's position-2 readings always agree — no label change in either mode.</li>
+                  <li><InlineMath math="m'm'm" />: <strong>orthorhombic frame symbols are convention-independent</strong> (the c-unique frame is always <InlineMath math="m'm'm" />, the a-unique frame always <InlineMath math="mm'm'" />). The conventions differ only in which frame is the standard — Birss: c-unique (<InlineMath math="m'm'm" />); ITC: a-unique (<InlineMath math="mm'm'" />) — so the displayed group name follows the mode without relabelling any frame.</li>
+                  <li><InlineMath math="6'/mm'm" />: <strong>the names swap exactly like the Mechanism-B pairs</strong> (setting 1 is Birss's <InlineMath math="6'/mm'm" /> and ITC's <InlineMath math="6'/mmm'" />), but this group opens on setting 1 in both conventions: both tabulated standards are the same physical frame.</li>
+                </ul>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  Monoclinic groups keep the same short symbol in both conventions (settings are labelled First/Second, i.e. c-unique/b-unique); only which setting opens by default differs — ITC mode opens on the b-unique (Second) setting.
+                </p>
+                <p className="text-xs opacity-70 leading-relaxed italic">
+                  Deep dive: reading Birss's parentheses → Deeper Topics.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
                   <Info className="w-4 h-4" />
                   Symmetry Operations
@@ -260,6 +325,14 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                   <div className="p-4 border border-ink border-opacity-10 space-y-2">
                     <h4 className="font-medium"><InlineMath math="2', m'" /> — Prime</h4>
                     <p className="text-xs opacity-70 leading-relaxed">Indicates an operation combined with time-reversal (anti-symmetry).</p>
+                  </div>
+                  <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                    <h4 className="font-medium"><InlineMath math="3_z^+, m_y" /> — Subscript</h4>
+                    <p className="text-xs opacity-70 leading-relaxed">The operation's characteristic direction: the rotation axis for rotations and roto-inversions, the mirror normal for <InlineMath math="m" />. Cardinal directions are x, y, z; in-plane directions are given as the azimuth from +x in degrees (0–180°), e.g. <InlineMath math="m_{150^\circ}" /> is the mirror whose normal lies in the basal plane at 150° from x.</p>
+                  </div>
+                  <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                    <h4 className="font-medium"><InlineMath math="3^+ / 3^-" /> — Superscript</h4>
+                    <p className="text-xs opacity-70 leading-relaxed">The rotation sense about the axis (right-hand rule: + counter-clockwise, − clockwise). Shown for rotations of order 3 and higher, where the two senses are distinct operations.</p>
                   </div>
                 </div>
               </div>
@@ -368,21 +441,28 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               <div className="space-y-3">
                 <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
                   <Zap className="w-4 h-4" />
-                  How to use it?
+                  Workflow
                 </h3>
                 <ol className="text-sm opacity-70 list-decimal list-inside space-y-2 ml-4">
                   <li>Select the point group, tensor type, and time-reversal symmetry from the main controls.</li>
-                  <li>Adjust the crystal orientation angles (<InlineMath math="\theta_X, \theta_Y" />) to set the incidence angle of the light.</li>
+                  <li>Adjust the crystal orientation angles (<InlineMath math="\varphi_X, \varphi_Y" />, azimuth <InlineMath math="\psi" />) to set the incidence angle of the light.</li>
                   <li>The simulator automatically isolates the independent tensor components (<InlineMath math="\chi_{ijk\dots}" />) that contribute to the transverse source terms (<InlineMath math="S_X, S_Y" />).</li>
                   <li>Adjust the relative amplitude and phase of each independent tensor component using the sliders.</li>
                   <li>Switch between the <strong>Anisotropy</strong>, <strong>Polarizer</strong>, and <strong>Analyzer</strong> tabs to observe the resulting SHG intensity polarimetry patterns in the radar charts.</li>
                 </ol>
               </div>
 
+              <div className="p-4 border border-ink border-opacity-10 space-y-2">
+                <h4 className="font-medium">Components & phases</h4>
+                <p className="text-xs opacity-70 leading-relaxed">
+                  Each independent tensor component enters with an adjustable relative amplitude and phase. The measured pattern is the squared modulus of a coherent sum, so relative phases matter: components interfere, and changing a phase can reshape or rotate lobes without changing any amplitude. Values are relative (arbitrary units); only ratios and phase differences affect the pattern shape.
+                </p>
+              </div>
+
               <div className="space-y-3">
                 <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
                   <Compass className="w-4 h-4" />
-                  Physics behind it
+                  Physical Background
                 </h3>
                 <p className="text-sm opacity-70 leading-relaxed">
                   In a typical SHG polarimetry experiment, linearly polarized light is incident on the crystal. The polarization of the incident light (polarizer) and the detected SHG light (analyzer) are rotated to probe the symmetry of the nonlinear susceptibility tensor. The simulator provides three distinct views:
@@ -403,6 +483,27 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                 <h3 className="text-sm font-bold uppercase tracking-widest">Crystal Cut</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
                   <strong>Surface normal ∥ <InlineMath math="k" />.</strong> The cut presets choose which crystal direction faces the beam: the selected direction is aligned with the lab Z axis (<InlineMath math="k" />), the polarization plane is X/Y. Each preset aligns a Cartesian axis (x, y or z) or a symmetry diagonal; the button shows every valid designation (<InlineMath math="[hkl]" />, Cartesian axis, crystallographic axis). Additional tilts (<InlineMath math="\varphi_X, \varphi_Y" />) and the azimuth (<InlineMath math="\psi" />) are applied on top of the preset.
+                </p>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Crystal Rotation (Lab Frame)</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The crystal orientation in the lab frame is controlled by a preset plus three continuous rotation angles:
+                </p>
+                <div className="space-y-3 pl-4 border-l-2 border-ink border-opacity-20 my-4">
+                  <p className="text-sm opacity-70 leading-relaxed">
+                    <strong>Preset (<InlineMath math="k \parallel [hkl]" />):</strong> Selects which crystal direction is aligned with the beam axis (lab Z). Defines <InlineMath math="R_{\text{preset}}" />.
+                  </p>
+                  <p className="text-sm opacity-70 leading-relaxed">
+                    <strong><InlineMath math="\varphi_X, \varphi_Y" /> (tilt):</strong> Tilt the crystal surface away from normal incidence, rotating about the lab X and Y axes. Range: ±90°.
+                  </p>
+                  <p className="text-sm opacity-70 leading-relaxed">
+                    <strong><InlineMath math="\psi" /> (azimuth):</strong> Rotate the crystal about its surface normal (crystal-tied azimuth). At zero tilt this coincides with the beam axis (lab Z). This is the in-plane rotation that sweeps the crystallographic directions through the polarizer plane. Range: ±180°.
+                  </p>
+                </div>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The full rotation matrix is <InlineMath math="R = R_y(\varphi_Y) \cdot R_x(\varphi_X) \cdot R_z(\psi) \cdot R_{\text{preset}}" />, applied right-to-left: the preset alignment first, then the crystal-tied azimuth <InlineMath math="\psi" />, then the lab-fixed tilts <InlineMath math="\varphi_X" /> and <InlineMath math="\varphi_Y" />. At <InlineMath math="\varphi_X = \varphi_Y = \psi = 0" />, the result is purely the preset alignment.
                 </p>
               </div>
 
@@ -470,60 +571,30 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               <div className="space-y-4">
                 <h3 className="text-sm font-bold uppercase tracking-widest">i-type vs. c-type Tensors</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  Every magnetic point group <InlineMath math="G" /> can be written as <InlineMath math="G = H + \theta(G - H)" />, where <InlineMath math="H" /> is the halving subgroup of elements that do not include time reversal, and <InlineMath math="\theta" /> is the time-reversal operator.
+                  Every magnetic point group <InlineMath math="G" /> can be written as <InlineMath math="G = H + 1'(G - H)" />, where <InlineMath math="H" /> is the halving subgroup of elements that do not include time reversal, and <InlineMath math="1'" /> is the time-reversal operation.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed">
                   <strong>i-type (time-even):</strong> The tensor is invariant under <em>all</em> operations of <InlineMath math="G" />, including the time-reversed ones. Physically, i-type tensors describe properties that do not depend on the magnetic order — they survive even when the material is demagnetized. Example: the crystal structure contribution to SHG.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  <strong>c-type (time-odd):</strong> The tensor is invariant under <InlineMath math="H" /> but changes sign under the time-reversed operations. Physically, c-type tensors describe properties that reverse with the magnetic order. Example: the magnetization-induced SHG contribution that flips sign when the sample is demagnetized or the magnetic domains are reversed. For grey groups (<InlineMath math="G = H \times \{'{'}1, 1'{'\}'}" />), the c-type tensor is identically zero.
+                  <strong>c-type (time-odd):</strong> The tensor is invariant under <InlineMath math="H" /> but changes sign under the time-reversed operations. Physically, c-type tensors describe properties that reverse with the magnetic order. Example: the magnetization-induced SHG contribution that flips sign when the sample is demagnetized or the magnetic domains are reversed. For gray groups (<InlineMath math="G = H \times \{1, 1'\}" />), the c-type tensor is identically zero.
                 </p>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
-                <h3 className="text-sm font-bold uppercase tracking-widest">Crystal Rotation (Lab Frame)</h3>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  The crystal orientation in the lab frame is controlled by a preset plus three continuous rotation angles:
-                </p>
+                <h3 className="text-sm font-bold uppercase tracking-widest">Why settings exist: the three mechanisms</h3>
                 <div className="space-y-3 pl-4 border-l-2 border-ink border-opacity-20 my-4">
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Preset (<InlineMath math="k \parallel [hkl]" />):</strong> Selects which crystal direction is aligned with the beam axis (lab Z). Defines <InlineMath math="R_{\text{preset}}" />.
+                    <strong>Mechanism A (classical setting ambiguity):</strong> inherited from the spatial group — the two in-plane symmetry-direction sets carry <em>different</em> element types (e.g. 2-folds vs. mirrors in tetragonal <InlineMath math="\bar{4}2m" /> vs. <InlineMath math="\bar{4}m2" />).
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong><InlineMath math="\varphi_X, \varphi_Y" /> (tilt):</strong> Tilt the crystal surface away from normal incidence, rotating about the lab X and Y axes. Range: ±90°.
+                    <strong>Mechanism B (time-reversal-broken equivalence):</strong> the two in-plane direction sets carry the <em>same</em> element type, so the non-magnetic parent has only one setting; priming one set but not the other (e.g. <InlineMath math="6'mm'" /> vs. <InlineMath math="6'm'm" />) breaks that equivalence.
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong><InlineMath math="\psi" /> (azimuth):</strong> Rotate the crystal about the beam axis (lab Z). This is the in-plane rotation that sweeps the crystallographic directions through the polarizer plane. Range: ±180°.
-                  </p>
-                </div>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  The full rotation matrix is <InlineMath math="R = R_y(\varphi_Y) \cdot R_x(\varphi_X) \cdot R_z(\psi) \cdot R_{\text{preset}}" />, applied right-to-left: the preset alignment first, then the crystal-tied azimuth <InlineMath math="\psi" />, then the lab-fixed tilts <InlineMath math="\varphi_X" /> and <InlineMath math="\varphi_Y" />. At <InlineMath math="\varphi_X = \varphi_Y = \psi = 0" />, the result is purely the preset alignment.
-                </p>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
-                <h3 className="text-sm font-bold uppercase tracking-widest">Alternate Settings</h3>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  A handful of crystals don't have a single "natural" way to line their symmetry elements up with the <InlineMath math="x,y,z" /> axes — there are two or three equally valid choices, and which one matches your sample depends on which convention your crystal data was published in. The app calls each valid choice a <strong>setting</strong>. Picking a different setting never changes which tensor components are independent or zero, only which axis label they're attached to — so getting it right matters for comparing to a specific paper's numbers, but never changes whether a given effect is allowed at all.
-                </p>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  Some magnetic point groups have multiple settings — distinct orientations of the symmetry elements relative to the crystal axes that produce different tensor forms. For example, <InlineMath math="6'mm'" /> and <InlineMath math="6'm'm" /> are two settings of the same abstract group, related by a 30° rotation that swaps which mirror family is primed.
-                </p>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  The app implements all settings via the similarity transform <InlineMath math="G' = S \cdot G \cdot S^{-1}" /> applied to the base generators. A setting selector appears in the group info header, shared by the Calculator and the Simulator, whenever a group has multiple settings, and the choice persists between the two views. No group has more than 3 settings. The mechanisms, and how each labels its buttons, are:
-                </p>
-                <div className="space-y-3 pl-4 border-l-2 border-ink border-opacity-20 my-4">
-                  <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Mechanism A (classical setting ambiguity):</strong> inherited from the spatial group — the two in-plane symmetry-direction sets carry <em>different</em> element types (e.g. 2-folds vs. mirrors in tetragonal <InlineMath math="\bar{4}2m" /> vs. <InlineMath math="\bar{4}m2" />). Buttons are labelled with the distinct HM symbol for each setting.
+                    <strong>Axis orientation (orthorhombic):</strong> three settings (c-unique, a-unique, and b-unique) choosing which crystal axis carries the group's distinguished direction — the axis that differs from the other two. The distinction is either classical (the unique polar / 2-fold axis, e.g. <InlineMath math="mm2" />) or time-reversal-driven (the operation whose primed / un-primed status is unique, e.g. the un-primed 2-fold in <InlineMath math="2'2'2" />, or the primed mirror in <InlineMath math="mmm'" />). Groups whose three axes are equivalent — <InlineMath math="222" />, <InlineMath math="mmm" />, <InlineMath math="m'm'm'" />, and the gray forms <InlineMath math="2221'" />, <InlineMath math="mmm1'" /> — have a single setting only.
                   </p>
                   <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Mechanism B (time-reversal-broken equivalence):</strong> the two in-plane direction sets carry the <em>same</em> element type, so the non-magnetic parent has only one setting; priming one set but not the other (e.g. <InlineMath math="6'mm'" /> vs. <InlineMath math="6'm'm" />) breaks that equivalence. Buttons are labelled with the distinct magnetic HM symbol, same as Mechanism A.
-                  </p>
-                  <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Axis orientation (orthorhombic):</strong> three settings (c-unique, a-unique, and b-unique) choosing which crystal axis carries the group's distinguished direction — the axis that differs from the other two. The distinction is either classical (the unique polar / 2-fold axis, e.g. <InlineMath math="mm2" />) or time-reversal-driven (the operation whose primed / un-primed status is unique, e.g. the un-primed 2-fold in <InlineMath math="2'2'2" />, or the primed mirror in <InlineMath math="mmm'" />). Groups whose three axes are equivalent — <InlineMath math="222" />, <InlineMath math="mmm" />, <InlineMath math="m'm'm'" />, and the grey forms <InlineMath math="2221'" />, <InlineMath math="mmm1'" /> — have a single setting only.
-                  </p>
-                  <p className="text-sm opacity-70 leading-relaxed">
-                    <strong>Axis convention (monoclinic, 2 settings):</strong> not a different orientation but a different naming convention for the same physical axis choice — <em>First</em> (<InlineMath math="c" />-unique, Birss) and <em>Second</em> (<InlineMath math="b" />-unique, ITC). Buttons read <em>c-unique</em> <InlineMath math="2/m" /> / <em>b-unique</em> <InlineMath math="2/m" /> — the axis word plus the short HM symbol, which is identical for both settings; the axis word disambiguates.
+                    <strong>Axis convention (monoclinic, 2 settings):</strong> not a different orientation but a different naming convention for the same physical axis choice — <em>First</em> (<InlineMath math="c" />-unique, Birss) and <em>Second</em> (<InlineMath math="b" />-unique, ITC).
                   </p>
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed">
@@ -532,33 +603,13 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               </div>
 
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
-                <h3 className="text-sm font-bold uppercase tracking-widest">Symbol Conventions: Birss vs ITC</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest">Reading Birss's Parentheses</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  <strong>Convention</strong> is a separate choice from <strong>setting</strong> above: setting picks <em>which</em> physical frame is selected; convention only picks <em>which naming rule</em> labels that frame. Switching convention never changes the selected frame or any computed tensor value — only which symbol is displayed.
+                  Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-xs">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  The convention is a single global toggle (<strong>BIRSS | ITC</strong>) in the app header. It relabels group names app-wide — Explorer, search, Calculator, and Simulator — and opens newly selected groups on the active convention's standard frame. Toggling it while a group is already open keeps the current physical frame; it only relabels it.
+                  Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}'2m')" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
                 </p>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  The two rules disagree on one point: for trigonal/hexagonal groups, Birss reads HM position 2 from the <InlineMath math="y" />-axis family, while ITC reads it from the <InlineMath math="x" /> (a-axis) family — the two families are 30° apart. This has three distinct effects:
-                </p>
-                <ul className="text-sm opacity-70 list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Mechanism-B trigonal/hexagonal pairs swap names:</strong> for a group like <InlineMath math="6'mm'" /> (Mechanism B above), the app's default frame is Birss's <InlineMath math="6'mm'" /> and ITC's <InlineMath math="6'm'm" />; the alternate setting is Birss's <InlineMath math="6'm'm" /> and ITC's <InlineMath math="6'mm'" />. The physics is identical (labels swap; ITC mode opens the group on the setting ITC would call by the group's key); this covers the trigonal <InlineMath math="32/3m/\bar{3}m" /> family and the seven affected hexagonal groups.</li>
-                  <li><strong>Tetragonal Mechanism-A pairs are convention-neutral:</strong> for groups like <InlineMath math="\bar{4}2m" />, the 4-fold makes the <InlineMath math="x" /> and <InlineMath math="y" /> secondary families equivalent, so Birss's and ITC's position-2 readings always agree — no label change in either mode.</li>
-                  <li><strong>Two Sec.-7A groups are exceptions to the swap:</strong> <InlineMath math="m'm'm" /> already uses the identical string in both conventions (opening the group in ITC mode selects the a-unique setting, which carries ITC's <InlineMath math="mm'm'" /> orientation); <InlineMath math="6'/mm'm" /> swaps names exactly like the Mechanism-B groups (setting 1: Birss <InlineMath math="6'/mm'm" /> / ITC <InlineMath math="6'/mmm'" />), but uniquely opens on setting 1 in both conventions, because both conventions' tabulated standard is the same physical frame for this one group.</li>
-                </ul>
-                <p className="text-sm opacity-70 leading-relaxed">
-                  Monoclinic groups keep the same short symbol in both conventions (Mechanism "Axis convention" above already labels the two settings <em>First</em>/<em>Second</em>); only which setting opens by default differs — ITC mode opens on the b-unique (Second) setting.
-                </p>
-                <div className="p-4 bg-ink/5 border border-ink border-opacity-10 space-y-2">
-                  <h4 className="font-medium text-sm">Reading Birss's parentheses</h4>
-                  <p className="text-xs opacity-70 leading-relaxed">
-                    Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-xs">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
-                  </p>
-                  <p className="text-xs opacity-70 leading-relaxed">
-                    Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}'2m')" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
-                  </p>
-                </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
