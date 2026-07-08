@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { InlineMath } from 'react-katex';
-import 'katex/dist/katex.min.css';
 import { X, Calculator, Activity } from 'lucide-react';
 import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, getParentGroup, getHalvingSubgroup, isCentrosymmetric } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels, getStandardSetting, getConventionNote } from '../services/conventionMapping';
