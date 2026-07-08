@@ -12,13 +12,13 @@
  */
 
 /**
- * Shubnikov (Birss dot/colon) symbol for each of the 90 groups that carry independent
- * information — the 32 classical (Type I) and 58 black-and-white (Type III) groups. Keyed by
- * the app group key. Grey (Type II) groups are intentionally OMITTED: their Shubnikov symbol
- * arrives with the ITC-1.5.2.3 transcription and must not be derived here by appending a suffix.
+ * Shubnikov (Birss dot/colon) symbol for every one of the 122 magnetic point groups — the 32
+ * classical (Type I), 58 black-and-white (Type III), and 32 grey (Type II) groups — keyed by the
+ * app group key.
  *
- * Source: `birss-tables/table-nomenclature.md` Table A (App key + Shubnikov columns), whose
- * Shubnikov column is transcribed from Birss Table 6 (and Table 3 for the classical groups).
+ * Source: `birss-tables/table-nomenclature.md` (the canonical, CI-drift-guarded nomenclature
+ * reference), Shubnikov column of Table A (the 90 non-grey groups) and Table C (the 32 grey
+ * groups). The guard test re-parses both tables and asserts equality entry-for-entry.
  */
 export const SHUBNIKOV: Record<string, string> = {
   // Triclinic
@@ -118,6 +118,180 @@ export const SHUBNIKOV: Record<string, string> = {
   "m-3m'": "-6/4'",
   "m'-3'm'": "-6'/4'",
   "m'-3'm": "-6'/4",
+  // Grey (Type II) — Table C
+  "11'": "11'",
+  "-11'": "-21'",
+  "21'": "21'",
+  "m1'": "m1'",
+  "2/m1'": "2:m1'",
+  "2221'": "2:21'",
+  "mm21'": "2.m1'",
+  "mmm1'": "m.2:m1'",
+  "41'": "41'",
+  "-41'": "-41'",
+  "4/m1'": "4:m1'",
+  "4221'": "4:21'",
+  "4mm1'": "4.m1'",
+  "-42m1'": "-4.m1'",
+  "4/mmm1'": "m.4:m1'",
+  "31'": "31'",
+  "-31'": "-61'",
+  "321'": "3:21'",
+  "3m1'": "3.m1'",
+  "-3m1'": "-6.m1'",
+  "61'": "61'",
+  "-61'": "3:m1'",
+  "6/m1'": "6:m1'",
+  "6221'": "6:21'",
+  "6mm1'": "6.m1'",
+  "-6m21'": "m.3:m1'",
+  "6/mmm1'": "m.6:m1'",
+  "231'": "3/21'",
+  "m-31'": "-6/21'",
+  "4321'": "3/41'",
+  "-43m1'": "3/-41'",
+  "m-3m1'": "-6/41'",
+};
+
+/**
+ * Full Hermann–Mauguin symbol (app/Birss setting) for every one of the 122 magnetic point groups,
+ * keyed by the app group key. Multi-position symbols keep the space-separated positional generators
+ * (e.g. `4/m 2/m 2/m`); the cubic bar is written `-3` per the app notation convention.
+ *
+ * Source: `birss-tables/table-nomenclature.md` "HM full" column of Table A (90 non-grey) and
+ * Table C (32 grey). The guard test re-parses both tables and asserts equality entry-for-entry.
+ */
+export const FULL_HM: Record<string, string> = {
+  // Triclinic
+  "1": "1",
+  "-1": "-1",
+  "-1'": "-1'",
+  // Monoclinic
+  "2": "112",
+  "2'": "112'",
+  "m": "11m",
+  "m'": "11m'",
+  "2/m": "11 2/m",
+  "2'/m'": "11 2'/m'",
+  "2/m'": "11 2/m'",
+  "2'/m": "11 2'/m",
+  // Orthorhombic
+  "222": "222",
+  "2'2'2": "2'2'2",
+  "mm2": "mm2",
+  "m'm'2": "m'm'2",
+  "2'm'm": "2'm'm",
+  "mmm": "2/m 2/m 2/m",
+  "m'm'm": "2'/m' 2'/m' 2/m",
+  "m'm'm'": "2/m' 2/m' 2/m'",
+  "mmm'": "2'/m 2'/m 2/m'",
+  // Tetragonal
+  "4": "4",
+  "4'": "4'",
+  "-4": "-4",
+  "-4'": "-4'",
+  "4/m": "4/m",
+  "4'/m": "4'/m",
+  "4/m'": "4/m'",
+  "4'/m'": "4'/m'",
+  "422": "422",
+  "4'22'": "4'22'",
+  "42'2'": "42'2'",
+  "4mm": "4mm",
+  "4'mm'": "4'mm'",
+  "4m'm'": "4m'm'",
+  "-42m": "-42m",
+  "-4'2m'": "-4'2m'",
+  "-4'm2'": "-4'm2'",
+  "-42'm'": "-42'm'",
+  "4/mmm": "4/m 2/m 2/m",
+  "4'/mmm'": "4'/m 2/m 2'/m'",
+  "4/mm'm'": "4/m 2'/m' 2'/m'",
+  "4/m'm'm'": "4/m' 2/m' 2/m'",
+  "4/m'mm": "4/m' 2'/m 2'/m",
+  "4'/m'm'm": "4'/m' 2/m' 2'/m",
+  // Trigonal
+  "3": "3",
+  "-3": "-3",
+  "-3'": "-3'",
+  "32": "321",
+  "32'": "32'1",
+  "3m": "3m1",
+  "3m'": "3m'1",
+  "-3m": "-3 2/m 1",
+  "-3m'": "-3 2'/m' 1",
+  "-3'm'": "-3' 2/m' 1",
+  "-3'm": "-3' 2'/m 1",
+  // Hexagonal
+  "6": "6",
+  "6'": "6'",
+  "-6": "-6",
+  "-6'": "-6'",
+  "6/m": "6/m",
+  "6'/m'": "6'/m'",
+  "6/m'": "6/m'",
+  "6'/m": "6'/m",
+  "622": "622",
+  "6'22'": "6'22'",
+  "62'2'": "62'2'",
+  "6mm": "6mm",
+  "6'mm'": "6'mm'",
+  "6m'm'": "6m'm'",
+  "-6m2": "-6m2",
+  "-6'2m'": "-6'2m'",
+  "-6'm2'": "-6'm2'",
+  "-6m'2'": "-6m'2'",
+  "6/mmm": "6/m 2/m 2/m",
+  "6'/m'mm'": "6'/m' 2/m 2'/m'",
+  "6/mm'm'": "6/m 2'/m' 2'/m'",
+  "6/m'm'm'": "6/m' 2/m' 2/m'",
+  "6/m'mm": "6/m' 2'/m 2'/m",
+  "6'/mm'm": "6'/m 2/m' 2'/m",
+  // Cubic
+  "23": "23",
+  "m-3": "2/m -3",
+  "m'-3'": "2/m' -3'",
+  "432": "432",
+  "4'32'": "4'32'",
+  "-43m": "-43m",
+  "-4'3m'": "-4'3m'",
+  "m-3m": "4/m -3 2/m",
+  "m-3m'": "4'/m -3 2'/m'",
+  "m'-3'm'": "4/m' -3' 2/m'",
+  "m'-3'm": "4'/m' -3' 2'/m",
+  // Grey (Type II) — Table C
+  "11'": "11'",
+  "-11'": "-11'",
+  "21'": "1121'",
+  "m1'": "11m1'",
+  "2/m1'": "11 2/m1'",
+  "2221'": "2221'",
+  "mm21'": "mm21'",
+  "mmm1'": "2/m 2/m 2/m1'",
+  "41'": "41'",
+  "-41'": "-41'",
+  "4/m1'": "4/m1'",
+  "4221'": "4221'",
+  "4mm1'": "4mm1'",
+  "-42m1'": "-42m1'",
+  "4/mmm1'": "4/m 2/m 2/m1'",
+  "31'": "31'",
+  "-31'": "-31'",
+  "321'": "3211'",
+  "3m1'": "3m11'",
+  "-3m1'": "-3 2/m 11'",
+  "61'": "61'",
+  "-61'": "-61'",
+  "6/m1'": "6/m1'",
+  "6221'": "6221'",
+  "6mm1'": "6mm1'",
+  "-6m21'": "-6m21'",
+  "6/mmm1'": "6/m 2/m 2/m1'",
+  "231'": "231'",
+  "m-31'": "2/m -31'",
+  "4321'": "4321'",
+  "-43m1'": "-43m1'",
+  "m-3m1'": "4/m -3 2/m1'",
 };
 
 /**
