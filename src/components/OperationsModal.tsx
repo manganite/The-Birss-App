@@ -7,7 +7,7 @@ import { getGroupDisplayName, getSettingLabels, getStandardSetting, getConventio
 import type { Convention } from '../services/conventionMapping';
 import { FormatPointGroup, FormatSchoenflies, SymmetryOperation, ConventionNote } from './MathComponents';
 import { PointGroupData } from '../data/pointGroups';
-import { SHUBNIKOV, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
+import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
 /** Render a Birss reference-axis orientation string ("3//z, -2//y", or the word "any"): `//`
@@ -34,6 +34,8 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   const groupTitle = getGroupDisplayName(group.name, convention);
 
   const shubnikov = SHUBNIKOV[group.name];
+  const fullHM = FULL_HM[group.name];
+  const showFullHM = fullHM !== undefined && fullHM !== group.name;
   const parent = getParentGroup(group.name);
   const halvingOps = getHalvingSubgroup(group.name);
   const referenceAxes = REFERENCE_AXES[getFamilyClass(group.name)];
@@ -97,6 +99,16 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
 
         <div className="p-6 overflow-y-auto space-y-6">
           <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-baseline text-sm">
+            {showFullHM && (
+              <>
+                <dt className="text-xs uppercase tracking-widest text-ink/70">Full HM</dt>
+                <dd className="font-serif italic">
+                  {fullHM.split(' ').map((position, idx) => (
+                    <span key={idx}>{idx > 0 ? ' ' : ''}<FormatPointGroup name={position} /></span>
+                  ))}
+                </dd>
+              </>
+            )}
             {shubnikov && (
               <>
                 <dt className="text-xs uppercase tracking-widest text-ink/70">Shubnikov</dt>

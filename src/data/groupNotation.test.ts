@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
-import { SHUBNIKOV, REFERENCE_AXES, getFamilyClass } from './groupNotation';
+import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from './groupNotation';
 
 /**
  * Anti-drift guard tests for the supplementary Birss notation maps. Each test re-parses the
@@ -39,37 +39,46 @@ function sliceBetween(content: string, startHeading: string, endHeading: string)
   return rest.slice(0, endIdx);
 }
 
-describe('SHUBNIKOV vs table-nomenclature.md Table A', () => {
-  // Table A columns: System | Schoenflies | App key | HM full | Shubnikov | Type | Note
-  const content = readFileSync(NOMENCLATURE_PATH, 'utf-8');
-  const rows = parseRows(sliceBetween(content, '## Table A', '## Table B'));
-  const header = rows[0];
-  const parsed: Record<string, string> = {};
-  for (const cells of rows.slice(1)) {
-    parsed[stripBackticks(cells[2])] = stripBackticks(cells[4]);
+// Table A (90 non-grey) and Table C (32 grey) share the same leading columns:
+// index 2 = App key (backticked), 3 = HM full (plain), 4 = Shubnikov (backticked).
+const NOMENCLATURE = readFileSync(NOMENCLATURE_PATH, 'utf-8');
+const TABLE_A_ROWS = parseRows(sliceBetween(NOMENCLATURE, '## Table A', '## Table B')).slice(1);
+const TABLE_C_ROWS = parseRows(sliceBetween(NOMENCLATURE, '## Table C', '## Changelog')).slice(1);
+const ALL_NOMENCLATURE_ROWS = [...TABLE_A_ROWS, ...TABLE_C_ROWS];
+
+function parseColumn(col: number): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const cells of ALL_NOMENCLATURE_ROWS) {
+    map[stripBackticks(cells[2])] = stripBackticks(cells[col]);
   }
+  return map;
+}
 
-  it('reads the expected Table A columns', () => {
-    expect(header).toEqual(['System', 'Schoenflies', 'App key', 'HM full', 'Shubnikov', 'Type', 'Note']);
-  });
+describe('SHUBNIKOV vs table-nomenclature.md (Table A + Table C)', () => {
+  const parsed = parseColumn(4);
 
-  it('parses the 90 non-grey rows (32 Type I + 58 Type III)', () => {
-    expect(Object.keys(parsed)).toHaveLength(90);
-    const typeI = POINT_GROUPS.filter(g => g.type === 'I').map(g => g.name);
-    const typeIII = POINT_GROUPS.filter(g => g.type === 'III').map(g => g.name);
-    expect(typeI).toHaveLength(32);
-    expect(typeIII).toHaveLength(58);
-    for (const name of [...typeI, ...typeIII]) expect(parsed).toHaveProperty(name);
+  it('parses all 122 groups (32 Type I + 58 Type III + 32 Type II)', () => {
+    expect(TABLE_A_ROWS).toHaveLength(90);
+    expect(TABLE_C_ROWS).toHaveLength(32);
+    expect(Object.keys(parsed)).toHaveLength(122);
+    for (const g of POINT_GROUPS) expect(parsed).toHaveProperty(g.name);
   });
 
   it('equals SHUBNIKOV entry-for-entry (no missing, no extra, no differing)', () => {
     expect(SHUBNIKOV).toEqual(parsed);
   });
+});
 
-  it('has no grey (Type II) entries', () => {
-    for (const g of POINT_GROUPS.filter(g => g.type === 'II')) {
-      expect(SHUBNIKOV).not.toHaveProperty(g.name);
-    }
+describe('FULL_HM vs table-nomenclature.md (Table A + Table C)', () => {
+  const parsed = parseColumn(3);
+
+  it('parses all 122 groups', () => {
+    expect(Object.keys(parsed)).toHaveLength(122);
+    for (const g of POINT_GROUPS) expect(parsed).toHaveProperty(g.name);
+  });
+
+  it('equals FULL_HM entry-for-entry (no missing, no extra, no differing)', () => {
+    expect(FULL_HM).toEqual(parsed);
   });
 });
 

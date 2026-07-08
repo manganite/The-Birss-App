@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   print-verified Birss tables with anti-drift guard tests), group order, parent group with
   halving subgroup, per-setting labels with Birss/ITC standards, and the Birss reference-axis
   orientation of the group's classical family.
+- Explorer group popup: full Hermann-Mauguin symbol for all groups and Shubnikov symbols for the
+  grey groups, both sourced from the canonical `table-nomenclature.md` with entry-for-entry
+  anti-drift guard tests.
 
 ### Fixed
 
