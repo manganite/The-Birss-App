@@ -15,7 +15,7 @@ const MARGIN = 8;
 
 export function TermInfo({ id, onNavigate }: TermInfoProps) {
   const [open, setOpen] = useState(false);
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number; maxHeight: number } | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const term = GLOSSARY_TERMS.find(t => t.id === id);
@@ -27,13 +27,21 @@ export function TermInfo({ id, onNavigate }: TermInfoProps) {
   const openPopup = () => {
     const r = triggerRef.current?.getBoundingClientRect();
     if (!r) return;
-    const left = Math.min(Math.max(MARGIN, r.left), window.innerWidth - POPUP_WIDTH - MARGIN);
-    const spaceBelow = window.innerHeight - r.bottom;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // Shrink to the viewport on very narrow screens, then clamp with MARGIN winning last so the
+    // popup can never land off-screen (Math.max outermost guards a negative upper bound).
+    const width = Math.min(POPUP_WIDTH, vw - 2 * MARGIN);
+    const left = Math.max(MARGIN, Math.min(r.left, vw - width - MARGIN));
+    const spaceBelow = vh - r.bottom;
     const candidateTop = spaceBelow >= POPUP_EST_HEIGHT + GAP || spaceBelow >= r.top
       ? r.bottom + GAP
       : r.top - GAP - POPUP_EST_HEIGHT;
-    const top = Math.min(Math.max(MARGIN, candidateTop), window.innerHeight - POPUP_EST_HEIGHT - MARGIN);
-    setCoords({ top, left });
+    const top = Math.max(MARGIN, Math.min(candidateTop, vh - POPUP_EST_HEIGHT - MARGIN));
+    // Cap the height to the space from `top` to the bottom margin so tall briefs scroll inside the
+    // popup instead of overflowing the viewport.
+    const maxHeight = vh - top - MARGIN;
+    setCoords({ top, left, width, maxHeight });
     setOpen(true);
   };
 
@@ -74,8 +82,8 @@ export function TermInfo({ id, onNavigate }: TermInfoProps) {
       {open && coords && createPortal(
         <div
           ref={popupRef}
-          style={{ position: 'fixed', top: coords.top, left: coords.left, width: POPUP_WIDTH }}
-          className="z-50 bg-paper text-ink border border-ink shadow-xl normal-case tracking-normal p-3 space-y-2 text-left"
+          style={{ position: 'fixed', top: coords.top, left: coords.left, width: coords.width, maxHeight: coords.maxHeight }}
+          className="z-50 overflow-y-auto bg-paper text-ink border border-ink shadow-xl normal-case tracking-normal p-3 space-y-2 text-left"
           onClick={(e) => e.stopPropagation()}
         >
           <p className="text-xs font-semibold opacity-80">{term.term}</p>
