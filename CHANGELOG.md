@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Simulator: the "As functions of θ_pol" label no longer uppercases the math symbol.
+
 ### Changed
+
+- Simulator's Mathematical Model box and the Help intensity derivation now use one notation
+  (incident E^ω; intensities written directly as squared source-term projections, no detected
+  E^2ω quantity) and link to each other; the Help derivation leads with the general intensity
+  formula and drops redundant repetition.
 
 - Help page reworked after a content review: settings and symbol-convention documentation moved
   to Notations & Conventions and crystal rotation to Simulation (Deeper Topics now holds only

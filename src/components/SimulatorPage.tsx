@@ -81,6 +81,7 @@ export function SimulatorPage({
         sourceTerms={sourceTerms}
         sourceTermsExEy={sourceTermsExEy}
         expandedFormulas={expandedFormulas}
+        onNavigate={onNavigate}
       />
     </div>
   );

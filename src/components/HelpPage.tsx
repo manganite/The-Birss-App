@@ -508,47 +508,38 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               </div>
 
               <div className="p-6 bg-ink/5 border border-ink border-opacity-10 space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-widest">A bit of mathematics: Calculating intensity</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest">Calculating the Intensity</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  Let <InlineMath math="\theta" /> be the polarizer angle. The incident electric field <InlineMath math="\vec{E}^\omega" /> induces nonlinear source terms <InlineMath math="S_X" /> and <InlineMath math="S_Y" /> in the material. The measured intensity is proportional to the square of the projected source term along the analyzer direction.
+                  The polarizer sets the incident field direction (angle <InlineMath math="\theta_{pol}" />); the analyzer selects the detected component (angle <InlineMath math="\theta_{ana}" />). The incident field induces the transverse source terms <InlineMath math="S_X" />, <InlineMath math="S_Y" /> (see Physics → Source Terms & Transverse Fields); the detected signal is proportional to the source-term component along the analyzer. The Simulator's Mathematical Model box shows these formulas evaluated live for the selected group and orientation.
+                </p>
+                <div className="text-center overflow-x-auto py-2">
+                  <BlockMath math="\vec{E}^{\omega} = E_0 (\cos\theta_{pol}, \sin\theta_{pol}, 0)" />
+                </div>
+                <div className="text-center overflow-x-auto py-2">
+                  <BlockMath math="I(\theta_{pol}, \theta_{ana}) \propto |S_X(\theta_{pol})\cos\theta_{ana} + S_Y(\theta_{pol})\sin\theta_{ana}|^2" />
+                </div>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  Every plotted configuration is a specialization of this formula: Parallel (<InlineMath math="\theta_{ana} = \theta_{pol} = \theta" />), Crossed (<InlineMath math="\theta_{ana} = \theta_{pol} + 90^\circ" />), the Polarizer scans (<InlineMath math="\theta_{ana}" /> fixed at <InlineMath math="0^\circ" /> / <InlineMath math="90^\circ" />), and the Analyzer scans (<InlineMath math="\theta_{pol}" /> fixed at <InlineMath math="0^\circ" /> / <InlineMath math="90^\circ" />).
                 </p>
 
                 <div className="space-y-4 mt-4">
                   <div>
                     <h4 className="font-medium text-sm">Parallel Configuration</h4>
-                    <p className="text-sm opacity-70 leading-relaxed mt-1">
-                      The analyzer is at the same angle <InlineMath math="\theta" />. The incident field components are:
-                    </p>
                     <div className="text-center overflow-x-auto py-2">
-                      <BlockMath math="E_X = E_0 \cos(\theta), \quad E_Y = E_0 \sin(\theta)" />
+                      <BlockMath math="I_{\parallel} \propto |S_X\cos\theta + S_Y\sin\theta|^2" />
                     </div>
                     <p className="text-sm opacity-70 leading-relaxed">
-                      The detected SHG electric field is the projection of the source terms onto the analyzer:
-                    </p>
-                    <div className="text-center overflow-x-auto py-2">
-                      <BlockMath math="E_{\parallel}^{2\omega} = S_X \cos(\theta) + S_Y \sin(\theta)" />
-                    </div>
-                    <p className="text-sm opacity-70 leading-relaxed">
-                      The measured intensity is <InlineMath math="I_{\parallel} \propto |E_{\parallel}^{2\omega}|^2" />.
+                      with <InlineMath math="\theta = \theta_{pol} = \theta_{ana}" />.
                     </p>
                   </div>
 
                   <div className="pt-4 border-t border-ink border-opacity-10">
                     <h4 className="font-medium text-sm">Crossed Configuration</h4>
-                    <p className="text-sm opacity-70 leading-relaxed mt-1">
-                      The analyzer is at <InlineMath math="\theta + 90^\circ" />. The incident field components are:
-                    </p>
                     <div className="text-center overflow-x-auto py-2">
-                      <BlockMath math="E_X = E_0 \cos(\theta), \quad E_Y = E_0 \sin(\theta)" />
+                      <BlockMath math="I_{\perp} \propto |{-S_X\sin\theta + S_Y\cos\theta}|^2" />
                     </div>
                     <p className="text-sm opacity-70 leading-relaxed">
-                      The analyzer is at <InlineMath math="\theta + 90^\circ" />, so the detected SHG electric field is:
-                    </p>
-                    <div className="text-center overflow-x-auto py-2">
-                      <BlockMath math="E_{\perp}^{2\omega} = S_X \cos(\theta + 90^\circ) + S_Y \sin(\theta + 90^\circ) = -S_X \sin(\theta) + S_Y \cos(\theta)" />
-                    </div>
-                    <p className="text-sm opacity-70 leading-relaxed">
-                      The measured intensity is <InlineMath math="I_{\perp} \propto |E_{\perp}^{2\omega}|^2" />.
+                      with <InlineMath math="\theta_{ana} = \theta + 90^\circ" />.
                     </p>
                   </div>
                   <div className="pt-4 border-t border-ink border-opacity-10">
