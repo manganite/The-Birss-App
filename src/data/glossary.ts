@@ -40,13 +40,13 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     id: 'crystal-setting',
     term: 'Crystal Setting',
     brief: 'An alternative axis convention for the same group. Two mechanisms exist: axis reorientation (non-monoclinic) and c/b-unique choice (monoclinic).',
-    helpTab: 'deeper',
+    helpTab: 'conventions',
   },
   {
     id: 'convention',
     term: 'Symbol Convention (Birss vs ITC)',
     brief: 'Which source’s Hermann-Mauguin naming rule labels the current frame. Never changes the physics or the selected setting -- only which symbol is shown.',
-    helpTab: 'deeper',
+    helpTab: 'conventions',
   },
   {
     id: 'axis-triclinic',
@@ -99,8 +99,8 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     id: 'crystal-rotation',
     term: 'Crystal Rotation',
-    brief: 'Additional tilt applied after aligning the crystal cut: φ_X and φ_Y tilt the crystal about the lab X/Y axes; ψ rotates it about the beam (azimuth).',
-    helpTab: 'deeper',
+    brief: 'Additional tilt applied after aligning the crystal cut: φ_X and φ_Y tilt the crystal about the lab X/Y axes; ψ rotates it about its own surface normal (crystal-tied azimuth), coinciding with the beam only at zero tilt.',
+    helpTab: 'simulation',
   },
   {
     id: 'chi-components',
