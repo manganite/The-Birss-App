@@ -90,7 +90,7 @@ export function SimulatorEquationPanel({
                 </button>
               </div>
               <p className="text-sm opacity-70 leading-relaxed">
-                The plotted intensities <InlineMath math="I \propto |S_X\cos\theta_{ana} + S_Y\sin\theta_{ana}|^2" /> correspond to the following configurations, where <InlineMath math="\theta" /> is the angle shown on the polar plot:
+                The plotted intensities <InlineMath math="I \propto |S_X(\theta_{pol})\cos\theta_{ana} + S_Y(\theta_{pol})\sin\theta_{ana}|^2" /> correspond to the following configurations, where <InlineMath math="\theta" /> is the angle shown on the polar plot:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-ink/5 p-4 space-y-4">
