@@ -8,12 +8,14 @@ interface SimulatorEquationPanelProps {
   sourceTerms: ReturnType<typeof useSimulatorState>['sourceTerms'];
   sourceTermsExEy: ReturnType<typeof useSimulatorState>['sourceTermsExEy'];
   expandedFormulas: ReturnType<typeof useSimulatorState>['expandedFormulas'];
+  onNavigate?: (view: string, tab?: string) => void;
 }
 
 export function SimulatorEquationPanel({
   sourceTerms,
   sourceTermsExEy,
   expandedFormulas,
+  onNavigate,
 }: SimulatorEquationPanelProps) {
   const [showEquations, setShowEquations] = useState(false);
   const [verboseFormulas, setVerboseFormulas] = useState(false);
@@ -33,7 +35,7 @@ export function SimulatorEquationPanel({
           <div className="space-y-4">
             <h3 className="text-lg font-serif italic">Mathematical Model</h3>
             <p className="text-sm opacity-70 leading-relaxed">
-              The SHG intensity <InlineMath math="I" /> is calculated based on the incident electric field <InlineMath math="\vec{E}_{in}" /> and the resulting source polarization <InlineMath math="\vec{S}" />.
+              The SHG intensity <InlineMath math="I" /> is calculated based on the incident electric field <InlineMath math="\vec{E}^{\omega}" /> and the resulting source polarization <InlineMath math="\vec{S}" />.
             </p>
           </div>
 
@@ -41,10 +43,10 @@ export function SimulatorEquationPanel({
             <div className="space-y-4">
               <h4 className="text-xs uppercase tracking-[0.2em] text-ink/70">1. Incident Field</h4>
               <p className="text-sm opacity-70 leading-relaxed">
-                The incident light propagates along the Lab Z-axis. The electric field vector is defined by the polarizer angle <InlineMath math="\theta_{pol}" />:
+                The incident light propagates along the Lab Z-axis. The electric field vector <InlineMath math="\vec{E}^{\omega}" /> is defined by the polarizer angle <InlineMath math="\theta_{pol}" />:
               </p>
               <div className="bg-ink/5 p-4 overflow-x-auto">
-                <BlockMath math="\vec{E}_{in} = \begin{pmatrix} E_X \\ E_Y \\ 0 \end{pmatrix} = E_0 \begin{pmatrix} \cos(\theta_{pol}) \\ \sin(\theta_{pol}) \\ 0 \end{pmatrix}" />
+                <BlockMath math="\vec{E}^{\omega} = \begin{pmatrix} E_X \\ E_Y \\ 0 \end{pmatrix} = E_0 \begin{pmatrix} \cos(\theta_{pol}) \\ \sin(\theta_{pol}) \\ 0 \end{pmatrix}" />
               </div>
             </div>
 
@@ -55,7 +57,7 @@ export function SimulatorEquationPanel({
               </p>
               <div className="bg-ink/5 p-4 overflow-x-auto space-y-6">
                 <div className="space-y-4">
-                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70 mb-2">As functions of <InlineMath math="E_X, E_Y" /></div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70 mb-2">As functions of <span className="normal-case"><InlineMath math="E_X, E_Y" /></span></div>
                   {sourceTermsExEy.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
                     <div key={`exey-${i}`} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
                       <div><TensorTerm term={term.component} isNull={term.expression === '0'} /></div>
@@ -65,7 +67,7 @@ export function SimulatorEquationPanel({
                   ))}
                 </div>
                 <div className="space-y-4 pt-4 border-t border-ink/10">
-                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70 mb-2">As functions of <InlineMath math="\theta_{pol}" /></div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-ink/70 mb-2">As functions of <span className="normal-case"><InlineMath math="\theta_{pol}" /></span></div>
                   {sourceTerms.filter(term => term.component === 'S_X' || term.component === 'S_Y').map((term, i) => (
                     <div key={`theta-${i}`} className="flex items-center gap-4 font-mono text-sm whitespace-nowrap">
                       <div><TensorTerm term={`${term.component}(\\theta_{pol})`} isNull={term.expression === '0'} /></div>
@@ -88,7 +90,7 @@ export function SimulatorEquationPanel({
                 </button>
               </div>
               <p className="text-sm opacity-70 leading-relaxed">
-                The plotted intensities <InlineMath math="I \propto |E_{out}|^2" /> correspond to the following configurations, where <InlineMath math="\theta" /> is the angle shown on the polar plot:
+                The plotted intensities <InlineMath math="I \propto |S_X\cos\theta_{ana} + S_Y\sin\theta_{ana}|^2" /> correspond to the following configurations, where <InlineMath math="\theta" /> is the angle shown on the polar plot:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-ink/5 p-4 space-y-4">
@@ -129,6 +131,16 @@ export function SimulatorEquationPanel({
               </div>
             </div>
           </div>
+
+          {onNavigate && (
+            <button
+              type="button"
+              onClick={() => onNavigate('help', 'simulation')}
+              className="text-xs uppercase tracking-wider text-ink/70 hover:text-ink transition-colors"
+            >
+              Derivation and simplification details: Help → Simulation
+            </button>
+          )}
         </div>
       )}
     </div>
