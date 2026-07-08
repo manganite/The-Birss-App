@@ -85,7 +85,7 @@ const CONVENTION_AFFECTED = new Set<string>([
 
 /** Which setting number is standard for this group, under this convention. Returns null for
  * groups whose standard setting doesn't depend on convention (always setting 1). */
-function getStandardSetting(group: string, convention: Convention): number | null {
+export function getStandardSetting(group: string, convention: Convention): number | null {
   if (!CONVENTION_AFFECTED.has(group)) return null;
   if (convention === 'birss') return 1;
   if (group === STANDARD_STAYS_AT_SETTING_1) return 1;
