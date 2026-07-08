@@ -30,10 +30,25 @@ import { averageTensor, calculateTensorBasisResults } from './tensorProjection';
 import { getFamilyClass } from '../data/groupNotation';
 import { POINT_GROUPS } from '../data/pointGroups';
 
-/** The full magnetic group (matrices, with antiunitary flags) for an app group key. */
-function fullGroup(groupName: string): Matrix3x3[] {
+/** The full magnetic group (matrices, with antiunitary flags) for an app group key, or null for an
+ * unknown key -- so the public flags treat unknown groups as "no property" rather than crashing. */
+function fullGroup(groupName: string): Matrix3x3[] | null {
   const generators = GENERATORS[groupName];
+  if (!generators) return null;
   return getCachedFullGroup(groupName, generators);
+}
+
+/** Memoize a boolean group flag: the flags are pure and called repeatedly at render time
+ * (per popup open, and by `getSHGConsequenceShort` in the Calculator/Simulator headers). */
+function memoizeFlag(fn: (group: string) => boolean): (group: string) => boolean {
+  const cache = new Map<string, boolean>();
+  return (group: string) => {
+    const hit = cache.get(group);
+    if (hit !== undefined) return hit;
+    const value = fn(group);
+    cache.set(group, value);
+    return value;
+  };
 }
 
 /**
@@ -54,34 +69,37 @@ function hasNonzeroInvariant(group: Matrix3x3[], rank: number, isAxial: boolean,
 
 /** Polar: admits a spontaneous polarization (time-even polar vector, rank 1). Pyro-/ferroelectric
  * coincide with this at the point-group level. */
-export function isPolar(group: string): boolean {
-  return hasNonzeroInvariant(fullGroup(group), 1, false, false);
-}
+export const isPolar = memoizeFlag((group: string) => {
+  const g = fullGroup(group);
+  return g !== null && hasNonzeroInvariant(g, 1, false, false);
+});
 
 /** Ferromagnetic (incl. ferri-/weak): admits a spontaneous magnetization (time-odd axial vector,
  * rank 1). */
-export function isFerromagnetic(group: string): boolean {
-  return hasNonzeroInvariant(fullGroup(group), 1, true, true);
-}
+export const isFerromagnetic = memoizeFlag((group: string) => {
+  const g = fullGroup(group);
+  return g !== null && hasNonzeroInvariant(g, 1, true, true);
+});
 
 /** Magnetoelectric: admits a linear magnetoelectric tensor alpha_ij (time-odd axial rank 2). */
-export function isMagnetoelectric(group: string): boolean {
-  return hasNonzeroInvariant(fullGroup(group), 2, true, true);
-}
+export const isMagnetoelectric = memoizeFlag((group: string) => {
+  const g = fullGroup(group);
+  return g !== null && hasNonzeroInvariant(g, 2, true, true);
+});
 
 /** Piezoelectric: the time-even polar rank-3 (jk-symmetric) tensor is nonzero -- exactly the app's
  * ED i-type form. */
-export function isPiezoelectric(group: string): boolean {
+export const isPiezoelectric = memoizeFlag((group: string) => {
   const result = calculateTensorBasisResults(group, 'ED', 'i');
   return result !== null && result.basisResults.length > 0;
-}
+});
 
 /** Piezomagnetic: the time-odd axial rank-3 (jk-symmetric) tensor is nonzero -- exactly the app's
  * MD c-type form. */
-export function isPiezomagnetic(group: string): boolean {
+export const isPiezomagnetic = memoizeFlag((group: string) => {
   const result = calculateTensorBasisResults(group, 'MD', 'c');
   return result !== null && result.basisResults.length > 0;
-}
+});
 
 /** The 11 Laue classes: the classical (Type I) centrosymmetric point-group keys. */
 const LAUE_KEYS = POINT_GROUPS.filter(g => g.type === 'I' && isCentrosymmetric(g.name)).map(g => g.name);
@@ -127,9 +145,10 @@ export function getLaueClass(group: string): string {
  * reversal does not affect spatial handedness, so primes are irrelevant -- the family group alone
  * decides.
  */
-export function isChiral(group: string): boolean {
-  return fullGroup(getFamilyClass(group)).every(m => det(m) > 0);
-}
+export const isChiral = memoizeFlag((group: string) => {
+  const g = fullGroup(getFamilyClass(group));
+  return g !== null && g.every(m => det(m) > 0);
+});
 
 const SHG_CONSEQUENCE = {
   centro: { premise: 'Centrosymmetric', consequence: 'ED SHG forbidden (bulk); EQ/MD can contribute' },
@@ -139,6 +158,10 @@ const SHG_CONSEQUENCE = {
 
 function shgConsequence(group: string) {
   if (isCentrosymmetric(group)) return SHG_CONSEQUENCE.centro;
+  // The `.vanishes` label names the 432 family explicitly, and that is exact: among the 21
+  // non-centrosymmetric crystal classes, 432 is the unique one whose polar rank-3 (ED / piezo)
+  // tensor vanishes identically (see the piezoelectric anchor -- piezoelectric == non-centro minus
+  // 432). So `non-centrosymmetric AND ED form zero` is precisely the 432 family.
   return isPiezoelectric(group) ? SHG_CONSEQUENCE.allowed : SHG_CONSEQUENCE.vanishes;
 }
 

@@ -33,6 +33,7 @@ function tableRows(section: string): string[][] {
 }
 function sliceBetween(content: string, start: string, end: string): string {
   const s = content.indexOf(start);
+  if (s === -1) throw new Error(`sliceBetween: start heading not found: "${start}"`);
   const rest = content.slice(s + start.length);
   const e = rest.indexOf(end);
   return e === -1 ? rest : rest.slice(0, e);
