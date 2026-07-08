@@ -99,7 +99,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     id: 'crystal-rotation',
     term: 'Crystal Rotation',
-    brief: 'Additional tilt applied after aligning the crystal cut: φ_X and φ_Y tilt the crystal about the lab X/Y axes; ψ rotates it about the beam (azimuth).',
+    brief: 'Additional tilt applied after aligning the crystal cut: φ_X and φ_Y tilt the crystal about the lab X/Y axes; ψ rotates it about its own surface normal (crystal-tied azimuth), coinciding with the beam only at zero tilt.',
     helpTab: 'simulation',
   },
   {

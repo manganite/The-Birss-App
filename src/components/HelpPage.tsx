@@ -93,7 +93,7 @@ const REFERENCES: { href: string; title: string; description: string; openAccess
   {
     href: 'https://doi.org/10.1002/9783527621156',
     title: 'Physical Properties of Crystals: An Introduction',
-    description: 'Haussühl, S. (2007, Wiley-VCH; German original: Kristallphysik, 1983). Source of the Cartesian axis convention for the triclinic and monoclinic systems (IRE 1949 standard).',
+    description: 'Haussuehl, S. (2007, Wiley-VCH; German original: Kristallphysik, 1983). Source of the Cartesian axis convention for the triclinic and monoclinic systems (IRE 1949 standard).',
   },
   {
     href: 'https://www.sciencedirect.com/book/9780123694706/nonlinear-optics',
@@ -258,7 +258,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                   </div>
                 </div>
                 <p className="text-sm opacity-70 leading-relaxed mt-4">
-                  The triclinic and monoclinic conventions follow the standard crystal-physics prescription (Haussühl 1983, based on IRE 1949): <InlineMath math="z \parallel c" />, <InlineMath math="y \parallel (c \times a)" />, <InlineMath math="x = y \times z" />. The set of independent and zero tensor components does <strong>not</strong> depend on this choice, but the numeric component values — and therefore the orientation of simulated polarimetry patterns — <strong>do</strong>.
+                  The triclinic and monoclinic conventions follow the standard crystal-physics prescription (Haussuehl 1983, based on IRE 1949): <InlineMath math="z \parallel c" />, <InlineMath math="y \parallel (c \times a)" />, <InlineMath math="x = y \times z" />. The set of independent and zero tensor components does <strong>not</strong> depend on this choice, but the numeric component values — and therefore the orientation of simulated polarimetry patterns — <strong>do</strong>.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed mt-2">
                   <strong>Why there is no monoclinic-angle control:</strong> The angle <InlineMath math="\beta" /> does not enter the symmetry calculation directly. A crystal with a different <InlineMath math="\beta" /> is a different material with different tensor values, so it is represented by adjusting the relevant in-plane component values — not by a separate geometric control. Linear-optical effects such as birefringence, which do depend on <InlineMath math="\beta" />, are outside the scope of this symmetry calculator.
@@ -445,7 +445,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                 </h3>
                 <ol className="text-sm opacity-70 list-decimal list-inside space-y-2 ml-4">
                   <li>Select the point group, tensor type, and time-reversal symmetry from the main controls.</li>
-                  <li>Adjust the crystal orientation angles (<InlineMath math="\varphi_X, \varphi_Y" />, azimuth <InlineMath math="\psi" />) to set the incidence angle of the light.</li>
+                  <li>Adjust the crystal tilt (<InlineMath math="\varphi_X, \varphi_Y" />) to set the incidence angle of the light, and the azimuth (<InlineMath math="\psi" />) to rotate the crystal about its surface normal.</li>
                   <li>The simulator automatically isolates the independent tensor components (<InlineMath math="\chi_{ijk\dots}" />) that contribute to the transverse source terms (<InlineMath math="S_X, S_Y" />).</li>
                   <li>Adjust the relative amplitude and phase of each independent tensor component using the sliders.</li>
                   <li>Switch between the <strong>Anisotropy</strong>, <strong>Polarizer</strong>, and <strong>Analyzer</strong> tabs to observe the resulting SHG intensity polarimetry patterns in the radar charts.</li>
