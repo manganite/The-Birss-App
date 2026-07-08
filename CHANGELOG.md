@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   432 family the ED SHG tensor vanishes identically. The consequence is now derived from the
   computed tensor form (wrong text shipped in v0.16.0-v0.17.x).
 
+- Explorer popup: info tooltips no longer get clipped (rendered through a portal -- applies
+  app-wide to all info tooltips); wider layout with a two-column info grid; Full HM shown for
+  every group; redundant pyro/ferroelectric footnote removed.
+
 - Simulator: the "As functions of θ_pol" label no longer uppercases the math symbol.
 
 ### Changed

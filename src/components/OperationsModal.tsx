@@ -36,7 +36,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
 
   const shubnikov = SHUBNIKOV[group.name];
   const fullHM = FULL_HM[group.name];
-  const showFullHM = fullHM !== undefined && fullHM !== group.name;
+  const showFullHM = fullHM !== undefined;
   const parent = getParentGroup(group.name);
   const halvingOps = getHalvingSubgroup(group.name);
   const referenceAxes = REFERENCE_AXES[getFamilyClass(group.name)];
@@ -68,7 +68,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="bg-paper w-full max-w-2xl border border-ink shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-paper w-full max-w-3xl border border-ink shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-ink shrink-0">
@@ -108,28 +108,36 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
         </div>
 
         <div className="p-6 overflow-y-auto space-y-6">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-baseline text-sm">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
             {showFullHM && (
-              <>
-                <dt className="text-xs uppercase tracking-widest text-ink/70">Full HM</dt>
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Full HM</dt>
                 <dd className="font-serif italic">
                   {fullHM.split(' ').map((position, idx) => (
                     <span key={idx}>{idx > 0 ? ' ' : ''}<FormatPointGroup name={position} /></span>
                   ))}
                 </dd>
-              </>
+              </div>
             )}
             {shubnikov && (
-              <>
-                <dt className="text-xs uppercase tracking-widest text-ink/70">Shubnikov</dt>
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Shubnikov</dt>
                 <dd className="font-serif italic"><FormatPointGroup name={shubnikov} /></dd>
-              </>
+              </div>
             )}
-            <dt className="text-xs uppercase tracking-widest text-ink/70">Order</dt>
-            <dd>{operations.length}</dd>
+            <div>
+              <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Order</dt>
+              <dd>{operations.length}</dd>
+            </div>
+            {referenceAxes && (
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Reference axes</dt>
+                <dd><ReferenceAxes value={referenceAxes} /></dd>
+              </div>
+            )}
             {group.type === 'III' && parent && (
-              <>
-                <dt className="text-xs uppercase tracking-widest text-ink/70">Parent group</dt>
+              <div className="sm:col-span-2">
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Parent group</dt>
                 <dd className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
                   <span className="font-serif italic"><FormatPointGroup name={parent} /></span>
                   {halvingOps && (
@@ -145,11 +153,11 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                     </span>
                   )}
                 </dd>
-              </>
+              </div>
             )}
             {altSettings && (
-              <>
-                <dt className="text-xs uppercase tracking-widest text-ink/70">Settings</dt>
+              <div className="sm:col-span-2">
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Settings</dt>
                 <dd className="flex flex-wrap items-baseline gap-y-1">
                   {settingLabels.map(({ setting, axisWord, hm }, idx) => (
                     <span key={setting} className="inline-flex items-baseline gap-1.5">
@@ -165,39 +173,37 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                     </span>
                   ))}
                 </dd>
-              </>
-            )}
-            {referenceAxes && (
-              <>
-                <dt className="text-xs uppercase tracking-widest text-ink/70">Reference axes</dt>
-                <dd><ReferenceAxes value={referenceAxes} /></dd>
-              </>
+              </div>
             )}
             {conventionAffected && (
-              <>
-                <dt className="text-xs uppercase tracking-widest text-ink/70">Convention</dt>
+              <div className="sm:col-span-2">
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Convention</dt>
                 <dd><ConventionNote groupName={group.name} /></dd>
-              </>
+              </div>
             )}
           </dl>
 
           <div>
             <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">Properties</h3>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-baseline text-sm mb-4">
-              <dt className="text-xs uppercase tracking-widest text-ink/70 inline-flex items-center gap-1.5">
-                Laue class <TermInfo id="laue-class" />
-              </dt>
-              <dd className="font-serif italic"><FormatPointGroup name={laueClass} /></dd>
-              <dt className="text-xs uppercase tracking-widest text-ink/70 inline-flex items-center gap-1.5">
-                Chiral <TermInfo id="chiral" />
-              </dt>
-              <dd>{isChiral(group.name) ? 'Yes' : 'No'}</dd>
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm mb-4">
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1 flex items-center gap-1.5">
+                  Laue class <TermInfo id="laue-class" />
+                </dt>
+                <dd className="font-serif italic"><FormatPointGroup name={laueClass} /></dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1 flex items-center gap-1.5">
+                  Chiral <TermInfo id="chiral" />
+                </dt>
+                <dd>{isChiral(group.name) ? 'Yes' : 'No'}</dd>
+              </div>
             </dl>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {properties.map(p => (
                 <span
                   key={p.id}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs border ${p.allowed ? 'bg-ink text-paper border-ink' : 'border-ink/20 text-ink/40'}`}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs border ${p.allowed ? 'bg-ink text-paper border-ink' : 'border-ink/20 text-ink/40'}`}
                 >
                   {p.allowed ? <Check className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
                   {p.label}
@@ -205,9 +211,6 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 </span>
               ))}
             </div>
-            <p className="text-xs text-ink/50 leading-relaxed mt-3">
-              Pyro- and ferroelectric coincide at the point-group level — switchability is not a point-group property.
-            </p>
           </div>
 
           {generators.length > 0 && (
