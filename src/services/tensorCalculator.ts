@@ -15,10 +15,19 @@ export {
   getTransformedGenerators,
   getParentGroup,
   getHalvingSubgroup,
-  getSHGConsequence,
-  getSHGConsequenceShort,
   type SettingDef,
 } from './symmetryGroups';
+export {
+  isPolar,
+  isFerromagnetic,
+  isMagnetoelectric,
+  isPiezoelectric,
+  isPiezomagnetic,
+  isChiral,
+  getLaueClass,
+  getSHGConsequence,
+  getSHGConsequenceShort,
+} from './propertyFlags';
 export {
   type TensorType,
   type TensorTimeReversal,

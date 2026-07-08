@@ -132,4 +132,39 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     brief: 'SHG intensity vs. outgoing analyzer angle at a fixed polarizer (0° or 90°). Shows which output polarization directions the tensor generates.',
     helpTab: 'simulation',
   },
+  {
+    id: 'laue-class',
+    term: 'Laue Class',
+    brief: 'The point group with inversion added — the symmetry of the diffraction pattern. The 122 magnetic groups fall into 11 Laue classes.',
+  },
+  {
+    id: 'chiral',
+    term: 'Chiral (Enantiomorphic)',
+    brief: 'The crystal class contains only proper rotations (no mirror, inversion, or rotoinversion), so the structure is distinguishable from its mirror image. Time reversal does not affect handedness.',
+  },
+  {
+    id: 'polar-property',
+    term: 'Polar (Pyro-/Ferroelectric)',
+    brief: 'Admits a spontaneous electric polarization (a time-even polar vector). Pyroelectric and ferroelectric share this symmetry requirement; ferroelectricity additionally requires the polarization be switchable, which symmetry alone cannot decide.',
+  },
+  {
+    id: 'piezoelectric',
+    term: 'Piezoelectric',
+    brief: 'Admits a third-rank polar strain–polarization tensor (the ED i-type form). Allowed in the 20 non-centrosymmetric classes except 432, where the tensor vanishes by symmetry.',
+  },
+  {
+    id: 'ferromagnetic-property',
+    term: 'Ferromagnetic',
+    brief: 'Admits a spontaneous magnetization (a time-odd axial vector). Covers ferro-, ferri-, and weak (canted) magnetism — 31 magnetic point groups (ITC Table 1.5.2.4).',
+  },
+  {
+    id: 'piezomagnetic',
+    term: 'Piezomagnetic',
+    brief: 'Admits a third-rank axial, time-odd tensor coupling stress to magnetization (the MD c-type form) — vanishes for all grey (Type II) groups.',
+  },
+  {
+    id: 'magnetoelectric',
+    term: 'Magnetoelectric (linear)',
+    brief: 'Admits a second-rank axial, time-odd tensor αᵢⱼ coupling an electric field to magnetization (and vice versa) — 58 magnetic point groups (ITC Table 1.5.8.1).',
+  },
 ];

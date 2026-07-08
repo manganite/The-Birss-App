@@ -1,11 +1,12 @@
 import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { InlineMath } from 'react-katex';
-import { X, Calculator, Activity } from 'lucide-react';
-import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, getParentGroup, getHalvingSubgroup, isCentrosymmetric } from '../services/tensorCalculator';
+import { X, Calculator, Activity, Check, Minus } from 'lucide-react';
+import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, getParentGroup, getHalvingSubgroup, isCentrosymmetric, isPolar, isPiezoelectric, isFerromagnetic, isPiezomagnetic, isMagnetoelectric, isChiral, getLaueClass } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels, getStandardSetting, getConventionNote } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 import { FormatPointGroup, FormatSchoenflies, SymmetryOperation, ConventionNote } from './MathComponents';
+import { TermInfo } from './TermInfo';
 import { PointGroupData } from '../data/pointGroups';
 import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
 import { useDialogA11y } from '../hooks/useDialogA11y';
@@ -43,6 +44,15 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   const birssStandard = getStandardSetting(group.name, 'birss');
   const itcStandard = getStandardSetting(group.name, 'itc');
   const conventionAffected = getConventionNote(group.name) !== null;
+
+  const laueClass = getLaueClass(group.name);
+  const properties = [
+    { id: 'polar-property', label: 'Polar', allowed: isPolar(group.name) },
+    { id: 'piezoelectric', label: 'Piezoelectric', allowed: isPiezoelectric(group.name) },
+    { id: 'ferromagnetic-property', label: 'Ferromagnetic', allowed: isFerromagnetic(group.name) },
+    { id: 'piezomagnetic', label: 'Piezomagnetic', allowed: isPiezomagnetic(group.name) },
+    { id: 'magnetoelectric', label: 'Magnetoelectric', allowed: isMagnetoelectric(group.name) },
+  ];
 
   const containerRef = useRef<HTMLDivElement>(null);
   useDialogA11y({ onClose, containerRef });
@@ -170,6 +180,36 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               </>
             )}
           </dl>
+
+          <div>
+            <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">Properties</h3>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 items-baseline text-sm mb-4">
+              <dt className="text-xs uppercase tracking-widest text-ink/70 inline-flex items-center gap-1.5">
+                Laue class <TermInfo id="laue-class" />
+              </dt>
+              <dd className="font-serif italic"><FormatPointGroup name={laueClass} /></dd>
+              <dt className="text-xs uppercase tracking-widest text-ink/70 inline-flex items-center gap-1.5">
+                Chiral <TermInfo id="chiral" />
+              </dt>
+              <dd>{isChiral(group.name) ? 'Yes' : 'No'}</dd>
+            </dl>
+            <div className="flex flex-wrap gap-2">
+              {properties.map(p => (
+                <span
+                  key={p.id}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs border ${p.allowed ? 'bg-ink text-paper border-ink' : 'border-ink/20 text-ink/40'}`}
+                >
+                  {p.allowed ? <Check className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+                  {p.label}
+                  <TermInfo id={p.id} />
+                </span>
+              ))}
+            </div>
+            <p className="text-xs text-ink/50 leading-relaxed mt-3">
+              Pyro- and ferroelectric coincide at the point-group level — switchability is not a point-group property.
+            </p>
+          </div>
+
           {generators.length > 0 && (
             <div>
               <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">Generators ({generators.length})</h3>

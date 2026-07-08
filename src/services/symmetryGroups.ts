@@ -322,21 +322,9 @@ export function getHalvingSubgroup(groupName: string): string[] | null {
   });
 }
 
-const SHG_CONSEQUENCE = {
-  centro: { premise: 'Centrosymmetric', consequence: 'ED SHG forbidden (bulk); EQ/MD can contribute' },
-  nonCentro: { premise: 'Non-centrosymmetric', consequence: 'ED SHG allowed' },
-} as const;
-
-export function getSHGConsequence(groupName: string): string {
-  const { premise, consequence } = isCentrosymmetric(groupName) ? SHG_CONSEQUENCE.centro : SHG_CONSEQUENCE.nonCentro;
-  return `${premise} → ${consequence}`;
-}
-
-/** The consequence half of `getSHGConsequence`, for display alongside a Centro/Non-Centro label
- * that already states the premise -- shares the same source strings, no string parsing. */
-export function getSHGConsequenceShort(groupName: string): string {
-  return (isCentrosymmetric(groupName) ? SHG_CONSEQUENCE.centro : SHG_CONSEQUENCE.nonCentro).consequence;
-}
+// The SHG-consequence text lives in `propertyFlags.ts`: for the `432` family the ED tensor
+// vanishes identically despite non-centrosymmetry, so the consequence is derived from the computed
+// ED i-type form, which requires `tensorProjection` (a higher layer than this module).
 
 export interface SettingDef {
   name: string;
