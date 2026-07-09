@@ -75,8 +75,8 @@ and the decisions recorded this cycle, the only item still genuinely open is **B
 - **B4** — two-column header layout: shipped (v0.12.0).
 - **B25** — emphasis rule (drop chips): shipped (v0.12.0).
 - **B27** — group header optional fields: shipped (v0.12.0).
-- **A1** — Simulator source-term presentation: decided (D4) — delete the
-  φ_x, φ_y, ψ-symbolic block, keep the E and θ_pol forms; implementation pending.
+- **A1** — Simulator source-term presentation: decided (D4) and **shipped** —
+  deleted the φ_x, φ_y, ψ-symbolic block, kept the E and θ_pol forms.
 - **B2.4** — setting persists across Calculator ↔ Simulator (D1).
 - **B16** — drop the full 3-angle symbolic form; θ-only swept display, harmonic
   preferred, power form only when strictly shorter (D4).
@@ -96,7 +96,11 @@ _The physics-correctness backbone — which groups have which settings, and how 
 
 ### B1 — Alternate settings missing for colorless (Type I) and grey (Type II) groups
 
-**Status:** Derivation / verification pending — settings enumeration & mechanism count (reconcile with B22) before UI work.
+**Status:** Done (v0.11.0). Alternate settings shipped for the Type I (colourless) and
+Type II (grey) monoclinic / orthorhombic / Mechanism-A groups; `ALTERNATE_SETTINGS`
+(`symmetryGroups.ts:338–414`) now carries their keys alongside the Type III ones, and
+`GROUPS_WITH_FUTURE_SETTINGS` is empty. Mechanism count reconciled with the mono = 2 (b/c),
+ortho = 3 standing decision. The action items below are retained as the historical derivation record.
 
 **Area:** Feature 3 (Alternate Point Group Settings via similarity transforms `G' = S·G·S⁻¹`)
 **Severity:** Medium–High — scope/completeness gap with crystallographic-correctness impact *(provisional)*
@@ -382,10 +386,10 @@ _Choosing the cut / k direction, naming it clearly, and what depends on it._
 
 ### A1 — Calculator shows source terms as a function of angles that cannot be set there
 
-**Status:** Done (`feature/simplify-source-terms`, pending merge) — Calculator was
-already shipped; Simulator now matches D4: deleted the φ_x, φ_y, ψ-symbolic block
-from `SimulatorPage.tsx`, keeping "As functions of E_X,E_Y" and "As functions of
-θ_pol". The now-fully-dead `symbolicExpressions` prop chain (App → Calculator,
+**Status:** Done (shipped) — Calculator was
+already shipped; the Simulator now matches D4: deleted the φ_x, φ_y, ψ-symbolic block
+(the source-term equation panel keeps only "As functions of E_X,E_Y" and "As functions of
+θ_pol"). The now-fully-dead `symbolicExpressions` prop chain (App → Calculator,
 Simulator — it turned out to already be unused in the Calculator too) was removed;
 `symbolicProjection.ts`/`trigPolyFormat.ts` were deliberately left in place
 (unused but not deleted, per Thomas).
@@ -998,7 +1002,10 @@ _Simulator-specific geometry, layout, and controls._
 
 ### A2 — Simulator tilt axes φ_x, φ_y are crystal-fixed; should be lab-fixed (corrects Feature 1B roadmap spec)
 
-**Status:** Derivation / verification pending — the corrected rotation composition must be re-derived and numerically re-checked.
+**Status:** Done (v0.10.0). The corrected composition was derived and numerically re-checked:
+the shipped `R = Ry(φ_y)·Rx(φ_x)·Rz(ψ)·R_preset` makes φ_x/φ_y lab-fixed and keeps ψ crystal-tied
+(`tensorProjection.ts:294–297` and the twin at `:590–591`), rank-3 at all presets. Data flag in
+`CHANGELOG.md` `[0.10.0]`. The description and action items below are retained as the historical record.
 
 **Area:** Simulator — three-angle sample rotation (Feature 1B)
 **Severity:** Medium–High — wrong experimental geometry when ψ and tilts are combined *(provisional)*
@@ -1027,17 +1034,16 @@ frame changes the parametrization, so the corrected composition must be:
   property — it must **not** silently reintroduce gimbal lock elsewhere.
 
 **Action items.**
-- [ ] Re-derive the corrected rotation composition: φ_x, φ_y lab-fixed; ψ stays
+- [x] Re-derive the corrected rotation composition: φ_x, φ_y lab-fixed; ψ stays
       crystal-tied about the normal.
-- [ ] Numerically verify rank 3 at all presets for the corrected composition
+- [x] Numerically verify rank 3 at all presets for the corrected composition
       (geometry checked directly, not via the app's own output).
-- [ ] Update the ROADMAP Feature 1B spec to the corrected frame convention.
+- [x] Update the ROADMAP Feature 1B spec to the corrected frame convention.
 
-**Open question — DEFERRED, still to be resolved.** The exact corrected
-composition (operator order and handedness) has **not yet been derived**. The
-derivation and its numerical singularity check are postponed; they must be
-worked out and verified before Feature 1B is implemented / the ROADMAP spec is
-updated.
+**Resolved (v0.10.0).** The corrected composition is
+`R = Ry(φ_y)·Rx(φ_x)·Rz(ψ)·R_preset` — φ_x/φ_y are tilts about the fixed lab X/Y axes
+(outermost), ψ spins the crystal about the normal (innermost, before `R_preset`). It was
+verified rank-3 / singularity-free at all presets and shipped with a CHANGELOG data flag.
 
 ---
 
@@ -1457,6 +1463,33 @@ when no common form applies.
 - **Tie-breaking:** when several common forms are possible, prefer smallest `n`?
   denominator-only?
 - Does B28 stay as a permanent table entry, or get removed once B29 subsumes it?
+
+---
+
+### B31 — Accessibility polish: missing labels on form controls
+
+**Status:** Backlog — do **not** implement yet. Small, non-urgent a11y polish.
+
+**Area:** App-wide — form-control accessibility (labels)
+**Severity:** Low — assistive-tech usability; no functional defect.
+
+**Problem.** A few interactive controls are identified only by adjacent visual text, with
+no programmatic label a screen reader can announce:
+
+- The global group-search input relies on `placeholder` text instead of a real `<label>`
+  (`App.tsx:188`); a placeholder is not an accessible name.
+- Some Simulator sliders have no label beyond the adjacent visual math/title: the setup-panel
+  angle sliders (`SimulatorSetupPanel.tsx:111`) and the tensor-component amplitude sliders
+  (`TensorComponentControls.tsx:95`) render an `<InlineMath>` / `<TensorTerm>` next to a bare
+  `<input type="range">` with no `aria-label` or associated `<label>`.
+
+**Already in place (not part of this item).** Dialog focus handling and the info-button
+`aria-label`s already exist — this item is only the unlabeled search input and the sliders.
+
+**Action items (deferred).**
+- [ ] Give the search input an accessible name (visually-hidden `<label>` or `aria-label`).
+- [ ] Give each Simulator slider an `aria-label` (or associated `<label>`) naming the
+      component / angle it controls.
 
 ---
 

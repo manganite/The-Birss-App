@@ -94,20 +94,19 @@ Strengthen the fixtures the upcoming correctness work (Waves B/D/E) will lean on
 Gate: `npm run lint && npm run test`. Merge: `chore/` or `test/` branch, local
 `--no-ff`. SemVer: none (or fold into the next PATCH). No release on its own.
 
-### Wave B — Unblock correctness (the two pending derivations)
+### Wave B — Unblock correctness (both derivations now landed)
 
-Do not build UI on unsettled correctness. Both are **analysis loops first** (a
-self-contained `.mjs` numeric check, the project's established method), fixture green,
-**then** code.
+Both items below are **Done** — kept here for the historical execution record. Each was
+worked as an **analysis loop first** (a self-contained `.mjs` numeric check, the project's
+established method), fixture green, **then** code.
 
 | Item | Branch | Method | SemVer | Notes |
 |---|---|---|---|---|
-| **A2** | `fix/lab-fixed-tilt-axes` | PR (physics) | PATCH | Re-derive/confirm the φ_x, φ_y tilt-axis semantics in `R = Rz(ψ)·Ry(φ_y)·Rx(φ_x)·R_preset` at `tensorProjection.ts:290–292` **and the twin at `:571–573`**; validate against `rotatedSHG.fixtures` + a fresh `.mjs` random-angle / rank-3 / gimbal-lock check. Data-relevant → CHANGELOG data flag. |
-| **B1** | `feature/type-i-ii-settings` | PR (physics) | MINOR | Populate the missing settings for **Type I/II** groups. Verified gap: `ALTERNATE_SETTINGS` (`symmetryGroups.ts:310–347`) holds only **Type III** keys (`4'mm'`, `-4'2m'`, `2'2'2`, `m'm'm`, `2'`…); `GROUPS_WITH_FUTURE_SETTINGS` is **empty**. Reconcile the mechanism taxonomy with **B22**/`ROADMAP.md` standing decision (mono = 2 b/c, ortho = 3) before coding; verify by conjugation + golden fixtures. |
+| **A2** ✅ Done (v0.10.0) | `fix/lab-fixed-tilt-axes` | PR (physics) | PATCH | Tilt-axis semantics settled: the shipped composition is `R = Ry(φ_y)·Rx(φ_x)·Rz(ψ)·R_preset` (lab-fixed φ_x/φ_y, crystal-tied ψ), at `tensorProjection.ts:294–297` **and the twin at `:590–591`**; validated against `rotatedSHG.fixtures` + a random-angle / rank-3 / gimbal-lock check. Shipped with a CHANGELOG data flag. |
+| **B1** ✅ Done (v0.11.0) | `feature/type-i-ii-settings` | PR (physics) | MINOR | Alternate settings populated for **Type I/II** groups: `ALTERNATE_SETTINGS` (`symmetryGroups.ts:338–414`) now carries the Type I (colourless) and Type II (grey) monoclinic / orthorhombic / Mechanism-A keys alongside the Type III ones; `GROUPS_WITH_FUTURE_SETTINGS` is empty (no deferred settings remain). Mechanism taxonomy reconciled with the mono = 2 (b/c), ortho = 3 standing decision; verified by conjugation + golden fixtures. |
 
-Why first: A2 feeds the symbolic/rotation path shared by **A1, B16, B5/B8**; B1 gates
-the settings surfacing **B2 / B2.3 / B2.4** and informs **B27** (halving subgroup,
-notations).
+Why these were first: A2 fed the symbolic/rotation path shared by **A1, B16, B5/B8**; B1 gated
+the settings surfacing **B2 / B2.3 / B2.4** and informed **B27** (halving subgroup, notations).
 
 ### Wave C — Quick decided fixes (independent, low-risk; first Claude Code sessions)
 
@@ -212,6 +211,22 @@ B30 (unplanned):  -3'm' generator fix (PR #37)  ── gates ──►  B2.3's t
 - **B29** — context-sensitive coefficient formatter. Revisit after B16 (done, PR #41).
   Open questions (grouping unit, call sites, tie-breaking) still need resolution before
   starting. B28 covers the concrete use case; B29 generalises it.
+
+- **V1 — Print-verify the EQ (rank-4) golden fixtures against Birss Table 4f.**
+  Priority: medium. **Correctness assurance, not a known error** — do not implement as part of a
+  feature; it is a standalone scientific-validation task. This is the main remaining
+  scientific-validation gap. Two distinct sub-gaps, both tracked in
+  `docs/findings/AUDIT-convention-references.md` (see the Residuals list, ~:319):
+  - **EQ / Table 4f (rank 4).** Birss Table 4f is not yet print-verified and its symbol-class
+    (A–U) form fixtures are not yet written. EQ-i is 1/122 pinned (`m-3m`), EQ-c is 0/122 pinned.
+    Requires print verification against Birss Table 4f (or an independent literature source), then
+    transcribing class-form fixtures. Gates B15's rank-4 generalisation.
+  - **7 `VERIFY`-marked rank-3 ED/MD fixtures** in `goldenTensors.fixtures.ts`
+    (`:978`, `:984`, `:1343`, `:1349`, `:1360`, `:1366`, `:1372`) — setting-derived / grey-rule
+    forms still pending human sign-off against Fiebig et al. (2005) or the printed Birss tables
+    (these are *not* EQ/Table-4f fixtures; they are rank-3 ED-c/MD-i/ED-i setting-2 forms).
+  - **Anti-circularity rule (binding):** all expected values must come from the printed tables or
+    an independent literature source — **never** from the app's own output.
 
 ---
 
