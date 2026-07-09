@@ -119,9 +119,95 @@ anti-circular -- no expected value comes from `computeTensorForm`).
   4b-4d guard *through Table 7* is deferred. (The engine itself already produces magnetic-group
   forms correctly -- anchored independently in `tensorForms.test.ts` via ITC 1.5.8.1 and the ED/MD
   golden paths; only the *Birss-class-indexed* guard is deferred.)
-- **Table 4e (rank 3):** already covered by the existing table-anchored golden fixtures
-  (`goldenTensors.fixtures.ts`, Birss Table 4e) and the ED-i / MD-c reproduction anchor in
-  `tensorForms.test.ts`.
-- **Table 4f (rank 4):** BLOCKED on print-verification (roadmap gap F4). The engine's rank-4
-  support is in scope and partially anchored (EQ-i reproduction spot-check), but the 4f guard waits
-  on the maintainer/scan verification loop.
+- **Tables 4e (rank 3) and 4f (rank 4):** analyzed and resolved in the §8 addendum below (4e wired;
+  4f a documented STOP). This supersedes the earlier "already covered / blocked on F4" notes here.
+
+---
+
+## 8. Addendum (2026-07-09b) -- Tables 4e (rank 3) and 4f (rank 4)
+
+**Date:** 2026-07-09 (second same-day work order: rank-3/4 guards).
+**Purpose:** extend the classical-groups guard to rank 3 (Table 4e) and rank 4 (Table 4f) now that
+4f is print-verified (PR #77). Same discipline: analyze cell semantics with quoted evidence before
+parsing; STOP for any table whose conventions stay ambiguous.
+
+### 8.1 What 4e / 4f tabulate
+
+Same two-step lookup as 4b-4d (Table 4a class letter -> form row), for the ODD-rank letters
+(rank 3 -> Table 4c/4e) and EVEN-rank letters (rank 4 -> Table 4f). Both are classical tables (no
+time reversal), so the guard runs Type I groups, time-even (i) forms, setting 1. Because classical
+groups have no antiunitary element, the i- and c-forms coincide -- the guard asserts this
+programmatically (`computeTensorForm` i-form == c-form for every classical group) before comparing
+the i-form to the table.
+
+Both tables describe the GENERAL tensor (no intrinsic index symmetry): the columns partition all
+3^rank components into families (via permutation shorthand), and for the lowest class A the family
+members are independent, giving the full 27 (4e) / 81 (4f) -- the "multiplicity" reading already
+established for 4d's `xz(2)` columns.
+
+### 8.2 Table 4e -- established and WIRED
+
+> Evidence (`table-4e.md:8-9`): "Headers such as `xxy(3)` denote the distinct unrestricted
+> permutations of `xxy`." Print-verified 2026-07-02 (changelog: "checked cell-by-cell ... No
+> transcription errors found").
+
+15 columns partition the 27 components: 3 singletons (`xxx`,`yyy`,`zzz`), six `(3)` families
+(full 3-permutation orbits), and the six all-distinct `xyz`-permutation singletons. Every cell is
+one of four unambiguous forms:
+- `0` -> those components vanish;
+- **self-reference** (cell == column base) -> the family is free (independent);
+- **single mult-1 reference** (e.g. `xxy(3) = -yyy`) -> every family member = +/- that one
+  component (unambiguous, since the reference is a singleton);
+- **cross-reference to a same-size family** (e.g. `yyz(3) = xxz`) -> the two families are related by
+  an **axis relabel** (here x<->y), which is a bijection on components, so the pairing is
+  well-defined: `chi_{sigma(m)} = +/- chi_m`.
+
+Comparison = subspace equality: the engine basis must satisfy every parsed relation AND match the
+table's independent-component count (27 - rank of the relation matrix). **Result: all 32 classical
+groups x both parities pass** (`tables4e.reference.test.ts`). No ambiguity; wired.
+
+### 8.3 Table 4f -- STOP (semantics underdetermined by the notation)
+
+> Evidence (`table-4f.md:8-15`): the families use FIVE different permutation rules -- `(4)` = all
+> unrestricted permutations, `(c4)` = four cyclic permutations, `(x.3)` = "fix the last index,
+> permute the others", `(x:3)` = "fix the first index, permute the others", `(xy:6)` = the six
+> perms preserving the x-before-y order.
+
+Unlike 4e's single uniform rule, 4f's mixed partial-permutation families make the cell -> component
+pairing underdetermined. Two concrete, unresolvable problems (empirically checked against the
+independently-validated engine for all 32 classical groups):
+
+1. **The `(c4)`-block cross-references have no defining relabel.** In the trigonal/hexagonal rows
+   K4/L4/M4/O4/R4 the c4 columns read e.g. `xxyz(c4) = -yyyz` and `yyxz(c4) = -xxxz`. The multisets
+   differ (`{x,x,y,z}` vs `{y,y,y,z}`), so NO axis relabel maps one family onto the other, and the
+   notation does not say whether this means "each of the four cyclic components = -chi_yyyz (one
+   component)" or a positional family pairing. The single-component reading was tested and the
+   engine does **not** satisfy it (`sat=false` for `3`, `-3`, `32`, `3m`, `-3m`, ...); no positional
+   order is specified by the file.
+2. **Even the relabel-clean hexagonal rows (N4/P4/Q4, whose c4 block is all zero) mismatch on
+   dimension.** Under the same axis-relabel + sum-cell reading that works perfectly for 4e, the
+   engine reports e.g. 21 independent components for class N (hexagonal `6`) while the parsed table
+   yields 19 -- so the multi-member family pairing that 4f's mixed rules imply does not reproduce
+   the (validated) rank-4 engine either.
+
+Both readings I could principle-derive from the notation fail against the engine, and the file does
+not pin down the component ordering needed to disambiguate. Per the work order ("If any cell
+convention remains ambiguous, STOP for that table and report"), **Table 4f is NOT wired.**
+
+What would unblock it: an explicit statement (from the printed book layout, or added to
+`table-4f.md`) of the component ORDER within each `(c4)`/`(4)`/`(x.3)`/`(x:3)`/`(xy:6)` family and
+the pairing convention for cross-references between different-rule families -- i.e. exactly which
+component each cell entry maps to. That is a transcription/print task (like the 4f value
+verification itself), not something to guess here.
+
+The rank-4 engine is not left unanchored: `tensorForms.test.ts` already anchors rank-4 EQ-i
+(jk-symmetric) against the app's book-verified EQ path, and the four rank-0 / rank-2 ME anchors
+exercise the axial `det(R)` and time-odd branches. Only the *Birss-4f-class-indexed general-tensor*
+guard is deferred.
+
+### 8.4 Coverage added
+
+| Table | Rank | Groups | Status |
+|---|---|---|---|
+| 4e | 3 | 32 classical, both parities | wired, green (`tables4e.reference.test.ts`) |
+| 4f | 4 | -- | **STOP** -- semantics underdetermined (see 8.3) |
