@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Explorer popup: the settings row now lists the active convention's standard frame first and
+  annotates frames as "standard frame in Birss/ITC" (clarifying that the annotation names the
+  frame choice, not the symbol's notation).
+
 - Simulator's Mathematical Model box and the Help intensity derivation now use one notation
   (incident E^ω; intensities written directly as squared source-term projections, no detected
   E^2ω quantity) and link to each other; the Help derivation leads with the general intensity
