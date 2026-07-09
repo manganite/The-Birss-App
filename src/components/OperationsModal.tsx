@@ -44,6 +44,11 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   const birssStandard = getStandardSetting(group.name, 'birss');
   const itcStandard = getStandardSetting(group.name, 'itc');
   const conventionAffected = getConventionNote(group.name) !== null;
+  // List the active convention's standard frame first, so the first setting always matches the
+  // popup title. Non-affected groups have no standard setting -> activeStandard = 1 -> order 1..N.
+  const activeStandard = getStandardSetting(group.name, convention) ?? 1;
+  const orderedSettingLabels = [...settingLabels].sort((a, b) =>
+    a.setting === activeStandard ? -1 : b.setting === activeStandard ? 1 : a.setting - b.setting);
 
   const laueClass = getLaueClass(group.name);
   const properties = [
@@ -159,16 +164,16 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               <div className="sm:col-span-2">
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Settings</dt>
                 <dd className="flex flex-wrap items-baseline gap-y-1">
-                  {settingLabels.map(({ setting, axisWord, hm }, idx) => (
+                  {orderedSettingLabels.map(({ setting, axisWord, hm }, idx) => (
                     <span key={setting} className="inline-flex items-baseline gap-1.5">
                       {idx > 0 && <span className="text-ink/30 mx-2">·</span>}
                       {axisWord && <span className="normal-case text-xs text-ink/60">{axisWord}</span>}
                       <FormatPointGroup name={hm} />
                       {conventionAffected && setting === birssStandard && (
-                        <span className="text-xs text-ink/50">(Birss standard)</span>
+                        <span className="text-xs text-ink/50">(standard frame in Birss)</span>
                       )}
                       {conventionAffected && setting === itcStandard && (
-                        <span className="text-xs text-ink/50">(ITC standard)</span>
+                        <span className="text-xs text-ink/50">(standard frame in ITC)</span>
                       )}
                     </span>
                   ))}
