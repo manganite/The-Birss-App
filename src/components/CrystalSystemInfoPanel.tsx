@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { InlineMath } from 'react-katex';
 import { CRYSTAL_SYSTEM_INFO } from '../data/crystalSystemInfo';
-import { AxisOrientationInfo, FormatPointGroup } from './MathComponents';
+import { FormatPointGroup } from './notation';
+import { AxisOrientationInfo } from './axisConventions';
 import type { Convention } from '../services/conventionMapping';
 
 function InfoBox({ title, children }: { title: string; children: ReactNode }) {

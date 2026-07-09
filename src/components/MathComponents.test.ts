@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getMonoclinicFrame, MONOCLINIC_FRAMES, getAxisTooltipId, getPresetsForSystem } from './MathComponents';
+import { getMonoclinicFrame, MONOCLINIC_FRAMES, getAxisTooltipId } from './axisConventions';
+import { getPresetsForSystem } from './crystalCut';
 import { GLOSSARY_TERMS } from '../data/glossary';
 
 describe('getPresetsForSystem', () => {

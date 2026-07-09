@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
-import { FormatPointGroup, getCrystalIcon } from './MathComponents';
+import { FormatPointGroup, getCrystalIcon } from './notation';
 import { CrystalSystemInfoPanel } from './CrystalSystemInfoPanel';
 import { OperationsModal } from './OperationsModal';
 import { AnimatePresence } from 'motion/react';

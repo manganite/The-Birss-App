@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sliders, Info } from 'lucide-react';
 import { isCentrosymmetric } from '../services/tensorCalculator';
-import { TensorTerm, SectionHeader } from './MathComponents';
+import { TensorTerm, SectionHeader } from './notation';
 import { TermInfo } from './TermInfo';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig, SimulationState } from '../types';

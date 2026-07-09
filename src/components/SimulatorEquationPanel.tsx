@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { InlineMath, BlockMath } from 'react-katex';
-import { TensorTerm } from './MathComponents';
+import { TensorTerm } from './notation';
 import type { useSimulatorState } from '../hooks/useSimulatorState';
 
 interface SimulatorEquationPanelProps {

@@ -14,7 +14,7 @@ import {
 import { getDefaultSetting, getGroupDisplayName } from './services/conventionMapping';
 import type { Convention } from './services/conventionMapping';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
-import { FormatPointGroup } from './components/MathComponents';
+import { FormatPointGroup } from './components/notation';
 import { TermInfo } from './components/TermInfo';
 
 const CONVENTION_STORAGE_KEY = 'birss-app:convention';
