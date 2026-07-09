@@ -3,6 +3,9 @@
 Source: scanned PDF pages 41–43 in `Birss Symmetry & Magnetism komplett.pdf`  
 (printed book pages 62–66, Table 4f spread over 5 printed pages)
 
+Print-verified 2026-07-09 against the printed pages 62–66 (maintainer-provided scans; five
+transcription-error sites corrected, see changelog).
+
 All five parts share the same 21 row labels (A4–U4) and have been merged here, split into Part I (columns 1–11) and Part II (columns 12–25) for readability.
 
 Notation:
@@ -47,11 +50,11 @@ point-group -> symbol-class lookup and the full rank-mapping explanation (m=0 ->
 
 ## Part II: Columns 12–25
 
-| Row | xxyy(x:3) | yyxx(y:3) | xxzz(x:3) | zzxx(z:3) | yyzz(y:3) | zzyy(z:3) | xxyz(c4) | yxzz(c4) | yxxx(c4) | yyxz(c4) | yxyz(c4) | xyyz(c4) | zzxy(xy:6) | zzyx(yx:6) |
+| Row | xxyy(x:3) | yyxx(y:3) | xxzz(x:3) | zzxx(z:3) | yyzz(y:3) | zzyy(z:3) | xxyz(c4) | xyxz(c4) | yxxz(c4) | yyxz(c4) | yxyz(c4) | xyyz(c4) | zzxy(xy:6) | zzyx(yx:6) |
 |-----|-----------|-----------|-----------|-----------|-----------|-----------|----------|----------|----------|----------|----------|----------|------------|------------|
-| A4 | xxyy | yyxx | xxzz | zzxx | yyzz | zzyy | xxyz | yxzz | yxxx | yyxz | yxyz | xyyz | zzxy | zzyx |
+| A4 | xxyy | yyxx | xxzz | zzxx | yyzz | zzyy | xxyz | xyxz | yxxz | yyxz | yxyz | xyyz | zzxy | zzyx |
 | B4 | xxyy | yyxx | xxzz | zzxx | yyzz | zzyy | 0 | 0 | 0 | 0 | 0 | 0 | zzxy | zzyx |
-| C4 | 0 | 0 | 0 | 0 | 0 | 0 | xxyz | yxzz | yxxx | yyxz | yxyz | xyyz | 0 | 0 |
+| C4 | 0 | 0 | 0 | 0 | 0 | 0 | xxyz | xyxz | yxxz | yyxz | yxyz | xyyz | 0 | 0 |
 | D4 | xxyy | yyxx | xxzz | zzxx | yyzz | zzyy | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | E4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | zzxy | zzyx |
 | F4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | 0 | 0 | 0 | 0 | 0 | 0 | zzxy | -zzxy |
@@ -59,14 +62,14 @@ point-group -> symbol-class lookup and the full rank-mapping explanation (m=0 ->
 | H4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | I4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | zzxy | -zzxy |
 | J4 | xxyy | -xxyy | xxzz | zzxx | -xxzz | -zzxx | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| K4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | -yyyy | -yyyy | -yyyy | -xxxx | -xxxx | -xxxx | zzxy | -zzxy |
-| L4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | 0 | 0 | 0 | -xxxx | -xxxx | -xxxx | 0 | 0 |
-| M4 | 0 | 0 | 0 | 0 | 0 | 0 | -yyyy | -yyyy | -yyyy | 0 | 0 | 0 | zzxy | -zzxy |
+| K4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | -yyyz | -yyyz | -yyyz | -xxxz | -xxxz | -xxxz | zzxy | -zzxy |
+| L4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | 0 | 0 | 0 | -xxxz | -xxxz | -xxxz | 0 | 0 |
+| M4 | 0 | 0 | 0 | 0 | 0 | 0 | -yyyz | -yyyz | -yyyz | 0 | 0 | 0 | zzxy | -zzxy |
 | N4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | 0 | 0 | 0 | 0 | 0 | 0 | zzxy | -zzxy |
-| O4 | 0 | 0 | 0 | 0 | 0 | 0 | -yyyy | -yyyy | -yyyy | -xxxx | -xxxx | -xxxx | 0 | 0 |
+| O4 | 0 | 0 | 0 | 0 | 0 | 0 | -yyyz | -yyyz | -yyyz | -xxxz | -xxxz | -xxxz | 0 | 0 |
 | P4 | xxyy | xxyy | xxzz | zzxx | xxzz | zzxx | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Q4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | zzxy | -zzxy |
-| R4 | 0 | 0 | 0 | 0 | 0 | 0 | -yyyy | -yyyy | -yyyy | 0 | 0 | 0 | 0 | 0 |
+| R4 | 0 | 0 | 0 | 0 | 0 | 0 | -yyyz | -yyyz | -yyyz | 0 | 0 | 0 | 0 | 0 |
 | S4 | xxyy | yyxx | yyxx | xxyy | xxyy | yyxx | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | T4 | xxyy | xxyy | xxyy | xxyy | xxyy | xxyy | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | U4 | xxyy | -xxyy | -xxyy | xxyy | xxyy | -xxyy | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -77,3 +80,12 @@ point-group -> symbol-class lookup and the full rank-mapping explanation (m=0 ->
 - **2026-06-17** (`c055746`): Split into Part I (columns 1-11) and Part II (columns 12-25) for
   readability — the 25-column single table required horizontal scrolling — matching the LaTeX
   layout. No data changes.
+- **2026-07-09**: Print-verification corrections (five transcription-error sites, all in the
+  Part II c4 column block; verified against printed pages 62–66):
+  - Part II header: `yxzz(c4)` → `xyxz(c4)` and `yxxx(c4)` → `yxxz(c4)` (the six c4 columns are
+    the six arrangements of {x,x,y,z}: xxyz, xyxz, yxxz, yyxz, yxyz, xyyz).
+  - Rows A4 and C4, same two self-referencing cells: `yxzz` → `xyxz`, `yxxx` → `yxxz`.
+  - Rows K4, M4, O4, R4, columns xxyz/xyxz/yxxz: `-yyyy` → `-yyyz`.
+  - Rows K4, L4, O4, columns yyxz/yxyz/xyyz: `-xxxx` → `-xxxz`.
+  All of Part I is unchanged (the `-xxxx` in rows G4/J4 and `-yyyy`-free `xxxx`/`-xxxx` cells there
+  are correct as printed); only the c4 block was affected.
