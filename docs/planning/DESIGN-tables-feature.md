@@ -1,6 +1,10 @@
 # DESIGN -- "Tables": the interactive Birss-tables feature (B15)
 
-Status: maintainer-approved design decisions locked 2026-07-09; phase-1 analysis items open.
+Status: maintainer-approved design decisions locked 2026-07-09. Phase 1 engine + anchors landed
+(PR #76): `TensorSpec` / `computeTensorForm`, the intrinsic-symmetry (permutation-generator) model,
+and the 4b-4d semantics analysis + guards. Remaining Phase-1 items are the deferred anchors -- 4f
+print-verification (roadmap gap F4) and the Table-7 magnetic i/c class map -- both on the
+maintainer/scan loop, not code work. See the resolved "Open items" below.
 Place in repo: `docs/planning/DESIGN-tables-feature.md` (committed with the Phase-1 work order).
 
 ## Goal
@@ -110,8 +114,17 @@ exists (decision 7), and a literature pointer. Adding an effect = one entry.
   deep links (decision 6), "groups sharing this form" overview, chain refinements.
 - **Phase 4 (nice-to-have):** LaTeX copy, possibly classic Nye dot diagrams.
 
-## Open items (resolve in Phase 1, before coding)
-1. Exact semantics of tables 4b-4d (rows, columns, i/c coverage, magnetic vs classical classes).
-2. Final intrinsic-symmetry model (permutation-generator representation).
-3. Zero-tensor and "effect forbidden" presentation (align with the property-flag chips).
-4. Routing/code-splitting details (match the existing route-level splitting).
+## Open items
+Phase-1 engine items (1, 2) are resolved by PR #76; the presentation/routing items (3, 4) are
+Phase-2 UI concerns and stay open.
+1. ~~Exact semantics of tables 4b-4d (rows, columns, i/c coverage, magnetic vs classical
+   classes).~~ **Resolved (PR #76)** -- see `docs/findings/ANALYSIS-table-4b-4d-semantics.md`
+   (4b/4c/4d are classical, no time reversal; the 4d `xz(2)`/`yz(2)` multiplicity reading is
+   confirmed) and the guard `src/services/tables4bcd.reference.test.ts`. The magnetic i/c
+   reassignment via Table 7 remains deferred (a 4b-4d guard *through Table 7* is not yet wired).
+2. ~~Final intrinsic-symmetry model (permutation-generator representation).~~ **Resolved
+   (PR #76)** -- `TensorSpec.intrinsic` (`none`/`ij`/`jk`/`voigt`) is modelled as index-permutation
+   generators in `src/services/tensorForms.ts` (`intrinsicGenerators`).
+3. Zero-tensor and "effect forbidden" presentation (align with the property-flag chips). *(Phase 2
+   UI -- the engine already exposes the explicit `isZero` state this will render.)*
+4. Routing/code-splitting details (match the existing route-level splitting). *(Phase 2.)*
