@@ -932,7 +932,10 @@ reader naturally takes them as the counts for the *displayed* system → mislead
 
 ### B15 — Explorer as an interactive Birss table (tensor lookup up to rank 4)
 
-**Status:** Open decision — scope & placement (larger vision item).
+**Status:** Design locked 2026-07-09, Phase 1 in progress. Scope & placement resolved — see
+[`DESIGN-tables-feature.md`](DESIGN-tables-feature.md) (the standalone "Tables" page). Phase 1
+is the engine + anchors (no UI): `TensorSpec` / `computeTensorForm`, the internal + reference
+anchors, and the 4b–4d semantics analysis + guards.
 
 **Area:** Explorer (and/or a new "Tables" section) — general tensor lookup
 **Severity:** Feature / vision — larger (roadmap-scale) scope *(exploratory)*

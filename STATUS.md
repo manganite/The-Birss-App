@@ -79,7 +79,9 @@ B15 and B29.
 ## 1. Open items — ROADMAP-next
 
 ### B15 — Explorer as interactive Birss table
-**Status:** Open (scope). The largest remaining Wave E item.
+**Status:** Design locked 2026-07-09; Phase 1 (engine + anchors, no UI) in progress. See
+[`docs/planning/DESIGN-tables-feature.md`](docs/planning/DESIGN-tables-feature.md) for the
+approved design (the "Tables" page) and phasing.
 
 **What it is.** Beyond SHG, make the Explorer a full property-tensor reference: look
 up any property tensor up to rank 4 for any magnetic point group, using the Birss
