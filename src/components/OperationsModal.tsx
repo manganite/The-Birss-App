@@ -169,11 +169,19 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                       {idx > 0 && <span className="text-ink/30 mx-2">·</span>}
                       {axisWord && <span className="normal-case text-xs text-ink/60">{axisWord}</span>}
                       <FormatPointGroup name={hm} />
-                      {conventionAffected && setting === birssStandard && (
-                        <span className="text-xs text-ink/50">(standard frame in Birss)</span>
-                      )}
-                      {conventionAffected && setting === itcStandard && (
-                        <span className="text-xs text-ink/50">(standard frame in ITC)</span>
+                      {conventionAffected && (
+                        birssStandard === itcStandard && setting === birssStandard ? (
+                          <span className="text-xs text-ink/50">(standard frame in Birss and ITC)</span>
+                        ) : (
+                          <>
+                            {setting === birssStandard && (
+                              <span className="text-xs text-ink/50">(standard frame in Birss)</span>
+                            )}
+                            {setting === itcStandard && (
+                              <span className="text-xs text-ink/50">(standard frame in ITC)</span>
+                            )}
+                          </>
+                        )
                       )}
                     </span>
                   ))}
