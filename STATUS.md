@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-07. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-09. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -11,16 +11,27 @@ on drift)._
 
 ---
 
-## Current release: v0.16.0 (2026-07-05)
+## Current release: v0.18.0 (2026-07-09)
 
-Makes the Birss/ITC convention a global mode; adds per-crystal-system axis tooltips, a reworked
-group info header, app-wide LaTeX rendering, and route-level code splitting; fixes the grey
-alternate-setting symbol (missing `1'`) and the monoclinic axis-orientation display.
-Display/verification-only — no computed output changes. See `CHANGELOG.md` `[0.16.0]`.
+Enriched Explorer popup (Shubnikov + full HM, group order, parent + halving subgroup, per-setting
+Birss/ITC standards, and print-anchored property flags for polar/piezo/magnetoelectric behaviour);
+corrected the `432`-family ED-SHG consequence (ED SHG vanishes identically, so the consequence is
+now derived from the computed tensor form); app-wide portal tooltips (no clipping); and unified
+simulator/Help intensity notation. Display/verification-only except the `432` consequence-text fix.
+See `CHANGELOG.md` `[0.18.0]`.
 
-Unreleased since v0.16.0: corrected crystal-cut/rotation labels, Simulator polarimetry and
-component-note polish, the Explorer per-crystal-system info panel, and the Help/README/tooltip
-review fixes (this work order).
+There is nothing unreleased on `main` at present.
+
+### v0.17.0 (2026-07-08)
+
+Explorer per-crystal-system info panel; crystal-cut and rotation-angle (φ_X/φ_Y) label corrections;
+Help/README tab and cross-link fixes. Display-only. See `CHANGELOG.md` `[0.17.0]`.
+
+### v0.16.0 (2026-07-05)
+
+Birss/ITC convention as a global mode; per-crystal-system axis tooltips, reworked group header,
+app-wide LaTeX rendering, route-level code splitting; grey alternate-setting `1'` and monoclinic
+axis-orientation fixes. Display/verification-only. See `CHANGELOG.md` `[0.16.0]`.
 
 ### v0.15.0 (2026-07-04)
 

@@ -1,10 +1,18 @@
 /**
- * groupNotation.ts — supplementary Birss notation for the point-group explorer popup.
+ * groupNotation.ts — supplementary Birss/ITC notation for the point-group explorer popup.
  *
- * All data here is transcribed VERBATIM from the vendored, print-verified Birss reference
- * tables; never derive it from the app's own output. Two anti-drift guard tests
- * (`groupNotation.test.ts`) re-parse the source markdown at test time and assert these maps
- * equal the parsed tables entry-for-entry, so the TypeScript can never silently drift.
+ * These maps (`SHUBNIKOV`, `FULL_HM`, `REFERENCE_AXES`) are transcribed from the two vendored,
+ * canonical reference tables — not raw Birss data. `SHUBNIKOV` and `FULL_HM` come from
+ * `birss-tables/table-nomenclature.md` (Table A + Table C); `REFERENCE_AXES` comes from
+ * `birss-tables/table-4a.md`. Within those tables the columns have mixed provenance, documented in
+ * the tables themselves: the full Hermann–Mauguin and Schoenflies symbols are ITC-derived, the 32
+ * grey Shubnikov symbols are derived by the ⊗{1,1′} rule, and only the 90 non-grey Shubnikov
+ * symbols are Birss (Table 6). So the data is authoritative-per-its-source, not "verbatim from
+ * Birss" — never derive any of it from the app's own output.
+ *
+ * Two anti-drift guard tests (`groupNotation.test.ts`) re-parse those source markdown tables at
+ * test time and assert these maps equal the parsed tables entry-for-entry, so the TypeScript can
+ * never silently drift from the canonical tables.
  *
  * Notation: app group keys keep the inversion bar on the cubic 3 (`m-3`, `m'-3'm'`) where the
  * Birss tables print a bare `m3` — see `birss-tables/table-nomenclature.md` ("App notation

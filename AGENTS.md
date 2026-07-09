@@ -254,8 +254,9 @@ git push origin main
 ### Cutting a release
 1. Bump `version` in `package.json`/`package-lock.json`.
 2. Move the `Unreleased` entries under a new `## [x.y.z] - YYYY-MM-DD` heading, and update the compare/release links at the bottom of `CHANGELOG.md`.
-3. Commit, then on `main`: `git tag -a vX.Y.Z -m "..."` and `git push origin main --tags`.
-4. Pushing the tag triggers two workflows: `release.yml` creates the GitHub Release automatically, using the matching `## [x.y.z]` section of `CHANGELOG.md` as the release notes; `deploy.yml` builds and publishes the tagged commit to GitHub Pages — this is the point where the live site actually updates.
+3. Bump `STATUS.md`'s current-release block (the `## Current release: vX.Y.Z` heading, its one-line summary, the `_Last updated:_` date, and demote the previous release to a `### vX.Y.Z` past entry). Keeps the canonical cycle index from going stale.
+4. Commit, then on `main`: `git tag -a vX.Y.Z -m "..."` and `git push origin main --tags`.
+5. Pushing the tag triggers two workflows: `release.yml` creates the GitHub Release automatically, using the matching `## [x.y.z]` section of `CHANGELOG.md` as the release notes; `deploy.yml` builds and publishes the tagged commit to GitHub Pages — this is the point where the live site actually updates.
 
 ### Commit messages
 - [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): lowercase summary`, e.g. `feat(simulator): add polarimetry tooltip`. Common types are `feat`, `fix`, `refactor`, `test`, `docs`, `chore`. Scope is optional and usually the affected component/module. Keep the summary line short (~72 chars); use the body for details.
@@ -270,6 +271,7 @@ git push origin main
 - [ ] `npm run lint && npm run test` pass
 - [ ] Version bumped per SemVer
 - [ ] `CHANGELOG.md` updated
+- [ ] `STATUS.md` current-release block bumped (heading, summary, `_Last updated:_`, previous release demoted)
 - [ ] Tag created and pushed with `--tags` (triggers the GitHub Release via `release.yml` and the live deploy via `deploy.yml`)
 
 ## Important Constraints
