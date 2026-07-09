@@ -146,7 +146,7 @@ in-repo) or ITC 1.5.2.3 — **never** derived from the app's own output (anti-ci
 - **Time-reversal**: `'i'` = time-even (i-type), `'c'` = time-odd (c-type). Represented by `TensorTimeReversal` in `tensorCalculator.ts`.
 - **Point group types**: `'I'` Standard (32), `'II'` Gray (32), `'III'` Black & White (58) — defined in `PointGroupData.type`.
 - Light propagates along the **Z-axis** in the Lab Frame → `E_Z = 0` by convention throughout.
-- Crystal rotation is parameterised by **thetaX** and **thetaY** (degrees), applied as sequential rotation matrices in `tensorCalculator.ts`.
+- Crystal rotation is parameterised by **phiX**, **phiY** (lab-fixed tilts) and **psi** (crystal-tied azimuth), in degrees -- see `trigPoly.ts` / `tensorProjection.ts` for the composition `R = Ry(phiY) * Rx(phiX) * Rz(psi) * R_preset`.
 - Anti-unitary operations (time-reversal combined) are flagged via `isAntiUnitary?: boolean` on the `Matrix3x3` interface.
 
 ### Math rendering
