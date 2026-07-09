@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
-import { getPresetsForSystem, KDirectionSelector } from './MathComponents';
+import { getPresetsForSystem, KDirectionSelector } from './crystalCut';
 import { TensorClassificationControl, TimeReversalControl } from './TensorSetupControls';
 import { TermInfo } from './TermInfo';
 import type { PointGroupData } from '../data/pointGroups';

@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Activity } from 'lucide-react';
 import { InlineMath } from 'react-katex';
 import { isCentrosymmetric } from '../services/tensorCalculator';
-import { SectionHeader } from './MathComponents';
+import { SectionHeader } from './notation';
 import { PolarimetryPlot } from './PolarimetryPlot';
 import { TermInfo } from './TermInfo';
 import type { PointGroupData } from '../data/pointGroups';

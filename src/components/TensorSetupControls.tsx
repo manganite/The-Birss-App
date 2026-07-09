@@ -1,7 +1,7 @@
 import { Activity, Zap } from 'lucide-react';
 import type { TensorType, TensorTimeReversal } from '../services/tensorCalculator';
 import { TENSOR_META } from '../types';
-import { SectionHeader } from './MathComponents';
+import { SectionHeader } from './notation';
 import { TermInfo } from './TermInfo';
 
 interface NavigateProp {
