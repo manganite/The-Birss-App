@@ -61,7 +61,7 @@ function annotationPerms(ann: string | undefined, base: string): number[][] {
   if (!ann) return [range(n)];                                    // bare: identity only
   if (/^\d+$/.test(ann)) return allPerms(n);                      // (2)/(3)/(4): all permutations
   if (ann === 'c4') return range(n).map(k => range(n).map(i => (i + k) % n)); // cyclic shifts
-  if (ann.includes('·')) {                                   // (x.3): fix the LAST index
+  if (ann.includes('·') || ann.includes('.')) {                  // (x·3) or (x.3): fix the LAST index
     return allPerms(n - 1).map(p => [...p, n - 1]);
   }
   if (/^[a-z]:\d+$/.test(ann)) {                                  // (x:3): fix the FIRST index
@@ -149,9 +149,17 @@ for (const r of FF_ROWS) {
   FF_ROWS_BY_LETTER.get(m[1])!.push(r);
 }
 
+const relationsCache = new Map<string, Relation[]>();
 function relationsForClass(letter: string): Relation[] {
-  const rws = FF_ROWS_BY_LETTER.get(letter)!; // [Part I row, Part II row] in file order
-  return rws.flatMap((row, i) => buildConstraints(FF_HEADERS[i], row));
+  const hit = relationsCache.get(letter);
+  if (hit) return hit;
+  const rws = FF_ROWS_BY_LETTER.get(letter);
+  if (!rws || rws.length !== FF_HEADERS.length) {
+    throw new Error(`Table 4f: class ${letter} has ${rws?.length ?? 0} rows, expected ${FF_HEADERS.length} (Part I + Part II)`);
+  }
+  const rels = rws.flatMap((row, i) => buildConstraints(FF_HEADERS[i], row)); // [Part I, Part II] in file order
+  relationsCache.set(letter, rels);
+  return rels;
 }
 
 describe('Part C rank 4 -- Table 4f guard (32 classical groups, lockstep pairing)', () => {
@@ -163,6 +171,7 @@ describe('Part C rank 4 -- Table 4f guard (32 classical groups, lockstep pairing
     }
     expect(FF_HEADERS).toHaveLength(2);
     expect(FF_ROWS_BY_LETTER.size).toBe(21);
+    for (const [letter, rws] of FF_ROWS_BY_LETTER) expect(rws.length, `class ${letter} row count`).toBe(2); // Part I + Part II
   });
 
   it('classical i-form == c-form for every group (no antiunitary elements)', () => {

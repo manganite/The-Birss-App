@@ -21,7 +21,7 @@ Notation:
 of the type xz(2), xxy(3), yxxx(x.3), xxxz(4), xxyy(x:3), xxyz(c4) and zzxy(xy:6) indicate certain
 permutations which must be applied to every component in the column. Thus, in considering a
 permutation of a component at the top of a column, the same permutation must be applied to all the
-components listed in that column for the various crystal classes." In other words the header
+components listed in that column for the various crystal classes." In other words, the header
 annotation defines a set of **index-position** permutations, and each cell value is expanded by the
 **same** position permutations (it is *not* an axis relabel). Worked example — row `K4`, column
 `xxyz(c4)`, cell `-yyyz`: the four cyclic position shifts give `T_xxyz = -T_yyyz`,
