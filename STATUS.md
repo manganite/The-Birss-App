@@ -20,7 +20,13 @@ matching effect; and a frame-canonical "groups sharing this form" view whose par
 the ITC 1.5.8.1 magnetoelectric F-blocks. Also corrects the lookup-chain breadcrumb for magnetic
 c-tensors (a Table-7 note instead of the classical Table-4a tail). See `CHANGELOG.md` `[0.20.0]`.
 
-There is nothing unreleased on `main` at present.
+**Unreleased on `main`:** the Table-7 lookup-chain breadcrumb for magnetic c-tensors (Type III groups
+now show the full Birss cross-formula chain — associated classical group A/B, rotated-setting badge,
+Table-4a column with the parity crossover made explicit, class letter, rank-table row, and book-error
+footnotes; grey groups show the time-reversal-forbidden tail), plus a class-indexed Table-7 guard
+holding `computeTensorForm` to Birss's i-/c cross-formula at ranks 0/1/2/4 across all 58 black-white
+rows (generated `table7Data.ts`, `npm run table7data`). The latter subsumes the "magnetic EQ rank-4
+golden fixtures" backlog item at the symbol-class level. See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 
