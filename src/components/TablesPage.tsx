@@ -58,6 +58,14 @@ function buildLabels(basis: number[][], rank: number): string[] {
   return labels;
 }
 
+// Gaussian-elimination tolerances (distinct from the display EPS): a looser pivot cutoff so that
+// float noise is never counted as an independent direction, and a tighter elimination cutoff so
+// only genuinely-nonzero entries are reduced. Same values as the validated Table-4f guard's rank
+// helper (tables4f.reference.test.ts). Engine bases are exact group averages, so noise sits near
+// machine epsilon (~1e-16), far from either cutoff.
+const RANK_PIVOT_EPS = 1e-7;
+const RANK_ELIM_EPS = 1e-12;
+
 /** Rank of a set of vectors (Gaussian elimination) = true independent-component count. */
 function spanRank(basis: number[][]): number {
   if (!basis.length) return 0;
@@ -67,11 +75,11 @@ function spanRank(basis: number[][]): number {
   for (let c = 0; c < dim && rank < M.length; c++) {
     let piv = rank;
     for (let r = rank + 1; r < M.length; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
-    if (Math.abs(M[piv][c]) < 1e-7) continue;
+    if (Math.abs(M[piv][c]) < RANK_PIVOT_EPS) continue;
     [M[rank], M[piv]] = [M[piv], M[rank]];
     const pv = M[rank][c];
     for (let j = 0; j < dim; j++) M[rank][j] /= pv;
-    for (let r = 0; r < M.length; r++) if (r !== rank && Math.abs(M[r][c]) > 1e-12) { const f = M[r][c]; for (let j = 0; j < dim; j++) M[r][j] -= f * M[rank][j]; }
+    for (let r = 0; r < M.length; r++) if (r !== rank && Math.abs(M[r][c]) > RANK_ELIM_EPS) { const f = M[r][c]; for (let j = 0; j < dim; j++) M[r][j] -= f * M[rank][j]; }
     rank++;
   }
   return rank;
