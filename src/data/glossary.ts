@@ -2,7 +2,7 @@ export interface GlossaryTerm {
   id: string;
   term: string;
   brief: string;
-  helpTab?: 'overview' | 'conventions' | 'physics' | 'simulation' | 'deeper';
+  helpTab?: 'overview' | 'conventions' | 'physics' | 'simulation' | 'tables' | 'deeper';
 }
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
@@ -166,5 +166,131 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     id: 'magnetoelectric',
     term: 'Magnetoelectric (linear)',
     brief: 'Admits a second-rank axial, time-odd tensor αᵢⱼ coupling an electric field to magnetization (and vice versa) — 58 magnetic point groups (ITC Table 1.5.8.1).',
+  },
+
+  // ---- Tables-page tooltips (T1-T18; T15 is a link on the book-error footnote, not a tooltip) ----
+  {
+    id: 'tbl-spatial-parity',
+    term: 'Spatial parity',
+    brief: 'Polar tensors transform like arrows (E, P); axial tensors like circulation (H, M). A tensor inherits the product of the parities of the quantities it connects.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-time-parity',
+    term: 'Time parity',
+    brief: 'i-type: invariant under time reversal. c-type: changes sign under time reversal -- nonzero only where magnetic order breaks it.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-rank',
+    term: 'Rank',
+    brief: 'The number of indices -- one per coupled direction. Even or odd rank also decides which Table 4a column supplies the class letter.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-index-symmetry',
+    term: 'Index symmetry',
+    brief: 'Index pairs that can be swapped for free -- imposed by the physics of the coupling (symmetric stress, energy arguments), not by the crystal.',
+    helpTab: 'deeper',
+  },
+  {
+    id: 'tbl-eff-pyroelectricity',
+    term: 'Pyroelectricity / spont. pol.',
+    brief: 'A temperature change shifts a polarization that is already allowed to exist -- the same vector form as a spontaneous polarization.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-eff-spontaneous-magnetization',
+    term: 'Pyromagnetism / spont. magn.',
+    brief: 'The magnetic twin: a temperature change shifts a spontaneous magnetization. c-type -- needs magnetic order.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-eff-permittivity',
+    term: 'Electric permittivity',
+    brief: 'The linear dielectric response D = eps_0 eps E; symmetric on energy grounds.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-eff-magnetoelectric',
+    term: 'Linear magnetoelectric effect',
+    brief: 'An electric polarization driven by a MAGNETIC field -- axial and c-type, the classic marker of magnetoelectric order.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-eff-piezoelectricity',
+    term: 'Piezoelectricity',
+    brief: 'Polarization driven by stress; the symmetric stress tensor makes the last two indices interchangeable.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-eff-piezomagnetism',
+    term: 'Piezomagnetism',
+    brief: 'Magnetization driven by stress -- the c-type counterpart of piezoelectricity.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-eff-elasticity',
+    term: 'Elasticity',
+    brief: 'Stress from strain; carries the full Voigt symmetry (at most 21 independent constants).',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-indep-count',
+    term: 'Independent components',
+    brief: 'The numbers symmetry leaves free. Symmetry fixes the pattern -- zeros, equalities, signs -- never the values.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-nye',
+    term: 'Nye scheme',
+    brief: 'Rows: the response direction i = x, y, z. Columns: the symmetric index pairs in Voigt order xx, yy, zz, yz, zx, xy.',
+    helpTab: 'deeper',
+  },
+  {
+    id: 'tbl-relations',
+    term: 'Independent components & relations',
+    brief: 'The independent components, and the equalities and sign flips symmetry enforces among all the others.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-vanishes',
+    term: 'Vanishes identically',
+    brief: 'Exactly zero by symmetry -- not merely small. A clearly nonzero measurement would mean the assumed symmetry is wrong or broken.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-sharing',
+    term: 'Groups sharing this form',
+    brief: 'Point groups this measurement alone cannot distinguish -- their forms are identical when compared in a common reference frame.',
+    helpTab: 'tables',
+  },
+  {
+    id: 'tbl-rotated',
+    term: 'Rotated setting',
+    brief: "Birss tabulates this source group in a rotated axis setting. The app shows the form transformed into the group's own frame.",
+    helpTab: 'deeper',
+  },
+  {
+    id: 'tbl-grey-tail',
+    term: 'Grey group',
+    brief: 'Grey groups contain time reversal itself, so every c-tensor component equals its own negative: identically zero.',
+  },
+  {
+    id: 'tbl-ref-axes',
+    term: 'Reference axes',
+    brief: "The axis orientation the tabulated form is written in -- fixed per family class, independent of the group's conventional setting.",
+    helpTab: 'conventions',
+  },
+  {
+    id: 'tbl-no-form',
+    term: 'No allowed form',
+    brief: 'Table 4a has no class letter here: this tensor species is forbidden for that class at every rank of this parity.',
+  },
+  {
+    id: 'tbl-crossover',
+    term: 'Parity crossover',
+    brief: 'The Table 4a column being read has the OPPOSITE spatial parity to your tensor. Not a bug -- Table 7\'s cross-rule.',
+    helpTab: 'tables',
   },
 ];
