@@ -26,6 +26,7 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
   - Interactive radar charts displaying SHG intensity as the analyzer angle is rotated.
   - Mathematically simplified and summarized expanded formulas using harmonic Fourier series representation (power reduction and multiple-angle formulas).
   - Smart grouping algorithm to automatically pick the most elegant representation (power vs harmonic) and minimize unnecessary minus signs.
+- **Tables**: interactive Birss-table lookup — any rank 0–4 tensor by spatial/time parity and intrinsic symmetry, rendered rank-specifically (matrix, Nye scheme, relation list) with the Birss lookup chain; print-anchored against the vendored tables 4a–4f.
 - **Global Birss | ITC symbol-convention toggle**: relabels group symbols and standard settings app-wide (Explorer, search, Calculator, Simulator) — display only, computed output always follows the Birss engine conventions below.
 - **Help & Documentation**: 
   - Comprehensive physics background, mathematics behind the intensity calculations, and usage instructions.
