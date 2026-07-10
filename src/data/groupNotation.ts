@@ -376,3 +376,70 @@ export function getFamilyClass(name: string): string {
   const stripped = name.replace(/'/g, ""); // Type III — strip time-reversal primes
   return BRACKETED_FAMILY[stripped] ?? stripped;
 }
+
+/** The Birss symbol-class letter (A–U) a classical symmetry class maps to, per tensor type. `null`
+ * = the table prints `-` for that type (the tensor vanishes identically for the class). */
+export interface ClassLetters {
+  polarEven: string | null;
+  axialEven: string | null;
+  polarOdd: string | null;
+  axialOdd: string | null;
+}
+
+/**
+ * Birss Table 4a, columns "Polar/Axial tensor of even/odd rank" (columns 3–6): the symbol-class
+ * letter each of the 32 classical symmetry classes maps to, per tensor type. Keyed by the app
+ * classical class key (cubic `m3`/`m3m` printed in the table are keyed here as `m-3`/`m-3m`).
+ *
+ * Source: `birss-tables/table-4a.md`. Re-parsed and compared entry-for-entry by the anti-drift
+ * guard in `groupNotation.test.ts`.
+ */
+export const TABLE_4A_CLASS_LETTERS: Record<string, ClassLetters> = {
+  "1":     { polarEven: 'A', axialEven: 'A',  polarOdd: 'A',  axialOdd: 'A' },
+  "-1":    { polarEven: 'A', axialEven: null, polarOdd: null, axialOdd: 'A' },
+  "2":     { polarEven: 'B', axialEven: 'B',  polarOdd: 'B',  axialOdd: 'B' },
+  "m":     { polarEven: 'B', axialEven: 'C',  polarOdd: 'C',  axialOdd: 'B' },
+  "2/m":   { polarEven: 'B', axialEven: null, polarOdd: null, axialOdd: 'B' },
+  "222":   { polarEven: 'D', axialEven: 'D',  polarOdd: 'D',  axialOdd: 'D' },
+  "mm2":   { polarEven: 'D', axialEven: 'E',  polarOdd: 'E',  axialOdd: 'D' },
+  "mmm":   { polarEven: 'D', axialEven: null, polarOdd: null, axialOdd: 'D' },
+  "4":     { polarEven: 'F', axialEven: 'F',  polarOdd: 'F',  axialOdd: 'F' },
+  "-4":    { polarEven: 'F', axialEven: 'G',  polarOdd: 'G',  axialOdd: 'F' },
+  "4/m":   { polarEven: 'F', axialEven: null, polarOdd: null, axialOdd: 'F' },
+  "422":   { polarEven: 'H', axialEven: 'H',  polarOdd: 'H',  axialOdd: 'H' },
+  "4mm":   { polarEven: 'H', axialEven: 'I',  polarOdd: 'I',  axialOdd: 'H' },
+  "-42m":  { polarEven: 'H', axialEven: 'J',  polarOdd: 'J',  axialOdd: 'H' },
+  "4/mmm": { polarEven: 'H', axialEven: null, polarOdd: null, axialOdd: 'H' },
+  "3":     { polarEven: 'K', axialEven: 'K',  polarOdd: 'K',  axialOdd: 'K' },
+  "-3":    { polarEven: 'K', axialEven: null, polarOdd: null, axialOdd: 'K' },
+  "32":    { polarEven: 'L', axialEven: 'L',  polarOdd: 'L',  axialOdd: 'L' },
+  "3m":    { polarEven: 'L', axialEven: 'M',  polarOdd: 'M',  axialOdd: 'L' },
+  "-3m":   { polarEven: 'L', axialEven: null, polarOdd: null, axialOdd: 'L' },
+  "6":     { polarEven: 'N', axialEven: 'N',  polarOdd: 'N',  axialOdd: 'N' },
+  "-6":    { polarEven: 'N', axialEven: 'O',  polarOdd: 'O',  axialOdd: 'N' },
+  "6/m":   { polarEven: 'N', axialEven: null, polarOdd: null, axialOdd: 'N' },
+  "622":   { polarEven: 'P', axialEven: 'P',  polarOdd: 'P',  axialOdd: 'P' },
+  "6mm":   { polarEven: 'P', axialEven: 'Q',  polarOdd: 'Q',  axialOdd: 'P' },
+  "-6m2":  { polarEven: 'P', axialEven: 'R',  polarOdd: 'R',  axialOdd: 'P' },
+  "6/mmm": { polarEven: 'P', axialEven: null, polarOdd: null, axialOdd: 'P' },
+  "23":    { polarEven: 'S', axialEven: 'S',  polarOdd: 'S',  axialOdd: 'S' },
+  "m-3":   { polarEven: 'S', axialEven: null, polarOdd: null, axialOdd: 'S' },
+  "432":   { polarEven: 'T', axialEven: 'T',  polarOdd: 'T',  axialOdd: 'T' },
+  "-43m":  { polarEven: 'T', axialEven: 'U',  polarOdd: 'U',  axialOdd: 'T' },
+  "m-3m":  { polarEven: 'T', axialEven: null, polarOdd: null, axialOdd: 'T' },
+};
+
+/**
+ * The Birss symbol-class letter for a group's tensor of the given parity and rank, via its classical
+ * family (`getFamilyClass`) and Table 4a. Even rank (0, 2, 4) reads the even-rank column, odd rank
+ * (1, 3) the odd-rank column — rank 0 uses the even-rank letter, following the table's even/odd
+ * split. Returns `null` when the class prints `-` (no allowed form of that type). This is the
+ * classical-family lookup (Table 4a); the magnetic i/c reassignment (Table 7) is not applied.
+ */
+export function getClassLetter(name: string, parity: 'polar' | 'axial', rank: number): string | null {
+  const row = TABLE_4A_CLASS_LETTERS[getFamilyClass(name)];
+  if (!row) return null;
+  const even = rank % 2 === 0;
+  if (parity === 'polar') return even ? row.polarEven : row.polarOdd;
+  return even ? row.axialEven : row.axialOdd;
+}

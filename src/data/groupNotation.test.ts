@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
-import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from './groupNotation';
+import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, TABLE_4A_CLASS_LETTERS, getFamilyClass } from './groupNotation';
 
 /**
  * Anti-drift guard tests for the supplementary Birss notation maps. Each test re-parses the
@@ -106,6 +106,34 @@ describe('REFERENCE_AXES vs table-4a.md', () => {
 
   it('equals REFERENCE_AXES entry-for-entry (no missing, no extra, no differing)', () => {
     expect(REFERENCE_AXES).toEqual(parsed);
+  });
+});
+
+describe('TABLE_4A_CLASS_LETTERS vs table-4a.md (columns 3-6)', () => {
+  // Columns: System | International symbol | Orientation | PolarEven | AxialEven | PolarOdd | AxialOdd
+  const CUBIC_RENAME: Record<string, string> = { m3: 'm-3', m3m: 'm-3m' };
+  const rows = parseRows(readFileSync(TABLE_4A_PATH, 'utf-8'));
+  const header = rows[0];
+  const letter = (cell: string): string | null => { const m = cell.match(/^([A-U])_[mn]$/); return m ? m[1] : null; };
+  const parsed: Record<string, { polarEven: string | null; axialEven: string | null; polarOdd: string | null; axialOdd: string | null }> = {};
+  for (const cells of rows.slice(1)) {
+    const key = CUBIC_RENAME[cells[1]] ?? cells[1];
+    parsed[key] = { polarEven: letter(cells[3]), axialEven: letter(cells[4]), polarOdd: letter(cells[5]), axialOdd: letter(cells[6]) };
+  }
+
+  it('reads the expected tensor-type columns', () => {
+    expect(header[3]).toBe('Polar tensor of even rank m');
+    expect(header[4]).toBe('Axial tensor of even rank m');
+    expect(header[5]).toBe('Polar tensor of odd rank n');
+    expect(header[6]).toBe('Axial tensor of odd rank n');
+  });
+
+  it('parses all 32 classical symmetry classes', () => {
+    expect(Object.keys(parsed)).toHaveLength(32);
+  });
+
+  it('equals TABLE_4A_CLASS_LETTERS entry-for-entry (no missing, no extra, no differing)', () => {
+    expect(TABLE_4A_CLASS_LETTERS).toEqual(parsed);
   });
 });
 
