@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { InlineMath } from 'react-katex';
-import { X, Calculator, Activity, Check, Minus } from 'lucide-react';
+import { X, Calculator, Activity, Table2, Check, Minus } from 'lucide-react';
 import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, getParentGroup, getHalvingSubgroup, isCentrosymmetric, isPolar, isPiezoelectric, isFerromagnetic, isPiezomagnetic, isMagnetoelectric, isChiral, getLaueClass } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels, getStandardSetting, getConventionNote } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
@@ -26,9 +26,10 @@ interface OperationsModalProps {
   onClose: () => void;
   onOpenInCalculator?: () => void;
   onOpenInSimulator?: () => void;
+  onOpenInTables?: () => void;
 }
 
-export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator, onOpenInSimulator }: OperationsModalProps) => {
+export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator, onOpenInSimulator, onOpenInTables }: OperationsModalProps) => {
   const operations = getSymmetryOperations(group.name);
   const generators = getGeneratorSymbols(group.name);
   const altSettings = getAlternateSettings(group.name);
@@ -247,7 +248,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
           </div>
         </div>
 
-        {(onOpenInCalculator || onOpenInSimulator) && (
+        {(onOpenInCalculator || onOpenInSimulator || onOpenInTables) && (
           <div className="p-4 border-t border-ink bg-ink/5 flex justify-end gap-2 shrink-0">
             {onOpenInCalculator && (
               <button
@@ -271,6 +272,18 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               >
                 <Activity className="w-4 h-4" />
                 Open in Simulator
+              </button>
+            )}
+            {onOpenInTables && (
+              <button
+                onClick={() => {
+                  onOpenInTables();
+                  onClose();
+                }}
+                className="px-4 py-2 bg-ink text-paper text-sm uppercase tracking-widest hover:bg-transparent hover:text-ink border border-ink transition-colors flex items-center gap-2"
+              >
+                <Table2 className="w-4 h-4" />
+                Open in Tables
               </button>
             )}
           </div>

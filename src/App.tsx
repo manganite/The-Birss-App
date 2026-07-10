@@ -30,6 +30,7 @@ function loadStoredConvention(): Convention {
 const HelpPage = lazy(() => import('./components/HelpPage').then((m) => ({ default: m.HelpPage })));
 const SimulatorPage = lazy(() => import('./components/SimulatorPage').then((m) => ({ default: m.SimulatorPage })));
 const CalculatorPage = lazy(() => import('./components/CalculatorPage').then((m) => ({ default: m.CalculatorPage })));
+const TablesPage = lazy(() => import('./components/TablesPage').then((m) => ({ default: m.TablesPage })));
 
 const normalizeString = (str: string) => {
   return str
@@ -47,7 +48,7 @@ const getGroupCategory = (name: string): GroupCategory => {
 };
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'calculator' | 'simulator' | 'explorer' | 'help'>('explorer');
+  const [currentView, setCurrentView] = useState<'calculator' | 'simulator' | 'explorer' | 'tables' | 'help'>('explorer');
   const [helpActiveTab, setHelpActiveTab] = useState<string>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -102,8 +103,14 @@ export default function App() {
   };
 
   const handleNavigate = (view: string, tab?: string) => {
-    setCurrentView(view as 'calculator' | 'simulator' | 'explorer' | 'help');
+    setCurrentView(view as 'calculator' | 'simulator' | 'explorer' | 'tables' | 'help');
     if (view === 'help' && tab) setHelpActiveTab(tab);
+  };
+
+  const openInTables = (group: PointGroupData) => {
+    setSelectedGroup(group);
+    setSelectedSetting(getDefaultSetting(group.name, convention));
+    setCurrentView('tables');
   };
 
   const tensorConfig = {
@@ -157,6 +164,12 @@ export default function App() {
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'simulator' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Simulator
+            </button>
+            <button
+              onClick={() => setCurrentView('tables')}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'tables' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
+            >
+              Tables
             </button>
             <button
               onClick={() => setCurrentView('help')}
@@ -296,11 +309,18 @@ export default function App() {
               setSelectedSetting(getDefaultSetting(group.name, convention));
               setCurrentView('simulator');
             }}
+            onSelectGroupForTables={openInTables}
           />
         ) : (
           <Suspense fallback={<div className="text-center text-xs uppercase tracking-widest text-ink/70 py-24">Loading…</div>}>
             {currentView === 'help' ? (
               <HelpPage activeTab={helpActiveTab} onTabChange={setHelpActiveTab} />
+            ) : currentView === 'tables' ? (
+              <TablesPage
+                selectedGroup={selectedGroup}
+                tensorConfig={tensorConfig}
+                onNavigate={handleNavigate}
+              />
             ) : currentView === 'simulator' ? (
               <SimulatorPage
                 selectedGroup={selectedGroup}

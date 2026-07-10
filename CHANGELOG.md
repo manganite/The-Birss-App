@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New "Tables" page: interactive Birss-table lookup -- choose any tensor by rank (0-4), spatial
+  parity and time parity (plus intrinsic index symmetry) and see its symmetry-reduced form for
+  the selected group, with the Birss lookup chain (family class, reference axes, table row) and
+  an "Open in Tables" button in the Explorer popup. Print-anchored via the Phase-1 engine.
+
 ## [0.18.0] - 2026-07-09
 
 ### Added
