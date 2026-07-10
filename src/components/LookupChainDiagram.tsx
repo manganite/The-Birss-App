@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronDown } from 'lucide-react';
 import {
   classicalChainApplies, getFamilyClass, getClassLetter, getTable7Chain,
   TABLE_4A_CLASS_LETTERS, REFERENCE_AXES, type ClassLetters,
 } from '../data/groupNotation';
-import type { TensorParity, TensorTimeParity } from '../services/tensorForms';
+import type { TensorParity, TensorTimeParity, TensorRank } from '../services/tensorForms';
 import { TermInfo } from './TermInfo';
 
 /**
@@ -42,7 +43,7 @@ interface LookupChainDiagramProps {
   groupName: string;
   groupType: 'I' | 'II' | 'III';
   parity: TensorParity;
-  rank: number;
+  rank: TensorRank;
   timeParity: TensorTimeParity;
   /** convention-aware display label; defaults to the app key */
   displayName?: string;
@@ -52,7 +53,7 @@ interface LookupChainDiagramProps {
 const Sym = ({ s }: { s: string }) => <InlineMath math={bar(s)} />;
 
 /** A chip: the visual building block. `tone` maps to the prototype's emphasis levels. */
-function Chip({ tone = 'plain', children }: { tone?: 'plain' | 'source' | 'dim' | 'invert'; children: React.ReactNode }) {
+function Chip({ tone = 'plain', children }: { tone?: 'plain' | 'source' | 'dim' | 'invert'; children: ReactNode }) {
   const cls = {
     plain: 'border border-ink/35 text-ink',
     source: 'border-[1.8px] border-ink bg-ink/10 text-ink font-semibold',

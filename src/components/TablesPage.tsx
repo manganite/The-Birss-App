@@ -207,8 +207,8 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
             <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Effect</span>
             <div className="flex flex-wrap gap-2">
               {TENSOR_EFFECTS.map(e => (
-                <span key={e.id} className={`inline-flex items-center gap-1.5 ${chipBase} ${selectedEffectId === e.id ? chipOn : chipOff}`}>
-                  <button type="button" aria-pressed={selectedEffectId === e.id} onClick={() => setSelectedEffectId(e.id)} className="leading-none">{e.label}</button>
+                <span key={e.id} className="inline-flex items-center gap-1">
+                  <button type="button" aria-pressed={selectedEffectId === e.id} onClick={() => setSelectedEffectId(e.id)} className={`${chipBase} ${selectedEffectId === e.id ? chipOn : chipOff}`}>{e.label}</button>
                   <TermInfo id={`tbl-eff-${e.id}`} onNavigate={onNavigate} />
                 </span>
               ))}

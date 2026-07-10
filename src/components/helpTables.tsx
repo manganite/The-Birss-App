@@ -2,6 +2,7 @@ import React from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronRight } from 'lucide-react';
 import { TENSOR_EFFECTS } from '../data/tensorEffects';
+import type { TensorRank } from '../services/tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { LookupChainDiagram } from './LookupChainDiagram';
 
@@ -88,7 +89,7 @@ function ClassicalBreadcrumbExample() {
   );
 }
 
-function HelpDiagram({ name, parity, rank, timeParity }: { name: string; parity: 'polar' | 'axial'; rank: number; timeParity: 'i' | 'c' }) {
+function HelpDiagram({ name, parity, rank, timeParity }: { name: string; parity: 'polar' | 'axial'; rank: TensorRank; timeParity: 'i' | 'c' }) {
   const group = POINT_GROUPS.find(g => g.name === name);
   if (!group) return null;
   return <LookupChainDiagram groupName={name} groupType={group.type} parity={parity} rank={rank} timeParity={timeParity} />;
