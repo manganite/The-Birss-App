@@ -11,17 +11,25 @@ on drift)._
 
 ---
 
-## Current release: v0.19.0 (2026-07-10)
+## Current release: v0.20.0 (2026-07-10)
+
+Tables **"By effect" mode**: a seven-effect catalogue (pyroelectricity, spontaneous magnetization,
+permittivity, linear magnetoelectric effect, piezoelectricity, piezomagnetism, elasticity), each with
+its defining equation and its own tensor symbol; allowed Explorer property chips deep-link into the
+matching effect; and a frame-canonical "groups sharing this form" view whose partition is anchored to
+the ITC 1.5.8.1 magnetoelectric F-blocks. Also corrects the lookup-chain breadcrumb for magnetic
+c-tensors (a Table-7 note instead of the classical Table-4a tail). See `CHANGELOG.md` `[0.20.0]`.
+
+There is nothing unreleased on `main` at present.
+
+### v0.19.0 (2026-07-10)
 
 New **Tables** page: interactive Birss-table lookup — pick any tensor by rank (0–4), spatial parity
 (polar/axial) and time parity (i/c), plus intrinsic index symmetry where meaningful, and see its
 symmetry-reduced form, with the Birss lookup-chain breadcrumb (family class → reference axes → table
-row) and an "Open in Tables" entry point in the Explorer popup. Backed by the new print-anchored
+row) and an "Open in Tables" entry point in the Explorer popup. Backed by the print-anchored
 tensor-form engine (`computeTensorForm`, validated against Birss tables 4b–4f across the 32 classical
-groups via the lockstep rule) — plus the internal engine/guard work and the seven rank-3 golden-fixture
-human sign-offs that landed alongside it. See `CHANGELOG.md` `[0.19.0]`.
-
-There is nothing unreleased on `main` at present.
+groups via the lockstep rule). See `CHANGELOG.md` `[0.19.0]`.
 
 ### v0.18.0 (2026-07-09)
 
