@@ -10,6 +10,7 @@ import { ConventionNote } from './axisConventions';
 import { TermInfo } from './TermInfo';
 import { PointGroupData } from '../data/pointGroups';
 import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
+import { CHIP_TO_EFFECT } from '../data/tensorEffects';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
 /** Render a Birss reference-axis orientation string ("3//z, -2//y", or the word "any"): `//`
@@ -26,7 +27,7 @@ interface OperationsModalProps {
   onClose: () => void;
   onOpenInCalculator?: () => void;
   onOpenInSimulator?: () => void;
-  onOpenInTables?: () => void;
+  onOpenInTables?: (effectId?: string) => void;
 }
 
 export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator, onOpenInSimulator, onOpenInTables }: OperationsModalProps) => {
@@ -215,16 +216,34 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               </div>
             </dl>
             <div className="flex flex-wrap gap-1.5">
-              {properties.map(p => (
-                <span
-                  key={p.id}
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs border ${p.allowed ? 'bg-ink text-paper border-ink' : 'border-ink/20 text-ink/40'}`}
-                >
-                  {p.allowed ? <Check className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
-                  {p.label}
-                  <TermInfo id={p.id} />
-                </span>
-              ))}
+              {properties.map(p => {
+                const effectId = CHIP_TO_EFFECT[p.id];
+                const linkable = p.allowed && effectId && onOpenInTables;
+                return (
+                  <span
+                    key={p.id}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs border ${p.allowed ? 'bg-ink text-paper border-ink' : 'border-ink/20 text-ink/40'}`}
+                  >
+                    {linkable ? (
+                      <button
+                        type="button"
+                        onClick={() => { onOpenInTables!(effectId); onClose(); }}
+                        title="Open in Tables"
+                        className="inline-flex items-center gap-1 hover:underline"
+                      >
+                        <Check className="w-3 h-3" />
+                        {p.label}
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center gap-1">
+                        {p.allowed ? <Check className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+                        {p.label}
+                      </span>
+                    )}
+                    <TermInfo id={p.id} />
+                  </span>
+                );
+              })}
             </div>
           </div>
 

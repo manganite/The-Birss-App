@@ -58,6 +58,7 @@ export default function App() {
   const [selectedTensorType, setSelectedTensorType] = useState<TensorType>('ED');
   const [selectedTimeReversal, setSelectedTimeReversal] = useState<TensorTimeReversal>('i');
   const [selectedSetting, setSelectedSetting] = useState<number>(1);
+  const [tablesEffectId, setTablesEffectId] = useState<string | null>(null);
   const [convention, setConvention] = useState<Convention>(loadStoredConvention);
 
   useEffect(() => {
@@ -107,10 +108,17 @@ export default function App() {
     if (view === 'help' && tab) setHelpActiveTab(tab);
   };
 
-  const openInTables = (group: PointGroupData) => {
+  const openInTables = (group: PointGroupData, effectId?: string) => {
     setSelectedGroup(group);
     setSelectedSetting(getDefaultSetting(group.name, convention));
+    setTablesEffectId(effectId ?? null);
     setCurrentView('tables');
+  };
+
+  // Select a group while staying on the Tables page (used by the "Groups sharing this form" list).
+  const selectGroupOnTables = (group: PointGroupData) => {
+    setSelectedGroup(group);
+    setSelectedSetting(getDefaultSetting(group.name, convention));
   };
 
   const tensorConfig = {
@@ -166,7 +174,7 @@ export default function App() {
               Simulator
             </button>
             <button
-              onClick={() => setCurrentView('tables')}
+              onClick={() => { setTablesEffectId(null); setCurrentView('tables'); }}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'tables' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Tables
@@ -320,6 +328,8 @@ export default function App() {
                 selectedGroup={selectedGroup}
                 tensorConfig={tensorConfig}
                 onNavigate={handleNavigate}
+                effectId={tablesEffectId}
+                onSelectGroup={selectGroupOnTables}
               />
             ) : currentView === 'simulator' ? (
               <SimulatorPage
