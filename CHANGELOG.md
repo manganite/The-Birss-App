@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parity and time parity (plus intrinsic index symmetry) and see its symmetry-reduced form for
   the selected group, with the Birss lookup chain (family class, reference axes, table row) and
   an "Open in Tables" button in the Explorer popup. Print-anchored via the Phase-1 engine.
+  Help and README document the Tables page.
 
 ## [0.18.0] - 2026-07-09
 

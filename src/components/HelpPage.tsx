@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { InlineMath, BlockMath } from 'react-katex';
-import { BookOpen, Compass, Layers, Zap, Info, Activity, LucideIcon } from 'lucide-react';
+import { BookOpen, Compass, Layers, Zap, Info, Activity, Table2, LucideIcon } from 'lucide-react';
 
 const FEATURES: { icon: LucideIcon; title: string; description: string; extra?: React.ReactNode }[] = [
   {
@@ -24,6 +24,11 @@ const FEATURES: { icon: LucideIcon; title: string; description: string; extra?: 
         <li><strong>Analyzer:</strong> Fixed polarizer at 0° and 90°, as a function of analyzer angle.</li>
       </ul>
     ),
+  },
+  {
+    icon: Table2,
+    title: 'Tables',
+    description: 'Interactive lookup in the Birss tables: choose any tensor by rank (0–4), spatial parity (polar/axial) and time parity (i/c), plus intrinsic index symmetry where meaningful, and see its symmetry-reduced form for the selected group. The lookup chain (family class, reference axes, table row) mirrors the manual two-step lookup in the book.',
   },
 ];
 
@@ -306,6 +311,16 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
                 </p>
                 <p className="text-xs opacity-70 leading-relaxed italic">
                   Deep dive: reading Birss's parentheses → Deeper Topics.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">The Birss lookup chain</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  Birss's tables answer tensor-form questions in two steps: a group is first mapped to its classical family class with fixed reference-axis orientations (Table 4a), and that class selects a row in the rank-specific form tables (4b–4f). The Tables page shows this chain as a breadcrumb above each result, so the app lookup and the manual book lookup stay recognizably the same procedure.
+                </p>
+                <p className="text-xs opacity-70 leading-relaxed italic">
+                  Forms for every rank are verified against the printed tables — see Deeper Topics → References.
                 </p>
               </div>
 
