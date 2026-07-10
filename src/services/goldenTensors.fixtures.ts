@@ -975,13 +975,13 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     group: "-3m'", tensor: 'MD', tr: 'i',
     expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
     source: "Fiebig et al., JOSA B 22, 96 (2005), Sec. 3, chi^{m(i)} for Cr2O3 (their 3-bar-m' = -3'm', anchored to Birss ref. 50): chi_yyy = -chi_yxx = -chi_xyx = -chi_xxy and chi_xyz = chi_xzy = -chi_yxz = -chi_yzx. MD-i is time-even, so it depends only on the spatial symmetry -3m, which -3'm' and -3m' share; the form is identical for -3m'. The yyy-family (mirror perpendicular to y) fixes the standard setting; a 30°-rotated setting gives the xxx-family.",
-    // VERIFY: pending human sign-off against Fiebig et al. (2005) / printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
   {
     group: "-3m'", tensor: 'MD', tr: 'i', setting: 2,
     expected: ['\\chi_{xxx} = -\\chi_{xyy} = -\\chi_{yxy} = -\\chi_{yyx}', '\\chi_{xyz} = \\chi_{xzy} = -\\chi_{yxz} = -\\chi_{yzx}'],
     source: "Rz(30°) rotation of the Fiebig/Birss-anchored -3m' MD-i default form above into the -31m' setting. Pure tensor algebra; verified to reproduce the app's transformed-operator projection.",
-    // VERIFY: pending human sign-off against Fiebig et al. (2005) / printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
 
   // Hexagonal Mechanism A — Rz(30°)
@@ -1340,13 +1340,13 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     group: "4'/m'm'm", tensor: 'ED', tr: 'i', setting: 2,
     expected: ['All components are zero.'],
     source: "4'/m'm'm has an antiunitary inversion (-1'); the time-even ED tensor vanishes in every setting (orientation-independent).",
-    // VERIFY: pending human sign-off against the printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
   {
     group: "4'/m'm'm", tensor: 'ED', tr: 'c', setting: 2,
     expected: ['\\chi_{xxz} = \\chi_{xzx} = -\\chi_{yyz} = -\\chi_{yzy}', '\\chi_{zxx} = -\\chi_{zyy}'],
     source: "Default 4'/m'm'm ED-c form (table-anchored, Table 4e via SIX_GENERATOR_FIX_DERIVATION: chi_xyz=chi_xzy=chi_yxz=chi_yzx, chi_zxy=chi_zyx) rotated by Rz(45°) into the 4'/m'mm' setting. Pure tensor algebra; independent projection over the transformed operators reproduces it.",
-    // VERIFY: pending human sign-off against the printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
 
   // --- Grey-group setting-2 coverage: ED-i identical to the unitary parent -------------
@@ -1357,19 +1357,19 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
     group: "m1'", tensor: 'ED', tr: 'i', setting: 2,
     expected: ['\\chi_{xxx}', '\\chi_{xxz} = \\chi_{xzx}', '\\chi_{xyy}', '\\chi_{xzz}', '\\chi_{yxy} = \\chi_{yyx}', '\\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx}', '\\chi_{zxz} = \\chi_{zzx}', '\\chi_{zyy}', '\\chi_{zzz}'],
     source: "Grey rule: ED-i identical to parent m (setting 2), which is table-anchored (see m ED-i setting-2 fixture).",
-    // VERIFY: pending human sign-off against the printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
   {
     group: "3m1'", tensor: 'ED', tr: 'i', setting: 2,
     expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}', '\\chi_{xxz} = \\chi_{xzx} = \\chi_{yyz} = \\chi_{yzy}', '\\chi_{zxx} = \\chi_{zyy}', '\\chi_{zzz}'],
     source: "Grey rule: ED-i identical to parent 3m (setting 2), table-anchored.",
-    // VERIFY: pending human sign-off against the printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
   {
     group: "-6m21'", tensor: 'ED', tr: 'i', setting: 2,
     expected: ['\\chi_{xxy} = \\chi_{xyx} = \\chi_{yxx} = -\\chi_{yyy}'],
     source: "Grey rule: ED-i identical to parent -6m2 (setting 2), table-anchored.",
-    // VERIFY: pending human sign-off against the printed Birss tables.
+    // Signed off 2026-07-09: Fiebig (2005) PDF check + independent numeric projection -- see docs/findings/SIGNOFF-rank3-verify-2026-07-09.md.
   },
 
   // --- ITC Table 1.5.7.1 piezomagnetic anchors: independent second-source MD-c coverage ---
