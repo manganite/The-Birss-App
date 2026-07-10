@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Help: a new "Tables" tab documents the Tables page end to end -- the two lookup modes and the four
+  result blocks, how to choose a tensor (rank, spatial/time parity and index symmetry, via the parity
+  product rule) with the effect catalogue, the classical two-step Table-4a chain (with a worked
+  quartz example), and the magnetic c-tensor Table-7 route (recipe, cross-formula, three worked
+  examples). Two new Deeper Topics entries -- "Voigt symmetry and Voigt notation" and "Table 7:
+  reading the letter columns directly".
+- Tables page: a collapsible lookup-chain diagram under the breadcrumb -- a monochrome picture of the
+  route (the A/B fork, the Table-4a row read with the parity crossover marked, the rotated-setting
+  badge, and the final rank-table row); it also illustrates the three worked examples in the Help
+  Tables tab. Tooltips on every selector, effect chip, result block and lookup-chain segment.
 - Tables page: the lookup-chain breadcrumb now renders the full Birss Table-7 chain for c-tensors of
   magnetic (Type III) groups instead of a "chain display planned" placeholder. It shows the c-column,
   the associated classical group A/B (with a rotated-setting badge when the source uses alternate
@@ -18,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Tables page: the lookup mode toggle shows "By tensor type" (the core function) before "By effect".
 - Testing: added a class-indexed Table-7 guard putting `computeTensorForm` under Birss's i-/c-tensor
   cross-formula at ranks 0/1/2/4 (Tables 4b/4c/4d/4f) for all 58 black-white groups, backed by a
   generated `table7Data.ts` (codegen from `table-7.md`, `npm run table7data`). This subsumes the
