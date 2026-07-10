@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-07-10
+
 ### Added
 
 - Tables page "By effect" mode: pick a named physical effect (pyroelectricity, spontaneous
@@ -668,7 +670,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help & Documentation page covering physics background, math derivations, and usage instructions.
 - MIT license, repository description, topics, and homepage link.
 
-[Unreleased]: https://github.com/manganite/birss-app/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/manganite/birss-app/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/manganite/birss-app/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/manganite/birss-app/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/manganite/birss-app/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/manganite/birss-app/compare/v0.16.0...v0.17.0
