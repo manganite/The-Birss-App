@@ -178,7 +178,9 @@ describe('Part C rank 3 -- Table 4e guard (32 classical groups via Table 4a)', (
         expect(cc.relations, `${c.group} ${parity}`).toEqual(i.relations);
       }
     }
-  });
+  }, 120000); // generous explicit timeout: this rank-3 i-vs-c sweep (64 form computations) can far
+  // exceed the 5s default under the heavier parallel CPU load added by the Table-7 rank-0/1/2/4
+  // guard (which roughly doubles the suite's rank-4 workload). Assertions unchanged.
 
   const checkParity = (c: ClassRow, parity: TensorParity, letter: string | null) => {
     const basis = engineBasis(c.group, parity);

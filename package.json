@@ -21,7 +21,8 @@
     "lint": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "nomenclature": "python3 birss-tables/tools/generate_nomenclature.py"
+    "nomenclature": "python3 birss-tables/tools/generate_nomenclature.py",
+    "table7data": "node birss-tables/tools/generate_table7_data.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.1.14",

@@ -19,6 +19,9 @@
  * conventions"), which is the app's canonical notation reference and reconciles the two.
  */
 
+import { TABLE7_BW_ROWS } from './table7Data';
+import { BOOK_ERROR_WARNING } from '../services/conventionMapping';
+
 /**
  * Shubnikov (Birss dot/colon) symbol for every one of the 122 magnetic point groups — the 32
  * classical (Type I), 58 black-and-white (Type III), and 32 grey (Type II) groups — keyed by the
@@ -449,9 +452,94 @@ export function getClassLetter(name: string, parity: 'polar' | 'axial', rank: nu
  * displayed tensor form. True for time-even (i) tensors of any group — primes act only spatially,
  * so an i-tensor reduces to its classical family class — and for all Type I groups, which have no
  * antiunitary elements (so c coincides with i). For c-tensors of magnetic (Type II/III) groups
- * Birss's lookup instead runs via Table 7 (magnetic classes), whose chain display is deferred; in
- * that case the classical letter / "no allowed form" tail would contradict the computed form.
+ * Birss's lookup instead runs via Table 7 (magnetic classes); that chain is rendered by
+ * `getTable7Chain` (Type III) or as the grey-group tail (Type II). This gate still selects which
+ * breadcrumb branch renders: the classical letter / "no allowed form" tail would contradict the
+ * computed form for those cases.
  */
 export function classicalChainApplies(groupType: 'I' | 'II' | 'III', timeParity: 'i' | 'c'): boolean {
   return timeParity === 'i' || groupType === 'I';
+}
+
+// --- Table-7 lookup chain for magnetic c-tensors (Type III) -------------------------------------
+// Alternate-setting source spellings -> Table-4a family key (strip brackets + primes first). Mirrors
+// the Table-7 guard's familyKeyOf; `-6m2`/`-42m`/`mm2` etc. are already 4a keys.
+const T7_ALT_TO_4A: Record<string, string> = { m2m: 'mm2', '2mm': 'mm2', '-4m2': '-42m', '-62m': '-6m2', m3: 'm-3', m3m: 'm-3m' };
+const t7FamilyKey = (sym: string) => { const s = sym.replace(/[()']/g, ''); return T7_ALT_TO_4A[s] ?? s; };
+
+// Human transform label for a bracketed (rotated-setting) source group, keyed by its printed symbol.
+const T7_TRANSFORM_LABEL: Record<string, string> = {
+  m2m: 'z↔y permutation', '2mm': 'z↔x permutation', "2'm'm": 'z↔x permutation',
+  '-4m2': 'Rz(45°)', '-42m': 'Rz(45°)', "-4'm2'": 'Rz(45°)',
+  '-62m': 'Rz(30°)', "-6'2m'": 'Rz(30°)',
+};
+
+/**
+ * The Table-7 lookup chain that determines a magnetic (Type III) group's c-tensor form (Birss's
+ * cross-formula, verified in `table7Ranks0124.reference.test.ts`). Makes the parity crossover, the
+ * associated classical source group A/B (with any rotated-setting badge), the Table-4a column read,
+ * the class letter, and the final rank table row explicit for the breadcrumb.
+ */
+export interface Table7Chain {
+  /** the Table-7 c-column, e.g. `c-Polar-even` (derived from parity + rank) */
+  column: string;
+  source: 'A' | 'B';
+  /** associated classical group symbol as printed in Table 7 (brackets stripped) */
+  sourceSymbol: string;
+  /** effective bracket state (true = rotated setting), after the `-6m'2'` book-error override */
+  sourceBracketed: boolean;
+  /** the source's Table-4a family key (index into REFERENCE_AXES / TABLE_4A_CLASS_LETTERS) */
+  sourceClass: string;
+  /** human transform label when bracketed (`Rz(45°)`, `Rz(30°)`, `z↔y permutation`, …); else null */
+  transformLabel: string | null;
+  /** which Table-4a column is read — `Axial-even` | `Polar-odd` */
+  fourAColumn: string;
+  /** true when `fourAColumn`'s parity differs from the tensor's parity (polar-even, axial-odd) */
+  parityCrossover: boolean;
+  /** the Birss class letter, or null = the class prints `-` (no allowed form) */
+  letter: string | null;
+  /** documented Birss Table-7 misprint note (reused from conventionMapping), or null */
+  bookErrorNote: string | null;
+}
+
+/**
+ * The Table-7 chain for a Type III group's c-tensor of the given parity and rank. Returns null for
+ * groups without a Table-7 black-white row (Type I and Type II grey groups — the UI renders those
+ * branches separately). Cross-formula: polar-even → B/Axial-even, axial-even → A/Axial-even,
+ * polar-odd → A/Polar-odd, axial-odd → B/Polar-odd (even rank → even columns, odd → odd).
+ */
+export function getTable7Chain(groupName: string, parity: 'polar' | 'axial', rank: number): Table7Chain | null {
+  const row = TABLE7_BW_ROWS[groupName];
+  if (!row) return null;
+
+  const even = rank % 2 === 0;
+  let source: 'A' | 'B';
+  let fourAKey: 'axialEven' | 'polarOdd';
+  let fourAColumn: string;
+  let parityCrossover: boolean;
+  if (parity === 'polar' && even) { source = 'B'; fourAKey = 'axialEven'; fourAColumn = 'Axial-even'; parityCrossover = true; }
+  else if (parity === 'axial' && even) { source = 'A'; fourAKey = 'axialEven'; fourAColumn = 'Axial-even'; parityCrossover = false; }
+  else if (parity === 'polar' && !even) { source = 'A'; fourAKey = 'polarOdd'; fourAColumn = 'Polar-odd'; parityCrossover = false; }
+  else { source = 'B'; fourAKey = 'polarOdd'; fourAColumn = 'Polar-odd'; parityCrossover = true; } // axial odd
+
+  const sourceSymbol = source === 'A' ? row.a : row.b;
+  let sourceBracketed = source === 'A' ? row.aBracketed : row.bBracketed;
+  let forcedLabel: string | null = null;
+  let bookErrorNote: string | null = null;
+
+  // `-6m'2'` book error: A is misprinted UNBRACKETED (`-6m2`), contradicting the row's own Table-6
+  // generator; the A-sourced columns are physically the rotated Rz(30°) form (see the guard's
+  // FORCED_TRANSFORM). Force the effective bracket + label + note to reflect the real physics.
+  if (groupName === "-6m'2'" && source === 'A') {
+    sourceBracketed = true;
+    forcedLabel = 'Rz(30°)';
+    bookErrorNote = BOOK_ERROR_WARNING;
+  }
+
+  const sourceClass = t7FamilyKey(sourceSymbol);
+  const letter = TABLE_4A_CLASS_LETTERS[sourceClass]?.[fourAKey] ?? null;
+  const transformLabel = forcedLabel ?? (sourceBracketed ? (T7_TRANSFORM_LABEL[sourceSymbol] ?? null) : null);
+  const column = `c-${parity === 'polar' ? 'Polar' : 'Axial'}-${even ? 'even' : 'odd'}`;
+
+  return { column, source, sourceSymbol, sourceBracketed, sourceClass, transformLabel, fourAColumn, parityCrossover, letter, bookErrorNote };
 }

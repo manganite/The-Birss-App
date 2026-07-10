@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
-import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, TABLE_4A_CLASS_LETTERS, getFamilyClass, classicalChainApplies } from './groupNotation';
+import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, TABLE_4A_CLASS_LETTERS, getFamilyClass, classicalChainApplies, getTable7Chain } from './groupNotation';
 
 /**
  * Anti-drift guard tests for the supplementary Birss notation maps. Each test re-parses the
@@ -173,5 +173,74 @@ describe('classicalChainApplies', () => {
     expect(classicalChainApplies(typeOf("321'"), 'c')).toBe(false);  // Type II grey, c
     expect(classicalChainApplies(typeOf('432'), 'c')).toBe(true);    // Type I: c coincides with i
     expect(classicalChainApplies(typeOf("m'm'm"), 'i')).toBe(true);  // any i-tensor
+  });
+});
+
+describe('getTable7Chain', () => {
+  // Expectations pinned to the print-verified Table-7 rows + Table-4a cross-formula (NOT derived
+  // from the helper). See birss-tables/table-7.md and TABLE_4A_CLASS_LETTERS.
+
+  it("m'm'm polar rank 2: c-Polar-even reads B=mm2 Axial-even (crossover) -> class E (Table 4d E2)", () => {
+    const chain = getTable7Chain("m'm'm", 'polar', 2)!;
+    expect(chain.column).toBe('c-Polar-even');
+    expect(chain.source).toBe('B');
+    expect(chain.sourceSymbol).toBe('mm2');
+    expect(chain.sourceBracketed).toBe(false);
+    expect(chain.fourAColumn).toBe('Axial-even');
+    expect(chain.parityCrossover).toBe(true);
+    expect(chain.letter).toBe('E');
+    expect(chain.transformLabel).toBeNull();
+    expect(chain.bookErrorNote).toBeNull();
+  });
+
+  it("4'mm' polar rank 3: c-Polar-odd reads A=-4m2 (bracketed) Polar-odd -> class J, Rz(45°)", () => {
+    const chain = getTable7Chain("4'mm'", 'polar', 3)!;
+    expect(chain.column).toBe('c-Polar-odd');
+    expect(chain.source).toBe('A');
+    expect(chain.sourceSymbol).toBe('-4m2');
+    expect(chain.sourceBracketed).toBe(true);
+    expect(chain.sourceClass).toBe('-42m');
+    expect(chain.fourAColumn).toBe('Polar-odd');
+    expect(chain.parityCrossover).toBe(false);
+    expect(chain.letter).toBe('J');
+    expect(chain.transformLabel).toBe('Rz(45°)');
+    expect(chain.bookErrorNote).toBeNull();
+  });
+
+  it("m'm'm axial rank 2: c-Axial-even reads A=mmm Axial-even -> no allowed form (Table 4a '-')", () => {
+    const chain = getTable7Chain("m'm'm", 'axial', 2)!;
+    expect(chain.source).toBe('A');
+    expect(chain.sourceSymbol).toBe('mmm');
+    expect(chain.fourAColumn).toBe('Axial-even');
+    expect(chain.letter).toBeNull();
+    expect(chain.bookErrorNote).toBeNull();
+  });
+
+  it("-6m'2' axial rank 2: A misprinted -6m2 -> forced bracket + Rz(30°) + book-error note", () => {
+    const chain = getTable7Chain("-6m'2'", 'axial', 2)!;
+    expect(chain.source).toBe('A');
+    expect(chain.sourceSymbol).toBe('-6m2');
+    expect(chain.sourceBracketed).toBe(true);       // forced despite the printed unbracketed A
+    expect(chain.transformLabel).toBe('Rz(30°)');
+    expect(chain.letter).toBe('R');
+    expect(chain.bookErrorNote).not.toBeNull();
+  });
+
+  it('grey (Type II) and Type I groups have no Table-7 chain', () => {
+    expect(getTable7Chain("321'", 'polar', 2)).toBeNull(); // Type II grey
+    expect(getTable7Chain('432', 'polar', 2)).toBeNull();  // Type I
+  });
+
+  it('the source class is always a valid REFERENCE_AXES / Table-4a key for every BW c-tensor', () => {
+    for (const g of POINT_GROUPS.filter(p => p.type === 'III')) {
+      for (const parity of ['polar', 'axial'] as const) {
+        for (const rank of [1, 2, 3, 4]) {
+          const chain = getTable7Chain(g.name, parity, rank);
+          expect(chain, `${g.name} ${parity} rank ${rank}`).not.toBeNull();
+          expect(REFERENCE_AXES, `${g.name}: source class ${chain!.sourceClass}`).toHaveProperty(chain!.sourceClass);
+          expect(TABLE_4A_CLASS_LETTERS).toHaveProperty(chain!.sourceClass);
+        }
+      }
+    }
   });
 });

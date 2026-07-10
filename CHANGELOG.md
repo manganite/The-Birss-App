@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tables page: the lookup-chain breadcrumb now renders the full Birss Table-7 chain for c-tensors of
+  magnetic (Type III) groups instead of a "chain display planned" placeholder. It shows the c-column,
+  the associated classical group A/B (with a rotated-setting badge when the source uses alternate
+  axes), that source's reference axes, which Table-4a column is read (making the parity crossover
+  explicit), the class letter, and the final rank-table row -- plus a footnote on the two documented
+  Birss Table-7 misprints. Grey (Type II) c-tensors show that time reversal alone forbids the tensor.
+
+### Changed
+
+- Testing: added a class-indexed Table-7 guard putting `computeTensorForm` under Birss's i-/c-tensor
+  cross-formula at ranks 0/1/2/4 (Tables 4b/4c/4d/4f) for all 58 black-white groups, backed by a
+  generated `table7Data.ts` (codegen from `table-7.md`, `npm run table7data`). This subsumes the
+  planned "magnetic EQ rank-4 golden fixtures" backlog item at the symbol-class level (Table-4f
+  even-rank c-tensors are now anchored for every class that appears in the black-white rows).
+
 ## [0.20.0] - 2026-07-10
 
 ### Added
