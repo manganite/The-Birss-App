@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-09. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-10. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -11,16 +11,23 @@ on drift)._
 
 ---
 
-## Current release: v0.18.0 (2026-07-09)
+## Current release: v0.19.0 (2026-07-10)
 
-Enriched Explorer popup (Shubnikov + full HM, group order, parent + halving subgroup, per-setting
-Birss/ITC standards, and print-anchored property flags for polar/piezo/magnetoelectric behaviour);
-corrected the `432`-family ED-SHG consequence (ED SHG vanishes identically, so the consequence is
-now derived from the computed tensor form); app-wide portal tooltips (no clipping); and unified
-simulator/Help intensity notation. Display/verification-only except the `432` consequence-text fix.
-See `CHANGELOG.md` `[0.18.0]`.
+New **Tables** page: interactive Birss-table lookup — pick any tensor by rank (0–4), spatial parity
+(polar/axial) and time parity (i/c), plus intrinsic index symmetry where meaningful, and see its
+symmetry-reduced form, with the Birss lookup-chain breadcrumb (family class → reference axes → table
+row) and an "Open in Tables" entry point in the Explorer popup. Backed by the new print-anchored
+tensor-form engine (`computeTensorForm`, validated against Birss tables 4b–4f across the 32 classical
+groups via the lockstep rule) — plus the internal engine/guard work and the seven rank-3 golden-fixture
+human sign-offs that landed alongside it. See `CHANGELOG.md` `[0.19.0]`.
 
 There is nothing unreleased on `main` at present.
+
+### v0.18.0 (2026-07-09)
+
+Enriched Explorer popup (Shubnikov/full HM, group order, parent + halving subgroup, per-setting
+Birss/ITC standards, print-anchored property flags); corrected the `432`-family ED-SHG consequence;
+app-wide portal tooltips; unified simulator/Help intensity notation. See `CHANGELOG.md` `[0.18.0]`.
 
 ### v0.17.0 (2026-07-08)
 
