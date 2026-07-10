@@ -298,12 +298,14 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
           <div className="mt-4 flex flex-wrap gap-2 max-h-64 overflow-y-auto">
             {sharing.map(g => {
               const isCurrent = g.name === selectedGroup.name;
+              const interactive = !isCurrent && !!onSelectGroup;
               return (
                 <button
                   key={g.name}
                   type="button"
-                  onClick={() => !isCurrent && onSelectGroup?.(g)}
-                  className={`px-2.5 py-1 text-sm border transition-colors ${isCurrent ? 'bg-ink text-paper border-ink' : 'border-ink/20 hover:bg-ink hover:text-paper'}`}
+                  disabled={!interactive}
+                  onClick={() => interactive && onSelectGroup!(g)}
+                  className={`px-2.5 py-1 text-sm border transition-colors ${isCurrent ? 'bg-ink text-paper border-ink' : interactive ? 'border-ink/20 hover:bg-ink hover:text-paper' : 'border-ink/20 text-ink/50 cursor-default'}`}
                 >
                   <FormatPointGroup name={getGroupDisplayName(g.name, convention)} />
                 </button>

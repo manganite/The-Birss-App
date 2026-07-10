@@ -273,7 +273,13 @@ export function getFormSignature(groupName: string, setting: number, spec: Tenso
  * plain (frame-specific) `getFormSignature` is a strict refinement of this; see
  * `docs/findings/ANALYSIS-table-4b-4d-semantics.md` §9.
  */
+const canonicalSignatureCache = new Map<string, string>();
+
 export function getCanonicalFormSignature(groupName: string, spec: TensorSpec): string {
+  const cacheKey = `${groupName}::${specKey(spec)}`;
+  const cached = canonicalSignatureCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const alts = getAlternateSettings(groupName);
   const nSettings = alts ? alts.length + 1 : 1;
   let best: string | null = null;
@@ -281,5 +287,7 @@ export function getCanonicalFormSignature(groupName: string, spec: TensorSpec): 
     const sig = getFormSignature(groupName, s, spec);
     if (best === null || sig < best) best = sig;
   }
-  return best ?? 'unsupported';
+  const result = best ?? 'unsupported';
+  canonicalSignatureCache.set(cacheKey, result);
+  return result;
 }
