@@ -212,9 +212,10 @@ B30 (unplanned):  -3'm' generator fix (PR #37)  ── gates ──►  B2.3's t
   Open questions (grouping unit, call sites, tie-breaking) still need resolution before
   starting. B28 covers the concrete use case; B29 generalises it.
 
-- **V1 — Remaining rank-3 fixture sign-offs (the Table-4f sub-gap is now closed).**
+- **V1 — Scientific-validation gaps (both original sub-gaps now closed).**
   Priority: medium. **Correctness assurance, not a known error** — a standalone scientific-validation
-  task. Two sub-gaps were tracked here; the first is now done:
+  task. Both sub-gaps tracked here are now done; the only residual is the Table-7 magnetic
+  class-indexed guarding noted below, which is future work rather than an open validation gap:
   - ~~**EQ / Table 4f (rank 4).**~~ **Done.** Table 4f is print-verified (2026-07-09, PR #77 in
     `birss-app` + PR #1 in the canonical `birss-tables`), and the rank-4 form is now guarded
     directly: `src/services/tables4f.reference.test.ts` checks `computeTensorForm` against every
@@ -223,10 +224,12 @@ B30 (unplanned):  -3'm' generator fix (PR #37)  ── gates ──►  B2.3's t
     against Table 4e in `tables4e.reference.test.ts`.) This closes the anti-circular *file-anchored*
     validation of the rank-4 general-tensor form; magnetic (Type II/III) class-indexed guarding via
     Table 7 remains future work, and the pre-existing EQ golden-fixture coverage counts are unchanged.
-  - **7 `VERIFY`-marked rank-3 ED/MD fixtures** in `goldenTensors.fixtures.ts`
-    (`:978`, `:984`, `:1343`, `:1349`, `:1360`, `:1366`, `:1372`) — setting-derived / grey-rule
-    forms still pending human sign-off against Fiebig et al. (2005) or the printed Birss tables
-    (these are *not* EQ/Table-4f fixtures; they are rank-3 ED-c/MD-i/ED-i setting-2 forms).
+  - ~~**7 `VERIFY`-marked rank-3 ED/MD fixtures**~~ **Done (signed off 2026-07-09).** The seven
+    setting-derived / grey-rule fixtures in `goldenTensors.fixtures.ts` (rank-3 ED-c / MD-i / ED-i
+    setting-2 forms — *not* EQ/Table-4f) were signed off against Fiebig et al. (2005) plus an
+    independent numeric projection (all equality/sign chains and independent-component counts
+    reproduced); see `docs/findings/SIGNOFF-rank3-verify-2026-07-09.md`. The
+    `// VERIFY: pending human sign-off` markers are replaced with signed-off references.
   - **Anti-circularity rule (binding):** all expected values must come from the printed tables or
     an independent literature source — **never** from the app's own output.
 
