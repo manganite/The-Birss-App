@@ -11,6 +11,8 @@ import { formatCoeff } from '../services/tensorCalculator';
 import { GroupIdentityHeader } from './MathComponents';
 import { FormatPointGroup } from './notation';
 import { getFamilyClass, getClassLetter, REFERENCE_AXES, classicalChainApplies, getTable7Chain } from '../data/groupNotation';
+import { LookupChainDiagram } from './LookupChainDiagram';
+import { TermInfo } from './TermInfo';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import { TENSOR_EFFECTS, getEffect, effectBaseSymbol } from '../data/tensorEffects';
 import type { TensorConfig } from '../types';
@@ -114,6 +116,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   const [timeParity, setTimeParity] = useState<TensorTimeParity>('i');
   const [intrinsic, setIntrinsic] = useState<TensorIntrinsic>('jk');
   const [sharingOpen, setSharingOpen] = useState(false);
+  const [diagramOpen, setDiagramOpen] = useState(false);
 
   const validIntrinsics = INTRINSIC_BY_RANK[rank];
   const effIntrinsic = validIntrinsics.includes(intrinsic) ? intrinsic : 'none';
@@ -193,7 +196,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
         <div className="space-y-2">
           <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Lookup</span>
           <div className="flex gap-2">
-            {(['effect', 'type'] as const).map(m => (
+            {(['type', 'effect'] as const).map(m => (
               <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} className={`${chipBase} ${mode === m ? chipOn : chipOff}`}>{m === 'effect' ? 'By effect' : 'By tensor type'}</button>
             ))}
           </div>
@@ -204,14 +207,17 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
             <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Effect</span>
             <div className="flex flex-wrap gap-2">
               {TENSOR_EFFECTS.map(e => (
-                <button key={e.id} type="button" aria-pressed={selectedEffectId === e.id} onClick={() => setSelectedEffectId(e.id)} className={`${chipBase} ${selectedEffectId === e.id ? chipOn : chipOff}`}>{e.label}</button>
+                <span key={e.id} className="inline-flex items-center gap-1">
+                  <button type="button" aria-pressed={selectedEffectId === e.id} onClick={() => setSelectedEffectId(e.id)} className={`${chipBase} ${selectedEffectId === e.id ? chipOn : chipOff}`}>{e.label}</button>
+                  <TermInfo id={`tbl-eff-${e.id}`} onNavigate={onNavigate} />
+                </span>
               ))}
             </div>
           </div>
         ) : (
           <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
             <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Rank</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">Rank <TermInfo id="tbl-rank" onNavigate={onNavigate} /></span>
               <div className="flex gap-2">
                 {([0, 1, 2, 3, 4] as TensorRank[]).map(r => (
                   <button key={r} type="button" aria-pressed={rank === r} onClick={() => changeRank(r)} className={`${chipBase} w-9 ${rank === r ? chipOn : chipOff}`}>{r}</button>
@@ -219,7 +225,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
               </div>
             </div>
             <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Spatial parity</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">Spatial parity <TermInfo id="tbl-spatial-parity" onNavigate={onNavigate} /></span>
               <div className="flex gap-2">
                 {(['polar', 'axial'] as TensorParity[]).map(p => (
                   <button key={p} type="button" aria-pressed={parity === p} onClick={() => setParity(p)} className={`${chipBase} ${parity === p ? chipOn : chipOff}`}>{p}</button>
@@ -227,7 +233,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
               </div>
             </div>
             <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Time parity</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">Time parity <TermInfo id="tbl-time-parity" onNavigate={onNavigate} /></span>
               <div className="flex gap-2">
                 {(['i', 'c'] as TensorTimeParity[]).map(t => (
                   <button key={t} type="button" aria-pressed={timeParity === t} onClick={() => setTimeParity(t)} className={`${chipBase} ${timeParity === t ? chipOn : chipOff}`}>{t}-type</button>
@@ -236,7 +242,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
             </div>
             {validIntrinsics.length > 1 && (
               <div className="space-y-2">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Index symmetry</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">Index symmetry <TermInfo id="tbl-index-symmetry" onNavigate={onNavigate} /></span>
                 <div className="flex gap-2">
                   {validIntrinsics.map(v => (
                     <button key={v} type="button" aria-pressed={effIntrinsic === v} onClick={() => setIntrinsic(v)} className={`${chipBase} ${effIntrinsic === v ? chipOn : chipOff}`}>{v}</button>
@@ -267,11 +273,11 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
             <>
               <ChevronRight className="w-3 h-3 opacity-40" />
               <span>family class <span className="font-serif italic text-ink/80"><InlineMath math={bar(familyClass)} /></span> <span className="opacity-50">(Table 4a)</span></span>
-              {refAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span>ref. axes {refAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(refAxes.replace(/\/\//g, ' \\parallel '))} />}</span></>)}
+              {refAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span className="inline-flex items-center gap-1">ref. axes {refAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(refAxes.replace(/\/\//g, ' \\parallel '))} />} <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} /></span></>)}
               <ChevronRight className="w-3 h-3 opacity-40" />
               {classLetter
                 ? <span>Table {RANK_TABLE[aRank]} row <span className="font-mono text-ink/80">{classLetter}{aRank}</span></span>
-                : <span className="italic">no allowed form (Table 4a: —)</span>}
+                : <span className="italic inline-flex items-center gap-1">no allowed form (Table 4a: —) <TermInfo id="tbl-no-form" onNavigate={onNavigate} /></span>}
             </>
           ) : t7chain && !t7Contradiction ? (
             <>
@@ -281,38 +287,51 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
               <span>
                 {t7chain.source} = <span className="font-serif italic text-ink/80"><InlineMath math={bar(t7chain.sourceSymbol)} /></span>
                 {t7chain.sourceBracketed && t7chain.transformLabel && (
-                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {t7chain.transformLabel}</span>
+                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm inline-flex items-center gap-1">rotated: {t7chain.transformLabel}<TermInfo id="tbl-rotated" onNavigate={onNavigate} /></span>
                 )}
               </span>
-              {t7SourceRefAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span>ref. axes {t7SourceRefAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(t7SourceRefAxes.replace(/\/\//g, ' \\parallel '))} />}</span></>)}
+              {t7SourceRefAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span className="inline-flex items-center gap-1">ref. axes {t7SourceRefAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(t7SourceRefAxes.replace(/\/\//g, ' \\parallel '))} />} <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} /></span></>)}
               <ChevronRight className="w-3 h-3 opacity-40" />
-              <span>Table 4a, {t7chain.fourAColumn} column{t7chain.parityCrossover && <span title="parity crossover: the c-tensor reads the opposite-parity Table-4a column" className="text-ink font-semibold">*</span>}</span>
+              <span className="inline-flex items-center">Table 4a, {t7chain.fourAColumn} column{t7chain.parityCrossover && <span className="text-ink font-semibold ml-0.5">*<TermInfo id="tbl-crossover" onNavigate={onNavigate} /></span>}</span>
               <ChevronRight className="w-3 h-3 opacity-40" />
               {t7chain.letter
                 ? <span>class {t7chain.letter} <ChevronRight className="inline w-3 h-3 opacity-40" /> Table {RANK_TABLE[aRank]} row <span className="font-mono text-ink/80">{t7chain.letter}{aRank}</span></span>
-                : <span className="italic">no allowed form (Table 4a: —)</span>}
+                : <span className="italic inline-flex items-center gap-1">no allowed form (Table 4a: —) <TermInfo id="tbl-no-form" onNavigate={onNavigate} /></span>}
             </>
           ) : t7chain ? (
             <><ChevronRight className="w-3 h-3 opacity-40" /><span className="italic">c-tensor lookup runs via Birss Table 7 (magnetic classes)</span></>
           ) : (
-            <><ChevronRight className="w-3 h-3 opacity-40" /><span className="italic">grey group <ChevronRight className="inline w-3 h-3 opacity-40" /> time reversal alone is a symmetry <ChevronRight className="inline w-3 h-3 opacity-40" /> c-tensor vanishes identically (no Table-7 row)</span></>
+            <><ChevronRight className="w-3 h-3 opacity-40" /><span className="italic inline-flex items-center gap-1">grey group <ChevronRight className="inline w-3 h-3 opacity-40" /> time reversal alone is a symmetry <ChevronRight className="inline w-3 h-3 opacity-40" /> c-tensor vanishes identically (no Table-7 row) <TermInfo id="tbl-grey-tail" onNavigate={onNavigate} /></span></>
           )}
         </div>
         {t7chain?.bookErrorNote && (
-          <p className="text-[11px] text-ink/50 italic px-1">⚠ {t7chain.bookErrorNote}</p>
+          <p className="text-[11px] text-ink/50 italic px-1">⚠ {t7chain.bookErrorNote}{onNavigate && <> <button type="button" onClick={() => onNavigate('help', 'deeper')} className="not-italic uppercase tracking-wider text-ink/60 hover:text-ink">Learn more →</button></>}</p>
         )}
+        <div>
+          <button type="button" aria-expanded={diagramOpen} onClick={() => setDiagramOpen(v => !v)} className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-ink/50 hover:text-ink">
+            {diagramOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            {diagramOpen ? 'Hide diagram' : 'Show diagram'}
+          </button>
+          {diagramOpen && (
+            <div className="mt-3">
+              <LookupChainDiagram groupName={selectedGroup.name} groupType={selectedGroup.type} parity={aParity} rank={aRank} timeParity={aTime} displayName={displayName} onNavigate={onNavigate} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Result */}
       <div className="space-y-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-sm uppercase tracking-[0.2em] text-ink/70">Symmetry-reduced form</h2>
-          {!form!.isZero && aRank > 0 && <span className="text-xs text-ink/50">{independentCount} independent component{independentCount === 1 ? '' : 's'}</span>}
+          <h2 className="text-sm uppercase tracking-[0.2em] text-ink/70 flex items-center gap-1">Symmetry-reduced form
+            {!form!.isZero && (aRank === 4 || (aRank === 3 && aIntrinsic !== 'jk')) && <TermInfo id="tbl-relations" onNavigate={onNavigate} />}
+          </h2>
+          {!form!.isZero && aRank > 0 && <span className="text-xs text-ink/50 flex items-center gap-1">{independentCount} independent component{independentCount === 1 ? '' : 's'} <TermInfo id="tbl-indep-count" onNavigate={onNavigate} /></span>}
         </div>
 
         {form!.isZero ? (
           <div className="border border-ink/20 bg-ink/5 p-6 text-center">
-            <p className="text-sm text-ink/70">{forbiddenName} {effect ? 'is forbidden' : 'vanishes identically'} for <span className="font-serif italic"><InlineMath math={bar(displayName)} /></span>.</p>
+            <p className="text-sm text-ink/70 inline-flex items-center gap-1">{forbiddenName} {effect ? 'is forbidden' : 'vanishes identically'} for <span className="font-serif italic"><InlineMath math={bar(displayName)} /></span>. <TermInfo id="tbl-vanishes" onNavigate={onNavigate} /></p>
           </div>
         ) : aRank === 0 ? (
           <div className="border border-ink/10 p-6"><p className="text-sm">Allowed — {RANK0_READING[`${aParity}-${aTime}`]}.</p></div>
@@ -321,7 +340,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
         ) : aRank === 2 ? (
           <div className="p-2"><BlockMath math={`${formLabel} = \\begin{pmatrix} ${[0, 1, 2].map(i => [0, 1, 2].map(j => labels[i * 3 + j]).join(' & ')).join(' \\\\ ')} \\end{pmatrix}`} /></div>
         ) : aRank === 3 && aIntrinsic === 'jk' ? (
-          <NyeScheme labels={labels} />
+          <NyeScheme labels={labels} onNavigate={onNavigate} />
         ) : (
           <RelationList relations={form!.relations.map(toSym)} />
         )}
@@ -333,10 +352,13 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
 
       {/* Groups sharing this form */}
       <div className="border-t border-ink border-opacity-10 pt-4">
-        <button type="button" aria-expanded={sharingOpen} onClick={() => setSharingOpen(v => !v)} className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/70 hover:text-ink">
-          {sharingOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          Groups sharing this form{sharing ? ` (${sharing.length})` : ''}
-        </button>
+        <div className="flex items-center gap-1">
+          <button type="button" aria-expanded={sharingOpen} onClick={() => setSharingOpen(v => !v)} className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/70 hover:text-ink">
+            {sharingOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            Groups sharing this form{sharing ? ` (${sharing.length})` : ''}
+          </button>
+          <TermInfo id="tbl-sharing" onNavigate={onNavigate} />
+        </div>
         {sharingOpen && sharing && (
           <div className="mt-4 flex flex-wrap gap-2 max-h-64 overflow-y-auto">
             {sharing.map(g => {
@@ -362,14 +384,14 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
 }
 
 /** Rank-3, jk-symmetric: the 3x6 Nye scheme (rows i = x,y,z; columns jk = xx,yy,zz,yz,zx,xy). */
-function NyeScheme({ labels }: { labels: string[] }) {
+function NyeScheme({ labels, onNavigate }: { labels: string[]; onNavigate?: (view: string, tab?: string) => void }) {
   const cols: [string, number][] = [['xx', 0], ['yy', 4], ['zz', 8], ['yz', 5], ['zx', 6], ['xy', 1]]; // (j,k) flat within a row
   return (
     <div className="overflow-x-auto">
       <table className="border-collapse text-center">
         <thead>
           <tr>
-            <th className="p-2" />
+            <th className="p-2"><TermInfo id="tbl-nye" onNavigate={onNavigate} /></th>
             {cols.map(([name]) => (
               <th key={name} className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider min-w-[3.5rem]"><InlineMath math={`(${name})`} /></th>
             ))}

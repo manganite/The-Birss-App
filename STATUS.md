@@ -26,7 +26,11 @@ Table-4a column with the parity crossover made explicit, class letter, rank-tabl
 footnotes; grey groups show the time-reversal-forbidden tail), plus a class-indexed Table-7 guard
 holding `computeTensorForm` to Birss's i-/c cross-formula at ranks 0/1/2/4 across all 58 black-white
 rows (generated `table7Data.ts`, `npm run table7data`). The latter subsumes the "magnetic EQ rank-4
-golden fixtures" backlog item at the symbol-class level. See `CHANGELOG.md` `[Unreleased]`.
+golden fixtures" backlog item at the symbol-class level. Also the **Tables documentation** workstream:
+a new Help "Tables" tab (lookup modes, choosing a tensor, the classical Table-4a chain and the
+magnetic Table-7 route, all worked), two new Deeper Topics entries (Voigt notation; reading Table 7's
+letter columns), a collapsible `LookupChainDiagram` on the Tables page and in the help examples, and
+tooltips across the Tables selectors, results and lookup chain. See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 

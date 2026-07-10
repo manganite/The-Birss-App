@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { InlineMath, BlockMath } from 'react-katex';
 import { BookOpen, Compass, Layers, Zap, Info, Activity, Table2, LucideIcon } from 'lucide-react';
+import { TablesHelp } from './helpTables';
 
 const FEATURES: { icon: LucideIcon; title: string; description: string; extra?: React.ReactNode }[] = [
   {
@@ -133,13 +134,14 @@ const REFERENCES: { href: string; title: string; description: string; openAccess
   },
 ];
 
-type HelpTab = 'overview' | 'conventions' | 'physics' | 'simulation' | 'deeper';
+type HelpTab = 'overview' | 'conventions' | 'physics' | 'simulation' | 'tables' | 'deeper';
 
 const TABS: { id: HelpTab; label: string }[] = [
   { id: 'overview', label: 'Feature Overview' },
   { id: 'conventions', label: 'Notations & Conventions' },
   { id: 'physics', label: 'Physics & Group Theory' },
   { id: 'simulation', label: 'Simulation' },
+  { id: 'tables', label: 'Tables' },
   { id: 'deeper', label: 'Deeper Topics' },
 ];
 
@@ -317,7 +319,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               <div className="space-y-3 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest">The Birss lookup chain</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  Birss's tables answer tensor-form questions in two steps: a group is first mapped to its classical family class with fixed reference-axis orientations (Table 4a), and that class selects a row in the rank-specific form tables (4b–4f). The Tables page shows this chain as a breadcrumb above each result, so the app lookup and the manual book lookup stay recognizably the same procedure.
+                  Birss's tables answer tensor-form questions in two steps: a group is first mapped to its classical family class with fixed reference-axis orientations (Table 4a), and that class selects a row in the rank-specific form tables (4b–4f). The Tables page shows this chain as a breadcrumb above each result, so the app lookup and the manual book lookup stay recognizably the same procedure. A step-by-step walkthrough with examples is in the Tables tab.
                 </p>
                 <p className="text-xs opacity-70 leading-relaxed italic">
                   Forms for every rank are verified against the printed tables — see Deeper Topics → References.
@@ -571,6 +573,9 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
             </section>
           )}
 
+          {/* Tables */}
+          {activeTab === 'tables' && <TablesHelp />}
+
           {/* Deeper Topics */}
           {activeTab === 'deeper' && (
             <section className="space-y-6">
@@ -609,12 +614,29 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               </div>
 
               <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Voigt symmetry and Voigt notation</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  <strong>Voigt symmetry</strong> is the full set of intrinsic symmetries of the elastic tensor: <InlineMath math="c_{ijkl}" /> is unchanged when you swap <InlineMath math="i" /> and <InlineMath math="j" />, when you swap <InlineMath math="k" /> and <InlineMath math="l" /> (stress and strain are themselves symmetric), and when you exchange the pair <InlineMath math="ij" /> with the pair <InlineMath math="kl" /> (an energy argument: the elastic energy is a quadratic form). Together these cut the 81 components of a general rank-4 tensor down to at most 21 independent ones — before any crystal symmetry is applied.
+                </p>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  <strong>Voigt notation</strong> is the bookkeeping that exploits this: a symmetric index pair takes only six values, so it is compressed to a single index 1…6 in the fixed order <InlineMath math="xx \to 1,\ yy \to 2,\ zz \to 3,\ yz \to 4,\ zx \to 5,\ xy \to 6" />. The elastic tensor <InlineMath math="c_{ijkl}" /> then becomes a symmetric <InlineMath math="6\times6" /> matrix <InlineMath math="c_{mn}" />, and a rank-3 tensor with a symmetric jk pair (piezoelectricity <InlineMath math="d_{ijk}" />) becomes the <InlineMath math="3\times6" /> scheme <InlineMath math="d_{im}" />. This is exactly the Nye scheme the Tables page displays: its rows are the free index <InlineMath math="i = x, y, z" /> and its columns are the compressed pairs in the order above.
+                </p>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest">Reading Birss's Parentheses</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
                   Birss's Table 7 marks some group symbols and tensor-form letters with parentheses -- e.g. <InlineMath math="(-6'2m')" /> -- to flag that the printed tensor form is expressed in axes rotated away from the row's standard orientation (30° for trigonal/hexagonal pairs, 45° for tetragonal). The bracket is a frame assertion, not decoration: the app's fixed-frame tensor output already accounts for it by direct projection, so no bracket-tracking step is needed at runtime. See <code className="text-xs">docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md</code> for the full derivation.
                 </p>
                 <p className="text-sm opacity-70 leading-relaxed">
                   Two rows of Birss's own printed Table 7 omit brackets that its own generator column (Table 6) requires: <InlineMath math="(\bar{6}'2m')" /> (i-cells) and <InlineMath math="\bar{6}m'2'" /> (A- and c-cells). These are documented book printing errors -- the app's values for both groups are correct and independently verified against the book's own generators and against ITC Table 1.5.7.1.
+                </p>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-ink border-opacity-10">
+                <h3 className="text-sm font-bold uppercase tracking-widest">Table 7: reading the letter columns directly</h3>
+                <p className="text-sm opacity-70 leading-relaxed">
+                  The printed Table 7 also lists the resulting class letters directly, in its last eight columns — with the book in hand, you can read your letter straight off. Those columns are <strong>built</strong> from A and B by the cross-formula, and the app's chain display walks that construction rather than the shortcut, for two reasons: the rotation step (step 5 of the recipe in the Tables tab) needs the source symbol anyway, and only the construction makes visible why a polar tensor can end up being read from an axial column.
                 </p>
               </div>
 
