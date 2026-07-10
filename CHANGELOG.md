@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-07-10
+
 ### Added
 
 - New "Tables" page: interactive Birss-table lookup -- choose any tensor by rank (0-4), spatial
@@ -652,7 +654,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help & Documentation page covering physics background, math derivations, and usage instructions.
 - MIT license, repository description, topics, and homepage link.
 
-[Unreleased]: https://github.com/manganite/birss-app/compare/v0.18.0...HEAD
+[Unreleased]: https://github.com/manganite/birss-app/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/manganite/birss-app/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/manganite/birss-app/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/manganite/birss-app/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/manganite/birss-app/compare/v0.15.0...v0.16.0
