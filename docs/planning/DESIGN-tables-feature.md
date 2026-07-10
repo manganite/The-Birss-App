@@ -103,6 +103,10 @@ exists (decision 7), and a literature pointer. Adding an effect = one entry.
 - The engine exposes a canonical, hashable form signature (normal-ordered relation set) per
   (group, spec); the later overview is then a groupBy over 122 signatures -- no engine rework.
 - The page layout reserves a secondary view slot ("Groups sharing this form") without building it.
+- **Table-7 lookup-chain display (future work).** The breadcrumb shows the classical Table-4a chain
+  only where it applies (i-tensors of any group, or Type I groups); for a magnetic group's c-tensor
+  it currently shows a neutral "runs via Table 7 (magnetic classes)" note instead. Completing this
+  means encoding the Table-7 magnetic-class map and rendering the c-tensor lookup chain through it.
 
 ## Phasing
 - **Phase 1 (engine + anchors, no UI):** TensorSpec, unified extraction, 4b-4d semantics

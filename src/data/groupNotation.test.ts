@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
-import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, TABLE_4A_CLASS_LETTERS, getFamilyClass } from './groupNotation';
+import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, TABLE_4A_CLASS_LETTERS, getFamilyClass, classicalChainApplies } from './groupNotation';
 
 /**
  * Anti-drift guard tests for the supplementary Birss notation maps. Each test re-parses the
@@ -162,5 +162,16 @@ describe('getFamilyClass', () => {
       const family = getFamilyClass(g.name);
       expect(REFERENCE_AXES, `family "${family}" for group "${g.name}"`).toHaveProperty(family);
     }
+  });
+});
+
+describe('classicalChainApplies', () => {
+  const typeOf = (name: string) => POINT_GROUPS.find(p => p.name === name)!.type;
+  it('the classical Table-4a chain applies iff the tensor is i-type or the group is Type I', () => {
+    expect(classicalChainApplies(typeOf("-3'm'"), 'c')).toBe(false); // Type III, c -> Table 7
+    expect(classicalChainApplies(typeOf("-3'm'"), 'i')).toBe(true);  // i-tensor reduces to family class
+    expect(classicalChainApplies(typeOf("321'"), 'c')).toBe(false);  // Type II grey, c
+    expect(classicalChainApplies(typeOf('432'), 'c')).toBe(true);    // Type I: c coincides with i
+    expect(classicalChainApplies(typeOf("m'm'm"), 'i')).toBe(true);  // any i-tensor
   });
 });
