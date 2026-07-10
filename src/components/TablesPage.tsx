@@ -9,7 +9,7 @@ import {
 } from '../services/tensorForms';
 import { formatCoeff } from '../services/tensorCalculator';
 import { GroupIdentityHeader } from './MathComponents';
-import { getFamilyClass, getClassLetter, REFERENCE_AXES } from '../data/groupNotation';
+import { getFamilyClass, getClassLetter, REFERENCE_AXES, classicalChainApplies } from '../data/groupNotation';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import type { TensorConfig } from '../types';
 
@@ -149,6 +149,10 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate }: TablesPa
   const familyClass = getFamilyClass(groupName);
   const classLetter = getClassLetter(groupName, parity, rank);
   const refAxes = REFERENCE_AXES[familyClass];
+  // The classical Table-4a tail only describes the form for i-tensors or Type I groups; for a
+  // magnetic group's c-tensor Birss's lookup runs via Table 7, so the classical letter / "no
+  // allowed form" would contradict the computed result (see classicalChainApplies).
+  const chainValid = classicalChainApplies(selectedGroup.type, timeParity);
 
   const toT = (s: string) => s.replace(/\\chi/g, 'T');
 
@@ -203,9 +207,11 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate }: TablesPa
         <span>family class <span className="font-serif italic text-ink/80"><InlineMath math={familyClass.replace(/-([1-6])/g, '\\bar{$1}')} /></span> <span className="opacity-50">(Table 4a)</span></span>
         {refAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span>ref. axes {refAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={refAxes.replace(/\/\//g, ' \\parallel ').replace(/-([1-6])/g, '\\bar{$1}')} />}</span></>)}
         <ChevronRight className="w-3 h-3 opacity-40" />
-        {classLetter
-          ? <span>Table {RANK_TABLE[rank]} row <span className="font-mono text-ink/80">{classLetter}{rank}</span></span>
-          : <span className="italic">no allowed form (Table 4a: —)</span>}
+        {!chainValid
+          ? <span className="italic">c-tensor lookup runs via Birss Table 7 (magnetic classes) — chain display planned.</span>
+          : classLetter
+            ? <span>Table {RANK_TABLE[rank]} row <span className="font-mono text-ink/80">{classLetter}{rank}</span></span>
+            : <span className="italic">no allowed form (Table 4a: —)</span>}
       </div>
 
       {/* Result */}

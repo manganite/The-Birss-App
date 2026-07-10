@@ -443,3 +443,15 @@ export function getClassLetter(name: string, parity: 'polar' | 'axial', rank: nu
   if (parity === 'polar') return even ? row.polarEven : row.polarOdd;
   return even ? row.axialEven : row.axialOdd;
 }
+
+/**
+ * Whether the classical Table-4a lookup chain (`getFamilyClass` → `getClassLetter`) determines the
+ * displayed tensor form. True for time-even (i) tensors of any group — primes act only spatially,
+ * so an i-tensor reduces to its classical family class — and for all Type I groups, which have no
+ * antiunitary elements (so c coincides with i). For c-tensors of magnetic (Type II/III) groups
+ * Birss's lookup instead runs via Table 7 (magnetic classes), whose chain display is deferred; in
+ * that case the classical letter / "no allowed form" tail would contradict the computed form.
+ */
+export function classicalChainApplies(groupType: 'I' | 'II' | 'III', timeParity: 'i' | 'c'): boolean {
+  return timeParity === 'i' || groupType === 'I';
+}

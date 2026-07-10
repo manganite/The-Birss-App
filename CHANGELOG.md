@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Tables page: the lookup-chain breadcrumb no longer shows the classical Table-4a tail for magnetic
+  c-tensors (where Birss's lookup runs via Table 7) -- it previously could contradict the displayed
+  form.
+
 ## [0.19.0] - 2026-07-10
 
 ### Added
