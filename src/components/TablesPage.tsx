@@ -11,6 +11,7 @@ import { formatCoeff } from '../services/tensorCalculator';
 import { GroupIdentityHeader } from './MathComponents';
 import { FormatPointGroup } from './notation';
 import { getFamilyClass, getClassLetter, REFERENCE_AXES, classicalChainApplies, getTable7Chain } from '../data/groupNotation';
+import { LookupChainDiagram } from './LookupChainDiagram';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import { TENSOR_EFFECTS, getEffect, effectBaseSymbol } from '../data/tensorEffects';
 import type { TensorConfig } from '../types';
@@ -114,6 +115,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   const [timeParity, setTimeParity] = useState<TensorTimeParity>('i');
   const [intrinsic, setIntrinsic] = useState<TensorIntrinsic>('jk');
   const [sharingOpen, setSharingOpen] = useState(false);
+  const [diagramOpen, setDiagramOpen] = useState(false);
 
   const validIntrinsics = INTRINSIC_BY_RANK[rank];
   const effIntrinsic = validIntrinsics.includes(intrinsic) ? intrinsic : 'none';
@@ -301,6 +303,17 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
         {t7chain?.bookErrorNote && (
           <p className="text-[11px] text-ink/50 italic px-1">⚠ {t7chain.bookErrorNote}</p>
         )}
+        <div>
+          <button type="button" aria-expanded={diagramOpen} onClick={() => setDiagramOpen(v => !v)} className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-ink/50 hover:text-ink">
+            {diagramOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            {diagramOpen ? 'Hide diagram' : 'Show diagram'}
+          </button>
+          {diagramOpen && (
+            <div className="mt-3">
+              <LookupChainDiagram groupName={selectedGroup.name} groupType={selectedGroup.type} parity={aParity} rank={aRank} timeParity={aTime} displayName={displayName} onNavigate={onNavigate} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Result */}
