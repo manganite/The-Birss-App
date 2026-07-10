@@ -145,8 +145,12 @@ function transformTensor(R: number[][], v: number[], rank: number): number[] {
 const famToVec = (fams: FCell[][], dim: number): number[][] =>
   fams.map(f => { const v = new Array(dim).fill(0); for (const c of f) v[c.index] = c.val; return v; });
 
-/** Basis of the solution space of the parsed rank-4 relations (81 - rank of the constraint matrix). */
+/** Basis of the solution space of the parsed rank-4 relations (81 - rank of the constraint matrix).
+ * Memoized by class letter -- the same letter recurs across many rows/columns. */
+const nullSpaceCache = new Map<string, number[][]>();
 function nullSpaceBasis(letter: string): number[][] {
+  const cached = nullSpaceCache.get(letter);
+  if (cached) return cached;
   const dim = 81;
   const relations = relationsForClass(letter);
   const M = relations.map(r => { const row = new Array(dim).fill(0); row[r.idx] += 1; for (const t of r.terms) row[t.idx] -= t.coeff; return row; });
@@ -171,6 +175,7 @@ function nullSpaceBasis(letter: string): number[][] {
     for (let i = 0; i < pivotCols.length; i++) v[pivotCols[i]] = -M[i][fc];
     basis.push(v);
   }
+  nullSpaceCache.set(letter, basis);
   return basis;
 }
 

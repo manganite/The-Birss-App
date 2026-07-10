@@ -177,7 +177,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   // -- is NOT a contradiction: the classical branch likewise shows the row for a zero form, and the
   // reduced-form section reports "vanishes identically" separately.)
   const t7Contradiction = !!t7chain && t7chain.letter === null && !form!.isZero;
-  if (t7Contradiction) {
+  if (t7Contradiction && import.meta.env.DEV) {
     console.error(`Table-7 chain says "no allowed form" but the engine computes a non-zero form for ${selectedGroup.name} ${aParity} rank ${aRank}`);
   }
 
