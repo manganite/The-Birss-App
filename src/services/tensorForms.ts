@@ -18,7 +18,7 @@
  * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md (projection & particularization)
  */
 
-import { EPSILON, GENERATORS, getCachedFullGroup, getTransformedGenerators, type Matrix3x3 } from './symmetryGroups';
+import { EPSILON, GENERATORS, getCachedFullGroup, getTransformedGenerators, getAlternateSettings, type Matrix3x3 } from './symmetryGroups';
 import { averageTensor, getIndices, getLabel, formatCoeff } from './tensorProjection';
 
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
@@ -259,4 +259,27 @@ export function getFormSignature(groupName: string, setting: number, spec: Tenso
 
   perBasis.sort();
   return `r${spec.rank}|${perBasis.join('|')}`;
+}
+
+/**
+ * A frame-canonical form signature for the "groups sharing this form" feature: the lexicographic
+ * minimum of `getFormSignature` over every setting the app already tabulates for the group
+ * (`ALTERNATE_SETTINGS`; setting 1 if none). Two groups share a form iff they share this signature.
+ *
+ * This is the printed-table notion of "same form": Birss/ITC choose, per group, the setting whose
+ * components match the tabulated block matrix (e.g. ITC prints the bracketed alternate `2'mm' [m2'm']`
+ * for block F5). Taking the min over the app's own S·G·S⁻¹ settings reproduces that choice without
+ * any new O(3) canonicalization -- the setting machinery already produces exactly these frames. The
+ * plain (frame-specific) `getFormSignature` is a strict refinement of this; see
+ * `docs/findings/ANALYSIS-table-4b-4d-semantics.md` §9.
+ */
+export function getCanonicalFormSignature(groupName: string, spec: TensorSpec): string {
+  const alts = getAlternateSettings(groupName);
+  const nSettings = alts ? alts.length + 1 : 1;
+  let best: string | null = null;
+  for (let s = 1; s <= nSettings; s++) {
+    const sig = getFormSignature(groupName, s, spec);
+    if (best === null || sig < best) best = sig;
+  }
+  return best ?? 'unsupported';
 }

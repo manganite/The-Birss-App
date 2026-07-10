@@ -28,7 +28,7 @@ const FEATURES: { icon: LucideIcon; title: string; description: string; extra?: 
   {
     icon: Table2,
     title: 'Tables',
-    description: 'Interactive lookup in the Birss tables: choose any tensor by rank (0–4), spatial parity (polar/axial) and time parity (i/c), plus intrinsic index symmetry where meaningful, and see its symmetry-reduced form for the selected group. The lookup chain (family class, reference axes, table row) mirrors the manual two-step lookup in the book.',
+    description: 'Interactive lookup in the Birss tables: choose any tensor by rank (0–4), spatial parity (polar/axial) and time parity (i/c), plus intrinsic index symmetry where meaningful, and see its symmetry-reduced form for the selected group. Effects like piezoelectricity or the linear magnetoelectric effect can be selected directly, with their defining equations. The lookup chain (family class, reference axes, table row) mirrors the manual two-step lookup in the book.',
   },
 ];
 

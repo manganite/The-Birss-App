@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tables page "By effect" mode: pick a named physical effect (pyroelectricity, spontaneous
+  magnetization, permittivity, the linear magnetoelectric effect, piezoelectricity, piezomagnetism,
+  elasticity) to see its symmetry-reduced form with the effect's own symbol and defining equation.
+  Allowed property chips in the Explorer popup now deep-link into the matching effect, and a
+  collapsible "Groups sharing this form" list shows every group with the same frame-canonical form.
+
 ### Fixed
 
 - Tables page: the lookup-chain breadcrumb no longer shows the classical Table-4a tail for magnetic

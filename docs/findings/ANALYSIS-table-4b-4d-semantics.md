@@ -232,3 +232,42 @@ rank-4 must apply the same rank reduction.
 |---|---|---|---|
 | 4e | 3 | 32 classical, both parities | wired, green (`tables4e.reference.test.ts`) |
 | 4f | 4 | 32 classical, both parities | wired, green (`tables4f.reference.test.ts`) -- lockstep rule (8.3.1) |
+
+---
+
+## 9. Addendum (2026-07-10) -- form-signature "sharing": setting-1 refines the F-blocks; use the canonical signature
+
+**Context.** The Tables Phase-3 "Groups sharing this form" feature partitions the 122 groups by a
+form signature (`getFormSignature`) and lists co-members. The natural anchor is ITC Table 1.5.8.1:
+for the linear magnetoelectric tensor `{2, axial, c, none}` the 58 groups should partition exactly
+into the printed F1-F11 form blocks.
+
+**Finding (setting-1 signature is a strict refinement).** Using the plain frame-specific signature
+at **setting 1** (`getFormSignature(g, 1, spec)`), the partition over the 58 ME groups does **not**
+equal the F-block partition -- it strictly **refines** it: 9 of the 11 blocks (and the zero class of
+the other 64 groups) match exactly, but two blocks split:
+
+- **F5** `{2'2'2, 2'm'm, mm2, mmm'}` splits into `{2'2'2, mm2, mmm'}` and `{2'm'm}`.
+- **F10** `{-42'm', -42m, 4'/m'm'm, 4'22', 4'mm'}` splits into `{-42m, 4'/m'm'm, 4'22'}` and
+  `{-42'm', 4'mm'}`.
+
+The mechanism is a **frame** difference, not a form difference. At setting 1 the same abstract form
+places its free components in different axis pairs: e.g. `mm2`'s magnetoelectric tensor is
+`[[0, a12, 0], [a21, 0, 0], [0, 0, 0]]` (the **xy/yx** pair), while `2'm'm`'s is
+`[[0, 0, a13], [0, 0, 0], [a31, 0, 0]]` (the **xz/zx** pair). Same F5 form (two off-diagonal free
+components), different axis pair, so a frame-specific signature separates them. The split groups are
+exactly the ones whose setting-1 (Birss standard) frame differs from the ITC-printed frame -- the
+bracketed / rotated-setting groups. The refinement never merges across blocks (each signature class
+is contained in one block).
+
+**Resolution (frame-canonical signature).** "Same printed-table form" is an **abstract-form**
+(frame-independent) notion -- ITC itself proves this by printing, per group, the bracketed alternate
+whose components match the block matrix (`2'mm' [m2'm']` in F5; `-4m'2'` for a setting of `-42'm'`
+in F10). The feature therefore uses `getCanonicalFormSignature(g, spec)` = the lexicographic minimum
+of `getFormSignature(g, s, spec)` over **every setting the app already tabulates** for `g`
+(`ALTERNATE_SETTINGS`; setting 1 if none). No new O(3) canonicalization is needed -- the app's own
+`S·G·S⁻¹` setting machinery already produces those frames. Under this signature the partition
+**equals** the F-blocks (F5 heals via the orthorhombic axis-permutation settings, F10 via the
+`Rz(45°)` settings); anchored in `src/services/formSignature.reference.test.ts`. The plain
+`getFormSignature` is kept as-is (frame-specific, used by the result panel); only "sharing" uses the
+canonical variant.
