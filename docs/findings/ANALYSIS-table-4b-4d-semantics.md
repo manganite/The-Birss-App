@@ -119,8 +119,9 @@ anti-circular -- no expected value comes from `computeTensorForm`).
   4b-4d guard *through Table 7* is deferred. (The engine itself already produces magnetic-group
   forms correctly -- anchored independently in `tensorForms.test.ts` via ITC 1.5.8.1 and the ED/MD
   golden paths; only the *Birss-class-indexed* guard is deferred.)
-- **Tables 4e (rank 3) and 4f (rank 4):** analyzed and resolved in the §8 addendum below (4e wired;
-  4f a documented STOP). This supersedes the earlier "already covered / blocked on F4" notes here.
+- **Tables 4e (rank 3) and 4f (rank 4):** analyzed in the §8 addendum below -- **both now wired**
+  (4e directly; 4f was initially a STOP, then resolved by Birss's lockstep rule, §8.3.1). This
+  supersedes the earlier "already covered / blocked on F4" notes here.
 
 ---
 
@@ -166,7 +167,7 @@ Comparison = subspace equality: the engine basis must satisfy every parsed relat
 table's independent-component count (27 - rank of the relation matrix). **Result: all 32 classical
 groups x both parities pass** (`tables4e.reference.test.ts`). No ambiguity; wired.
 
-### 8.3 Table 4f -- STOP (semantics underdetermined by the notation)
+### 8.3 Table 4f -- initially STOP, then RESOLVED (lockstep rule, see 8.3.1)
 
 > Evidence (`table-4f.md:8-15`): the families use FIVE different permutation rules -- `(4)` = all
 > unrestricted permutations, `(c4)` = four cyclic permutations, `(x.3)` = "fix the last index,
@@ -190,24 +191,44 @@ independently-validated engine for all 32 classical groups):
    yields 19 -- so the multi-member family pairing that 4f's mixed rules imply does not reproduce
    the (validated) rank-4 engine either.
 
-Both readings I could principle-derive from the notation fail against the engine, and the file does
-not pin down the component ordering needed to disambiguate. Per the work order ("If any cell
-convention remains ambiguous, STOP for that table and report"), **Table 4f is NOT wired.**
+Both candidate readings I could principle-derive from the notation *as then transcribed* fail
+against the engine, and the file did not pin down the component ordering needed to disambiguate.
+The STOP was recorded pending the exact pairing convention from the printed book.
 
-What would unblock it: an explicit statement (from the printed book layout, or added to
-`table-4f.md`) of the component ORDER within each `(c4)`/`(4)`/`(x.3)`/`(x:3)`/`(xy:6)` family and
-the pairing convention for cross-references between different-rule families -- i.e. exactly which
-component each cell entry maps to. That is a transcription/print task (like the 4f value
-verification itself), not something to guess here.
+#### 8.3.1 RESOLVED (2026-07-09b) -- Birss's lockstep rule
 
-The rank-4 engine is not left unanchored: `tensorForms.test.ts` already anchors rank-4 EQ-i
-(jk-symmetric) against the app's book-verified EQ path, and the four rank-0 / rank-2 ME anchors
-exercise the axial `det(R)` and time-odd branches. Only the *Birss-4f-class-indexed general-tensor*
-guard is deferred.
+Source: maintainer-provided book text (printed pages 62-66, preceding Table 4f), now recorded in
+`table-4f.md`'s Notation section. Quote: *"Notations of the type xz(2), xxy(3), yxxx(x.3),
+xxxz(4), xxyy(x:3), xxyz(c4) and zzxy(xy:6) indicate certain permutations which must be applied to
+every component in the column. Thus, in considering a permutation of a component at the top of a
+column, the same permutation must be applied to all the components listed in that column for the
+various crystal classes."*
+
+So the header annotation defines a set of **index-position** permutations, and each cell value is
+expanded by the **same** position permutations -- **lockstep** -- emitting one relation per family
+member. It is *not* an axis relabel (which is exactly why the relabel candidate failed) and *not*
+"all members equal one component" (why the single-component candidate failed). Worked example, row
+`K4`, column `xxyz(c4) = -yyyz`: the four cyclic shifts give `T_xxyz=-T_yyyz`, `T_zxxy=-T_zyyy`,
+`T_yzxx=-T_yzyy`, `T_xyzx=-T_yyzy`. Sum cells (single-component columns, e.g.
+`xxxx = yyxx+xyyx+yxyx`) are direct equalities, no expansion.
+
+Under this rule the guard **passes for all 32 classical groups x both parities** at rank 4
+(`tables4f.reference.test.ts`). The 6/mmm `P4` row -- Birss's own worked example (eq. 2.23) -- is
+among the passes; its resulting equalities are reported in the guard's PR for a book eyeball.
+
+**One implementation note (engine, not the table).** For a *general* (intrinsic-none) rank-4
+tensor the engine's seed projection (`computeTensorForm(...).basisResults`) returns a **non-minimal
+spanning set** -- it dedups seeds only by proportionality, so it can keep vectors that are linearly
+dependent without being scalar multiples (e.g. 11 vectors spanning a 10-dim space for class P).
+The guard therefore compares the **rank of the engine's span** to the table's solution-space
+dimension (plus the per-relation satisfaction check) -- i.e. genuine subspace equality -- rather
+than `basisResults.length`. This does not affect ED/MD/EQ or ranks 0-3 (where the projection is
+already minimal); a future Tables UI that displays an independent-component *count* for general
+rank-4 must apply the same rank reduction.
 
 ### 8.4 Coverage added
 
 | Table | Rank | Groups | Status |
 |---|---|---|---|
 | 4e | 3 | 32 classical, both parities | wired, green (`tables4e.reference.test.ts`) |
-| 4f | 4 | -- | **STOP** -- semantics underdetermined (see 8.3) |
+| 4f | 4 | 32 classical, both parities | wired, green (`tables4f.reference.test.ts`) -- lockstep rule (8.3.1) |

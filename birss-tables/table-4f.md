@@ -17,6 +17,17 @@ Notation:
 - A header of the form `zzxy(xy:6)` denotes the six components obtained from `zzxy` by permuting its indices subject to the restriction that the order of `x` and `y` remains unchanged, although `x` and `y` need not remain adjacent.
 - By the same convention, `zzyx(yx:6)` preserves the order `y, x`.
 
+**Lockstep expansion rule (Birss, text preceding Table 4f, printed pages 62–66).** Quote: "Notations
+of the type xz(2), xxy(3), yxxx(x.3), xxxz(4), xxyy(x:3), xxyz(c4) and zzxy(xy:6) indicate certain
+permutations which must be applied to every component in the column. Thus, in considering a
+permutation of a component at the top of a column, the same permutation must be applied to all the
+components listed in that column for the various crystal classes." In other words, the header
+annotation defines a set of **index-position** permutations, and each cell value is expanded by the
+**same** position permutations (it is *not* an axis relabel). Worked example — row `K4`, column
+`xxyz(c4)`, cell `-yyyz`: the four cyclic position shifts give `T_xxyz = -T_yyyz`,
+`T_zxxy = -T_zyyy`, `T_yzxx = -T_yzyy`, `T_xyzx = -T_yyzy`. Sum cells (single-component columns,
+e.g. `xxxx = yyxx+xyyx+yxyx`) are direct equalities with no expansion.
+
 Row labels (A4-U4) are the rank-4 (m=4) instances of the symbol classes `A_m`-`U_m`
 assigned to each of the 32 point groups in Table 4a — see Table 4a for the
 point-group -> symbol-class lookup and the full rank-mapping explanation (m=0 -> Table

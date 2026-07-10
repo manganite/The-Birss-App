@@ -212,15 +212,17 @@ B30 (unplanned):  -3'm' generator fix (PR #37)  ── gates ──►  B2.3's t
   Open questions (grouping unit, call sites, tie-breaking) still need resolution before
   starting. B28 covers the concrete use case; B29 generalises it.
 
-- **V1 — Print-verify the EQ (rank-4) golden fixtures against Birss Table 4f.**
-  Priority: medium. **Correctness assurance, not a known error** — do not implement as part of a
-  feature; it is a standalone scientific-validation task. This is the main remaining
-  scientific-validation gap. Two distinct sub-gaps, both tracked in
-  `docs/findings/AUDIT-convention-references.md` (see the Residuals list, ~:319):
-  - **EQ / Table 4f (rank 4).** Birss Table 4f is not yet print-verified and its symbol-class
-    (A–U) form fixtures are not yet written. EQ-i is 1/122 pinned (`m-3m`), EQ-c is 0/122 pinned.
-    Requires print verification against Birss Table 4f (or an independent literature source), then
-    transcribing class-form fixtures. Gates B15's rank-4 generalisation.
+- **V1 — Remaining rank-3 fixture sign-offs (the Table-4f sub-gap is now closed).**
+  Priority: medium. **Correctness assurance, not a known error** — a standalone scientific-validation
+  task. Two sub-gaps were tracked here; the first is now done:
+  - ~~**EQ / Table 4f (rank 4).**~~ **Done.** Table 4f is print-verified (2026-07-09, PR #77 in
+    `birss-app` + PR #1 in the canonical `birss-tables`), and the rank-4 form is now guarded
+    directly: `src/services/tables4f.reference.test.ts` checks `computeTensorForm` against every
+    Table-4f symbol class for all 32 classical groups (both parities) via Birss's lockstep pairing
+    rule — see `docs/findings/ANALYSIS-table-4b-4d-semantics.md` §8.3.1. (Rank 3 is likewise guarded
+    against Table 4e in `tables4e.reference.test.ts`.) This closes the anti-circular *file-anchored*
+    validation of the rank-4 general-tensor form; magnetic (Type II/III) class-indexed guarding via
+    Table 7 remains future work, and the pre-existing EQ golden-fixture coverage counts are unchanged.
   - **7 `VERIFY`-marked rank-3 ED/MD fixtures** in `goldenTensors.fixtures.ts`
     (`:978`, `:984`, `:1343`, `:1349`, `:1360`, `:1366`, `:1372`) — setting-derived / grey-rule
     forms still pending human sign-off against Fiebig et al. (2005) or the printed Birss tables
