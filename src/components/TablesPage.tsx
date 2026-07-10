@@ -10,7 +10,7 @@ import {
 import { formatCoeff } from '../services/tensorCalculator';
 import { GroupIdentityHeader } from './MathComponents';
 import { FormatPointGroup } from './notation';
-import { getFamilyClass, getClassLetter, REFERENCE_AXES, classicalChainApplies } from '../data/groupNotation';
+import { getFamilyClass, getClassLetter, REFERENCE_AXES, classicalChainApplies, getTable7Chain } from '../data/groupNotation';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import { TENSOR_EFFECTS, getEffect, effectBaseSymbol } from '../data/tensorEffects';
 import type { TensorConfig } from '../types';
@@ -168,6 +168,18 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   const classLetter = getClassLetter(selectedGroup.name, aParity, aRank);
   const refAxes = REFERENCE_AXES[familyClass];
   const chainValid = classicalChainApplies(selectedGroup.type, aTime);
+  // c-tensor of a magnetic group: Birss's lookup runs via Table 7. Type III -> a chain; Type II
+  // grey -> null (the c-tensor vanishes, rendered as the grey tail).
+  const t7chain = !chainValid ? getTable7Chain(selectedGroup.name, aParity, aRank) : null;
+  const t7SourceRefAxes = t7chain ? REFERENCE_AXES[t7chain.sourceClass] : undefined;
+  // Dev-only guard: never show a "no allowed form" chain when the engine actually computes one.
+  // (The reverse -- a class letter whose form vanishes at this particular rank, e.g. Table 4d R2 = 0
+  // -- is NOT a contradiction: the classical branch likewise shows the row for a zero form, and the
+  // reduced-form section reports "vanishes identically" separately.)
+  const t7Contradiction = !!t7chain && t7chain.letter === null && !form!.isZero;
+  if (t7Contradiction) {
+    console.error(`Table-7 chain says "no allowed form" but the engine computes a non-zero form for ${selectedGroup.name} ${aParity} rank ${aRank}`);
+  }
 
   const toSym = (s: string) => s.replace(/\\chi/g, base);
   const forbiddenName = effect ? effect.label : 'This tensor';
@@ -247,17 +259,48 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
       )}
 
       {/* Lookup chain */}
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink/60 bg-ink/5 border border-ink/10 px-4 py-2.5 rounded-sm">
-        <span className="font-serif italic text-ink"><InlineMath math={bar(displayName)} /></span>
-        <ChevronRight className="w-3 h-3 opacity-40" />
-        <span>family class <span className="font-serif italic text-ink/80"><InlineMath math={bar(familyClass)} /></span> <span className="opacity-50">(Table 4a)</span></span>
-        {refAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span>ref. axes {refAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(refAxes.replace(/\/\//g, ' \\parallel '))} />}</span></>)}
-        <ChevronRight className="w-3 h-3 opacity-40" />
-        {!chainValid
-          ? <span className="italic">c-tensor lookup runs via Birss Table 7 (magnetic classes) — chain display planned.</span>
-          : classLetter
-            ? <span>Table {RANK_TABLE[aRank]} row <span className="font-mono text-ink/80">{classLetter}{aRank}</span></span>
-            : <span className="italic">no allowed form (Table 4a: —)</span>}
+      <div className="space-y-1.5">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink/60 bg-ink/5 border border-ink/10 px-4 py-2.5 rounded-sm">
+          <span className="font-serif italic text-ink"><InlineMath math={bar(displayName)} /></span>
+
+          {chainValid ? (
+            <>
+              <ChevronRight className="w-3 h-3 opacity-40" />
+              <span>family class <span className="font-serif italic text-ink/80"><InlineMath math={bar(familyClass)} /></span> <span className="opacity-50">(Table 4a)</span></span>
+              {refAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span>ref. axes {refAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(refAxes.replace(/\/\//g, ' \\parallel '))} />}</span></>)}
+              <ChevronRight className="w-3 h-3 opacity-40" />
+              {classLetter
+                ? <span>Table {RANK_TABLE[aRank]} row <span className="font-mono text-ink/80">{classLetter}{aRank}</span></span>
+                : <span className="italic">no allowed form (Table 4a: —)</span>}
+            </>
+          ) : t7chain && !t7Contradiction ? (
+            <>
+              <ChevronRight className="w-3 h-3 opacity-40" />
+              <span>Table 7 <span className="opacity-50">({t7chain.column})</span></span>
+              <ChevronRight className="w-3 h-3 opacity-40" />
+              <span>
+                {t7chain.source} = <span className="font-serif italic text-ink/80"><InlineMath math={bar(t7chain.sourceSymbol)} /></span>
+                {t7chain.sourceBracketed && t7chain.transformLabel && (
+                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {t7chain.transformLabel}</span>
+                )}
+              </span>
+              {t7SourceRefAxes && (<><ChevronRight className="w-3 h-3 opacity-40" /><span>ref. axes {t7SourceRefAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={bar(t7SourceRefAxes.replace(/\/\//g, ' \\parallel '))} />}</span></>)}
+              <ChevronRight className="w-3 h-3 opacity-40" />
+              <span>Table 4a, {t7chain.fourAColumn} column{t7chain.parityCrossover && <span title="parity crossover: the c-tensor reads the opposite-parity Table-4a column" className="text-ink font-semibold">*</span>}</span>
+              <ChevronRight className="w-3 h-3 opacity-40" />
+              {t7chain.letter
+                ? <span>class {t7chain.letter} <ChevronRight className="inline w-3 h-3 opacity-40" /> Table {RANK_TABLE[aRank]} row <span className="font-mono text-ink/80">{t7chain.letter}{aRank}</span></span>
+                : <span className="italic">no allowed form (Table 4a: —)</span>}
+            </>
+          ) : t7chain ? (
+            <><ChevronRight className="w-3 h-3 opacity-40" /><span className="italic">c-tensor lookup runs via Birss Table 7 (magnetic classes)</span></>
+          ) : (
+            <><ChevronRight className="w-3 h-3 opacity-40" /><span className="italic">grey group <ChevronRight className="inline w-3 h-3 opacity-40" /> time reversal alone is a symmetry <ChevronRight className="inline w-3 h-3 opacity-40" /> c-tensor vanishes identically (no Table-7 row)</span></>
+          )}
+        </div>
+        {t7chain?.bookErrorNote && (
+          <p className="text-[11px] text-ink/50 italic px-1">⚠ {t7chain.bookErrorNote}</p>
+        )}
       </div>
 
       {/* Result */}
