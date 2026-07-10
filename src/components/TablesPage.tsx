@@ -193,7 +193,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
         <div className="space-y-2">
           <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Lookup</span>
           <div className="flex gap-2">
-            {(['effect', 'type'] as const).map(m => (
+            {(['type', 'effect'] as const).map(m => (
               <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)} className={`${chipBase} ${mode === m ? chipOn : chipOff}`}>{m === 'effect' ? 'By effect' : 'By tensor type'}</button>
             ))}
           </div>

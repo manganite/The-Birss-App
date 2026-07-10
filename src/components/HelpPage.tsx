@@ -317,7 +317,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               <div className="space-y-3 pt-4 border-t border-ink border-opacity-10">
                 <h3 className="text-sm font-bold uppercase tracking-widest">The Birss lookup chain</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
-                  Birss's tables answer tensor-form questions in two steps: a group is first mapped to its classical family class with fixed reference-axis orientations (Table 4a), and that class selects a row in the rank-specific form tables (4b–4f). The Tables page shows this chain as a breadcrumb above each result, so the app lookup and the manual book lookup stay recognizably the same procedure.
+                  Birss's tables answer tensor-form questions in two steps: a group is first mapped to its classical family class with fixed reference-axis orientations (Table 4a), and that class selects a row in the rank-specific form tables (4b–4f). The Tables page shows this chain as a breadcrumb above each result, so the app lookup and the manual book lookup stay recognizably the same procedure. A step-by-step walkthrough with examples is in the Tables tab.
                 </p>
                 <p className="text-xs opacity-70 leading-relaxed italic">
                   Forms for every rank are verified against the printed tables — see Deeper Topics → References.
