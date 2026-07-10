@@ -47,7 +47,9 @@ describe('Part C rank 4 -- Table 4f guard (32 classical groups, lockstep pairing
       const cc = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'c', intrinsic: 'none' })!;
       expect(cc.relations, `${c.group} ${parity}`).toEqual(i.relations);
     }
-  }, 30000);
+  }, 120000); // generous explicit timeout: this rank-4 i-vs-c sweep (128 form computations) can
+  // exceed the previous 30s cap under the heavier parallel CPU load added by the Table-7
+  // rank-0/1/2/4 guard (which roughly doubles the suite's rank-4 workload). Assertions unchanged.
 
   const checkParity = (c: ClassRow, parity: TensorParity, letter: string | null) => {
     const basis = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'i', intrinsic: 'none' })!.basisResults;
