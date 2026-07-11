@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculateSymbolicSHGExpressions, buildSymbolicR, type SymPoly } from './symbolicProjection';
 import { calculateSHGExpressions, rotX, rotY, rotZ, mat3mul, type SHGOptions } from './tensorProjection';
-import { trigEval, trigIsConst, trigGetConst } from './trigPoly';
-import { ROTATED_SHG_FIXTURES } from './rotatedSHG.fixtures';
+import { trigEval, trigIsConst } from './trigPoly';
 
 const EPSILON = 1e-6;
 

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { GENERATORS, EPSILON } from './symmetryGroups';
+import { GENERATORS } from './symmetryGroups';
 import { computeTensorForm, type TensorParity } from './tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
 

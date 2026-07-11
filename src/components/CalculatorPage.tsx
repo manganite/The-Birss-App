@@ -13,7 +13,6 @@ import { TensorTerm } from './notation';
 import { KDirectionSelector } from './crystalCut';
 import { GroupIdentityHeader } from './MathComponents';
 import { TensorClassificationControl, TimeReversalControl } from './TensorSetupControls';
-import { TermInfo } from './TermInfo';
 import { TENSOR_META } from '../types';
 import type { TensorConfig, PresetAnglesState } from '../types';
 

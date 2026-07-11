@@ -1,0 +1,14 @@
+# Build output & coverage
+dist/
+coverage/
+
+# Vendored, byte-identity discipline (see AGENTS.md / audit)
+birss-tables/
+docs/
+
+# Generated -- reformatting breaks the `npm run table7data` idempotence check
+src/data/table7Data.ts
+
+# Hand-maintained docs and lockfile are not code-formatted
+*.md
+package-lock.json

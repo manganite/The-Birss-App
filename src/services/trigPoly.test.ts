@@ -10,7 +10,7 @@ import {
 
 const EPSILON = 1e-10;
 
-function expectClose(a: number, b: number, msg?: string) {
+function expectClose(a: number, b: number, _msg?: string) {
   expect(Math.abs(a - b)).toBeLessThan(EPSILON);
 }
 

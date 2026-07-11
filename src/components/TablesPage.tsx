@@ -169,6 +169,9 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
 
   const form = useMemo(
     () => (selectedGroup ? computeTensorForm(selectedGroup.name, setting, spec) : null),
+    // specKey is a stable string derived from spec; keying on it (not the fresh `spec` object) avoids
+    // recomputing on every render when spec's identity changes but its contents don't.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedGroup, setting, specKey],
   );
 
@@ -179,6 +182,8 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
     if (!sharingOpen || !groupName) return null;
     const sig = getCanonicalFormSignature(groupName, spec);
     return POINT_GROUPS.filter(g => getCanonicalFormSignature(g.name, spec) === sig);
+    // specKey is a stable string derived from spec; see the form useMemo above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sharingOpen, groupName, specKey]);
 
   if (!selectedGroup) {

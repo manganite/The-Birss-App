@@ -144,6 +144,9 @@ export function useSimulatorState(
       });
       return next;
     });
+    // setAmplitudes/setPhases are useState dispatchers with stable identity (React guarantees this),
+    // so they are intentionally omitted from the dependency array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [independentComponents]);
 
   const simulationData = useMemo(() => {
