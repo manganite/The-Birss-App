@@ -12,6 +12,7 @@ import { PointGroupData } from '../data/pointGroups';
 import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
 import { CHIP_TO_EFFECT } from '../data/tensorEffects';
 import { POLAR_DIRECTIONS, FRAME_DIVERGENT_CLASSES, type SymDirClass } from '../data/polarDirections';
+import { CRYSTAL_SYSTEMS } from '../data/crystalSystems';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
 /** Render a Birss reference-axis orientation string ("3//z, -2//y", or the word "any"): `//`
@@ -128,6 +129,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   const parent = getParentGroup(group.name);
   const halvingOps = getHalvingSubgroup(group.name);
   const referenceAxes = REFERENCE_AXES[getFamilyClass(group.name)];
+  const systemInfo = CRYSTAL_SYSTEMS[group.crystalSystem];
   const settingLabels = altSettings ? getSettingLabels(group.name, convention) : [];
   const birssStandard = getStandardSetting(group.name, 'birss');
   const itcStandard = getStandardSetting(group.name, 'itc');
@@ -227,6 +229,27 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Reference axes</dt>
                 <dd><ReferenceAxes value={referenceAxes} /></dd>
               </div>
+            )}
+            {systemInfo && (
+              <>
+                <div>
+                  <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Cell restrictions</dt>
+                  <dd>{systemInfo.restrictions}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Free parameters</dt>
+                  <dd>{systemInfo.freeParams.join(', ')} <span className="text-ink/50">({systemInfo.freeParams.length})</span></dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Bravais lattices</dt>
+                  <dd className="font-mono">{systemInfo.bravais.join(', ')}</dd>
+                </div>
+                {systemInfo.note && (
+                  <div className="sm:col-span-2">
+                    <dd className="text-xs text-ink/60 leading-relaxed">{systemInfo.note}</dd>
+                  </div>
+                )}
+              </>
             )}
             {group.type === 'III' && parent && (
               <div className="sm:col-span-2">
