@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Explorer group popup: a "Polar directions" block -- the polar (symmetry) axes and nonpolar
+  direction sets for the group (ITC Vol. D Table 3.2.2.2), each nonpolar set labelled by its ITC
+  2.1.3.1 symmetry-direction class. Centrosymmetric groups show "no polar directions"; magnetic
+  groups reuse their unprimed spatial skeleton's directions (with a note that primes act spatially).
+  The three 30 deg-divergent trigonal classes (32, 3m, -6m2) and their derivatives carry a Birss
+  -frame note, and the 622 print omission in Table 3.2.2.2 is corrected (the [uv0] set restored, with
+  a footnote). The row choice is machine-verified against the app's own operators.
+- Explorer group popup: the lattice info now shows the crystal system's cell-parameter restrictions,
+  free ("to be determined") parameters, and Bravais lattice symbols (ITC Vol. A Table 2.1.1.1), with
+  monoclinic c-unique and trigonal family-vs-system notes.
+- Vendored ITC reference tables 2.1.1.1 and 2.1.3.1 under `docs/references/` (alongside 3.2.2.1 /
+  3.2.2.2 from the previous change), with drift + operator-consistency guards on the derived data.
+
 - Help: a new "Tables" tab documents the Tables page end to end -- the two lookup modes and the four
   result blocks, how to choose a tensor (rank, spatial/time parity and index symmetry, via the parity
   product rule) with the effect catalogue, the classical two-step Table-4a chain (with a worked
