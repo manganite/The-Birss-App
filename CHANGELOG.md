@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   axes), that source's reference axes, which Table-4a column is read (making the parity crossover
   explicit), the class letter, and the final rank-table row -- plus a footnote on the two documented
   Birss Table-7 misprints. Grey (Type II) c-tensors show that time reversal alone forbids the tensor.
+- Testing: vendored four transcribed ITC reference tables (Vol. D 3.2.2.1 property counts and 3.2.2.2
+  polar axes; Vol. A 2.1.3.1 symmetry directions and 2.1.1.1 crystal systems) under `docs/references/`,
+  and an anti-circular guard holding `computeTensorForm` to ITC Table 3.2.2.1 -- the independent
+  -component counts and property occurrence for the 21 noncentrosymmetric classical classes (rank-1
+  pyroelectric, rank-3 piezoelectric/SHG, axial rank-2 optical activity), the 11 centrosymmetric Laue
+  groups vanishing, the printed structural totals, the setting-mapped rank-1 polar-axis directions,
+  and the enantiomorphism column. The vendored 3.2.2.2 records the print-confirmed 622 omission.
 
 ### Changed
 
