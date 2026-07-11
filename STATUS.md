@@ -34,7 +34,11 @@ tooltips across the Tables selectors, results and lookup chain. Plus **ITC refer
 four transcribed ITC tables under `docs/references/` (Vol. D 3.2.2.1/3.2.2.2, Vol. A 2.1.3.1/2.1.1.1)
 and an anti-circular guard holding `computeTensorForm` to ITC 3.2.2.1's independent-component counts,
 property occurrence, structural totals and enantiomorphism (`isChiral`) across the 21 noncentro +
-11 centro classical classes. See `CHANGELOG.md` `[Unreleased]`.
+11 centro classical classes. Plus **Explorer polar directions + lattice info**: a "Polar directions"
+block in the group popup (polar/nonpolar directions from ITC 3.2.2.2, in the app's Birss frame with
+the documented 30 deg trigonal remapping machine-verified against the app operators, and the 622
+print omission corrected), and the crystal-system cell restrictions / free parameters / Bravais
+lattices from ITC 2.1.1.1 (2.1.1.1 and 2.1.3.1 vendored alongside). See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 
