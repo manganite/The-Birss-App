@@ -174,10 +174,17 @@ function applyPythagorean(terms: Map<string, number>): boolean {
     const cosIdx = angleIdx;
     const sinIdx = angleIdx + 1;
 
-    const entries = Array.from(terms.entries());
-    for (let i = 0; i < entries.length; i++) {
-      const [keyA, coeffA] = entries[i];
-      if (Math.abs(coeffA) < TRIG_EPSILON) continue;
+    // Snapshot the KEYS only; every coefficient is read live from `terms` at use
+    // time. A single monomial can take part in more than one cos^2+sin^2 reduction
+    // within one pass, and the three set() calls below mutate the map in place --
+    // reading a coefficient from a stale entries snapshot then corrupts the sum
+    // (right at special angles, wrong at generic ones). This was backlog item E1:
+    // symbolic EQ source terms on 3-/6-fold groups diverged from the numeric engine
+    // off-normal.
+    const keys = Array.from(terms.keys());
+    for (const keyA of keys) {
+      const coeffA = terms.get(keyA);
+      if (coeffA === undefined || Math.abs(coeffA) < TRIG_EPSILON) continue;
 
       const expsA = decodeKey(keyA);
       if (expsA[cosIdx] < 2) continue;
@@ -189,10 +196,12 @@ function applyPythagorean(terms: Map<string, number>): boolean {
       const coeffB = terms.get(keyB);
 
       if (coeffB === undefined || Math.abs(coeffB) < TRIG_EPSILON) continue;
-
-      const minCoeff = Math.abs(coeffA) < Math.abs(coeffB) ? coeffA : coeffB;
       if (Math.sign(coeffA) !== Math.sign(coeffB)) continue;
 
+      const minCoeff = Math.abs(coeffA) < Math.abs(coeffB) ? coeffA : coeffB;
+
+      // keyReduced (cos^(p-2) sin^q) is distinct from both keyA (cos^p sin^q) and
+      // keyB (cos^(p-2) sin^(q+2)), so these three writes never alias each other.
       const expsReduced = [...expsA];
       expsReduced[cosIdx] -= 2;
       const keyReduced = encodeKey(expsReduced);
