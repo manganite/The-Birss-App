@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { InlineMath } from 'react-katex';
-import { X, Calculator, Activity, Table2, Check, Minus } from 'lucide-react';
+import { X, Calculator, Activity, Table2, Check, Minus, BookOpen } from 'lucide-react';
 import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, getParentGroup, getHalvingSubgroup, isCentrosymmetric, isPolar, isPiezoelectric, isFerromagnetic, isPiezomagnetic, isMagnetoelectric, isChiral, getLaueClass } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels, getStandardSetting, getConventionNote } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
@@ -11,6 +11,7 @@ import { TermInfo } from './TermInfo';
 import { PointGroupData } from '../data/pointGroups';
 import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
 import { CHIP_TO_EFFECT } from '../data/tensorEffects';
+import { POLAR_DIRECTIONS, FRAME_DIVERGENT_CLASSES, type SymDirClass } from '../data/polarDirections';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
 /** Render a Birss reference-axis orientation string ("3//z, -2//y", or the word "any"): `//`
@@ -19,6 +20,90 @@ function ReferenceAxes({ value }: { value: string }) {
   if (value === 'any') return <span className="italic">any</span>;
   const latex = value.replace(/\/\//g, ' \\parallel ').replace(/-([1-6])/g, '\\bar{$1}');
   return <InlineMath math={latex} />;
+}
+
+const SYM_DIR_LABEL: Record<SymDirClass, string> = {
+  primary: '⊥ primary axis',
+  secondary: '⊥ secondary axes',
+  tertiary: '⊥ tertiary axes',
+};
+/** Crystallographic direction string -> overbar rendering (`[1-10]` -> `[11̄0]`, `[-u0w]` -> `[ū0w]`). */
+const fmtDir = (s: string) => s.replace(/-(.)/g, '$1̅');
+/** Systems whose direction indices are hexagonal (a note is shown for them). */
+const HEX_INDEX_SYSTEMS = new Set(['Trigonal', 'Hexagonal']);
+
+/**
+ * Polar (symmetry) axes and nonpolar directions for the group. A direction's polarity depends only
+ * on the spatial action, and a primed operation R' acts on directions exactly as its unprimed R --
+ * so every magnetic group's polar/nonpolar directions equal those of its unprimed classical skeleton
+ * (`getFamilyClass`). Centrosymmetric skeletons have no polar directions.
+ */
+function PolarDirections({ group }: { group: PointGroupData }) {
+  const skeleton = getFamilyClass(group.name);
+  const row = POLAR_DIRECTIONS[skeleton];
+  const isMagnetic = group.name.includes("'");
+  const hexNote = HEX_INDEX_SYSTEMS.has(group.crystalSystem) || group.crystalSystem === 'Cubic';
+
+  return (
+    <div className="mt-5 pt-4 border-t border-ink/10 space-y-2">
+      <h4 className="text-xs uppercase tracking-widest text-ink/70 flex items-center gap-1.5">
+        Polar directions <TermInfo id="polar-directions" />
+      </h4>
+
+      {!row ? (
+        <p className="text-sm text-ink/70">No polar directions (centrosymmetric).</p>
+      ) : (
+        <dl className="text-sm space-y-1.5">
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <dt className="text-xs uppercase tracking-widest text-ink/50">Polar axes</dt>
+            <dd className="font-mono text-ink/80">
+              {row.polarAxes.length === 0
+                ? <span className="font-sans italic text-ink/60">{row.allDirectionsNote ? 'None (every direction is polar)' : 'None'}</span>
+                : row.polarAxes.map((d, i) => (
+                    <span key={d}>{i > 0 ? ', ' : ''}{d.startsWith('[') ? fmtDir(d) : <span className="font-sans italic">{d}</span>}</span>
+                  ))}
+            </dd>
+          </div>
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <dt className="text-xs uppercase tracking-widest text-ink/50">Nonpolar</dt>
+            <dd className="flex flex-col gap-0.5">
+              {row.nonpolar.length === 0
+                ? <span className="font-sans italic text-ink/60">None</span>
+                : row.nonpolar.map((set, i) => (
+                    <span key={i}>
+                      <span className="font-mono text-ink/80">{set.directions.map(fmtDir).join(' ')}</span>
+                      <span className="text-xs text-ink/45 ml-2">{SYM_DIR_LABEL[set.cls]}</span>
+                    </span>
+                  ))}
+            </dd>
+          </div>
+        </dl>
+      )}
+
+      {row && hexNote && <p className="text-[11px] text-ink/45">Crystallographic (hexagonal/cubic) indices.</p>}
+
+      {isMagnetic && (
+        <p className="text-[11px] text-ink/50 leading-relaxed">
+          Spatial directions: primes act spatially like their unprimed operations, so the polar/nonpolar directions equal those of{' '}
+          <span className="font-serif italic"><FormatPointGroup name={skeleton} /></span>.
+        </p>
+      )}
+
+      {row?.frameDivergent && (
+        <p className="text-[11px] text-ink/50 italic leading-relaxed flex items-start gap-1.5">
+          <BookOpen className="w-3 h-3 mt-0.5 shrink-0 opacity-60" />
+          <span>Directions given in the app's Birss frame; ITC's positional reading of this symbol is rotated 30° (documented trigonal orientation divergence).</span>
+        </p>
+      )}
+
+      {row?.printOmission && (
+        <p className="text-[11px] text-ink/50 italic leading-relaxed flex items-start gap-1.5">
+          <BookOpen className="w-3 h-3 mt-0.5 shrink-0 opacity-60" />
+          <span>{row.printOmission}</span>
+        </p>
+      )}
+    </div>
+  );
 }
 
 interface OperationsModalProps {
@@ -245,6 +330,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 );
               })}
             </div>
+            <PolarDirections group={group} />
           </div>
 
           {generators.length > 0 && (

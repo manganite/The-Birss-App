@@ -167,6 +167,11 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: 'Magnetoelectric (linear)',
     brief: 'Admits a second-rank axial, time-odd tensor αᵢⱼ coupling an electric field to magnetization (and vice versa) — 58 magnetic point groups (ITC Table 1.5.8.1).',
   },
+  {
+    id: 'polar-directions',
+    term: 'Polar / nonpolar directions',
+    brief: 'Directions whose two ends are not related by any symmetry operation of the group. From ITC Vol. D, Table 3.2.2.2.',
+  },
 
   // ---- Tables-page tooltips (T1-T18; T15 is a link on the book-error footnote, not a tooltip) ----
   {
