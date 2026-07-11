@@ -25,10 +25,15 @@ export function PolarimetrySection({
   onNavigate,
 }: PolarimetrySectionProps) {
   const { type: selectedTensorType, timeReversal: selectedTimeReversal } = tensorConfig;
-  const [activePolarimetryTab, setActivePolarimetryTab] = useState<'anisotropy' | 'polarizer' | 'analyzer'>('anisotropy');
+  const [activePolarimetryTab, setActivePolarimetryTab] = useState<'anisotropy' | 'polarizer' | 'analyzer'>(
+    'anisotropy',
+  );
   const [mobilePlotVariant, setMobilePlotVariant] = useState<'primary' | 'secondary'>('primary');
 
-  const mobileDataKeyMap: Record<string, { primary: string; secondary: string; primaryLabel: string; secondaryLabel: string }> = {
+  const mobileDataKeyMap: Record<
+    string,
+    { primary: string; secondary: string; primaryLabel: string; secondaryLabel: string }
+  > = {
     anisotropy: { primary: 'parallel', secondary: 'crossed', primaryLabel: '∥', secondaryLabel: '⊥' },
     polarizer: { primary: 'pol_a0', secondary: 'pol_a90', primaryLabel: 'Ana 0°', secondaryLabel: 'Ana 90°' },
     analyzer: { primary: 'ana_p0', secondary: 'ana_p90', primaryLabel: 'Pol 0°', secondaryLabel: 'Pol 90°' },
@@ -36,12 +41,26 @@ export function PolarimetrySection({
   const mobileMap = mobileDataKeyMap[activePolarimetryTab];
   const mobileDataKey = mobilePlotVariant === 'primary' ? mobileMap.primary : mobileMap.secondary;
   const mobileDisplayMaxMap: Record<string, number> = {
-    parallel: simulationData.maxParallel, crossed: simulationData.maxCrossed,
-    pol_a0: simulationData.maxPolA0, pol_a90: simulationData.maxPolA90,
-    ana_p0: simulationData.maxAnaP0, ana_p90: simulationData.maxAnaP90,
+    parallel: simulationData.maxParallel,
+    crossed: simulationData.maxCrossed,
+    pol_a0: simulationData.maxPolA0,
+    pol_a90: simulationData.maxPolA90,
+    ana_p0: simulationData.maxAnaP0,
+    ana_p90: simulationData.maxAnaP90,
   };
   const mobilePlotTitle: Record<string, { primary: ReactNode; secondary: ReactNode }> = {
-    anisotropy: { primary: <>Parallel (<InlineMath math="I_{\parallel}" />)</>, secondary: <>Crossed (<InlineMath math="I_{\perp}" />)</> },
+    anisotropy: {
+      primary: (
+        <>
+          Parallel (<InlineMath math="I_{\parallel}" />)
+        </>
+      ),
+      secondary: (
+        <>
+          Crossed (<InlineMath math="I_{\perp}" />)
+        </>
+      ),
+    },
     polarizer: { primary: 'Analyzer at 0°', secondary: 'Analyzer at 90°' },
     analyzer: { primary: 'Polarizer at 0°', secondary: 'Polarizer at 90°' },
   };
@@ -51,7 +70,9 @@ export function PolarimetrySection({
     analyzer: { primary: 'Fixed Polarizer', secondary: 'Fixed Polarizer' },
   };
   const mobileLabelPrefix: Record<string, 'Polarizer' | 'Analyzer'> = {
-    anisotropy: 'Polarizer', polarizer: 'Polarizer', analyzer: 'Analyzer',
+    anisotropy: 'Polarizer',
+    polarizer: 'Polarizer',
+    analyzer: 'Analyzer',
   };
 
   return (
@@ -72,9 +93,13 @@ export function PolarimetrySection({
               <span className="md:hidden">Aniso</span>
               <span className="hidden md:inline">Anisotropy</span>
             </button>
-            <span className="px-1"><TermInfo id="anisotropy-config" onNavigate={onNavigate} /></span>
+            <span className="px-1">
+              <TermInfo id="anisotropy-config" onNavigate={onNavigate} />
+            </span>
           </div>
-          <div className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'polarizer' ? 'bg-ink text-paper' : ''}`}>
+          <div
+            className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'polarizer' ? 'bg-ink text-paper' : ''}`}
+          >
             <button
               onClick={() => setActivePolarimetryTab('polarizer')}
               className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'polarizer' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
@@ -82,9 +107,13 @@ export function PolarimetrySection({
               <span className="md:hidden">Pol</span>
               <span className="hidden md:inline">Polarizer</span>
             </button>
-            <span className="px-1"><TermInfo id="polarizer-config" onNavigate={onNavigate} /></span>
+            <span className="px-1">
+              <TermInfo id="polarizer-config" onNavigate={onNavigate} />
+            </span>
           </div>
-          <div className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'analyzer' ? 'bg-ink text-paper' : ''}`}>
+          <div
+            className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'analyzer' ? 'bg-ink text-paper' : ''}`}
+          >
             <button
               onClick={() => setActivePolarimetryTab('analyzer')}
               className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'analyzer' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
@@ -92,7 +121,9 @@ export function PolarimetrySection({
               <span className="md:hidden">Ana</span>
               <span className="hidden md:inline">Analyzer</span>
             </button>
-            <span className="px-1"><TermInfo id="analyzer-config" onNavigate={onNavigate} /></span>
+            <span className="px-1">
+              <TermInfo id="analyzer-config" onNavigate={onNavigate} />
+            </span>
           </div>
         </div>
 
@@ -105,8 +136,8 @@ export function PolarimetrySection({
                 {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && selectedTimeReversal === 'i'
                   ? 'ED SHG is symmetry-forbidden for centrosymmetric groups (i-type).'
                   : selectedGroup.type === 'II' && selectedTimeReversal === 'c'
-                  ? "c-type tensors vanish for grey groups (G1')."
-                  : ''}
+                    ? "c-type tensors vanish for grey groups (G1')."
+                    : ''}
               </span>
             </div>
           ) : (
@@ -117,11 +148,15 @@ export function PolarimetrySection({
                   <button
                     onClick={() => setMobilePlotVariant('primary')}
                     className={`px-3 py-1.5 text-xs transition-colors ${mobilePlotVariant === 'primary' ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'}`}
-                  >{mobileMap.primaryLabel}</button>
+                  >
+                    {mobileMap.primaryLabel}
+                  </button>
                   <button
                     onClick={() => setMobilePlotVariant('secondary')}
                     className={`px-3 py-1.5 text-xs border-l border-ink/20 transition-colors ${mobilePlotVariant === 'secondary' ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'}`}
-                  >{mobileMap.secondaryLabel}</button>
+                  >
+                    {mobileMap.secondaryLabel}
+                  </button>
                 </div>
                 <PolarimetryPlot
                   title={mobilePlotTitle[activePolarimetryTab][mobilePlotVariant]}
@@ -139,7 +174,11 @@ export function PolarimetrySection({
               {activePolarimetryTab === 'anisotropy' && (
                 <div className="hidden md:grid md:grid-cols-2 gap-4 md:gap-6">
                   <PolarimetryPlot
-                    title={<>Parallel (<InlineMath math="I_{\parallel}" />)</>}
+                    title={
+                      <>
+                        Parallel (<InlineMath math="I_{\parallel}" />)
+                      </>
+                    }
                     subtitle="Polarizer ∥ Analyzer"
                     data={simulationData.data}
                     domainMax={simulationData.maxIntensity}
@@ -149,7 +188,11 @@ export function PolarimetrySection({
                     labelPrefix="Polarizer"
                   />
                   <PolarimetryPlot
-                    title={<>Crossed (<InlineMath math="I_{\perp}" />)</>}
+                    title={
+                      <>
+                        Crossed (<InlineMath math="I_{\perp}" />)
+                      </>
+                    }
                     subtitle="Polarizer ⊥ Analyzer"
                     data={simulationData.data}
                     domainMax={simulationData.maxIntensity}
@@ -213,7 +256,9 @@ export function PolarimetrySection({
 
               {independentComponents.length > 0 && (
                 <div className="mt-6 text-center text-xs text-ink/70">
-                  Note: The angle shown in the plots represents the {activePolarimetryTab === 'analyzer' ? 'analyzer' : 'polarizer'} angle. 0° corresponds to the Lab X-axis, and 90° corresponds to the Lab Y-axis.
+                  Note: The angle shown in the plots represents the{' '}
+                  {activePolarimetryTab === 'analyzer' ? 'analyzer' : 'polarizer'} angle. 0° corresponds to the Lab
+                  X-axis, and 90° corresponds to the Lab Y-axis.
                 </div>
               )}
             </div>

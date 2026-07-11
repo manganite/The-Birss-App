@@ -37,9 +37,14 @@ function extractSection(startHeading: string, endHeading?: string): string {
 function parseRows(section: string): string[][] {
   return section
     .split('\n')
-    .filter(line => line.trim().startsWith('|'))
-    .map(line => line.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+    .filter((line) => line.trim().startsWith('|'))
+    .map((line) =>
+      line
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 
 function typeFromText(text: string): 'I' | 'II' | 'III' {
@@ -55,13 +60,19 @@ interface ReferenceGroup {
   type: 'I' | 'II' | 'III';
 }
 
-function parseTableWithType(startHeading: string, endHeading: string | undefined, expectedHeader: string[]): ReferenceGroup[] {
+function parseTableWithType(
+  startHeading: string,
+  endHeading: string | undefined,
+  expectedHeader: string[],
+): ReferenceGroup[] {
   const rows = parseRows(extractSection(startHeading, endHeading));
   const header = rows[0];
   if (JSON.stringify(header) !== JSON.stringify(expectedHeader)) {
-    throw new Error(`${startHeading} header changed shape, parser needs updating.\nExpected: ${JSON.stringify(expectedHeader)}\nActual:   ${JSON.stringify(header)}`);
+    throw new Error(
+      `${startHeading} header changed shape, parser needs updating.\nExpected: ${JSON.stringify(expectedHeader)}\nActual:   ${JSON.stringify(header)}`,
+    );
   }
-  return rows.slice(1).map(cells => ({
+  return rows.slice(1).map((cells) => ({
     key: stripBackticks(cells[2]),
     schoenflies: stripSub(cells[1]),
     type: typeFromText(cells[5]),
@@ -72,16 +83,26 @@ function parseGreyTable(startHeading: string, expectedHeader: string[]): Referen
   const rows = parseRows(extractSection(startHeading));
   const header = rows[0];
   if (JSON.stringify(header) !== JSON.stringify(expectedHeader)) {
-    throw new Error(`${startHeading} header changed shape, parser needs updating.\nExpected: ${JSON.stringify(expectedHeader)}\nActual:   ${JSON.stringify(header)}`);
+    throw new Error(
+      `${startHeading} header changed shape, parser needs updating.\nExpected: ${JSON.stringify(expectedHeader)}\nActual:   ${JSON.stringify(header)}`,
+    );
   }
-  return rows.slice(1).map(cells => ({
+  return rows.slice(1).map((cells) => ({
     key: stripBackticks(cells[2]),
     schoenflies: stripSub(cells[1]),
     type: 'II' as const,
   }));
 }
 
-const tableA = parseTableWithType('## Table A', '## Table B', ['System', 'Schoenflies', 'App key', 'HM full', 'Shubnikov', 'Type', 'Note']);
+const tableA = parseTableWithType('## Table A', '## Table B', [
+  'System',
+  'Schoenflies',
+  'App key',
+  'HM full',
+  'Shubnikov',
+  'Type',
+  'Note',
+]);
 const tableC = parseGreyTable('## Table C', ['System', 'Schoenflies', 'App key', 'HM full', 'Shubnikov', 'Parent']);
 const REFERENCE_GROUPS = [...tableA, ...tableC];
 
@@ -92,21 +113,21 @@ describe('nomenclature.reference — POINT_GROUPS matches birss-tables/table-nom
   });
 
   it('key set matches the 122 reference keys exactly', () => {
-    const appKeys = new Set(POINT_GROUPS.map(g => g.name));
-    const refKeys = new Set(REFERENCE_GROUPS.map(g => g.key));
-    const missingFromApp = [...refKeys].filter(k => !appKeys.has(k)).sort();
-    const extraInApp = [...appKeys].filter(k => !refKeys.has(k)).sort();
+    const appKeys = new Set(POINT_GROUPS.map((g) => g.name));
+    const refKeys = new Set(REFERENCE_GROUPS.map((g) => g.key));
+    const missingFromApp = [...refKeys].filter((k) => !appKeys.has(k)).sort();
+    const extraInApp = [...appKeys].filter((k) => !refKeys.has(k)).sort();
     expect({ missingFromApp, extraInApp }).toEqual({ missingFromApp: [], extraInApp: [] });
   });
 
   it("includes Birss's m'm'm and excludes ITC's mm'm' (Step 1 HM divergence)", () => {
-    const appKeys = new Set(POINT_GROUPS.map(g => g.name));
+    const appKeys = new Set(POINT_GROUPS.map((g) => g.name));
     expect(appKeys.has("m'm'm")).toBe(true);
     expect(appKeys.has("mm'm'")).toBe(false);
   });
 
   for (const ref of REFERENCE_GROUPS) {
-    const appGroup = POINT_GROUPS.find(g => g.name === ref.key);
+    const appGroup = POINT_GROUPS.find((g) => g.name === ref.key);
 
     it(`${ref.key}: type matches reference (${ref.type})`, () => {
       expect(appGroup?.type).toBe(ref.type);

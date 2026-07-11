@@ -31,9 +31,7 @@ function isRotZ30(group: string): boolean {
  * such groups have a trigonal-only (no proper unprimed 6-fold) unitary part, so there is no
  * group-specific exception here.
  */
-export const NAME_SWAP_GROUPS = new Set<string>(
-  Object.keys(ALTERNATE_SETTINGS).filter(isRotZ30),
-);
+export const NAME_SWAP_GROUPS = new Set<string>(Object.keys(ALTERNATE_SETTINGS).filter(isRotZ30));
 
 /**
  * Orthorhombic axis-setting groups (Sec. 3 "axis-permutation settings"): identified by the
@@ -42,7 +40,7 @@ export const NAME_SWAP_GROUPS = new Set<string>(
  * 30 deg-rotation trig/hex swap groups and the monoclinic "Second (b-unique, ITC)" groups.
  */
 export const ORTHO_AXIS_GROUPS = new Set<string>(
-  Object.keys(ALTERNATE_SETTINGS).filter(group => {
+  Object.keys(ALTERNATE_SETTINGS).filter((group) => {
     const defs = ALTERNATE_SETTINGS[group];
     return defs.length === 2 && defs[0].name === 'a-unique' && defs[1].name === 'b-unique';
   }),
@@ -51,7 +49,17 @@ export const ORTHO_AXIS_GROUPS = new Set<string>(
 /** Monoclinic groups (Sec. 7B): short symbol identical in both conventions; only which setting
  * is standard moves, to the b-unique setting (setting 2), in ITC mode. */
 export const MONOCLINIC_GROUPS = new Set<string>([
-  '2', 'm', '2/m', "2'", "m'", "2'/m", "2'/m'", "2/m'", "21'", "m1'", "2/m1'",
+  '2',
+  'm',
+  '2/m',
+  "2'",
+  "m'",
+  "2'/m",
+  "2'/m'",
+  "2/m'",
+  "21'",
+  "m1'",
+  "2/m1'",
 ]);
 
 /**
@@ -62,7 +70,7 @@ export const MONOCLINIC_GROUPS = new Set<string>([
  */
 const OTHER_SETTING_GROUPS = new Set<string>(
   Object.keys(ALTERNATE_SETTINGS).filter(
-    group => !NAME_SWAP_GROUPS.has(group) && !ORTHO_AXIS_GROUPS.has(group) && !MONOCLINIC_GROUPS.has(group),
+    (group) => !NAME_SWAP_GROUPS.has(group) && !ORTHO_AXIS_GROUPS.has(group) && !MONOCLINIC_GROUPS.has(group),
   ),
 );
 
@@ -77,11 +85,7 @@ const ORTHO_STANDARD_DIVERGES = "m'm'm";
 
 /** Groups whose "standard setting" depends on the active convention at all. Everything else
  * (groups outside the affected classes) has the same standard setting (1) in both conventions. */
-const CONVENTION_AFFECTED = new Set<string>([
-  ...NAME_SWAP_GROUPS,
-  ...MONOCLINIC_GROUPS,
-  ORTHO_STANDARD_DIVERGES,
-]);
+const CONVENTION_AFFECTED = new Set<string>([...NAME_SWAP_GROUPS, ...MONOCLINIC_GROUPS, ORTHO_STANDARD_DIVERGES]);
 
 /** Which setting number is standard for this group, under this convention. Returns null for
  * groups whose standard setting doesn't depend on convention (always setting 1). */
@@ -112,7 +116,7 @@ export const ORTHO_FRAME_HM: Record<string, [string, string, string]> = {
   "m'm'2": ["m'm'2", "2m'm'", "m'2m'"],
   "m'm'm": ["m'm'm", "mm'm'", "m'mm'"],
   "mmm'": ["mmm'", "m'mm", "mm'm"],
-  "mm2": ["mm2", "2mm", "m2m"],
+  mm2: ['mm2', '2mm', 'm2m'],
   "mm21'": ["mm21'", "2mm1'", "m2m1'"],
 };
 
@@ -223,8 +227,8 @@ export function getSettingLabels(group: string, convention: Convention): Setting
   const axisWords = ORTHO_AXIS_GROUPS.has(group)
     ? ORTHO_AXIS_WORDS
     : MONOCLINIC_GROUPS.has(group)
-    ? MONOCLINIC_AXIS_WORDS
-    : null;
+      ? MONOCLINIC_AXIS_WORDS
+      : null;
 
   const labels: SettingLabel[] = [];
   for (let setting = 1; setting <= totalSettings; setting++) {
@@ -246,8 +250,7 @@ const BOOK_ERROR_GROUPS = new Set<string>(["-6'2m'", "-6m'2'"]);
 export const CONVENTION_NOTES: Record<NoteKey, string> = {
   'naming-conflict':
     "Birss and ITC assign this symbol to frames 30° apart. Current display uses the active convention's reading; toggle to compare.",
-  'same-frame-different-string':
-    "Birss `6'/mm'm` = ITC `6'/mmm'` -- same frame, different string.",
+  'same-frame-different-string': "Birss `6'/mm'm` = ITC `6'/mmm'` -- same frame, different string.",
   'orthorhombic-frame':
     "Birss and ITC use the same string for this group's default frame, but disagree on which axis carries the unprimed 2-fold; ITC's standard is the `mm'm'` orientation (a-unique).",
   monoclinic:

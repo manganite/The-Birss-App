@@ -24,7 +24,7 @@ describe('CRYSTAL_SYSTEM_INFO', () => {
   });
 
   it('settings is null exactly for Triclinic and Cubic (no distinguished axis / no setting choice)', () => {
-    const nullSettings = CRYSTAL_SYSTEMS.filter(s => CRYSTAL_SYSTEM_INFO[s].settings === null);
+    const nullSettings = CRYSTAL_SYSTEMS.filter((s) => CRYSTAL_SYSTEM_INFO[s].settings === null);
     expect(nullSettings.sort()).toEqual(['Cubic', 'Triclinic']);
     for (const system of CRYSTAL_SYSTEMS) {
       if (nullSettings.includes(system)) continue;

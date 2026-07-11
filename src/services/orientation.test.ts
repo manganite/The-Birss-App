@@ -35,7 +35,7 @@ describe('hklToPresetAngles', () => {
   it('[1 1 1] matches the curated [111] preset angles', () => {
     const r = hklToPresetAngles(1, 1, 1)!;
     expect(r.tx).toBeCloseTo(45, 10);
-    expect(r.ty).toBeCloseTo(-(Math.atan(1 / Math.SQRT2) * 180 / Math.PI), 10);
+    expect(r.ty).toBeCloseTo(-((Math.atan(1 / Math.SQRT2) * 180) / Math.PI), 10);
   });
 
   it('[0 0 -1] → tx=180, ty=0 (Rx flips z)', () => {
@@ -52,13 +52,21 @@ describe('hklToPresetAngles', () => {
   });
 
   it('Ry(ty)·Rx(tx) maps [hkl] to [0,0,1] for arbitrary input', () => {
-    const cases = [[1,2,3], [0,1,1], [3,0,1], [-1,1,0], [2,-1,3]];
+    const cases = [
+      [1, 2, 3],
+      [0, 1, 1],
+      [3, 0, 1],
+      [-1, 1, 0],
+      [2, -1, 3],
+    ];
     for (const [h, k, l] of cases) {
       const r = hklToPresetAngles(h, k, l)!;
-      const txRad = r.tx * Math.PI / 180;
-      const tyRad = r.ty * Math.PI / 180;
-      const norm = Math.sqrt(h*h + k*k + l*l);
-      const nx = h/norm, ny = k/norm, nz = l/norm;
+      const txRad = (r.tx * Math.PI) / 180;
+      const tyRad = (r.ty * Math.PI) / 180;
+      const norm = Math.sqrt(h * h + k * k + l * l);
+      const nx = h / norm,
+        ny = k / norm,
+        nz = l / norm;
       // Rx(tx)
       const x1 = nx;
       const y1 = ny * Math.cos(txRad) - nz * Math.sin(txRad);

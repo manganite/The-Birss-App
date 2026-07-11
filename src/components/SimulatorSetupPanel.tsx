@@ -23,13 +23,22 @@ export function SimulatorSetupPanel({
   labFrame,
   onNavigate,
 }: SimulatorSetupPanelProps) {
-  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting } = tensorConfig;
-  const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0, phiX, setPhiX, phiY, setPhiY, psi, setPsi } = orientation;
+  const {
+    type: selectedTensorType,
+    setType: setSelectedTensorType,
+    timeReversal: selectedTimeReversal,
+    setTimeReversal: setSelectedTimeReversal,
+    setting: selectedSetting,
+  } = tensorConfig;
+  const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0, phiX, setPhiX, phiY, setPhiY, psi, setPsi } =
+    orientation;
   const [mobileSetupExpanded, setMobileSetupExpanded] = useState(false);
   const [showRotation, setShowRotation] = useState(phiX !== 0 || phiY !== 0 || psi !== 0);
 
   const rotationActive = phiX !== 0 || phiY !== 0 || psi !== 0;
-  const activePreset = getPresetsForSystem(selectedGroup.crystalSystem, selectedSetting).find(p => p.tx === thetaX && p.ty === thetaY && p.psi0 === psi0);
+  const activePreset = getPresetsForSystem(selectedGroup.crystalSystem, selectedSetting).find(
+    (p) => p.tx === thetaX && p.ty === thetaY && p.psi0 === psi0,
+  );
 
   return (
     <div className="bg-white/50 border border-ink p-6 md:p-8 space-y-8">
@@ -42,13 +51,19 @@ export function SimulatorSetupPanel({
         className="md:hidden flex items-center justify-between w-full"
       >
         <span className="text-sm font-medium">
-          <span className="text-xs">{selectedTensorType === 'ED' ? 'ED' : selectedTensorType === 'MD' ? 'MD' : 'EQ'}</span>
+          <span className="text-xs">
+            {selectedTensorType === 'ED' ? 'ED' : selectedTensorType === 'MD' ? 'MD' : 'EQ'}
+          </span>
           <span className="opacity-50 mx-1">·</span>
           <span className="text-xs">{selectedTimeReversal}-type</span>
           <span className="opacity-50 mx-1">·</span>
           <span className="text-xs">{activePreset ? activePreset.label : 'Custom'}</span>
         </span>
-        {mobileSetupExpanded ? <ChevronUp className="w-4 h-4 opacity-50" /> : <ChevronDown className="w-4 h-4 opacity-50" />}
+        {mobileSetupExpanded ? (
+          <ChevronUp className="w-4 h-4 opacity-50" />
+        ) : (
+          <ChevronDown className="w-4 h-4 opacity-50" />
+        )}
       </button>
 
       {/* Full controls — always on desktop, expandable on mobile */}
@@ -70,8 +85,12 @@ export function SimulatorSetupPanel({
           <KDirectionSelector
             crystalSystem={selectedGroup.crystalSystem}
             setting={selectedSetting}
-            thetaX={thetaX} thetaY={thetaY} psi0={psi0}
-            setThetaX={setThetaX} setThetaY={setThetaY} setPsi0={setPsi0}
+            thetaX={thetaX}
+            thetaY={thetaY}
+            psi0={psi0}
+            setThetaX={setThetaX}
+            setThetaY={setThetaY}
+            setPsi0={setPsi0}
             labFrame={labFrame}
             onNavigate={onNavigate}
           />
@@ -90,7 +109,11 @@ export function SimulatorSetupPanel({
             <span>Crystal Rotation</span>
             {rotationActive && !showRotation && (
               <span className="normal-case tracking-normal text-xs ml-2">
-                ({phiX !== 0 ? `φ_X = ${phiX}°` : ''}{phiX !== 0 && (phiY !== 0 || psi !== 0) ? ', ' : ''}{phiY !== 0 ? `φ_Y = ${phiY}°` : ''}{(phiX !== 0 || phiY !== 0) && psi !== 0 ? ', ' : ''}{psi !== 0 ? `ψ = ${psi}°` : ''})
+                ({phiX !== 0 ? `φ_X = ${phiX}°` : ''}
+                {phiX !== 0 && (phiY !== 0 || psi !== 0) ? ', ' : ''}
+                {phiY !== 0 ? `φ_Y = ${phiY}°` : ''}
+                {(phiX !== 0 || phiY !== 0) && psi !== 0 ? ', ' : ''}
+                {psi !== 0 ? `ψ = ${psi}°` : ''})
               </span>
             )}
           </button>
@@ -99,11 +122,13 @@ export function SimulatorSetupPanel({
 
         {showRotation && (
           <div className="space-y-3">
-            {([
-              { label: '\\varphi_X', value: phiX, setValue: setPhiX, min: -90, max: 90, desc: 'Tilt about lab-x' },
-              { label: '\\varphi_Y', value: phiY, setValue: setPhiY, min: -90, max: 90, desc: 'Tilt about lab-y' },
-              { label: '\\psi', value: psi, setValue: setPsi, min: -180, max: 180, desc: 'Azimuth about k' },
-            ] as const).map(({ label, value, setValue, min, max, desc }) => (
+            {(
+              [
+                { label: '\\varphi_X', value: phiX, setValue: setPhiX, min: -90, max: 90, desc: 'Tilt about lab-x' },
+                { label: '\\varphi_Y', value: phiY, setValue: setPhiY, min: -90, max: 90, desc: 'Tilt about lab-y' },
+                { label: '\\psi', value: psi, setValue: setPsi, min: -180, max: 180, desc: 'Azimuth about k' },
+              ] as const
+            ).map(({ label, value, setValue, min, max, desc }) => (
               <div key={label} className="flex items-center gap-3">
                 <div className="w-10 shrink-0 text-right">
                   <InlineMath math={label} />
@@ -136,7 +161,11 @@ export function SimulatorSetupPanel({
               </div>
             ))}
             <button
-              onClick={() => { setPhiX(0); setPhiY(0); setPsi(0); }}
+              onClick={() => {
+                setPhiX(0);
+                setPhiY(0);
+                setPsi(0);
+              }}
               disabled={!rotationActive}
               className="flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-20 disabled:cursor-default transition-colors transition-opacity mt-1"
             >

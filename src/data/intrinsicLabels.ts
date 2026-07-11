@@ -9,11 +9,16 @@ import type { TensorIntrinsic } from '../services/tensorForms';
  */
 export function intrinsicLabel(intrinsic: TensorIntrinsic, rank: number): string {
   switch (intrinsic) {
-    case 'none': return 'none';
-    case 'ij': return rank === 2 ? 'ij' : '(ij)k';
-    case 'jk': return 'i(jk)';
-    case 'ij_kl': return '(ij)(kl)';
-    case 'voigt': return '(ij)(kl) sym';
+    case 'none':
+      return 'none';
+    case 'ij':
+      return rank === 2 ? 'ij' : '(ij)k';
+    case 'jk':
+      return 'i(jk)';
+    case 'ij_kl':
+      return '(ij)(kl)';
+    case 'voigt':
+      return '(ij)(kl) sym';
   }
 }
 
@@ -21,6 +26,7 @@ export const INTRINSIC_TOOLTIP: Record<TensorIntrinsic, string> = {
   none: 'No intrinsic index symmetry -- the general tensor.',
   ij: 'The first two indices may be swapped freely (a symmetric index pair).',
   jk: 'The last two indices may be swapped freely -- e.g. coupling to a symmetric stress tensor.',
-  ij_kl: 'Each index pair is individually symmetric, with no exchange between the pairs (e.g. the photoelastic tensor).',
+  ij_kl:
+    'Each index pair is individually symmetric, with no exchange between the pairs (e.g. the photoelastic tensor).',
   voigt: 'Full elastic (Voigt) symmetry: ij, kl, and pair exchange.',
 };

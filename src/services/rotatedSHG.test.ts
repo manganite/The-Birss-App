@@ -6,12 +6,14 @@ import { ROTATED_SHG_FIXTURES, LAB_FRAME_FIXTURES } from './rotatedSHG.fixtures'
 const EPSILON = 1e-10;
 
 function expectMatrixClose(A: number[][], B: number[][], tol = EPSILON) {
-  for (let i = 0; i < 3; i++)
-    for (let j = 0; j < 3; j++)
-      expect(Math.abs(A[i][j] - B[i][j])).toBeLessThan(tol);
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) expect(Math.abs(A[i][j] - B[i][j])).toBeLessThan(tol);
 }
 
-const I3: number[][] = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+const I3: number[][] = [
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, 0, 1],
+];
 
 describe('rotation matrix primitives', () => {
   it.each([
@@ -23,15 +25,27 @@ describe('rotation matrix primitives', () => {
   });
 
   it('rotZ(90) returns [[0,-1,0],[1,0,0],[0,0,1]]', () => {
-    expectMatrixClose(rotZ(90), [[0, -1, 0], [1, 0, 0], [0, 0, 1]]);
+    expectMatrixClose(rotZ(90), [
+      [0, -1, 0],
+      [1, 0, 0],
+      [0, 0, 1],
+    ]);
   });
 
   it('rotX(90) returns [[1,0,0],[0,0,-1],[0,1,0]]', () => {
-    expectMatrixClose(rotX(90), [[1, 0, 0], [0, 0, -1], [0, 1, 0]]);
+    expectMatrixClose(rotX(90), [
+      [1, 0, 0],
+      [0, 0, -1],
+      [0, 1, 0],
+    ]);
   });
 
   it('rotY(-90) returns [[0,0,-1],[0,1,0],[1,0,0]]', () => {
-    expectMatrixClose(rotY(-90), [[0, 0, -1], [0, 1, 0], [1, 0, 0]]);
+    expectMatrixClose(rotY(-90), [
+      [0, 0, -1],
+      [0, 1, 0],
+      [1, 0, 0],
+    ]);
   });
 
   it('mat3mul(I, A) = A', () => {
@@ -47,10 +61,10 @@ describe('rotation matrix primitives', () => {
 
 describe('composition equivalence: mat3mul(rotY(ty), rotX(tx)) matches hand-expanded R', () => {
   function handExpandedR(thetaX: number, thetaY: number): number[][] {
-    const cx = Math.cos(thetaX * Math.PI / 180);
-    const sx = Math.sin(thetaX * Math.PI / 180);
-    const cy = Math.cos(thetaY * Math.PI / 180);
-    const sy = Math.sin(thetaY * Math.PI / 180);
+    const cx = Math.cos((thetaX * Math.PI) / 180);
+    const sx = Math.sin((thetaX * Math.PI) / 180);
+    const cy = Math.cos((thetaY * Math.PI) / 180);
+    const sy = Math.sin((thetaY * Math.PI) / 180);
     return [
       [cy, sx * sy, cx * sy],
       [0, cx, -sx],
@@ -83,8 +97,8 @@ describe('calculateSHGExpressions - rotated golden references', () => {
         thetaY: f.thetaY,
       });
 
-      const induced = result.induced.map(e => ({ component: e.component, expression: e.expression }));
-      const source = result.source.map(e => ({ component: e.component, expression: e.expression }));
+      const induced = result.induced.map((e) => ({ component: e.component, expression: e.expression }));
+      const source = result.source.map((e) => ({ component: e.component, expression: e.expression }));
 
       expect(induced).toEqual(f.expectedInduced);
       expect(source).toEqual(f.expectedSource);

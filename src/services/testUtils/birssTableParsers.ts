@@ -21,10 +21,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tbl = (name: string) => readFileSync(path.resolve(__dirname, '../../../birss-tables', name), 'utf-8');
 
 export function tableRows(content: string): string[][] {
-  return content.split('\n')
-    .filter(l => l.trim().startsWith('|'))
-    .map(l => l.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+  return content
+    .split('\n')
+    .filter((l) => l.trim().startsWith('|'))
+    .map((l) =>
+      l
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 
 // ---- Table 4a: point group -> symbol-class letter, per tensor type ----
@@ -70,23 +76,27 @@ export const T4C = parseFormTable(tbl('table-4c.md')); // [x, y, z]             
 export const T4D = parseFormTable(tbl('table-4d.md')); // [xx,yy,zz,xy,yx,xz(2),yz(2)]  (rank 2)
 
 // ---- family canonicalization (flat-index based, rank-agnostic) ----
-export interface FCell { index: number; val: number }
+export interface FCell {
+  index: number;
+  val: number;
+}
 export function canon(cells: FCell[]): FCell[] {
   const sorted = [...cells].sort((a, b) => a.index - b.index);
   const refVal = sorted[0].val;
-  return sorted.map(c => ({ index: c.index, val: c.val / refVal }));
+  return sorted.map((c) => ({ index: c.index, val: c.val / refVal }));
 }
 export function familiesEqual(a: FCell[], b: FCell[]): boolean {
-  return a.length === b.length &&
-    a.every((c, i) => c.index === b[i].index && Math.abs(c.val - b[i].val) < 1e-4);
+  return a.length === b.length && a.every((c, i) => c.index === b[i].index && Math.abs(c.val - b[i].val) < 1e-4);
 }
 export function familySetsMatch(a: FCell[][], b: FCell[][]): boolean {
-  return a.length === b.length &&
-    a.every(x => b.some(y => familiesEqual(x, y))) &&
-    b.every(y => a.some(x => familiesEqual(x, y)));
+  return (
+    a.length === b.length &&
+    a.every((x) => b.some((y) => familiesEqual(x, y))) &&
+    b.every((y) => a.some((x) => familiesEqual(x, y)))
+  );
 }
 export function engineFamilies(basis: number[][]): FCell[][] {
-  return basis.map(vec => {
+  return basis.map((vec) => {
     const cells: FCell[] = [];
     for (let i = 0; i < vec.length; i++) if (Math.abs(vec[i]) > EPSILON) cells.push({ index: i, val: vec[i] });
     return canon(cells);
@@ -141,13 +151,16 @@ export function expected4d(letter: string | null): FCell[][] {
 const RANK4_DIM = 3 ** 4; // 81
 const SYM = 'xyz';
 export const strToIdx = (s: string) => [...s].reduce((a, ch) => a * 3 + SYM.indexOf(ch), 0);
-export const applyPerm = (s: string, perm: number[]) => perm.map(p => s[p]).join('');
+export const applyPerm = (s: string, perm: number[]) => perm.map((p) => s[p]).join('');
 
 function allPerms(n: number): number[][] {
   if (n === 1) return [[0]];
   const out: number[][] = [];
   const rec = (chosen: number[], rest: number[]) => {
-    if (!rest.length) { out.push(chosen); return; }
+    if (!rest.length) {
+      out.push(chosen);
+      return;
+    }
     for (let i = 0; i < rest.length; i++) rec([...chosen, rest[i]], [...rest.slice(0, i), ...rest.slice(i + 1)]);
   };
   rec([], [...Array(n).keys()]);
@@ -161,24 +174,32 @@ const range = (n: number) => [...Array(n).keys()];
  */
 export function annotationPerms(ann: string | undefined, base: string): number[][] {
   const n = base.length;
-  if (!ann) return [range(n)];                                    // bare: identity only
-  if (/^\d+$/.test(ann)) return allPerms(n);                      // (2)/(3)/(4): all permutations
-  if (ann === 'c4') return range(n).map(k => range(n).map(i => (i + k) % n)); // cyclic shifts
-  if (ann.includes('·') || ann.includes('.')) {                  // (x·3) or (x.3): fix the LAST index
-    return allPerms(n - 1).map(p => [...p, n - 1]);
+  if (!ann) return [range(n)]; // bare: identity only
+  if (/^\d+$/.test(ann)) return allPerms(n); // (2)/(3)/(4): all permutations
+  if (ann === 'c4') return range(n).map((k) => range(n).map((i) => (i + k) % n)); // cyclic shifts
+  if (ann.includes('·') || ann.includes('.')) {
+    // (x·3) or (x.3): fix the LAST index
+    return allPerms(n - 1).map((p) => [...p, n - 1]);
   }
-  if (/^[a-z]:\d+$/.test(ann)) {                                  // (x:3): fix the FIRST index
-    return allPerms(n - 1).map(p => [0, ...p.map(i => i + 1)]);
+  if (/^[a-z]:\d+$/.test(ann)) {
+    // (x:3): fix the FIRST index
+    return allPerms(n - 1).map((p) => [0, ...p.map((i) => i + 1)]);
   }
-  const m6 = ann.match(/^([a-z])([a-z]):\d+$/);                   // (xy:6): perms preserving x-before-y
+  const m6 = ann.match(/^([a-z])([a-z]):\d+$/); // (xy:6): perms preserving x-before-y
   if (m6) {
     const [, a, b] = m6;
-    return allPerms(n).filter(perm => { const s = applyPerm(base, perm); return s.indexOf(a) < s.indexOf(b); });
+    return allPerms(n).filter((perm) => {
+      const s = applyPerm(base, perm);
+      return s.indexOf(a) < s.indexOf(b);
+    });
   }
   throw new Error(`unrecognized 4f annotation: (${ann})`);
 }
 
-export interface Relation { idx: number; terms: { idx: number; coeff: number }[] } // chi_idx = sum coeff*chi_term
+export interface Relation {
+  idx: number;
+  terms: { idx: number; coeff: number }[];
+} // chi_idx = sum coeff*chi_term
 
 /** Parse one table row (with its header) into linear relations, expanding each annotated column in
  * lockstep. Throws on any cell shape outside the documented conventions (fails loudly). */
@@ -187,15 +208,23 @@ export function buildConstraints(header: string[], row: string[]): Relation[] {
   for (let k = 1; k < header.length; k++) {
     const hm = header[k].match(/^([a-z]+)(?:\(([^)]+)\))?$/);
     if (!hm) throw new Error(`bad 4f header: ${header[k]}`);
-    const base = hm[1], ann = hm[2];
+    const base = hm[1],
+      ann = hm[2];
     const perms = annotationPerms(ann, base);
     const cell = row[k];
 
-    if (cell === '0') { for (const p of perms) relations.push({ idx: strToIdx(applyPerm(base, p)), terms: [] }); continue; }
+    if (cell === '0') {
+      for (const p of perms) relations.push({ idx: strToIdx(applyPerm(base, p)), terms: [] });
+      continue;
+    }
 
-    if (cell.includes('+')) { // sum cell: single-component column, direct equality (no expansion)
+    if (cell.includes('+')) {
+      // sum cell: single-component column, direct equality (no expansion)
       if (perms.length !== 1) throw new Error(`sum cell in annotated column ${header[k]}`);
-      relations.push({ idx: strToIdx(base), terms: cell.split('+').map(t => ({ idx: strToIdx(t.trim()), coeff: 1 })) });
+      relations.push({
+        idx: strToIdx(base),
+        terms: cell.split('+').map((t) => ({ idx: strToIdx(t.trim()), coeff: 1 })),
+      });
       continue;
     }
 
@@ -203,14 +232,18 @@ export function buildConstraints(header: string[], row: string[]): Relation[] {
     const value = cell.replace('-', '');
     if (value === base && sign === 1) continue; // self-reference: the family is free
     // lockstep: same position permutation on base and on value
-    for (const p of perms) relations.push({ idx: strToIdx(applyPerm(base, p)), terms: [{ idx: strToIdx(applyPerm(value, p)), coeff: sign }] });
+    for (const p of perms)
+      relations.push({
+        idx: strToIdx(applyPerm(base, p)),
+        terms: [{ idx: strToIdx(applyPerm(value, p)), coeff: sign }],
+      });
   }
   return relations;
 }
 
 /** Rank of a set of length-`dim` row vectors (Gaussian elimination with partial pivoting). */
 export function matrixRank(vectors: number[][], dim: number = RANK4_DIM): number {
-  const M = vectors.map(v => [...v]);
+  const M = vectors.map((v) => [...v]);
   let rank = 0;
   for (let c = 0; c < dim && rank < M.length; c++) {
     let piv = rank;
@@ -219,7 +252,11 @@ export function matrixRank(vectors: number[][], dim: number = RANK4_DIM): number
     [M[rank], M[piv]] = [M[piv], M[rank]];
     const pv = M[rank][c];
     for (let j = 0; j < dim; j++) M[rank][j] /= pv;
-    for (let r = 0; r < M.length; r++) if (r !== rank && Math.abs(M[r][c]) > 1e-12) { const f = M[r][c]; for (let j = 0; j < dim; j++) M[r][j] -= f * M[rank][j]; }
+    for (let r = 0; r < M.length; r++)
+      if (r !== rank && Math.abs(M[r][c]) > 1e-12) {
+        const f = M[r][c];
+        for (let j = 0; j < dim; j++) M[r][j] -= f * M[rank][j];
+      }
     rank++;
   }
   return rank;
@@ -227,13 +264,18 @@ export function matrixRank(vectors: number[][], dim: number = RANK4_DIM): number
 
 /** Dimension of the solution space of the parsed relations (`dim` - rank of the constraint matrix). */
 export function tableDim(relations: Relation[], dim: number = RANK4_DIM): number {
-  const M = relations.map(r => { const row = new Array(dim).fill(0); row[r.idx] += 1; for (const t of r.terms) row[t.idx] -= t.coeff; return row; });
+  const M = relations.map((r) => {
+    const row = new Array(dim).fill(0);
+    row[r.idx] += 1;
+    for (const t of r.terms) row[t.idx] -= t.coeff;
+    return row;
+  });
   return dim - matrixRank(M, dim);
 }
 
 // ---- Table 4f: two headers (Part I / Part II); per class letter, one row under each ----
 const FF_ROWS = tableRows(tbl('table-4f.md'));
-export const FF_HEADERS = FF_ROWS.filter(r => r[0] === 'Row');
+export const FF_HEADERS = FF_ROWS.filter((r) => r[0] === 'Row');
 export const FF_ROWS_BY_LETTER = new Map<string, string[][]>();
 for (const r of FF_ROWS) {
   const m = r[0].match(/^([A-U])4$/);
@@ -248,7 +290,9 @@ export function relationsForClass(letter: string): Relation[] {
   if (hit) return hit;
   const rws = FF_ROWS_BY_LETTER.get(letter);
   if (!rws || rws.length !== FF_HEADERS.length) {
-    throw new Error(`Table 4f: class ${letter} has ${rws?.length ?? 0} rows, expected ${FF_HEADERS.length} (Part I + Part II)`);
+    throw new Error(
+      `Table 4f: class ${letter} has ${rws?.length ?? 0} rows, expected ${FF_HEADERS.length} (Part I + Part II)`,
+    );
   }
   const rels = rws.flatMap((row, i) => buildConstraints(FF_HEADERS[i], row)); // [Part I, Part II] in file order
   relationsCache.set(letter, rels);

@@ -7,15 +7,7 @@ import { AnimatePresence } from 'motion/react';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 
-const CRYSTAL_SYSTEMS = [
-  "Triclinic",
-  "Monoclinic",
-  "Orthorhombic",
-  "Tetragonal",
-  "Trigonal",
-  "Hexagonal",
-  "Cubic"
-];
+const CRYSTAL_SYSTEMS = ['Triclinic', 'Monoclinic', 'Orthorhombic', 'Tetragonal', 'Trigonal', 'Hexagonal', 'Cubic'];
 
 interface PointGroupExplorerProps {
   convention: Convention;
@@ -25,18 +17,24 @@ interface PointGroupExplorerProps {
   onNavigate?: (view: string, tab?: string) => void;
 }
 
-export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onSelectGroupForSimulator, onSelectGroupForTables, onNavigate }: PointGroupExplorerProps) => {
+export const PointGroupExplorer = ({
+  convention,
+  onSelectGroupForCalculator,
+  onSelectGroupForSimulator,
+  onSelectGroupForTables,
+  onNavigate,
+}: PointGroupExplorerProps) => {
   const [selectedGroup, setSelectedGroup] = useState<PointGroupData | null>(null);
   const [activeSystem, setActiveSystem] = useState(CRYSTAL_SYSTEMS[0]);
 
   const groupsBySystem = useMemo(() => {
-    const grouped: Record<string, { I: PointGroupData[], II: PointGroupData[], III: PointGroupData[] }> = {};
+    const grouped: Record<string, { I: PointGroupData[]; II: PointGroupData[]; III: PointGroupData[] }> = {};
 
-    CRYSTAL_SYSTEMS.forEach(sys => {
+    CRYSTAL_SYSTEMS.forEach((sys) => {
       grouped[sys] = { I: [], II: [], III: [] };
     });
 
-    POINT_GROUPS.forEach(group => {
+    POINT_GROUPS.forEach((group) => {
       if (grouped[group.crystalSystem]) {
         grouped[group.crystalSystem][group.type].push(group);
       }
@@ -52,14 +50,14 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
       <div className="mb-12">
         <h1 className="text-4xl font-medium tracking-tight mb-4">Magnetic Point Groups</h1>
         <p className="text-lg opacity-70 max-w-3xl">
-          Explore the 122 magnetic point groups categorized by crystal system and type.
-          Click on any point group to view its symmetry operations.
+          Explore the 122 magnetic point groups categorized by crystal system and type. Click on any point group to view
+          its symmetry operations.
         </p>
       </div>
 
       {/* Crystal system tab strip */}
       <div className="flex flex-wrap gap-1 mb-8">
-        {CRYSTAL_SYSTEMS.map(system => (
+        {CRYSTAL_SYSTEMS.map((system) => (
           <button
             key={system}
             onClick={() => setActiveSystem(system)}
@@ -86,15 +84,21 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
           {/* Column Headers */}
           <div className="hidden md:block p-4 border-b border-ink bg-white/30">
             <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type I (Ordinary)</h3>
-            <p className="text-xs text-ink/70 mt-1">{systemGroups.I.length} {systemGroups.I.length === 1 ? 'group' : 'groups'}</p>
+            <p className="text-xs text-ink/70 mt-1">
+              {systemGroups.I.length} {systemGroups.I.length === 1 ? 'group' : 'groups'}
+            </p>
           </div>
           <div className="hidden md:block p-4 border-b border-ink bg-white/30">
             <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type II (Gray)</h3>
-            <p className="text-xs text-ink/70 mt-1">{systemGroups.II.length} {systemGroups.II.length === 1 ? 'group' : 'groups'}</p>
+            <p className="text-xs text-ink/70 mt-1">
+              {systemGroups.II.length} {systemGroups.II.length === 1 ? 'group' : 'groups'}
+            </p>
           </div>
           <div className="hidden md:block p-4 border-b border-ink bg-white/30">
             <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type III (Black & White)</h3>
-            <p className="text-xs text-ink/70 mt-1">{systemGroups.III.length} {systemGroups.III.length === 1 ? 'group' : 'groups'}</p>
+            <p className="text-xs text-ink/70 mt-1">
+              {systemGroups.III.length} {systemGroups.III.length === 1 ? 'group' : 'groups'}
+            </p>
           </div>
 
           {/* Type I Column */}
@@ -103,7 +107,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
               <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type I (Ordinary)</h3>
             </div>
             <div className="p-4 flex flex-wrap gap-2">
-              {systemGroups.I.map(group => (
+              {systemGroups.I.map((group) => (
                 <button
                   key={group.name}
                   onClick={() => setSelectedGroup(group)}
@@ -121,7 +125,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
               <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type II (Gray)</h3>
             </div>
             <div className="p-4 flex flex-wrap gap-2">
-              {systemGroups.II.map(group => (
+              {systemGroups.II.map((group) => (
                 <button
                   key={group.name}
                   onClick={() => setSelectedGroup(group)}
@@ -139,7 +143,7 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
               <h3 className="text-xs uppercase tracking-[0.2em] font-bold">Type III (Black & White)</h3>
             </div>
             <div className="p-4 flex flex-wrap gap-2">
-              {systemGroups.III.map(group => (
+              {systemGroups.III.map((group) => (
                 <button
                   key={group.name}
                   onClick={() => setSelectedGroup(group)}
@@ -164,9 +168,13 @@ export const PointGroupExplorer = ({ convention, onSelectGroupForCalculator, onS
             group={selectedGroup}
             convention={convention}
             onClose={() => setSelectedGroup(null)}
-            onOpenInCalculator={onSelectGroupForCalculator ? () => onSelectGroupForCalculator(selectedGroup) : undefined}
+            onOpenInCalculator={
+              onSelectGroupForCalculator ? () => onSelectGroupForCalculator(selectedGroup) : undefined
+            }
             onOpenInSimulator={onSelectGroupForSimulator ? () => onSelectGroupForSimulator(selectedGroup) : undefined}
-            onOpenInTables={onSelectGroupForTables ? (effectId) => onSelectGroupForTables(selectedGroup, effectId) : undefined}
+            onOpenInTables={
+              onSelectGroupForTables ? (effectId) => onSelectGroupForTables(selectedGroup, effectId) : undefined
+            }
           />
         )}
       </AnimatePresence>

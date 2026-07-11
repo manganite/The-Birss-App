@@ -17,16 +17,56 @@ export interface RefMatrix3x3 {
 const SQRT3_2 = Math.sqrt(3) / 2;
 
 const SIGMA: Record<number, number[][]> = {
-  0: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], // identity
-  1: [[-1, 0, 0], [0, -1, 0], [0, 0, -1]], // inversion
-  2: [[-1, 0, 0], [0, 1, 0], [0, 0, -1]], // 2-fold about y
-  3: [[-1, 0, 0], [0, -1, 0], [0, 0, 1]], // 2-fold about z
-  4: [[1, 0, 0], [0, -1, 0], [0, 0, 1]], // mirror perp y
-  5: [[1, 0, 0], [0, 1, 0], [0, 0, -1]], // mirror perp z
-  6: [[-0.5, SQRT3_2, 0], [-SQRT3_2, -0.5, 0], [0, 0, 1]], // 3-fold (120 deg) about z
-  7: [[0, 1, 0], [-1, 0, 0], [0, 0, 1]], // 4-fold about z
-  8: [[0, -1, 0], [1, 0, 0], [0, 0, -1]], // -4 roto-inversion about z
-  9: [[0, 1, 0], [0, 0, 1], [1, 0, 0]], // 3-fold about [111], cyclic x->y->z->x
+  0: [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+  ], // identity
+  1: [
+    [-1, 0, 0],
+    [0, -1, 0],
+    [0, 0, -1],
+  ], // inversion
+  2: [
+    [-1, 0, 0],
+    [0, 1, 0],
+    [0, 0, -1],
+  ], // 2-fold about y
+  3: [
+    [-1, 0, 0],
+    [0, -1, 0],
+    [0, 0, 1],
+  ], // 2-fold about z
+  4: [
+    [1, 0, 0],
+    [0, -1, 0],
+    [0, 0, 1],
+  ], // mirror perp y
+  5: [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, -1],
+  ], // mirror perp z
+  6: [
+    [-0.5, SQRT3_2, 0],
+    [-SQRT3_2, -0.5, 0],
+    [0, 0, 1],
+  ], // 3-fold (120 deg) about z
+  7: [
+    [0, 1, 0],
+    [-1, 0, 0],
+    [0, 0, 1],
+  ], // 4-fold about z
+  8: [
+    [0, -1, 0],
+    [1, 0, 0],
+    [0, 0, -1],
+  ], // -4 roto-inversion about z
+  9: [
+    [0, 1, 0],
+    [0, 0, 1],
+    [1, 0, 0],
+  ], // 3-fold about [111], cyclic x->y->z->x
 };
 
 export function sigma(n: number): RefMatrix3x3 {
@@ -40,7 +80,11 @@ export function sigmaPrime(n: number): RefMatrix3x3 {
 }
 
 export function refMultiply(a: RefMatrix3x3, b: RefMatrix3x3): RefMatrix3x3 {
-  const res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  const res = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ];
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
@@ -61,12 +105,14 @@ const REF_MAX_GROUP_SIZE = 200;
 
 function refSnap(a: RefMatrix3x3): RefMatrix3x3 {
   return {
-    m: a.m.map(row => row.map(v => {
-      for (const snap of REF_SNAP_VALUES) {
-        if (Math.abs(v - snap) < REF_SNAP_EPSILON) return snap;
-      }
-      return v;
-    })),
+    m: a.m.map((row) =>
+      row.map((v) => {
+        for (const snap of REF_SNAP_VALUES) {
+          if (Math.abs(v - snap) < REF_SNAP_EPSILON) return snap;
+        }
+        return v;
+      }),
+    ),
     isAntiUnitary: a.isAntiUnitary,
   };
 }
@@ -90,7 +136,7 @@ export function refClose(generators: RefMatrix3x3[]): RefMatrix3x3[] {
     for (let i = 0; i < currentSize; i++) {
       for (let j = 0; j < currentSize; j++) {
         const prod = refSnap(refMultiply(group[i], group[j]));
-        if (!group.some(m => refIsSameMatrix(m, prod))) {
+        if (!group.some((m) => refIsSameMatrix(m, prod))) {
           if (group.length >= REF_MAX_GROUP_SIZE) {
             throw new Error('Reference closure failed to terminate — check generator parsing');
           }

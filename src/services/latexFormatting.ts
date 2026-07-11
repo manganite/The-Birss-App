@@ -16,14 +16,24 @@ import {
   cleanupExpressionSigns,
 } from './tensorProjection';
 
-export function calculateTensorComponents(groupName: string, tensorType: 'ED' | 'MD' | 'EQ', trType: TensorTimeReversal, setting: number = 1): string[] {
+export function calculateTensorComponents(
+  groupName: string,
+  tensorType: 'ED' | 'MD' | 'EQ',
+  trType: TensorTimeReversal,
+  setting: number = 1,
+): string[] {
   const result = calculateTensorBasisResults(groupName, tensorType, trType, setting);
-  if (!result) return ["Point group not supported."];
+  if (!result) return ['Point group not supported.'];
   return formatResults(result.basisResults, result.rank);
 }
 
 export function formatSubstitutedPolySum(
-  terms: { poly: Map<string, Map<string, number>>, mode: 'THETA' | 'ZERO' | 'NINETY', scale?: number, multiplyTrig?: '\\cos\\theta' | '\\sin\\theta' }[]
+  terms: {
+    poly: Map<string, Map<string, number>>;
+    mode: 'THETA' | 'ZERO' | 'NINETY';
+    scale?: number;
+    multiplyTrig?: '\\cos\\theta' | '\\sin\\theta';
+  }[],
 ): string {
   const allChis = new Set<string>();
   for (const term of terms) {
@@ -34,11 +44,11 @@ export function formatSubstitutedPolySum(
 
   const sortedChis = Array.from(allChis).sort();
   const finalParts: string[] = [];
-  const allMergedChiTerms: { chi: string, terms: { coeff: number, fieldStr: string }[] }[] = [];
+  const allMergedChiTerms: { chi: string; terms: { coeff: number; fieldStr: string }[] }[] = [];
 
   for (const chi of sortedChis) {
-    const powerChiTerms: { coeff: number, fieldStr: string }[] = [];
-    const harmonicChiTerms: { coeff: number, fieldStr: string }[] = [];
+    const powerChiTerms: { coeff: number; fieldStr: string }[] = [];
+    const harmonicChiTerms: { coeff: number; fieldStr: string }[] = [];
 
     for (const term of terms) {
       const pairMap = term.poly.get(chi);
@@ -48,7 +58,7 @@ export function formatSubstitutedPolySum(
       const mode = term.mode;
       const multiplyTrig = term.multiplyTrig;
 
-      type HarmonicTerm = { harmonic: string, factor: number };
+      type HarmonicTerm = { harmonic: string; factor: number };
       let powerMappings: Record<string, HarmonicTerm[]>;
       let harmonicMappings: Record<string, HarmonicTerm[]>;
 
@@ -59,14 +69,25 @@ export function formatSubstitutedPolySum(
             '11': [{ harmonic: '\\cos\\theta \\sin^2\\theta', factor: 1 }],
             '22': [],
             '01': [{ harmonic: '\\cos^2\\theta \\sin\\theta', factor: 1 }],
-            '02': [], '12': []
+            '02': [],
+            '12': [],
           };
           harmonicMappings = {
-            '00': [{ harmonic: '\\cos\\theta', factor: 0.75 }, { harmonic: '\\cos 3\\theta', factor: 0.25 }],
-            '11': [{ harmonic: '\\cos\\theta', factor: 0.25 }, { harmonic: '\\cos 3\\theta', factor: -0.25 }],
+            '00': [
+              { harmonic: '\\cos\\theta', factor: 0.75 },
+              { harmonic: '\\cos 3\\theta', factor: 0.25 },
+            ],
+            '11': [
+              { harmonic: '\\cos\\theta', factor: 0.25 },
+              { harmonic: '\\cos 3\\theta', factor: -0.25 },
+            ],
             '22': [],
-            '01': [{ harmonic: '\\sin\\theta', factor: 0.25 }, { harmonic: '\\sin 3\\theta', factor: 0.25 }],
-            '02': [], '12': []
+            '01': [
+              { harmonic: '\\sin\\theta', factor: 0.25 },
+              { harmonic: '\\sin 3\\theta', factor: 0.25 },
+            ],
+            '02': [],
+            '12': [],
           };
         } else if (multiplyTrig === '\\sin\\theta') {
           powerMappings = {
@@ -74,14 +95,25 @@ export function formatSubstitutedPolySum(
             '11': [{ harmonic: '\\sin^3\\theta', factor: 1 }],
             '22': [],
             '01': [{ harmonic: '\\cos\\theta \\sin^2\\theta', factor: 1 }],
-            '02': [], '12': []
+            '02': [],
+            '12': [],
           };
           harmonicMappings = {
-            '00': [{ harmonic: '\\sin\\theta', factor: 0.25 }, { harmonic: '\\sin 3\\theta', factor: 0.25 }],
-            '11': [{ harmonic: '\\sin\\theta', factor: 0.75 }, { harmonic: '\\sin 3\\theta', factor: -0.25 }],
+            '00': [
+              { harmonic: '\\sin\\theta', factor: 0.25 },
+              { harmonic: '\\sin 3\\theta', factor: 0.25 },
+            ],
+            '11': [
+              { harmonic: '\\sin\\theta', factor: 0.75 },
+              { harmonic: '\\sin 3\\theta', factor: -0.25 },
+            ],
             '22': [],
-            '01': [{ harmonic: '\\cos\\theta', factor: 0.25 }, { harmonic: '\\cos 3\\theta', factor: -0.25 }],
-            '02': [], '12': []
+            '01': [
+              { harmonic: '\\cos\\theta', factor: 0.25 },
+              { harmonic: '\\cos 3\\theta', factor: -0.25 },
+            ],
+            '02': [],
+            '12': [],
           };
         } else {
           powerMappings = {
@@ -89,14 +121,22 @@ export function formatSubstitutedPolySum(
             '11': [{ harmonic: '\\sin^2\\theta', factor: 1 }],
             '22': [],
             '01': [{ harmonic: '\\cos\\theta \\sin\\theta', factor: 1 }],
-            '02': [], '12': []
+            '02': [],
+            '12': [],
           };
           harmonicMappings = {
-            '00': [{ harmonic: '1', factor: 0.5 }, { harmonic: '\\cos 2\\theta', factor: 0.5 }],
-            '11': [{ harmonic: '1', factor: 0.5 }, { harmonic: '\\cos 2\\theta', factor: -0.5 }],
+            '00': [
+              { harmonic: '1', factor: 0.5 },
+              { harmonic: '\\cos 2\\theta', factor: 0.5 },
+            ],
+            '11': [
+              { harmonic: '1', factor: 0.5 },
+              { harmonic: '\\cos 2\\theta', factor: -0.5 },
+            ],
             '22': [],
             '01': [{ harmonic: '\\sin 2\\theta', factor: 0.5 }],
-            '02': [], '12': []
+            '02': [],
+            '12': [],
           };
         }
       } else {
@@ -104,7 +144,10 @@ export function formatSubstitutedPolySum(
         powerMappings = {
           '00': [{ harmonic: multiplied, factor: 1 }],
           '11': [{ harmonic: multiplied, factor: 1 }],
-          '22': [], '01': [], '02': [], '12': []
+          '22': [],
+          '01': [],
+          '02': [],
+          '12': [],
         };
         harmonicMappings = powerMappings;
       }
@@ -135,12 +178,12 @@ export function formatSubstitutedPolySum(
       }
     }
 
-    const combineTerms = (chiTerms: { coeff: number, fieldStr: string }[]) => {
+    const combineTerms = (chiTerms: { coeff: number; fieldStr: string }[]) => {
       const combined = new Map<string, number>();
       for (const ct of chiTerms) {
         combined.set(ct.fieldStr, (combined.get(ct.fieldStr) || 0) + ct.coeff);
       }
-      const merged: { coeff: number, fieldStr: string }[] = [];
+      const merged: { coeff: number; fieldStr: string }[] = [];
       for (const [fieldStr, coeff] of combined.entries()) {
         if (Math.abs(coeff) > EPSILON) {
           merged.push({ coeff, fieldStr });
@@ -205,32 +248,34 @@ export function formatSubstitutedPolySum(
   for (const { chi, terms: mergedChiTerms } of allMergedChiTerms) {
     if (mergedChiTerms.length === 1) {
       const { coeff, fieldStr } = mergedChiTerms[0];
-      const sign = coeff < 0 ? "-" : "";
+      const sign = coeff < 0 ? '-' : '';
       const displayFieldStr = fieldStr === '1' ? '' : ` ${fieldStr}`;
       finalParts.push(`${sign}${formatCoeff(coeff)}${chi} E_0^2${displayFieldStr}`);
     } else {
-      const innerExpr = mergedChiTerms.map((ct, idx) => {
-        const fieldStr = ct.fieldStr;
-        const c = ct.coeff;
-        const coeffStr = formatCoeff(c);
+      const innerExpr = mergedChiTerms
+        .map((ct, idx) => {
+          const fieldStr = ct.fieldStr;
+          const c = ct.coeff;
+          const coeffStr = formatCoeff(c);
 
-        let termStr = '';
-        if (fieldStr === '1') {
-          termStr = coeffStr === '' ? '1' : coeffStr;
-        } else {
-          termStr = coeffStr === '' ? fieldStr : `${coeffStr} ${fieldStr}`;
-        }
+          let termStr = '';
+          if (fieldStr === '1') {
+            termStr = coeffStr === '' ? '1' : coeffStr;
+          } else {
+            termStr = coeffStr === '' ? fieldStr : `${coeffStr} ${fieldStr}`;
+          }
 
-        if (idx === 0) {
-          return `${c < 0 ? '-' : ''}${termStr}`;
-        } else {
-          return `${c < 0 ? '-' : '+'} ${termStr}`;
-        }
-      }).join(" ");
+          if (idx === 0) {
+            return `${c < 0 ? '-' : ''}${termStr}`;
+          } else {
+            return `${c < 0 ? '-' : '+'} ${termStr}`;
+          }
+        })
+        .join(' ');
       finalParts.push(`${chi} E_0^2(${innerExpr})`);
     }
   }
-  return finalParts.length > 0 ? cleanupExpressionSigns(finalParts.join(" + ")) : "0";
+  return finalParts.length > 0 ? cleanupExpressionSigns(finalParts.join(' + ')) : '0';
 }
 
 function formatResults(basisResults: number[][], rank: number): string[] {
@@ -250,16 +295,16 @@ function formatResults(basisResults: number[][], rank: number): string[] {
 
         if (leadIdx === -1) leadIdx = i;
         const scale = basis[i] / basis[leadIdx];
-        const sign = scale > 0 ? (members.length === 0 ? "" : " = ") : " = -";
+        const sign = scale > 0 ? (members.length === 0 ? '' : ' = ') : ' = -';
         const scaleStr = formatCoeff(scale);
         members.push(`${sign}${scaleStr}${label}`);
       }
     }
 
     if (members.length > 0) {
-      output.push(members.join(""));
+      output.push(members.join(''));
     }
   }
 
-  return output.length > 0 ? output : ["All components are zero."];
+  return output.length > 0 ? output : ['All components are zero.'];
 }

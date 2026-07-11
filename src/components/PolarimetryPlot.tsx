@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-  Tooltip
-} from 'recharts';
+import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 // Recharts' PolarAngleAxis types expect TickItem objects, but it accepts raw numbers at runtime.
 const RADAR_TICKS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330] as any;
@@ -37,7 +29,7 @@ export function PolarimetryPlot({
   dataKey,
   radarName,
   displayMax,
-  labelPrefix
+  labelPrefix,
 }: PolarimetryPlotProps) {
   return (
     <div className="flex flex-col items-center space-y-2">
@@ -47,13 +39,35 @@ export function PolarimetryPlot({
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data} startAngle={0} endAngle={360}>
             <PolarGrid gridType="circle" stroke="var(--color-ink)" strokeOpacity={0.1} />
-            <PolarAngleAxis dataKey="angle" type="number" domain={[0, 360]} ticks={RADAR_TICKS} tickFormatter={formatPolarAngle} stroke="var(--color-ink)" strokeOpacity={0.5} tick={{ fontSize: 10 }} axisLineType="circle" />
+            <PolarAngleAxis
+              dataKey="angle"
+              type="number"
+              domain={[0, 360]}
+              ticks={RADAR_TICKS}
+              tickFormatter={formatPolarAngle}
+              stroke="var(--color-ink)"
+              strokeOpacity={0.5}
+              tick={{ fontSize: 10 }}
+              axisLineType="circle"
+            />
             <PolarRadiusAxis angle={0} domain={[0, Math.max(1e-6, domainMax) / 0.95]} tick={false} axisLine={false} />
-            <Radar name={radarName} dataKey={dataKey} stroke="var(--color-ink)" strokeWidth={2} fill="var(--color-ink)" fillOpacity={0.1} isAnimationActive={false} />
+            <Radar
+              name={radarName}
+              dataKey={dataKey}
+              stroke="var(--color-ink)"
+              strokeWidth={2}
+              fill="var(--color-ink)"
+              fillOpacity={0.1}
+              isAnimationActive={false}
+            />
             <Tooltip
               formatter={(value) => (typeof value === 'number' ? value.toFixed(4) : value)}
               labelFormatter={(label) => `${labelPrefix} Angle: ${label}°`}
-              contentStyle={{ backgroundColor: 'var(--color-paper)', border: '1px solid var(--color-ink)', borderRadius: '0px' }}
+              contentStyle={{
+                backgroundColor: 'var(--color-paper)',
+                border: '1px solid var(--color-ink)',
+                borderRadius: '0px',
+              }}
             />
           </RadarChart>
         </ResponsiveContainer>

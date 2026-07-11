@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
 
 jobs:
@@ -17,9 +17,13 @@ jobs:
           node-version: 20
           cache: 'npm'
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Lint (type-check)
         run: npm run lint
+      - name: Lint (ESLint)
+        run: npm run lint:eslint
+      - name: Format check (Prettier)
+        run: npm run format:check
       - name: Build
         run: npm run build
       - name: Nomenclature table is reproducible
@@ -28,3 +32,6 @@ jobs:
           git diff --exit-code birss-tables/table-nomenclature.md
       - name: Test
         run: npm run test
+      - name: Coverage report (non-blocking)
+        continue-on-error: true
+        run: npm run test:coverage

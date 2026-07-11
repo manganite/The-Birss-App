@@ -2,8 +2,27 @@ import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { InlineMath } from 'react-katex';
 import { X, Calculator, Activity, Table2, Check, Minus, BookOpen } from 'lucide-react';
-import { getSymmetryOperations, getGeneratorSymbols, getAlternateSettings, getFutureSettingCount, getParentGroup, getHalvingSubgroup, isCentrosymmetric, isPolar, isPiezoelectric, isFerromagnetic, isPiezomagnetic, isMagnetoelectric, isChiral, getLaueClass } from '../services/tensorCalculator';
-import { getGroupDisplayName, getSettingLabels, getStandardSetting, getConventionNote } from '../services/conventionMapping';
+import {
+  getSymmetryOperations,
+  getGeneratorSymbols,
+  getAlternateSettings,
+  getParentGroup,
+  getHalvingSubgroup,
+  isCentrosymmetric,
+  isPolar,
+  isPiezoelectric,
+  isFerromagnetic,
+  isPiezomagnetic,
+  isMagnetoelectric,
+  isChiral,
+  getLaueClass,
+} from '../services/tensorCalculator';
+import {
+  getGroupDisplayName,
+  getSettingLabels,
+  getStandardSetting,
+  getConventionNote,
+} from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
 import { FormatPointGroup, FormatSchoenflies, SymmetryOperation } from './notation';
 import { ConventionNote } from './axisConventions';
@@ -58,24 +77,33 @@ function PolarDirections({ group }: { group: PointGroupData }) {
           <div className="flex flex-wrap items-baseline gap-x-2">
             <dt className="text-xs uppercase tracking-widest text-ink/50">Polar axes</dt>
             <dd className="font-mono text-ink/80">
-              {row.polarAxes.length === 0
-                ? <span className="font-sans italic text-ink/60">{row.allDirectionsNote ? 'None (every direction is polar)' : 'None'}</span>
-                : row.polarAxes.map((d, i) => (
-                    <span key={d}>{i > 0 ? ', ' : ''}{d.startsWith('[') ? fmtDir(d) : <span className="font-sans italic">{d}</span>}</span>
-                  ))}
+              {row.polarAxes.length === 0 ? (
+                <span className="font-sans italic text-ink/60">
+                  {row.allDirectionsNote ? 'None (every direction is polar)' : 'None'}
+                </span>
+              ) : (
+                row.polarAxes.map((d, i) => (
+                  <span key={d}>
+                    {i > 0 ? ', ' : ''}
+                    {d.startsWith('[') ? fmtDir(d) : <span className="font-sans italic">{d}</span>}
+                  </span>
+                ))
+              )}
             </dd>
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2">
             <dt className="text-xs uppercase tracking-widest text-ink/50">Nonpolar</dt>
             <dd className="flex flex-col gap-0.5">
-              {row.nonpolar.length === 0
-                ? <span className="font-sans italic text-ink/60">None</span>
-                : row.nonpolar.map((set, i) => (
-                    <span key={i}>
-                      <span className="font-mono text-ink/80">{set.directions.map(fmtDir).join(' ')}</span>
-                      <span className="text-xs text-ink/45 ml-2">{SYM_DIR_LABEL[set.cls]}</span>
-                    </span>
-                  ))}
+              {row.nonpolar.length === 0 ? (
+                <span className="font-sans italic text-ink/60">None</span>
+              ) : (
+                row.nonpolar.map((set, i) => (
+                  <span key={i}>
+                    <span className="font-mono text-ink/80">{set.directions.map(fmtDir).join(' ')}</span>
+                    <span className="text-xs text-ink/45 ml-2">{SYM_DIR_LABEL[set.cls]}</span>
+                  </span>
+                ))
+              )}
             </dd>
           </div>
         </dl>
@@ -85,15 +113,22 @@ function PolarDirections({ group }: { group: PointGroupData }) {
 
       {isMagnetic && (
         <p className="text-[11px] text-ink/50 leading-relaxed">
-          Spatial directions: primes act spatially like their unprimed operations, so the polar/nonpolar directions equal those of{' '}
-          <span className="font-serif italic"><FormatPointGroup name={skeleton} /></span>.
+          Spatial directions: primes act spatially like their unprimed operations, so the polar/nonpolar directions
+          equal those of{' '}
+          <span className="font-serif italic">
+            <FormatPointGroup name={skeleton} />
+          </span>
+          .
         </p>
       )}
 
       {row?.frameDivergent && (
         <p className="text-[11px] text-ink/50 italic leading-relaxed flex items-start gap-1.5">
           <BookOpen className="w-3 h-3 mt-0.5 shrink-0 opacity-60" />
-          <span>Directions given in the app's Birss frame; ITC's positional reading of this symbol is rotated 30° (documented trigonal orientation divergence).</span>
+          <span>
+            Directions given in the app's Birss frame; ITC's positional reading of this symbol is rotated 30°
+            (documented trigonal orientation divergence).
+          </span>
         </p>
       )}
 
@@ -116,11 +151,17 @@ interface OperationsModalProps {
   onOpenInTables?: (effectId?: string) => void;
 }
 
-export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator, onOpenInSimulator, onOpenInTables }: OperationsModalProps) => {
+export const OperationsModal = ({
+  group,
+  convention,
+  onClose,
+  onOpenInCalculator,
+  onOpenInSimulator,
+  onOpenInTables,
+}: OperationsModalProps) => {
   const operations = getSymmetryOperations(group.name);
   const generators = getGeneratorSymbols(group.name);
   const altSettings = getAlternateSettings(group.name);
-  const futureSettingCount = getFutureSettingCount(group.name);
   const groupTitle = getGroupDisplayName(group.name, convention);
 
   const shubnikov = SHUBNIKOV[group.name];
@@ -138,7 +179,8 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   // popup title. Non-affected groups have no standard setting -> activeStandard = 1 -> order 1..N.
   const activeStandard = getStandardSetting(group.name, convention) ?? 1;
   const orderedSettingLabels = [...settingLabels].sort((a, b) =>
-    a.setting === activeStandard ? -1 : b.setting === activeStandard ? 1 : a.setting - b.setting);
+    a.setting === activeStandard ? -1 : b.setting === activeStandard ? 1 : a.setting - b.setting,
+  );
 
   const laueClass = getLaueClass(group.name);
   const properties = [
@@ -153,7 +195,10 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
   useDialogA11y({ onClose, containerRef });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/80 backdrop-blur-sm" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <motion.div
         ref={containerRef}
         role="dialog"
@@ -174,7 +219,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink/70 hidden sm:flex">
               {group.schoenflies && (
                 <>
-                  <span className="normal-case"><FormatSchoenflies symbol={group.schoenflies} /></span>
+                  <span className="normal-case">
+                    <FormatSchoenflies symbol={group.schoenflies} />
+                  </span>
                   <span>•</span>
                 </>
               )}
@@ -183,21 +230,11 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               <span>Type {group.type}</span>
               <span>•</span>
               <span>{isCentrosymmetric(group.name) ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</span>
-              {!altSettings && futureSettingCount && (
-                <>
-                  <span>•</span>
-                  <span className="normal-case">{futureSettingCount} settings — selection coming</span>
-                </>
-              )}
               <span>•</span>
               <span>{convention === 'birss' ? 'Birss' : 'ITC'}</span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="p-2 hover:bg-ink/10 transition-colors"
-          >
+          <button onClick={onClose} aria-label="Close" className="p-2 hover:bg-ink/10 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -209,7 +246,10 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Full HM</dt>
                 <dd className="font-serif italic">
                   {fullHM.split(' ').map((position, idx) => (
-                    <span key={idx}>{idx > 0 ? ' ' : ''}<FormatPointGroup name={position} /></span>
+                    <span key={idx}>
+                      {idx > 0 ? ' ' : ''}
+                      <FormatPointGroup name={position} />
+                    </span>
                   ))}
                 </dd>
               </div>
@@ -217,7 +257,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             {shubnikov && (
               <div>
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Shubnikov</dt>
-                <dd className="font-serif italic"><FormatPointGroup name={shubnikov} /></dd>
+                <dd className="font-serif italic">
+                  <FormatPointGroup name={shubnikov} />
+                </dd>
               </div>
             )}
             <div>
@@ -227,7 +269,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             {referenceAxes && (
               <div>
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Reference axes</dt>
-                <dd><ReferenceAxes value={referenceAxes} /></dd>
+                <dd>
+                  <ReferenceAxes value={referenceAxes} />
+                </dd>
               </div>
             )}
             {systemInfo && (
@@ -238,7 +282,10 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Free parameters</dt>
-                  <dd>{systemInfo.freeParams.join(', ')} <span className="text-ink/50">({systemInfo.freeParams.length})</span></dd>
+                  <dd>
+                    {systemInfo.freeParams.join(', ')}{' '}
+                    <span className="text-ink/50">({systemInfo.freeParams.length})</span>
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Bravais lattices</dt>
@@ -256,7 +303,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               <div className="sm:col-span-2">
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Parent group</dt>
                 <dd className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-                  <span className="font-serif italic"><FormatPointGroup name={parent} /></span>
+                  <span className="font-serif italic">
+                    <FormatPointGroup name={parent} />
+                  </span>
                   {halvingOps && (
                     <span className="inline-flex items-baseline flex-wrap gap-1 text-ink/70">
                       H = {'{'}
@@ -281,8 +330,8 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                       {idx > 0 && <span className="text-ink/30 mx-2">·</span>}
                       {axisWord && <span className="normal-case text-xs text-ink/60">{axisWord}</span>}
                       <FormatPointGroup name={hm} />
-                      {conventionAffected && (
-                        birssStandard === itcStandard && setting === birssStandard ? (
+                      {conventionAffected &&
+                        (birssStandard === itcStandard && setting === birssStandard ? (
                           <span className="text-xs text-ink/50">(standard frame in Birss and ITC)</span>
                         ) : (
                           <>
@@ -293,8 +342,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                               <span className="text-xs text-ink/50">(standard frame in ITC)</span>
                             )}
                           </>
-                        )
-                      )}
+                        ))}
                     </span>
                   ))}
                 </dd>
@@ -303,7 +351,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             {conventionAffected && (
               <div className="sm:col-span-2">
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1">Convention</dt>
-                <dd><ConventionNote groupName={group.name} /></dd>
+                <dd>
+                  <ConventionNote groupName={group.name} />
+                </dd>
               </div>
             )}
           </dl>
@@ -315,7 +365,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1 flex items-center gap-1.5">
                   Laue class <TermInfo id="laue-class" />
                 </dt>
-                <dd className="font-serif italic"><FormatPointGroup name={laueClass} /></dd>
+                <dd className="font-serif italic">
+                  <FormatPointGroup name={laueClass} />
+                </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1 flex items-center gap-1.5">
@@ -325,7 +377,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
               </div>
             </dl>
             <div className="flex flex-wrap gap-1.5">
-              {properties.map(p => {
+              {properties.map((p) => {
                 const effectId = CHIP_TO_EFFECT[p.id];
                 const linkable = p.allowed && effectId && onOpenInTables;
                 return (
@@ -336,7 +388,10 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                     {linkable ? (
                       <button
                         type="button"
-                        onClick={() => { onOpenInTables!(effectId); onClose(); }}
+                        onClick={() => {
+                          onOpenInTables!(effectId);
+                          onClose();
+                        }}
                         title="Open in Tables"
                         className="inline-flex items-center gap-1 hover:underline"
                       >
@@ -368,7 +423,9 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
             </div>
           )}
           <div>
-            <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">Symmetry Operations ({operations.length})</h3>
+            <h3 className="text-xs uppercase tracking-[0.2em] text-ink/70 mb-4">
+              Symmetry Operations ({operations.length})
+            </h3>
             <div className="flex flex-wrap gap-2">
               {operations.map((op, idx) => (
                 <SymmetryOperation key={idx} symbol={op} />

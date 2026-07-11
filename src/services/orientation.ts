@@ -30,8 +30,8 @@ export function hklToPresetAngles(h: number, k: number, l: number): Orientation 
   const nx = h / norm;
   const ny = k / norm;
   const nz = l / norm;
-  const tx = Math.atan2(ny, nz) * 180 / Math.PI;
-  const ty = Math.atan2(-nx, Math.sqrt(ny * ny + nz * nz)) * 180 / Math.PI;
+  const tx = (Math.atan2(ny, nz) * 180) / Math.PI;
+  const ty = (Math.atan2(-nx, Math.sqrt(ny * ny + nz * nz)) * 180) / Math.PI;
 
   // Principal cut (exactly one nonzero index): keep the established x∥a frame.
   const nonzero = [h, k, l].filter((v) => v !== 0).length;
@@ -42,6 +42,6 @@ export function hklToPresetAngles(h: number, k: number, l: number): Orientation 
   // in-plane projection is well-defined.
   const Rp = mat3mul(rotY(ty), rotX(tx));
   const cLab = [Rp[0][2], Rp[1][2], Rp[2][2]]; // R_preset · [0,0,1]
-  const psi0 = -Math.atan2(cLab[1], cLab[0]) * 180 / Math.PI;
+  const psi0 = (-Math.atan2(cLab[1], cLab[0]) * 180) / Math.PI;
   return { tx, ty, psi0 };
 }

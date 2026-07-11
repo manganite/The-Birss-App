@@ -66,6 +66,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generated `table7Data.ts` (codegen from `table-7.md`, `npm run table7data`). This subsumes the
   planned "magnetic EQ rank-4 golden fixtures" backlog item at the symbol-class level (Table-4f
   even-rank c-tensors are now anchored for every class that appears in the black-white rows).
+- Tooling (tech-debt Wave 1): added ESLint (flat config, `typescript-eslint` + `eslint-plugin-react-hooks`,
+  hooks-deps / unused-vars as errors and the recommended sets as warnings) and Prettier, wired as
+  `lint:eslint` + `format:check` CI steps; a one-time repo-wide Prettier reformat (no logic changes);
+  switched CI/deploy to `npm ci` and exact-pinned the toolchain deps (`vite`, `vitest`, `vite-plugin-pwa`,
+  `@types/react*`) to their lockfile versions; and added non-blocking V8 coverage
+  (`@vitest/coverage-v8`, `npm run test:coverage`) with a recorded baseline (lines 86.72%, branches 74.45%).
+- Docs: corrected the `SectionHeader` entry in `AGENTS.md` (actual home `notation.tsx`, classes
+  `text-xs … text-ink/70`); renamed the misnamed `itcData.reference.test.ts` to
+  `polarDirections.reference.test.ts`. The 2026-07-11 tech-debt audit's actionable items are now
+  tracked as an `E#` series in `docs/planning/TODO-next.md`.
+
+### Removed
+
+- Dead `getFutureSettingCount` stub (backed by an always-empty `GROUPS_WITH_FUTURE_SETTINGS`, so it
+  could only ever return `null`) and its two no-op render branches in the operations and group-identity
+  headers. No user-visible change.
 
 ## [0.20.0] - 2026-07-10
 

@@ -1,16 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import {
-  trigConst, trigCos, trigSin,
-  trigAdd, trigSub, trigScale, trigMul, trigNeg,
-  trigIsZero, trigIsConst, trigGetConst,
-  trigEval, trigSimplify,
-  TRIG_ZERO, TRIG_ONE,
+  trigConst,
+  trigCos,
+  trigSin,
+  trigAdd,
+  trigSub,
+  trigScale,
+  trigMul,
+  trigNeg,
+  trigIsZero,
+  trigIsConst,
+  trigGetConst,
+  trigEval,
+  trigSimplify,
+  TRIG_ZERO,
+  TRIG_ONE,
   type TrigPoly,
 } from './trigPoly';
 
 const EPSILON = 1e-10;
 
-function expectClose(a: number, b: number, msg?: string) {
+function expectClose(a: number, b: number, _msg?: string) {
   expect(Math.abs(a - b)).toBeLessThan(EPSILON);
 }
 
@@ -100,7 +110,10 @@ describe('trigPoly arithmetic', () => {
     const b = trigSin('phiY');
     const ab = trigMul(a, b);
     const ba = trigMul(b, a);
-    for (const [phiX, phiY, psi] of [[30, 45, 0], [60, 120, 90]]) {
+    for (const [phiX, phiY, psi] of [
+      [30, 45, 0],
+      [60, 120, 90],
+    ]) {
       expectClose(trigEval(ab, phiX, phiY, psi), trigEval(ba, phiX, phiY, psi));
     }
   });
@@ -111,7 +124,10 @@ describe('trigPoly arithmetic', () => {
     const c = trigCos('psi');
     const ab_c = trigMul(trigMul(a, b), c);
     const a_bc = trigMul(a, trigMul(b, c));
-    for (const [phiX, phiY, psi] of [[30, 45, 60], [10, 20, 30]]) {
+    for (const [phiX, phiY, psi] of [
+      [30, 45, 60],
+      [10, 20, 30],
+    ]) {
       expectClose(trigEval(ab_c, phiX, phiY, psi), trigEval(a_bc, phiX, phiY, psi));
     }
   });
@@ -122,7 +138,10 @@ describe('trigPoly arithmetic', () => {
     const c = trigCos('phiY');
     const left = trigMul(a, trigAdd(b, c));
     const right = trigAdd(trigMul(a, b), trigMul(a, c));
-    for (const [phiX, phiY, psi] of [[30, 45, 0], [60, 120, 90]]) {
+    for (const [phiX, phiY, psi] of [
+      [30, 45, 0],
+      [60, 120, 90],
+    ]) {
       expectClose(trigEval(left, phiX, phiY, psi), trigEval(right, phiX, phiY, psi));
     }
   });
@@ -158,10 +177,7 @@ describe('trigPoly predicates', () => {
 
 describe('trigPoly evaluation', () => {
   it('evaluates at standard angles', () => {
-    const p = trigAdd(
-      trigMul(trigConst(2), trigCos('phiX')),
-      trigMul(trigConst(3), trigSin('phiY'))
-    );
+    const p = trigAdd(trigMul(trigConst(2), trigCos('phiX')), trigMul(trigConst(3), trigSin('phiY')));
     expectEvalClose(p, 0, 0, 0, 2);
     expectEvalClose(p, 0, 90, 0, 5);
     expectEvalClose(p, 90, 90, 0, 3);
@@ -217,12 +233,13 @@ describe('trigSimplify', () => {
     const cos2a = trigMul(trigCos('phiX'), trigCos('phiX'));
     const sin2a = trigMul(trigSin('phiX'), trigSin('phiX'));
     const cosb = trigCos('phiY');
-    const sum = trigSimplify(trigAdd(
-      trigMul(cos2a, cosb),
-      trigMul(sin2a, cosb)
-    ));
-    for (const [phiX, phiY] of [[30, 45], [60, 120], [0, 0]]) {
-      expectClose(trigEval(sum, phiX, phiY, 0), Math.cos(phiY * Math.PI / 180));
+    const sum = trigSimplify(trigAdd(trigMul(cos2a, cosb), trigMul(sin2a, cosb)));
+    for (const [phiX, phiY] of [
+      [30, 45],
+      [60, 120],
+      [0, 0],
+    ]) {
+      expectClose(trigEval(sum, phiX, phiY, 0), Math.cos((phiY * Math.PI) / 180));
     }
   });
 
@@ -257,8 +274,12 @@ describe('trigPoly edge cases', () => {
     const product = trigMul(r1, r2);
 
     const expected =
-      Math.cos(Math.PI / 6) * Math.sin(Math.PI / 4) * Math.cos(Math.PI / 3) *
-      Math.sin(Math.PI / 6) * Math.cos(Math.PI / 4) * Math.sin(Math.PI / 3);
+      Math.cos(Math.PI / 6) *
+      Math.sin(Math.PI / 4) *
+      Math.cos(Math.PI / 3) *
+      Math.sin(Math.PI / 6) *
+      Math.cos(Math.PI / 4) *
+      Math.sin(Math.PI / 3);
     expectEvalClose(product, 30, 45, 60, expected);
   });
 });

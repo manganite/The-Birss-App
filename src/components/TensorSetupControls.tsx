@@ -27,9 +27,7 @@ export function TensorClassificationControl({
               aria-pressed={value === type}
               onClick={() => onChange(type)}
               className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
-                value === type
-                  ? 'bg-ink text-paper'
-                  : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
+                value === type ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
               }`}
             >
               {TENSOR_META[type].label}
@@ -61,9 +59,7 @@ export function TimeReversalControl({
               aria-pressed={value === tr}
               onClick={() => onChange(tr)}
               className={`px-4 py-2 text-xs font-medium transition-colors border border-ink ${
-                value === tr
-                  ? 'bg-ink text-paper'
-                  : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
+                value === tr ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70 hover:text-ink border-opacity-20'
               }`}
             >
               {tr === 'i' ? 'i-type (Time-Even)' : 'c-type (Time-Odd)'}

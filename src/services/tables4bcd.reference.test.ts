@@ -3,8 +3,16 @@ import { GENERATORS } from './symmetryGroups';
 import { computeTensorForm, type TensorParity } from './tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
 import {
-  CLASS_ROWS, T4B, T4C, T4D, expected4b, expected4c, expected4d,
-  engineFamilies, familySetsMatch, type FCell,
+  CLASS_ROWS,
+  T4B,
+  T4C,
+  T4D,
+  expected4b,
+  expected4c,
+  expected4d,
+  engineFamilies,
+  familySetsMatch,
+  type FCell,
 } from './testUtils/birssTableParsers';
 
 /**
@@ -21,14 +29,14 @@ import {
  * parsers in ./testUtils/birssTableParsers); nothing is taken from computeTensorForm.
  */
 
-const CLASSICAL = CLASS_ROWS.map(r => r.group);
+const CLASSICAL = CLASS_ROWS.map((r) => r.group);
 
 describe('Part C -- Tables 4b/4c/4d guard (32 classical groups via Table 4a)', () => {
   it('Table 4a maps 32 classical groups, all Type I app keys', () => {
     expect(CLASS_ROWS).toHaveLength(32);
     for (const g of CLASSICAL) {
       expect(GENERATORS[g], `unknown app key ${g}`).toBeDefined();
-      expect(POINT_GROUPS.find(p => p.name === g)?.type, g).toBe('I');
+      expect(POINT_GROUPS.find((p) => p.name === g)?.type, g).toBe('I');
     }
   });
 
@@ -38,16 +46,16 @@ describe('Part C -- Tables 4b/4c/4d guard (32 classical groups via Table 4a)', (
     expect(Object.keys(T4D)).toHaveLength(21);
   });
 
-  const check = (
-    group: string, letter: string | null, parity: TensorParity, rank: 0 | 1 | 2, expected: FCell[][],
-  ) => {
+  const check = (group: string, letter: string | null, parity: TensorParity, rank: 0 | 1 | 2, expected: FCell[][]) => {
     const form = computeTensorForm(group, 1, { rank, parity, timeParity: 'i', intrinsic: 'none' })!;
     if (expected.length === 0) {
       expect(form.isZero, `${group} ${parity} rank-${rank} should vanish`).toBe(true);
     } else {
       expect(form.isZero, `${group} ${parity} rank-${rank} should be nonzero`).toBe(false);
-      expect(familySetsMatch(expected, engineFamilies(form.basisResults)),
-        `${group} ${parity} rank-${rank}: engine form != table row`).toBe(true);
+      expect(
+        familySetsMatch(expected, engineFamilies(form.basisResults)),
+        `${group} ${parity} rank-${rank}: engine form != table row`,
+      ).toBe(true);
     }
   };
 

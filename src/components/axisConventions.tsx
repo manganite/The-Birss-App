@@ -43,7 +43,12 @@ export function getAxisTooltipId(crystalSystem: string): string | null {
   return AXIS_TOOLTIP_ID[crystalSystem] ?? null;
 }
 
-export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavigate }: {
+export function AxisOrientationInfo({
+  crystalSystem,
+  convention,
+  setting,
+  onNavigate,
+}: {
   crystalSystem: string;
   convention?: Convention;
   setting?: number;
@@ -54,28 +59,40 @@ export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavi
     case 'Triclinic':
       content = (
         <>
-          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="c" /><br/>
-          <span className="font-mono font-medium">y</span> ∥ (<InlineMath math="c \times a" />) (∥ <InlineMath math="b^*" />)<br/>
-          <span className="font-mono font-medium">x</span> = <InlineMath math="y \times z" /> (projection of <InlineMath math="a" /> onto plane ⊥ <InlineMath math="c" />)
+          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="c" />
+          <br />
+          <span className="font-mono font-medium">y</span> ∥ (<InlineMath math="c \times a" />) (∥{' '}
+          <InlineMath math="b^*" />)<br />
+          <span className="font-mono font-medium">x</span> = <InlineMath math="y \times z" /> (projection of{' '}
+          <InlineMath math="a" /> onto plane ⊥ <InlineMath math="c" />)
         </>
       );
       break;
     case 'Monoclinic': {
       const frame = MONOCLINIC_FRAMES[getMonoclinicFrame(setting, convention ?? 'birss')];
       const qualifier = ' (unique axis: ∥ 2-fold or ⊥ mirror)';
-      content = frame.unique === 'z' ? (
-        <>
-          <span className="font-mono font-medium">z</span> ∥ <InlineMath math={frame.z} />{qualifier}<br/>
-          <span className="font-mono font-medium">x</span> ∥ <InlineMath math={frame.x} /><br/>
-          <span className="font-mono font-medium">y</span> ∥ <InlineMath math={frame.y} /> (completing the right-handed frame)
-        </>
-      ) : (
-        <>
-          <span className="font-mono font-medium">y</span> ∥ <InlineMath math={frame.y} />{qualifier}<br/>
-          <span className="font-mono font-medium">z</span> ∥ <InlineMath math={frame.z} /><br/>
-          <span className="font-mono font-medium">x</span> ∥ <InlineMath math={frame.x} /> (completing the right-handed frame)
-        </>
-      );
+      content =
+        frame.unique === 'z' ? (
+          <>
+            <span className="font-mono font-medium">z</span> ∥ <InlineMath math={frame.z} />
+            {qualifier}
+            <br />
+            <span className="font-mono font-medium">x</span> ∥ <InlineMath math={frame.x} />
+            <br />
+            <span className="font-mono font-medium">y</span> ∥ <InlineMath math={frame.y} /> (completing the
+            right-handed frame)
+          </>
+        ) : (
+          <>
+            <span className="font-mono font-medium">y</span> ∥ <InlineMath math={frame.y} />
+            {qualifier}
+            <br />
+            <span className="font-mono font-medium">z</span> ∥ <InlineMath math={frame.z} />
+            <br />
+            <span className="font-mono font-medium">x</span> ∥ <InlineMath math={frame.x} /> (completing the
+            right-handed frame)
+          </>
+        );
       break;
     }
     case 'Orthorhombic':
@@ -83,7 +100,9 @@ export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavi
     case 'Cubic':
       content = (
         <>
-          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" />, <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[010]" />, <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" />
+          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" />,{' '}
+          <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[010]" />,{' '}
+          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" />
         </>
       );
       break;
@@ -91,9 +110,14 @@ export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavi
     case 'Hexagonal':
       content = (
         <>
-          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" /> / <InlineMath math="[0001]" /> (c-axis)<br/>
-          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" /> / <InlineMath math="[2\bar{1}\bar{1}0]" /> (a-axis)<br/>
-          <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[120]" /> / <InlineMath math="[01\bar{1}0]" />
+          <span className="font-mono font-medium">z</span> ∥ <InlineMath math="[001]" /> / <InlineMath math="[0001]" />{' '}
+          (c-axis)
+          <br />
+          <span className="font-mono font-medium">x</span> ∥ <InlineMath math="[100]" /> /{' '}
+          <InlineMath math="[2\bar{1}\bar{1}0]" /> (a-axis)
+          <br />
+          <span className="font-mono font-medium">y</span> ∥ <InlineMath math="[120]" /> /{' '}
+          <InlineMath math="[01\bar{1}0]" />
         </>
       );
       break;
@@ -110,9 +134,7 @@ export function AxisOrientationInfo({ crystalSystem, convention, setting, onNavi
         Axis Orientation
         {tooltipId && <TermInfo id={tooltipId} onNavigate={onNavigate} />}
       </div>
-      <p className="text-xs leading-relaxed opacity-70">
-        {content}
-      </p>
+      <p className="text-xs leading-relaxed opacity-70">{content}</p>
     </div>
   );
 }

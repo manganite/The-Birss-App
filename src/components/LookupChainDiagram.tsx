@@ -2,8 +2,13 @@ import type { ReactNode } from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
-  classicalChainApplies, getFamilyClass, getClassLetter, getTable7Chain,
-  TABLE_4A_CLASS_LETTERS, REFERENCE_AXES, type ClassLetters,
+  classicalChainApplies,
+  getFamilyClass,
+  getClassLetter,
+  getTable7Chain,
+  TABLE_4A_CLASS_LETTERS,
+  REFERENCE_AXES,
+  type ClassLetters,
 } from '../data/groupNotation';
 import type { TensorParity, TensorTimeParity, TensorRank } from '../services/tensorForms';
 import { TermInfo } from './TermInfo';
@@ -36,7 +41,7 @@ const FOUR_A_COLS: { key: ColKey; label: string }[] = [
 ];
 const ownColKey = (parity: TensorParity, rank: number): ColKey => {
   const even = rank % 2 === 0;
-  return parity === 'polar' ? (even ? 'polarEven' : 'polarOdd') : (even ? 'axialEven' : 'axialOdd');
+  return parity === 'polar' ? (even ? 'polarEven' : 'polarOdd') : even ? 'axialEven' : 'axialOdd';
 };
 
 interface LookupChainDiagramProps {
@@ -71,7 +76,8 @@ const Connector = () => (
     <ChevronRight className="w-4 h-4 hidden md:inline" />
   </span>
 );
-const FLOW = 'flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 border border-ink/10 bg-ink/5 rounded-sm p-5';
+const FLOW =
+  'flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 border border-ink/10 bg-ink/5 rounded-sm p-5';
 const STAGE = 'flex flex-col items-start gap-1';
 
 /** The source's Table-4a row: four columns, the read column highlighted. */
@@ -79,14 +85,21 @@ function Table4aStrip({ classKey, readCol }: { classKey: string; readCol: ColKey
   const letters = TABLE_4A_CLASS_LETTERS[classKey];
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-widest text-ink/40 mb-1">Table 4a — row <span className="font-mono">{classKey}</span></div>
+      <div className="text-[10px] uppercase tracking-widest text-ink/40 mb-1">
+        Table 4a — row <span className="font-mono">{classKey}</span>
+      </div>
       <div className="flex flex-wrap gap-1.5">
-        {FOUR_A_COLS.map(col => {
+        {FOUR_A_COLS.map((col) => {
           const letter = letters?.[col.key] ?? null;
           const read = col.key === readCol;
           return (
-            <div key={col.key} className={`px-2.5 py-1.5 rounded-sm text-center min-w-[4.5rem] ${read ? 'border-[1.8px] border-ink bg-ink/10' : 'border border-ink/25'}`}>
-              <div className={`text-[9px] uppercase tracking-wide ${read ? 'text-ink font-semibold' : 'text-ink/45'}`}>{col.label}</div>
+            <div
+              key={col.key}
+              className={`px-2.5 py-1.5 rounded-sm text-center min-w-[4.5rem] ${read ? 'border-[1.8px] border-ink bg-ink/10' : 'border border-ink/25'}`}
+            >
+              <div className={`text-[9px] uppercase tracking-wide ${read ? 'text-ink font-semibold' : 'text-ink/45'}`}>
+                {col.label}
+              </div>
               <div className={`font-mono text-sm ${read ? 'text-ink font-bold' : 'text-ink/55'}`}>{letter ?? '—'}</div>
             </div>
           );
@@ -96,7 +109,15 @@ function Table4aStrip({ classKey, readCol }: { classKey: string; readCol: ColKey
   );
 }
 
-export function LookupChainDiagram({ groupName, groupType, parity, rank, timeParity, displayName, onNavigate }: LookupChainDiagramProps) {
+export function LookupChainDiagram({
+  groupName,
+  groupType,
+  parity,
+  rank,
+  timeParity,
+  displayName,
+  onNavigate,
+}: LookupChainDiagramProps) {
   const label = displayName ?? groupName;
   const chainValid = classicalChainApplies(groupType, timeParity);
   const chain = chainValid ? null : getTable7Chain(groupName, parity, rank);
@@ -104,25 +125,38 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
 
   const groupChip = (
     <Chip tone="plain">
-      <span className="font-serif italic"><Sym s={label} /></span>
+      <span className="font-serif italic">
+        <Sym s={label} />
+      </span>
     </Chip>
   );
 
   // Terminal chips shared by the classical / Table-7 variants (class -> rank-table row, or "no form").
-  const terminal = (letter: string | null) => (
+  const terminal = (letter: string | null) =>
     letter ? (
       <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
-        <Chip tone="plain">class <span className="font-mono font-bold ml-1">{letter}</span></Chip>
+        <Chip tone="plain">
+          class <span className="font-mono font-bold ml-1">{letter}</span>
+        </Chip>
         <Connector />
-        <Chip tone="invert">Table {RANK_TABLE[rank]} · row <span className="font-mono ml-1">{letter}{rank}</span></Chip>
+        <Chip tone="invert">
+          Table {RANK_TABLE[rank]} · row{' '}
+          <span className="font-mono ml-1">
+            {letter}
+            {rank}
+          </span>
+        </Chip>
       </div>
     ) : (
-      <Chip tone="plain"><span className="italic text-ink/60">no allowed form (Table 4a: —)</span></Chip>
-    )
-  );
+      <Chip tone="plain">
+        <span className="italic text-ink/60">no allowed form (Table 4a: —)</span>
+      </Chip>
+    );
 
   const tensorTag = (
-    <Chip tone="invert">your tensor: {parity} · {evenLabel}</Chip>
+    <Chip tone="invert">
+      your tensor: {parity} · {evenLabel}
+    </Chip>
   );
 
   // ---- grey variant: Type II c-tensor -------------------------------------------------------
@@ -131,9 +165,12 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
       <div className={FLOW}>
         {groupChip}
         <Connector />
-        <Chip tone="invert">time reversal <InlineMath math="1'" /> is a symmetry</Chip>
+        <Chip tone="invert">
+          time reversal <InlineMath math="1'" /> is a symmetry
+        </Chip>
         <Connector />
-        <Chip tone="plain"><span className="italic">c-tensor vanishes identically</span>
+        <Chip tone="plain">
+          <span className="italic">c-tensor vanishes identically</span>
           {onNavigate && <TermInfo id="tbl-grey-tail" onNavigate={onNavigate} />}
         </Chip>
       </div>
@@ -156,23 +193,33 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
           <div className={STAGE}>
             <div className="flex flex-wrap items-start gap-3">
               <Chip tone={chain.source === 'A' ? 'source' : 'dim'}>
-                A = <span className="font-serif italic"><Sym s={chain.source === 'A' ? chain.sourceSymbol : altSymbol(groupName, 'A')} /></span>
+                A ={' '}
+                <span className="font-serif italic">
+                  <Sym s={chain.source === 'A' ? chain.sourceSymbol : altSymbol(groupName, 'A')} />
+                </span>
                 {chain.source === 'A' && chain.sourceBracketed && chain.transformLabel && (
-                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {chain.transformLabel}
+                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">
+                    rotated: {chain.transformLabel}
                     {onNavigate && <TermInfo id="tbl-rotated" onNavigate={onNavigate} />}
                   </span>
                 )}
               </Chip>
               <Chip tone={chain.source === 'B' ? 'source' : 'dim'}>
-                B = <span className="font-serif italic"><Sym s={chain.source === 'B' ? chain.sourceSymbol : altSymbol(groupName, 'B')} /></span>
+                B ={' '}
+                <span className="font-serif italic">
+                  <Sym s={chain.source === 'B' ? chain.sourceSymbol : altSymbol(groupName, 'B')} />
+                </span>
                 {chain.source === 'B' && chain.sourceBracketed && chain.transformLabel && (
-                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {chain.transformLabel}
+                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">
+                    rotated: {chain.transformLabel}
                     {onNavigate && <TermInfo id="tbl-rotated" onNavigate={onNavigate} />}
                   </span>
                 )}
               </Chip>
             </div>
-            <div className="text-[11px] text-ink/55">rule: {parity} + {evenLabel} rank → read {chain.source}</div>
+            <div className="text-[11px] text-ink/55">
+              rule: {parity} + {evenLabel} rank → read {chain.source}
+            </div>
           </div>
           <Connector />
           <div className={STAGE}>
@@ -190,7 +237,9 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
           <div className={STAGE}>
             <Table4aStrip classKey={chain.sourceClass} readCol={readCol} />
             {srcAxes && (
-              <div className="text-[11px] text-ink/50">source reference axes: {srcAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(srcAxes)} />}
+              <div className="text-[11px] text-ink/50">
+                source reference axes:{' '}
+                {srcAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(srcAxes)} />}
                 {onNavigate && <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />}
               </div>
             )}
@@ -212,7 +261,12 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
     <div className={FLOW}>
       <div className={STAGE}>
         {groupChip}
-        <div className="text-[10px] uppercase tracking-widest text-ink/45">family class <span className="font-serif italic"><Sym s={familyClass} /></span></div>
+        <div className="text-[10px] uppercase tracking-widest text-ink/45">
+          family class{' '}
+          <span className="font-serif italic">
+            <Sym s={familyClass} />
+          </span>
+        </div>
       </div>
       <Connector />
       {tensorTag}
@@ -220,7 +274,9 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
       <div className={STAGE}>
         <Table4aStrip classKey={familyClass} readCol={readCol} />
         {famAxes && (
-          <div className="text-[11px] text-ink/50">reference axes: {famAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(famAxes)} />}
+          <div className="text-[11px] text-ink/50">
+            reference axes:{' '}
+            {famAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(famAxes)} />}
             {onNavigate && <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />}
           </div>
         )}
@@ -236,8 +292,9 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
 function altSymbol(groupName: string, want: 'A' | 'B'): string {
   // A is the source for axial-even / polar-odd; B for polar-even / axial-odd. Pick a spec that makes
   // `want` the source, so getTable7Chain hands back that symbol.
-  const probe = want === 'A'
-    ? getTable7Chain(groupName, 'axial', 2)   // axial-even -> source A
-    : getTable7Chain(groupName, 'polar', 2);  // polar-even -> source B
+  const probe =
+    want === 'A'
+      ? getTable7Chain(groupName, 'axial', 2) // axial-even -> source A
+      : getTable7Chain(groupName, 'polar', 2); // polar-even -> source B
   return probe?.sourceSymbol ?? '?';
 }

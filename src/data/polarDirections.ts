@@ -49,9 +49,9 @@ export interface PolarDirectionRow {
 }
 
 const OMISSION_622 =
-  "Corrected: ITC Table 3.2.2.2 prints the 622 nonpolar cell without the leading [uv0] primary set " +
+  'Corrected: ITC Table 3.2.2.2 prints the 622 nonpolar cell without the leading [uv0] primary set ' +
   "and without its set separators; by the table's own header rule all [uv0] are also nonpolar for " +
-  "622 (the sixfold axis is evenfold). Restored here; see docs/references/ITC-table-3.2.2.2-polar-axes.md.";
+  '622 (the sixfold axis is evenfold). Restored here; see docs/references/ITC-table-3.2.2.2-polar-axes.md.';
 
 /** Keyed by app classical group key. The 11 centrosymmetric classes are deliberately omitted. */
 export const POLAR_DIRECTIONS: Record<string, PolarDirectionRow> = {
@@ -60,7 +60,7 @@ export const POLAR_DIRECTIONS: Record<string, PolarDirectionRow> = {
 
   // --- Monoclinic (unique axis c = the app's first setting) ---
   '2': { polarAxes: ['[001]'], nonpolar: [{ cls: 'primary', directions: ['[uv0]'] }] },
-  'm': { polarAxes: [], allDirectionsNote: true, nonpolar: [{ cls: 'primary', directions: ['[001]'] }] },
+  m: { polarAxes: [], allDirectionsNote: true, nonpolar: [{ cls: 'primary', directions: ['[001]'] }] },
 
   // --- Orthorhombic ---
   '222': {
@@ -71,7 +71,7 @@ export const POLAR_DIRECTIONS: Record<string, PolarDirectionRow> = {
       { cls: 'tertiary', directions: ['[uv0]'] },
     ],
   },
-  'mm2': { polarAxes: ['[001]'], nonpolar: [{ cls: 'tertiary', directions: ['[uv0]'] }] },
+  mm2: { polarAxes: ['[001]'], nonpolar: [{ cls: 'tertiary', directions: ['[uv0]'] }] },
 
   // --- Tetragonal ---
   '4': { polarAxes: ['[001]'], nonpolar: [{ cls: 'primary', directions: ['[uv0]'] }] },
@@ -154,5 +154,7 @@ export const POLAR_DIRECTIONS: Record<string, PolarDirectionRow> = {
 
 /** App classical keys whose ITC 3.2.2.2 row is read under the 30 deg trigonal orientation divergence. */
 export const FRAME_DIVERGENT_CLASSES = new Set(
-  Object.entries(POLAR_DIRECTIONS).filter(([, r]) => r.frameDivergent).map(([k]) => k),
+  Object.entries(POLAR_DIRECTIONS)
+    .filter(([, r]) => r.frameDivergent)
+    .map(([k]) => k),
 );

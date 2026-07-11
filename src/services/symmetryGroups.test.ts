@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { GENERATORS, getCachedFullGroup, multiply, isSameMatrix, snapMatrix, getAlternateSettings, identity, transpose } from './symmetryGroups';
+import {
+  GENERATORS,
+  getCachedFullGroup,
+  multiply,
+  isSameMatrix,
+  snapMatrix,
+  getAlternateSettings,
+  identity,
+  transpose,
+} from './symmetryGroups';
 import { POINT_GROUPS } from '../data/pointGroups';
 
 /**
@@ -37,7 +46,7 @@ describe('getCachedFullGroup - true closure (Tier 1b)', () => {
       for (const a of group) {
         for (const b of group) {
           const prod = snapMatrix(multiply(a, b));
-          expect(group.some(m => isSameMatrix(m, prod))).toBe(true);
+          expect(group.some((m) => isSameMatrix(m, prod))).toBe(true);
         }
       }
     });

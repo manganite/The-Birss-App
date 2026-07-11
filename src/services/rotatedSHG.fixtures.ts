@@ -160,9 +160,21 @@ export const ROTATED_SHG_FIXTURES: RotatedSHGFixture[] = [
       { component: 'P_z', expression: '\\chi_{zxx}E_x^2 + \\chi_{zyy}E_y^2 + \\chi_{zzz}E_z^2' },
     ],
     expectedSource: [
-      { component: 'S_X', expression: '\\chi_{xxz}(\\frac{\\sqrt{6}}{4}E_X^2 - \\frac{1}{2}E_X E_Y) + \\chi_{yyz}(0.153E_X^2 + \\frac{1}{4}E_X E_Y - 0.306E_Y^2) + 0.306\\chi_{zxx}E_X^2 + \\chi_{zyy}(0.077E_X^2 + \\frac{3}{8}E_X E_Y + 0.459E_Y^2) + \\chi_{zzz}(0.23E_X^2 - \\frac{3}{8}E_X E_Y + 0.153E_Y^2)' },
-      { component: 'S_Y', expression: '\\chi_{yyz}(\\frac{3}{8}E_X^2 + \\frac{\\sqrt{6}}{4}E_X E_Y - \\frac{3}{4}E_Y^2) - \\frac{1}{4}\\chi_{zxx}E_X^2 + \\chi_{zyy}(-0.062E_X^2 - 0.306E_X E_Y - \\frac{3}{8}E_Y^2) + \\chi_{zzz}(-0.187E_X^2 + 0.306E_X E_Y - \\frac{1}{8}E_Y^2)' },
-      { component: 'S_Z', expression: '\\chi_{xxz}(-\\frac{\\sqrt{6}}{4}E_X^2 + \\frac{1}{2}E_X E_Y) + \\chi_{yyz}(0.153E_X^2 + \\frac{1}{4}E_X E_Y - 0.306E_Y^2) + 0.306\\chi_{zxx}E_X^2 + \\chi_{zyy}(0.077E_X^2 + \\frac{3}{8}E_X E_Y + 0.459E_Y^2) + \\chi_{zzz}(0.23E_X^2 - \\frac{3}{8}E_X E_Y + 0.153E_Y^2)' },
+      {
+        component: 'S_X',
+        expression:
+          '\\chi_{xxz}(\\frac{\\sqrt{6}}{4}E_X^2 - \\frac{1}{2}E_X E_Y) + \\chi_{yyz}(0.153E_X^2 + \\frac{1}{4}E_X E_Y - 0.306E_Y^2) + 0.306\\chi_{zxx}E_X^2 + \\chi_{zyy}(0.077E_X^2 + \\frac{3}{8}E_X E_Y + 0.459E_Y^2) + \\chi_{zzz}(0.23E_X^2 - \\frac{3}{8}E_X E_Y + 0.153E_Y^2)',
+      },
+      {
+        component: 'S_Y',
+        expression:
+          '\\chi_{yyz}(\\frac{3}{8}E_X^2 + \\frac{\\sqrt{6}}{4}E_X E_Y - \\frac{3}{4}E_Y^2) - \\frac{1}{4}\\chi_{zxx}E_X^2 + \\chi_{zyy}(-0.062E_X^2 - 0.306E_X E_Y - \\frac{3}{8}E_Y^2) + \\chi_{zzz}(-0.187E_X^2 + 0.306E_X E_Y - \\frac{1}{8}E_Y^2)',
+      },
+      {
+        component: 'S_Z',
+        expression:
+          '\\chi_{xxz}(-\\frac{\\sqrt{6}}{4}E_X^2 + \\frac{1}{2}E_X E_Y) + \\chi_{yyz}(0.153E_X^2 + \\frac{1}{4}E_X E_Y - 0.306E_Y^2) + 0.306\\chi_{zxx}E_X^2 + \\chi_{zyy}(0.077E_X^2 + \\frac{3}{8}E_X E_Y + 0.459E_Y^2) + \\chi_{zzz}(0.23E_X^2 - \\frac{3}{8}E_X E_Y + 0.153E_Y^2)',
+      },
     ],
   },
   // R8: 32 MD i-type at k||x (0, -90)

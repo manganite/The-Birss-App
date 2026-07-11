@@ -62,7 +62,7 @@ function hasNonzeroInvariant(group: Matrix3x3[], rank: number, isAxial: boolean,
     const basis = new Array(dim).fill(0);
     basis[i] = 1;
     const averaged = averageTensor(basis, group, rank, isAxial, isTimeOdd);
-    if (averaged.some(v => Math.abs(v) > EPSILON)) return true;
+    if (averaged.some((v) => Math.abs(v) > EPSILON)) return true;
   }
   return false;
 }
@@ -102,11 +102,11 @@ export const isPiezomagnetic = memoizeFlag((group: string) => {
 });
 
 /** The 11 Laue classes: the classical (Type I) centrosymmetric point-group keys. */
-const LAUE_KEYS = POINT_GROUPS.filter(g => g.type === 'I' && isCentrosymmetric(g.name)).map(g => g.name);
+const LAUE_KEYS = POINT_GROUPS.filter((g) => g.type === 'I' && isCentrosymmetric(g.name)).map((g) => g.name);
 
 function sameMatrixSet(a: Matrix3x3[], b: Matrix3x3[]): boolean {
   if (a.length !== b.length) return false;
-  return a.every(x => b.some(y => isSameMatrix(x, y)));
+  return a.every((x) => b.some((y) => isSameMatrix(x, y)));
 }
 
 /** The family group unioned with inversion·(family group) — the centrosymmetric Laue supergroup. */
@@ -115,7 +115,7 @@ function closeWithInversion(family: string): Matrix3x3[] {
   const result = [...base];
   for (const m of base) {
     const prod = snapMatrix(multiply(inversion, m));
-    if (!result.some(x => isSameMatrix(x, prod))) result.push(prod);
+    if (!result.some((x) => isSameMatrix(x, prod))) result.push(prod);
   }
   return result;
 }
@@ -147,7 +147,7 @@ export function getLaueClass(group: string): string {
  */
 export const isChiral = memoizeFlag((group: string) => {
   const g = fullGroup(getFamilyClass(group));
-  return g !== null && g.every(m => det(m) > 0);
+  return g !== null && g.every((m) => det(m) > 0);
 });
 
 const SHG_CONSEQUENCE = {

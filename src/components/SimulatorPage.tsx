@@ -25,10 +25,31 @@ export function SimulatorPage({
 }: SimulatorPageProps) {
   const { thetaX, thetaY, psi0, phiX, phiY, psi } = orientation;
   const { amplitudes, setAmplitudes, phases, setPhases } = simulation;
-  const { type: selectedTensorType, timeReversal: selectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting, convention } = tensorConfig;
+  const {
+    type: selectedTensorType,
+    timeReversal: selectedTimeReversal,
+    setting: selectedSetting,
+    setSetting: setSelectedSetting,
+    convention,
+  } = tensorConfig;
 
   const { labFrame, sourceTerms, sourceTermsExEy, expandedFormulas, independentComponents, simulationData } =
-    useSimulatorState(selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY, psi0, phiX, phiY, psi, selectedSetting, amplitudes, setAmplitudes, phases, setPhases);
+    useSimulatorState(
+      selectedGroup,
+      selectedTensorType,
+      selectedTimeReversal,
+      thetaX,
+      thetaY,
+      psi0,
+      phiX,
+      phiY,
+      psi,
+      selectedSetting,
+      amplitudes,
+      setAmplitudes,
+      phases,
+      setPhases,
+    );
 
   if (!selectedGroup) {
     return (
@@ -46,7 +67,14 @@ export function SimulatorPage({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <GroupIdentityHeader key={selectedGroup.name} group={selectedGroup} setting={selectedSetting} convention={convention} onSettingChange={setSelectedSetting} onNavigate={onNavigate} />
+      <GroupIdentityHeader
+        key={selectedGroup.name}
+        group={selectedGroup}
+        setting={selectedSetting}
+        convention={convention}
+        onSettingChange={setSelectedSetting}
+        onNavigate={onNavigate}
+      />
 
       <SimulatorSetupPanel
         selectedGroup={selectedGroup}

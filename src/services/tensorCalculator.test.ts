@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  calculateTensorComponents,
-  isCentrosymmetric,
-  getSymmetryOperations,
-  formatCoeff,
-} from './tensorCalculator';
+import { calculateTensorComponents, isCentrosymmetric, getSymmetryOperations, formatCoeff } from './tensorCalculator';
 import { POINT_GROUPS } from '../data/pointGroups';
 
 /**
@@ -12,17 +7,42 @@ import { POINT_GROUPS } from '../data/pointGroups';
  * per International Tables for Crystallography Vol. A.
  */
 const TYPE_I_ORDER: Record<string, number> = {
-  '1': 1, '-1': 2,
-  '2': 2, 'm': 2, '2/m': 4,
-  '222': 4, 'mm2': 4, 'mmm': 8,
-  '4': 4, '-4': 4, '4/m': 8, '422': 8, '4mm': 8, '-42m': 8, '4/mmm': 16,
-  '3': 3, '-3': 6, '32': 6, '3m': 6, '-3m': 12,
-  '6': 6, '-6': 6, '6/m': 12, '622': 12, '6mm': 12, '-6m2': 12, '6/mmm': 24,
-  '23': 12, 'm-3': 24, '432': 24, '-43m': 24, 'm-3m': 48,
+  '1': 1,
+  '-1': 2,
+  '2': 2,
+  m: 2,
+  '2/m': 4,
+  '222': 4,
+  mm2: 4,
+  mmm: 8,
+  '4': 4,
+  '-4': 4,
+  '4/m': 8,
+  '422': 8,
+  '4mm': 8,
+  '-42m': 8,
+  '4/mmm': 16,
+  '3': 3,
+  '-3': 6,
+  '32': 6,
+  '3m': 6,
+  '-3m': 12,
+  '6': 6,
+  '-6': 6,
+  '6/m': 12,
+  '622': 12,
+  '6mm': 12,
+  '-6m2': 12,
+  '6/mmm': 24,
+  '23': 12,
+  'm-3': 24,
+  '432': 24,
+  '-43m': 24,
+  'm-3m': 48,
 };
 
 /** Alternative Hermann-Mauguin spellings that appear once primes are stripped from Type III symbols. */
-const FAMILY_ALIASES: Record<string, string> = { 'm3': 'm-3', 'm3m': 'm-3m', '2mm': 'mm2', '-62m': '-6m2', '-4m2': '-42m' };
+const FAMILY_ALIASES: Record<string, string> = { m3: 'm-3', m3m: 'm-3m', '2mm': 'mm2', '-62m': '-6m2', '-4m2': '-42m' };
 
 /**
  * Expected order of a magnetic point group:
@@ -76,11 +96,10 @@ describe('calculateTensorComponents - parity invariants (Tier 2)', () => {
     });
   }
 
-  for (const pg of POINT_GROUPS.filter(p => p.type === 'I')) {
+  for (const pg of POINT_GROUPS.filter((p) => p.type === 'I')) {
     it(`${pg.name}1' (grey group) reproduces the i-type results of ${pg.name}`, () => {
       for (const t of ['ED', 'MD', 'EQ'] as const) {
-        expect(calculateTensorComponents(`${pg.name}1'`, t, 'i'))
-          .toEqual(calculateTensorComponents(pg.name, t, 'i'));
+        expect(calculateTensorComponents(`${pg.name}1'`, t, 'i')).toEqual(calculateTensorComponents(pg.name, t, 'i'));
       }
     });
   }
@@ -111,15 +130,34 @@ describe('isCentrosymmetric', () => {
     '%s is centrosymmetric',
     (name) => {
       expect(isCentrosymmetric(name)).toBe(true);
-    }
+    },
   );
 
-  it.each(['1', '2', 'm', '222', 'mm2', '4', '-4', '422', '4mm', '-42m', '3', '32', '3m', '6', '-6', '622', '6mm', '-6m2', '23', '432', '-43m'])(
-    '%s is not centrosymmetric',
-    (name) => {
-      expect(isCentrosymmetric(name)).toBe(false);
-    }
-  );
+  it.each([
+    '1',
+    '2',
+    'm',
+    '222',
+    'mm2',
+    '4',
+    '-4',
+    '422',
+    '4mm',
+    '-42m',
+    '3',
+    '32',
+    '3m',
+    '6',
+    '-6',
+    '622',
+    '6mm',
+    '-6m2',
+    '23',
+    '432',
+    '-43m',
+  ])('%s is not centrosymmetric', (name) => {
+    expect(isCentrosymmetric(name)).toBe(false);
+  });
 });
 
 /**

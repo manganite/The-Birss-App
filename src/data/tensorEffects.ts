@@ -51,7 +51,8 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     label: 'Linear magnetoelectric effect',
     symbol: '\\alpha_{ij}',
     spec: { rank: 2, parity: 'axial', timeParity: 'c', intrinsic: 'none' },
-    blurb: 'A magnetic field induces an electric polarization (and, conversely, an electric field induces a magnetization: $M_j = \\alpha_{ij} E_i$).',
+    blurb:
+      'A magnetic field induces an electric polarization (and, conversely, an electric field induces a magnetization: $M_j = \\alpha_{ij} E_i$).',
     equation: 'P_i = \\alpha_{ij} H_j',
     reference: 'ITC Vol. D Table 1.5.8.1 (doi:10.1107/97809553602060000113); Birss (1966), ch. 4.',
   },
@@ -84,7 +85,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
   },
 ];
 
-export const getEffect = (id: string): TensorEffect | undefined => TENSOR_EFFECTS.find(e => e.id === id);
+export const getEffect = (id: string): TensorEffect | undefined => TENSOR_EFFECTS.find((e) => e.id === id);
 
 /** The bare base symbol used to render the reduced form (e.g. `\alpha_{ij}` -> `\alpha`, `p_i` -> `p`). */
 export const effectBaseSymbol = (effect: TensorEffect): string => effect.symbol.replace(/_(\{[^}]*\}|.)$/, '');
@@ -93,7 +94,7 @@ export const effectBaseSymbol = (effect: TensorEffect): string => effect.symbol.
 export const CHIP_TO_EFFECT: Record<string, string> = {
   'polar-property': 'pyroelectricity',
   'ferromagnetic-property': 'spontaneous-magnetization',
-  'piezoelectric': 'piezoelectricity',
-  'piezomagnetic': 'piezomagnetism',
-  'magnetoelectric': 'magnetoelectric',
+  piezoelectric: 'piezoelectricity',
+  piezomagnetic: 'piezomagnetism',
+  magnetoelectric: 'magnetoelectric',
 };
