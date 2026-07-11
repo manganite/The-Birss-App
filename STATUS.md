@@ -38,7 +38,11 @@ property occurrence, structural totals and enantiomorphism (`isChiral`) across t
 block in the group popup (polar/nonpolar directions from ITC 3.2.2.2, in the app's Birss frame with
 the documented 30 deg trigonal remapping machine-verified against the app operators, and the 622
 print omission corrected), and the crystal-system cell restrictions / free parameters / Bravais
-lattices from ITC 2.1.1.1 (2.1.1.1 and 2.1.3.1 vendored alongside). See `CHANGELOG.md` `[Unreleased]`.
+lattices from ITC 2.1.1.1 (2.1.1.1 and 2.1.3.1 vendored alongside). Plus **Tables refinements**: the
+result section renamed "Tensor form"; the sharing list grouped by colour type; direction-aware
+lookup-chain diagram connectors; corrected effect citations; new index symmetries (rank-3 `(ij)k`,
+rank-4 pairs-only `(ij)(kl)` and full Voigt) with Voigt-compressed 6x3/6x6 renderings (RREF-canonical,
+sums like c66=(c11-c12)/2 correct) and guards. See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 
