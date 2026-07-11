@@ -6,7 +6,13 @@ import { computeTensorForm, type TensorParity, type TensorTimeParity, type Tenso
 import { TABLE_4A_CLASS_LETTERS } from '../data/groupNotation';
 import { TABLE7_BW_ROWS } from '../data/table7Data';
 import {
-  expected4b, expected4c, expected4d, relationsForClass, matrixRank, tableDim, type FCell,
+  expected4b,
+  expected4c,
+  expected4d,
+  relationsForClass,
+  matrixRank,
+  tableDim,
+  type FCell,
 } from './testUtils/birssTableParsers';
 
 /**
@@ -39,27 +45,63 @@ const appKey = (sym: string) => KEYMAP[sym] ?? sym;
 
 // ---------- transforms (kept verbatim in lockstep with table7RankThree.audit.test.ts SRC_TRANSFORM) --
 const Rz = (deg: number): number[][] => {
-  const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
-  return [[c, -s, 0], [s, c, 0], [0, 0, 1]];
+  const a = (deg * Math.PI) / 180,
+    c = Math.cos(a),
+    s = Math.sin(a);
+  return [
+    [c, -s, 0],
+    [s, c, 0],
+    [0, 0, 1],
+  ];
 };
-const P_zx = [[0, 0, 1], [0, 1, 0], [-1, 0, 0]];
-const P_zy = [[1, 0, 0], [0, 0, -1], [0, 1, 0]];
+const P_zx = [
+  [0, 0, 1],
+  [0, 1, 0],
+  [-1, 0, 0],
+];
+const P_zy = [
+  [1, 0, 0],
+  [0, 0, -1],
+  [0, 1, 0],
+];
 const SRC_TRANSFORM: Record<string, number[][]> = {
-  m2m: P_zy, '2mm': P_zx, "2'm'm": P_zx,
-  '-4m2': Rz(45), '-42m': Rz(45), "-4'm2'": Rz(45),
-  '-62m': Rz(30), "-6'2m'": Rz(30),
+  m2m: P_zy,
+  '2mm': P_zx,
+  "2'm'm": P_zx,
+  '-4m2': Rz(45),
+  '-42m': Rz(45),
+  "-4'm2'": Rz(45),
+  '-62m': Rz(30),
+  "-6'2m'": Rz(30),
 };
 
 // ---------- family-class key of a source symbol (strip brackets+primes, map alternate spellings) --
-const ALT_TO_4A: Record<string, string> = { m2m: 'mm2', '2mm': 'mm2', '-4m2': '-42m', '-62m': '-6m2', m3: 'm-3', m3m: 'm-3m' };
-const familyKeyOf = (sym: string) => { const s = sym.replace(/[()']/g, ''); return ALT_TO_4A[s] ?? s; };
+const ALT_TO_4A: Record<string, string> = {
+  m2m: 'mm2',
+  '2mm': 'mm2',
+  '-4m2': '-42m',
+  '-62m': '-6m2',
+  m3: 'm-3',
+  m3m: 'm-3m',
+};
+const familyKeyOf = (sym: string) => {
+  const s = sym.replace(/[()']/g, '');
+  return ALT_TO_4A[s] ?? s;
+};
 
 // ---------- table-7 BW-row parser (mirrors the rank-3 audit; all 8 letter cells) ----------
 type ColKey = 'iPolEven' | 'iAxEven' | 'iPolOdd' | 'iAxOdd' | 'cPolEven' | 'cAxEven' | 'cPolOdd' | 'cAxOdd';
 type Source = 'M' | 'A' | 'B';
 type FourACol = 'polarEven' | 'axialEven' | 'polarOdd' | 'axialOdd';
 
-interface ColSpec { field: number; parity: TensorParity; time: TensorTimeParity; ranks: TensorRank[]; source: Source; fourA: FourACol }
+interface ColSpec {
+  field: number;
+  parity: TensorParity;
+  time: TensorTimeParity;
+  ranks: TensorRank[];
+  source: Source;
+  fourA: FourACol;
+}
 const COLUMNS: Record<ColKey, ColSpec> = {
   iPolEven: { field: 5, parity: 'polar', time: 'i', ranks: [0, 2, 4], source: 'M', fourA: 'polarEven' },
   iAxEven: { field: 6, parity: 'axial', time: 'i', ranks: [0, 2, 4], source: 'M', fourA: 'axialEven' },
@@ -75,9 +117,12 @@ const COL_KEYS = Object.keys(COLUMNS) as ColKey[];
 interface Row {
   line: number;
   system: string;
-  M: string; Mbr: boolean;
-  A: string; Abr: boolean;
-  B: string; Bbr: boolean;
+  M: string;
+  Mbr: boolean;
+  A: string;
+  Abr: boolean;
+  B: string;
+  Bbr: boolean;
   letters: Record<ColKey, string | null>;
 }
 const strip = (s: string) => ({ sym: s.replace(/[()]/g, ''), br: s.includes('(') });
@@ -89,15 +134,19 @@ function cellLetter(s: string, line: number): string | null {
 }
 function parseTable7(): Row[] {
   const rows: Row[] = [];
-  readFileSync(TABLE7_PATH, 'utf8').split('\n').forEach((line, li) => {
-    if (!line.startsWith('|')) return;
-    const f = line.split('|').map(s => s.trim());
-    if (f.length < 14 || f[2].startsWith('--') || /Magnetic point group/.test(f[2]) || f[3] === '-') return;
-    const M = strip(f[2]), A = strip(f[3]), B = strip(f[4]);
-    const letters = {} as Record<ColKey, string | null>;
-    for (const key of COL_KEYS) letters[key] = cellLetter(f[COLUMNS[key].field], li + 1);
-    rows.push({ line: li + 1, system: f[1], M: M.sym, Mbr: M.br, A: A.sym, Abr: A.br, B: B.sym, Bbr: B.br, letters });
-  });
+  readFileSync(TABLE7_PATH, 'utf8')
+    .split('\n')
+    .forEach((line, li) => {
+      if (!line.startsWith('|')) return;
+      const f = line.split('|').map((s) => s.trim());
+      if (f.length < 14 || f[2].startsWith('--') || /Magnetic point group/.test(f[2]) || f[3] === '-') return;
+      const M = strip(f[2]),
+        A = strip(f[3]),
+        B = strip(f[4]);
+      const letters = {} as Record<ColKey, string | null>;
+      for (const key of COL_KEYS) letters[key] = cellLetter(f[COLUMNS[key].field], li + 1);
+      rows.push({ line: li + 1, system: f[1], M: M.sym, Mbr: M.br, A: A.sym, Abr: A.br, B: B.sym, Bbr: B.br, letters });
+    });
   return rows;
 }
 const ROWS = parseTable7();
@@ -124,7 +173,15 @@ const FORCED_TRANSFORM: Partial<Record<string, Partial<Record<ColKey, number[][]
 function transformTensor(R: number[][], v: number[], rank: number): number[] {
   const dim = 3 ** rank;
   if (rank === 0) return v.slice();
-  const digitsOf = (flat: number): number[] => { const d = new Array(rank); let t = flat; for (let k = rank - 1; k >= 0; k--) { d[k] = t % 3; t = Math.floor(t / 3); } return d; };
+  const digitsOf = (flat: number): number[] => {
+    const d = new Array(rank);
+    let t = flat;
+    for (let k = rank - 1; k >= 0; k--) {
+      d[k] = t % 3;
+      t = Math.floor(t / 3);
+    }
+    return d;
+  };
   const DIG = Array.from({ length: dim }, (_, i) => digitsOf(i));
   const out = new Array(dim).fill(0);
   for (let s = 0; s < dim; s++) {
@@ -134,7 +191,10 @@ function transformTensor(R: number[][], v: number[], rank: number): number[] {
     for (let o = 0; o < dim; o++) {
       const oi = DIG[o];
       let coeff = 1;
-      for (let k = 0; k < rank; k++) { coeff *= R[oi[k]][si[k]]; if (coeff === 0) break; }
+      for (let k = 0; k < rank; k++) {
+        coeff *= R[oi[k]][si[k]];
+        if (coeff === 0) break;
+      }
       if (coeff !== 0) out[o] += coeff * t;
     }
   }
@@ -143,7 +203,11 @@ function transformTensor(R: number[][], v: number[], rank: number): number[] {
 
 // ---------- expected component span (explicit basis vectors of length 3^rank) ----------
 const famToVec = (fams: FCell[][], dim: number): number[][] =>
-  fams.map(f => { const v = new Array(dim).fill(0); for (const c of f) v[c.index] = c.val; return v; });
+  fams.map((f) => {
+    const v = new Array(dim).fill(0);
+    for (const c of f) v[c.index] = c.val;
+    return v;
+  });
 
 /** Basis of the solution space of the parsed rank-4 relations (81 - rank of the constraint matrix).
  * Memoized by class letter -- the same letter recurs across many rows/columns. */
@@ -153,18 +217,33 @@ function nullSpaceBasis(letter: string): number[][] {
   if (cached) return cached;
   const dim = 81;
   const relations = relationsForClass(letter);
-  const M = relations.map(r => { const row = new Array(dim).fill(0); row[r.idx] += 1; for (const t of r.terms) row[t.idx] -= t.coeff; return row; });
+  const M = relations.map((r) => {
+    const row = new Array(dim).fill(0);
+    row[r.idx] += 1;
+    for (const t of r.terms) row[t.idx] -= t.coeff;
+    return row;
+  });
   const pivotCols: number[] = [];
   let pr = 0;
   for (let c = 0; c < dim && pr < M.length; c++) {
-    let piv = -1, best = 1e-7;
-    for (let r = pr; r < M.length; r++) if (Math.abs(M[r][c]) > best) { best = Math.abs(M[r][c]); piv = r; }
+    let piv = -1,
+      best = 1e-7;
+    for (let r = pr; r < M.length; r++)
+      if (Math.abs(M[r][c]) > best) {
+        best = Math.abs(M[r][c]);
+        piv = r;
+      }
     if (piv === -1) continue;
     [M[pr], M[piv]] = [M[piv], M[pr]];
     const pv = M[pr][c];
     for (let j = 0; j < dim; j++) M[pr][j] /= pv;
-    for (let r = 0; r < M.length; r++) if (r !== pr && Math.abs(M[r][c]) > 1e-12) { const fac = M[r][c]; for (let j = 0; j < dim; j++) M[r][j] -= fac * M[pr][j]; }
-    pivotCols.push(c); pr++;
+    for (let r = 0; r < M.length; r++)
+      if (r !== pr && Math.abs(M[r][c]) > 1e-12) {
+        const fac = M[r][c];
+        for (let j = 0; j < dim; j++) M[r][j] -= fac * M[pr][j];
+      }
+    pivotCols.push(c);
+    pr++;
   }
   const pivotSet = new Set(pivotCols);
   const basis: number[][] = [];
@@ -182,11 +261,16 @@ function nullSpaceBasis(letter: string): number[][] {
 /** The expected span for a (letter, rank), as explicit basis vectors (empty = the tensor vanishes). */
 function expectedVectors(letter: string, rank: TensorRank): number[][] {
   switch (rank) {
-    case 0: return famToVec(expected4b(letter), 1);
-    case 1: return famToVec(expected4c(letter), 3);
-    case 2: return famToVec(expected4d(letter), 9);
-    case 4: return nullSpaceBasis(letter);
-    default: throw new Error(`unexpected rank ${rank} in Table-7 even/odd guard`);
+    case 0:
+      return famToVec(expected4b(letter), 1);
+    case 1:
+      return famToVec(expected4c(letter), 3);
+    case 2:
+      return famToVec(expected4d(letter), 9);
+    case 4:
+      return nullSpaceBasis(letter);
+    default:
+      throw new Error(`unexpected rank ${rank} in Table-7 even/odd guard`);
   }
 }
 
@@ -209,9 +293,12 @@ describe('table7Data.ts drift guard (re-parse == generated module)', () => {
     for (const row of ROWS) {
       fresh[appKey(row.M)] = {
         system: row.system,
-        m: row.M, mBracketed: row.Mbr,
-        a: row.A, aBracketed: row.Abr,
-        b: row.B, bBracketed: row.Bbr,
+        m: row.M,
+        mBracketed: row.Mbr,
+        a: row.A,
+        aBracketed: row.Abr,
+        b: row.B,
+        bBracketed: row.Bbr,
       };
     }
     expect(Object.keys(TABLE7_BW_ROWS)).toHaveLength(58);
@@ -234,7 +321,8 @@ describe('Table 7 cross-formula consistency (printed letters == 4a(A/B) via TABL
         const famKey = familyKeyOf(src.sym);
         const expected = TABLE_4A_CLASS_LETTERS[famKey]?.[col.fourA] ?? null;
         const printed = row.letters[key];
-        if (expected !== printed) deviations.push(`${row.M} ${key}: cross-formula ${expected ?? '-'} != printed ${printed ?? '-'}`);
+        if (expected !== printed)
+          deviations.push(`${row.M} ${key}: cross-formula ${expected ?? '-'} != printed ${printed ?? '-'}`);
       }
     }
     expect(deviations, deviations.join('\n')).toEqual([]);
@@ -256,7 +344,12 @@ describe('Table 7 ranks 0/1/2/4 -- computeTensorForm class-indexed guard (58 BW 
         const R = forced ?? (src.br ? SRC_TRANSFORM[src.sym] : null);
 
         for (const rank of col.ranks) {
-          const form = computeTensorForm(key, 1, { rank, parity: col.parity, timeParity: col.time, intrinsic: 'none' })!;
+          const form = computeTensorForm(key, 1, {
+            rank,
+            parity: col.parity,
+            timeParity: col.time,
+            intrinsic: 'none',
+          })!;
           const ctx = `${row.M} ${colKey} rank ${rank} (letter ${letter ?? '-'}${src.br ? `, bracketed src ${src.sym}` : ''}${forced ? ', forced transform' : ''})`;
 
           if (letter === null) {
@@ -265,7 +358,7 @@ describe('Table 7 ranks 0/1/2/4 -- computeTensorForm class-indexed guard (58 BW 
           }
 
           let expected = expectedVectors(letter, rank);
-          if (R && expected.length) expected = expected.map(v => transformTensor(R, v, rank));
+          if (R && expected.length) expected = expected.map((v) => transformTensor(R, v, rank));
 
           const dim = 3 ** rank;
           if (expected.length === 0) {
@@ -295,9 +388,10 @@ describe('Table 7 ranks 0/1/2/4 -- computeTensorForm class-indexed guard (58 BW 
 describe('Table 7 rank-4 null-space basis dimension == tableDim', () => {
   it('nullSpaceBasis(letter).length == tableDim(relations) for every even-rank BW letter', () => {
     const letters = new Set<string>();
-    for (const row of ROWS) for (const key of COL_KEYS) {
-      if (COLUMNS[key].ranks.includes(4) && row.letters[key]) letters.add(row.letters[key]!);
-    }
+    for (const row of ROWS)
+      for (const key of COL_KEYS) {
+        if (COLUMNS[key].ranks.includes(4) && row.letters[key]) letters.add(row.letters[key]!);
+      }
     for (const letter of letters) {
       expect(nullSpaceBasis(letter).length, `class ${letter}`).toBe(tableDim(relationsForClass(letter), 81));
     }

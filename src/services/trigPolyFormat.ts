@@ -18,18 +18,24 @@ const ANGLE_NAMES: Record<string, string> = {
 };
 
 interface DecodedMonomial {
-  cosPhiX: number; sinPhiX: number;
-  cosPhiY: number; sinPhiY: number;
-  cosPsi: number; sinPsi: number;
+  cosPhiX: number;
+  sinPhiX: number;
+  cosPhiY: number;
+  sinPhiY: number;
+  cosPsi: number;
+  sinPsi: number;
   coeff: number;
 }
 
 function decodeMonomial(key: string, coeff: number): DecodedMonomial {
   const exps = key.split(',').map(Number);
   return {
-    cosPhiX: exps[0], sinPhiX: exps[1],
-    cosPhiY: exps[2], sinPhiY: exps[3],
-    cosPsi: exps[4], sinPsi: exps[5],
+    cosPhiX: exps[0],
+    sinPhiX: exps[1],
+    cosPhiY: exps[2],
+    sinPhiY: exps[3],
+    cosPsi: exps[4],
+    sinPsi: exps[5],
     coeff,
   };
 }
@@ -63,9 +69,8 @@ function formatMonomialTrigPart(m: DecodedMonomial): string {
 
 function sortKey(m: DecodedMonomial): string {
   const deg = totalDegree(m);
-  const anglePriority = m.cosPhiX + m.sinPhiX > 0 ? 0
-    : m.cosPhiY + m.sinPhiY > 0 ? 1 : 2;
-  const cosFirst = (m.cosPhiX > 0 || m.cosPhiY > 0 || m.cosPsi > 0) ? 0 : 1;
+  const anglePriority = m.cosPhiX + m.sinPhiX > 0 ? 0 : m.cosPhiY + m.sinPhiY > 0 ? 1 : 2;
+  const cosFirst = m.cosPhiX > 0 || m.cosPhiY > 0 || m.cosPsi > 0 ? 0 : 1;
   return `${deg.toString().padStart(2, '0')}_${anglePriority}_${cosFirst}_${m.cosPhiX}_${m.sinPhiX}_${m.cosPhiY}_${m.sinPhiY}_${m.cosPsi}_${m.sinPsi}`;
 }
 
@@ -121,8 +126,12 @@ export function formatTrigPoly(p: TrigPoly): string {
 }
 
 const FIELD_LABELS: Record<string, string> = {
-  '00': 'E_X^2', '11': 'E_Y^2', '22': 'E_Z^2',
-  '01': 'E_X E_Y', '02': 'E_X E_Z', '12': 'E_Y E_Z',
+  '00': 'E_X^2',
+  '11': 'E_Y^2',
+  '22': 'E_Z^2',
+  '01': 'E_X E_Y',
+  '02': 'E_X E_Z',
+  '12': 'E_Y E_Z',
 };
 
 export function formatSymbolicSourceTerm(poly: SymPoly): string {
@@ -162,12 +171,14 @@ export function formatSymbolicSourceTerm(poly: SymPoly): string {
       const sign = fp.isNeg ? '-' : '';
       finalParts.push(`${sign}${chi}${fp.formatted}`);
     } else {
-      const innerExpr = fieldParts.map((fp, idx) => {
-        if (idx === 0) {
-          return `${fp.isNeg ? '-' : ''}${fp.formatted}`;
-        }
-        return `${fp.isNeg ? '-' : '+'} ${fp.formatted}`;
-      }).join(' ');
+      const innerExpr = fieldParts
+        .map((fp, idx) => {
+          if (idx === 0) {
+            return `${fp.isNeg ? '-' : ''}${fp.formatted}`;
+          }
+          return `${fp.isNeg ? '-' : '+'} ${fp.formatted}`;
+        })
+        .join(' ');
       finalParts.push(`${chi}(${innerExpr})`);
     }
   }

@@ -33,99 +33,99 @@ import { BOOK_ERROR_WARNING } from '../services/conventionMapping';
  */
 export const SHUBNIKOV: Record<string, string> = {
   // Triclinic
-  "1": "1",
-  "-1": "-2",
+  '1': '1',
+  '-1': '-2',
   "-1'": "-2'",
   // Monoclinic
-  "2": "2",
+  '2': '2',
   "2'": "2'",
-  "m": "m",
+  m: 'm',
   "m'": "m'",
-  "2/m": "2:m",
+  '2/m': '2:m',
   "2'/m'": "2':m'",
   "2/m'": "2:m'",
   "2'/m": "2':m",
   // Orthorhombic
-  "222": "2:2",
+  '222': '2:2',
   "2'2'2": "2:2'",
-  "mm2": "2.m",
+  mm2: '2.m',
   "m'm'2": "2.m'",
   "2'm'm": "2'.m",
-  "mmm": "m.2:m",
+  mmm: 'm.2:m',
   "m'm'm": "m'.2:m",
   "m'm'm'": "m'.2:m'",
   "mmm'": "m.2:m'",
   // Tetragonal
-  "4": "4",
+  '4': '4',
   "4'": "4'",
-  "-4": "-4",
+  '-4': '-4',
   "-4'": "-4'",
-  "4/m": "4:m",
+  '4/m': '4:m',
   "4'/m": "4':m",
   "4/m'": "4:m'",
   "4'/m'": "4':m'",
-  "422": "4:2",
+  '422': '4:2',
   "4'22'": "4':2",
   "42'2'": "4:2'",
-  "4mm": "4.m",
+  '4mm': '4.m',
   "4'mm'": "4'.m",
   "4m'm'": "4.m'",
-  "-42m": "-4.m",
+  '-42m': '-4.m',
   "-4'2m'": "-4'.m'",
   "-4'm2'": "-4'.m",
   "-42'm'": "-4.m'",
-  "4/mmm": "m.4:m",
+  '4/mmm': 'm.4:m',
   "4'/mmm'": "m.4':m",
   "4/mm'm'": "m.4:m'",
   "4/m'm'm'": "m'.4:m'",
   "4/m'mm": "m'.4:m",
   "4'/m'm'm": "m'.4':m'",
   // Trigonal
-  "3": "3",
-  "-3": "-6",
+  '3': '3',
+  '-3': '-6',
   "-3'": "-6'",
-  "32": "3:2",
+  '32': '3:2',
   "32'": "3:2'",
-  "3m": "3.m",
+  '3m': '3.m',
   "3m'": "3.m'",
-  "-3m": "-6.m",
+  '-3m': '-6.m',
   "-3m'": "-6.m'",
   "-3'm'": "-6'.m'",
   "-3'm": "-6'.m",
   // Hexagonal
-  "6": "6",
+  '6': '6',
   "6'": "6'",
-  "-6": "3:m",
+  '-6': '3:m',
   "-6'": "3:m'",
-  "6/m": "6:m",
+  '6/m': '6:m',
   "6'/m'": "6':m'",
   "6/m'": "6:m'",
   "6'/m": "6':m",
-  "622": "6:2",
+  '622': '6:2',
   "6'22'": "6':2",
   "62'2'": "6:2'",
-  "6mm": "6.m",
+  '6mm': '6.m',
   "6'mm'": "6'.m",
   "6m'm'": "6.m'",
-  "-6m2": "m.3:m",
+  '-6m2': 'm.3:m',
   "-6'2m'": "m'.3:m'",
   "-6'm2'": "m.3:m'",
   "-6m'2'": "m'.3:m",
-  "6/mmm": "m.6:m",
+  '6/mmm': 'm.6:m',
   "6'/m'mm'": "m'.6':m'",
   "6/mm'm'": "m'.6:m",
   "6/m'm'm'": "m'.6:m'",
   "6/m'mm": "m.6:m'",
   "6'/mm'm": "m.6':m",
   // Cubic
-  "23": "3/2",
-  "m-3": "-6/2",
+  '23': '3/2',
+  'm-3': '-6/2',
   "m'-3'": "-6'/2",
-  "432": "3/4",
+  '432': '3/4',
   "4'32'": "3/4'",
-  "-43m": "3/-4",
+  '-43m': '3/-4',
   "-4'3m'": "3/-4'",
-  "m-3m": "-6/4",
+  'm-3m': '-6/4',
   "m-3m'": "-6/4'",
   "m'-3'm'": "-6'/4'",
   "m'-3'm": "-6'/4",
@@ -174,99 +174,99 @@ export const SHUBNIKOV: Record<string, string> = {
  */
 export const FULL_HM: Record<string, string> = {
   // Triclinic
-  "1": "1",
-  "-1": "-1",
+  '1': '1',
+  '-1': '-1',
   "-1'": "-1'",
   // Monoclinic
-  "2": "112",
+  '2': '112',
   "2'": "112'",
-  "m": "11m",
+  m: '11m',
   "m'": "11m'",
-  "2/m": "11 2/m",
+  '2/m': '11 2/m',
   "2'/m'": "11 2'/m'",
   "2/m'": "11 2/m'",
   "2'/m": "11 2'/m",
   // Orthorhombic
-  "222": "222",
+  '222': '222',
   "2'2'2": "2'2'2",
-  "mm2": "mm2",
+  mm2: 'mm2',
   "m'm'2": "m'm'2",
   "2'm'm": "2'm'm",
-  "mmm": "2/m 2/m 2/m",
+  mmm: '2/m 2/m 2/m',
   "m'm'm": "2'/m' 2'/m' 2/m",
   "m'm'm'": "2/m' 2/m' 2/m'",
   "mmm'": "2'/m 2'/m 2/m'",
   // Tetragonal
-  "4": "4",
+  '4': '4',
   "4'": "4'",
-  "-4": "-4",
+  '-4': '-4',
   "-4'": "-4'",
-  "4/m": "4/m",
+  '4/m': '4/m',
   "4'/m": "4'/m",
   "4/m'": "4/m'",
   "4'/m'": "4'/m'",
-  "422": "422",
+  '422': '422',
   "4'22'": "4'22'",
   "42'2'": "42'2'",
-  "4mm": "4mm",
+  '4mm': '4mm',
   "4'mm'": "4'mm'",
   "4m'm'": "4m'm'",
-  "-42m": "-42m",
+  '-42m': '-42m',
   "-4'2m'": "-4'2m'",
   "-4'm2'": "-4'm2'",
   "-42'm'": "-42'm'",
-  "4/mmm": "4/m 2/m 2/m",
+  '4/mmm': '4/m 2/m 2/m',
   "4'/mmm'": "4'/m 2/m 2'/m'",
   "4/mm'm'": "4/m 2'/m' 2'/m'",
   "4/m'm'm'": "4/m' 2/m' 2/m'",
   "4/m'mm": "4/m' 2'/m 2'/m",
   "4'/m'm'm": "4'/m' 2/m' 2'/m",
   // Trigonal
-  "3": "3",
-  "-3": "-3",
+  '3': '3',
+  '-3': '-3',
   "-3'": "-3'",
-  "32": "321",
+  '32': '321',
   "32'": "32'1",
-  "3m": "3m1",
+  '3m': '3m1',
   "3m'": "3m'1",
-  "-3m": "-3 2/m 1",
+  '-3m': '-3 2/m 1',
   "-3m'": "-3 2'/m' 1",
   "-3'm'": "-3' 2/m' 1",
   "-3'm": "-3' 2'/m 1",
   // Hexagonal
-  "6": "6",
+  '6': '6',
   "6'": "6'",
-  "-6": "-6",
+  '-6': '-6',
   "-6'": "-6'",
-  "6/m": "6/m",
+  '6/m': '6/m',
   "6'/m'": "6'/m'",
   "6/m'": "6/m'",
   "6'/m": "6'/m",
-  "622": "622",
+  '622': '622',
   "6'22'": "6'22'",
   "62'2'": "62'2'",
-  "6mm": "6mm",
+  '6mm': '6mm',
   "6'mm'": "6'mm'",
   "6m'm'": "6m'm'",
-  "-6m2": "-6m2",
+  '-6m2': '-6m2',
   "-6'2m'": "-6'2m'",
   "-6'm2'": "-6'm2'",
   "-6m'2'": "-6m'2'",
-  "6/mmm": "6/m 2/m 2/m",
+  '6/mmm': '6/m 2/m 2/m',
   "6'/m'mm'": "6'/m' 2/m 2'/m'",
   "6/mm'm'": "6/m 2'/m' 2'/m'",
   "6/m'm'm'": "6/m' 2/m' 2/m'",
   "6/m'mm": "6/m' 2'/m 2'/m",
   "6'/mm'm": "6'/m 2/m' 2'/m",
   // Cubic
-  "23": "23",
-  "m-3": "2/m -3",
+  '23': '23',
+  'm-3': '2/m -3',
   "m'-3'": "2/m' -3'",
-  "432": "432",
+  '432': '432',
   "4'32'": "4'32'",
-  "-43m": "-43m",
+  '-43m': '-43m',
   "-4'3m'": "-4'3m'",
-  "m-3m": "4/m -3 2/m",
+  'm-3m': '4/m -3 2/m',
   "m-3m'": "4'/m -3 2'/m'",
   "m'-3'm'": "4/m' -3' 2/m'",
   "m'-3'm": "4'/m' -3' 2'/m",
@@ -314,38 +314,38 @@ export const FULL_HM: Record<string, string> = {
  * `m-3`/`m-3m` per the app notation convention (values are unchanged).
  */
 export const REFERENCE_AXES: Record<string, string> = {
-  "1": "any",
-  "-1": "any",
-  "2": "2//z",
-  "m": "-2//z",
-  "2/m": "2//z",
-  "222": "2//x, 2//y",
-  "mm2": "-2//x, -2//y",
-  "mmm": "2//x, 2//y",
-  "4": "4//z",
-  "-4": "-4//z",
-  "4/m": "4//z",
-  "422": "4//z, 2//y",
-  "4mm": "4//z, -2//y",
-  "-42m": "-4//z, 2//y",
-  "4/mmm": "4//z, 2//y",
-  "3": "3//z",
-  "-3": "-3//z",
-  "32": "3//z, 2//y",
-  "3m": "3//z, -2//y",
-  "-3m": "-3//z, 2//y",
-  "6": "6//z",
-  "-6": "-3//z",
-  "6/m": "6//z",
-  "622": "6//z, 2//y",
-  "6mm": "6//z, -2//y",
-  "-6m2": "3//z, -2//y",
-  "6/mmm": "6//z, 2//y",
-  "23": "2//x, 2//y",
-  "m-3": "2//x, 2//y",
-  "432": "4//x, 4//y",
-  "-43m": "-4//x, -4//y",
-  "m-3m": "4//x, 4//y",
+  '1': 'any',
+  '-1': 'any',
+  '2': '2//z',
+  m: '-2//z',
+  '2/m': '2//z',
+  '222': '2//x, 2//y',
+  mm2: '-2//x, -2//y',
+  mmm: '2//x, 2//y',
+  '4': '4//z',
+  '-4': '-4//z',
+  '4/m': '4//z',
+  '422': '4//z, 2//y',
+  '4mm': '4//z, -2//y',
+  '-42m': '-4//z, 2//y',
+  '4/mmm': '4//z, 2//y',
+  '3': '3//z',
+  '-3': '-3//z',
+  '32': '3//z, 2//y',
+  '3m': '3//z, -2//y',
+  '-3m': '-3//z, 2//y',
+  '6': '6//z',
+  '-6': '-3//z',
+  '6/m': '6//z',
+  '622': '6//z, 2//y',
+  '6mm': '6//z, -2//y',
+  '-6m2': '3//z, -2//y',
+  '6/mmm': '6//z, 2//y',
+  '23': '2//x, 2//y',
+  'm-3': '2//x, 2//y',
+  '432': '4//x, 4//y',
+  '-43m': '-4//x, -4//y',
+  'm-3m': '4//x, 4//y',
 };
 
 /** The 32 classical symmetry-class keys (also the `REFERENCE_AXES` keys). */
@@ -359,9 +359,9 @@ const CLASSICAL_CLASSES = new Set(Object.keys(REFERENCE_AXES));
  * "bracketed: rotated setting" in `birss-tables/table-nomenclature.md`.
  */
 const BRACKETED_FAMILY: Record<string, string> = {
-  "2mm": "mm2",
-  "-4m2": "-42m",
-  "-62m": "-6m2",
+  '2mm': 'mm2',
+  '-4m2': '-42m',
+  '-62m': '-6m2',
 };
 
 /**
@@ -376,7 +376,7 @@ export function getFamilyClass(name: string): string {
     const parent = name.slice(0, -2);
     if (CLASSICAL_CLASSES.has(parent)) return parent; // Type II grey — parent + 1'
   }
-  const stripped = name.replace(/'/g, ""); // Type III — strip time-reversal primes
+  const stripped = name.replace(/'/g, ''); // Type III — strip time-reversal primes
   return BRACKETED_FAMILY[stripped] ?? stripped;
 }
 
@@ -398,38 +398,38 @@ export interface ClassLetters {
  * guard in `groupNotation.test.ts`.
  */
 export const TABLE_4A_CLASS_LETTERS: Record<string, ClassLetters> = {
-  "1":     { polarEven: 'A', axialEven: 'A',  polarOdd: 'A',  axialOdd: 'A' },
-  "-1":    { polarEven: 'A', axialEven: null, polarOdd: null, axialOdd: 'A' },
-  "2":     { polarEven: 'B', axialEven: 'B',  polarOdd: 'B',  axialOdd: 'B' },
-  "m":     { polarEven: 'B', axialEven: 'C',  polarOdd: 'C',  axialOdd: 'B' },
-  "2/m":   { polarEven: 'B', axialEven: null, polarOdd: null, axialOdd: 'B' },
-  "222":   { polarEven: 'D', axialEven: 'D',  polarOdd: 'D',  axialOdd: 'D' },
-  "mm2":   { polarEven: 'D', axialEven: 'E',  polarOdd: 'E',  axialOdd: 'D' },
-  "mmm":   { polarEven: 'D', axialEven: null, polarOdd: null, axialOdd: 'D' },
-  "4":     { polarEven: 'F', axialEven: 'F',  polarOdd: 'F',  axialOdd: 'F' },
-  "-4":    { polarEven: 'F', axialEven: 'G',  polarOdd: 'G',  axialOdd: 'F' },
-  "4/m":   { polarEven: 'F', axialEven: null, polarOdd: null, axialOdd: 'F' },
-  "422":   { polarEven: 'H', axialEven: 'H',  polarOdd: 'H',  axialOdd: 'H' },
-  "4mm":   { polarEven: 'H', axialEven: 'I',  polarOdd: 'I',  axialOdd: 'H' },
-  "-42m":  { polarEven: 'H', axialEven: 'J',  polarOdd: 'J',  axialOdd: 'H' },
-  "4/mmm": { polarEven: 'H', axialEven: null, polarOdd: null, axialOdd: 'H' },
-  "3":     { polarEven: 'K', axialEven: 'K',  polarOdd: 'K',  axialOdd: 'K' },
-  "-3":    { polarEven: 'K', axialEven: null, polarOdd: null, axialOdd: 'K' },
-  "32":    { polarEven: 'L', axialEven: 'L',  polarOdd: 'L',  axialOdd: 'L' },
-  "3m":    { polarEven: 'L', axialEven: 'M',  polarOdd: 'M',  axialOdd: 'L' },
-  "-3m":   { polarEven: 'L', axialEven: null, polarOdd: null, axialOdd: 'L' },
-  "6":     { polarEven: 'N', axialEven: 'N',  polarOdd: 'N',  axialOdd: 'N' },
-  "-6":    { polarEven: 'N', axialEven: 'O',  polarOdd: 'O',  axialOdd: 'N' },
-  "6/m":   { polarEven: 'N', axialEven: null, polarOdd: null, axialOdd: 'N' },
-  "622":   { polarEven: 'P', axialEven: 'P',  polarOdd: 'P',  axialOdd: 'P' },
-  "6mm":   { polarEven: 'P', axialEven: 'Q',  polarOdd: 'Q',  axialOdd: 'P' },
-  "-6m2":  { polarEven: 'P', axialEven: 'R',  polarOdd: 'R',  axialOdd: 'P' },
-  "6/mmm": { polarEven: 'P', axialEven: null, polarOdd: null, axialOdd: 'P' },
-  "23":    { polarEven: 'S', axialEven: 'S',  polarOdd: 'S',  axialOdd: 'S' },
-  "m-3":   { polarEven: 'S', axialEven: null, polarOdd: null, axialOdd: 'S' },
-  "432":   { polarEven: 'T', axialEven: 'T',  polarOdd: 'T',  axialOdd: 'T' },
-  "-43m":  { polarEven: 'T', axialEven: 'U',  polarOdd: 'U',  axialOdd: 'T' },
-  "m-3m":  { polarEven: 'T', axialEven: null, polarOdd: null, axialOdd: 'T' },
+  '1': { polarEven: 'A', axialEven: 'A', polarOdd: 'A', axialOdd: 'A' },
+  '-1': { polarEven: 'A', axialEven: null, polarOdd: null, axialOdd: 'A' },
+  '2': { polarEven: 'B', axialEven: 'B', polarOdd: 'B', axialOdd: 'B' },
+  m: { polarEven: 'B', axialEven: 'C', polarOdd: 'C', axialOdd: 'B' },
+  '2/m': { polarEven: 'B', axialEven: null, polarOdd: null, axialOdd: 'B' },
+  '222': { polarEven: 'D', axialEven: 'D', polarOdd: 'D', axialOdd: 'D' },
+  mm2: { polarEven: 'D', axialEven: 'E', polarOdd: 'E', axialOdd: 'D' },
+  mmm: { polarEven: 'D', axialEven: null, polarOdd: null, axialOdd: 'D' },
+  '4': { polarEven: 'F', axialEven: 'F', polarOdd: 'F', axialOdd: 'F' },
+  '-4': { polarEven: 'F', axialEven: 'G', polarOdd: 'G', axialOdd: 'F' },
+  '4/m': { polarEven: 'F', axialEven: null, polarOdd: null, axialOdd: 'F' },
+  '422': { polarEven: 'H', axialEven: 'H', polarOdd: 'H', axialOdd: 'H' },
+  '4mm': { polarEven: 'H', axialEven: 'I', polarOdd: 'I', axialOdd: 'H' },
+  '-42m': { polarEven: 'H', axialEven: 'J', polarOdd: 'J', axialOdd: 'H' },
+  '4/mmm': { polarEven: 'H', axialEven: null, polarOdd: null, axialOdd: 'H' },
+  '3': { polarEven: 'K', axialEven: 'K', polarOdd: 'K', axialOdd: 'K' },
+  '-3': { polarEven: 'K', axialEven: null, polarOdd: null, axialOdd: 'K' },
+  '32': { polarEven: 'L', axialEven: 'L', polarOdd: 'L', axialOdd: 'L' },
+  '3m': { polarEven: 'L', axialEven: 'M', polarOdd: 'M', axialOdd: 'L' },
+  '-3m': { polarEven: 'L', axialEven: null, polarOdd: null, axialOdd: 'L' },
+  '6': { polarEven: 'N', axialEven: 'N', polarOdd: 'N', axialOdd: 'N' },
+  '-6': { polarEven: 'N', axialEven: 'O', polarOdd: 'O', axialOdd: 'N' },
+  '6/m': { polarEven: 'N', axialEven: null, polarOdd: null, axialOdd: 'N' },
+  '622': { polarEven: 'P', axialEven: 'P', polarOdd: 'P', axialOdd: 'P' },
+  '6mm': { polarEven: 'P', axialEven: 'Q', polarOdd: 'Q', axialOdd: 'P' },
+  '-6m2': { polarEven: 'P', axialEven: 'R', polarOdd: 'R', axialOdd: 'P' },
+  '6/mmm': { polarEven: 'P', axialEven: null, polarOdd: null, axialOdd: 'P' },
+  '23': { polarEven: 'S', axialEven: 'S', polarOdd: 'S', axialOdd: 'S' },
+  'm-3': { polarEven: 'S', axialEven: null, polarOdd: null, axialOdd: 'S' },
+  '432': { polarEven: 'T', axialEven: 'T', polarOdd: 'T', axialOdd: 'T' },
+  '-43m': { polarEven: 'T', axialEven: 'U', polarOdd: 'U', axialOdd: 'T' },
+  'm-3m': { polarEven: 'T', axialEven: null, polarOdd: null, axialOdd: 'T' },
 };
 
 /**
@@ -464,14 +464,29 @@ export function classicalChainApplies(groupType: 'I' | 'II' | 'III', timeParity:
 // --- Table-7 lookup chain for magnetic c-tensors (Type III) -------------------------------------
 // Alternate-setting source spellings -> Table-4a family key (strip brackets + primes first). Mirrors
 // the Table-7 guard's familyKeyOf; `-6m2`/`-42m`/`mm2` etc. are already 4a keys.
-const T7_ALT_TO_4A: Record<string, string> = { m2m: 'mm2', '2mm': 'mm2', '-4m2': '-42m', '-62m': '-6m2', m3: 'm-3', m3m: 'm-3m' };
-const t7FamilyKey = (sym: string) => { const s = sym.replace(/[()']/g, ''); return T7_ALT_TO_4A[s] ?? s; };
+const T7_ALT_TO_4A: Record<string, string> = {
+  m2m: 'mm2',
+  '2mm': 'mm2',
+  '-4m2': '-42m',
+  '-62m': '-6m2',
+  m3: 'm-3',
+  m3m: 'm-3m',
+};
+const t7FamilyKey = (sym: string) => {
+  const s = sym.replace(/[()']/g, '');
+  return T7_ALT_TO_4A[s] ?? s;
+};
 
 // Human transform label for a bracketed (rotated-setting) source group, keyed by its printed symbol.
 const T7_TRANSFORM_LABEL: Record<string, string> = {
-  m2m: 'z↔y permutation', '2mm': 'z↔x permutation', "2'm'm": 'z↔x permutation',
-  '-4m2': 'Rz(45°)', '-42m': 'Rz(45°)', "-4'm2'": 'Rz(45°)',
-  '-62m': 'Rz(30°)', "-6'2m'": 'Rz(30°)',
+  m2m: 'z↔y permutation',
+  '2mm': 'z↔x permutation',
+  "2'm'm": 'z↔x permutation',
+  '-4m2': 'Rz(45°)',
+  '-42m': 'Rz(45°)',
+  "-4'm2'": 'Rz(45°)',
+  '-62m': 'Rz(30°)',
+  "-6'2m'": 'Rz(30°)',
 };
 
 /**
@@ -517,10 +532,27 @@ export function getTable7Chain(groupName: string, parity: 'polar' | 'axial', ran
   let fourAKey: 'axialEven' | 'polarOdd';
   let fourAColumn: string;
   let parityCrossover: boolean;
-  if (parity === 'polar' && even) { source = 'B'; fourAKey = 'axialEven'; fourAColumn = 'Axial-even'; parityCrossover = true; }
-  else if (parity === 'axial' && even) { source = 'A'; fourAKey = 'axialEven'; fourAColumn = 'Axial-even'; parityCrossover = false; }
-  else if (parity === 'polar' && !even) { source = 'A'; fourAKey = 'polarOdd'; fourAColumn = 'Polar-odd'; parityCrossover = false; }
-  else { source = 'B'; fourAKey = 'polarOdd'; fourAColumn = 'Polar-odd'; parityCrossover = true; } // axial odd
+  if (parity === 'polar' && even) {
+    source = 'B';
+    fourAKey = 'axialEven';
+    fourAColumn = 'Axial-even';
+    parityCrossover = true;
+  } else if (parity === 'axial' && even) {
+    source = 'A';
+    fourAKey = 'axialEven';
+    fourAColumn = 'Axial-even';
+    parityCrossover = false;
+  } else if (parity === 'polar' && !even) {
+    source = 'A';
+    fourAKey = 'polarOdd';
+    fourAColumn = 'Polar-odd';
+    parityCrossover = false;
+  } else {
+    source = 'B';
+    fourAKey = 'polarOdd';
+    fourAColumn = 'Polar-odd';
+    parityCrossover = true;
+  } // axial odd
 
   const sourceSymbol = source === 'A' ? row.a : row.b;
   let sourceBracketed = source === 'A' ? row.aBracketed : row.bBracketed;
@@ -541,5 +573,16 @@ export function getTable7Chain(groupName: string, parity: 'polar' | 'axial', ran
   const transformLabel = forcedLabel ?? (sourceBracketed ? (T7_TRANSFORM_LABEL[sourceSymbol] ?? null) : null);
   const column = `c-${parity === 'polar' ? 'Polar' : 'Axial'}-${even ? 'even' : 'odd'}`;
 
-  return { column, source, sourceSymbol, sourceBracketed, sourceClass, transformLabel, fourAColumn, parityCrossover, letter, bookErrorNote };
+  return {
+    column,
+    source,
+    sourceSymbol,
+    sourceBracketed,
+    sourceClass,
+    transformLabel,
+    fourAColumn,
+    parityCrossover,
+    letter,
+    bookErrorNote,
+  };
 }

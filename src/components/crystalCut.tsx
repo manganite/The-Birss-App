@@ -85,7 +85,11 @@ export function getPresetsForSystem(crystalSystem: string, setting: number = 1):
   return PRESETS_BY_SYSTEM[crystalSystem] ?? ORTHO_PRESETS;
 }
 
-export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: string; Z: string; inverse: { X: string; Y: string; Z: string } } }) {
+export function LabFrameOrientation({
+  labFrame,
+}: {
+  labFrame: { X: string; Y: string; Z: string; inverse: { X: string; Y: string; Z: string } };
+}) {
   const [showInverse, setShowInverse] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const fwd = labFrame;
@@ -94,18 +98,24 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
   return (
     <div className="flex-1 bg-ink/5 p-4 border border-ink/10 rounded-sm w-full">
       <div className="flex items-center justify-between mb-3">
-        <SectionHeader>
-          {showInverse ? 'Lab axes in the crystal frame' : 'Crystal axes in the lab frame'}
-        </SectionHeader>
+        <SectionHeader>{showInverse ? 'Lab axes in the crystal frame' : 'Crystal axes in the lab frame'}</SectionHeader>
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => setShowInverse(v => !v)}
+          <button
+            type="button"
+            onClick={() => setShowInverse((v) => !v)}
             className="text-xs opacity-70 hover:opacity-100 transition-opacity px-1.5 py-0.5 border border-ink/10 rounded-sm"
             title={showInverse ? 'Show crystal → lab' : 'Show lab → crystal'}
-          >{showInverse ? '↔ crystal' : '↔ inverse'}</button>
-          <button type="button" onClick={() => setShowLegend(v => !v)}
+          >
+            {showInverse ? '↔ crystal' : '↔ inverse'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowLegend((v) => !v)}
             className="opacity-40 hover:opacity-80 transition-opacity p-0.5"
             title="Symbol legend"
-          ><Info className="w-3 h-3" /></button>
+          >
+            <Info className="w-3 h-3" />
+          </button>
         </div>
       </div>
       <div className="flex flex-col gap-3 text-sm font-mono">
@@ -125,8 +135,13 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
       </div>
       {showLegend && (
         <div className="mt-3 pt-3 border-t border-ink/10 text-xs text-ink/70 leading-relaxed space-y-1">
-          <p><strong>x, y, z</strong> (crys) — the crystal Cartesian axes; their orientation relative to the crystallographic axes is defined per crystal system (and setting) in the AXIS ORIENTATION box above.</p>
-          <p><strong>X, Y, Z</strong> (LAB) — lab axes: Z = beam direction (k), X/Y = polarization plane (0°/90°)</p>
+          <p>
+            <strong>x, y, z</strong> (crys) — the crystal Cartesian axes; their orientation relative to the
+            crystallographic axes is defined per crystal system (and setting) in the AXIS ORIENTATION box above.
+          </p>
+          <p>
+            <strong>X, Y, Z</strong> (LAB) — lab axes: Z = beam direction (k), X/Y = polarization plane (0°/90°)
+          </p>
           <p>At zero tilt, the selected crystal cut normal is aligned with Z (the beam).</p>
         </div>
       )}
@@ -137,7 +152,9 @@ export function LabFrameOrientation({ labFrame }: { labFrame: { X: string; Y: st
 interface KDirectionSelectorProps {
   crystalSystem: string;
   setting?: number;
-  thetaX: number; thetaY: number; psi0: number;
+  thetaX: number;
+  thetaY: number;
+  psi0: number;
   setThetaX: (v: number) => void;
   setThetaY: (v: number) => void;
   setPsi0: (v: number) => void;
@@ -146,7 +163,19 @@ interface KDirectionSelectorProps {
   onNavigate?: (view: string, tab?: string) => void;
 }
 
-export function KDirectionSelector({ crystalSystem, setting, thetaX, thetaY, psi0, setThetaX, setThetaY, setPsi0, labFrame, compact, onNavigate }: KDirectionSelectorProps) {
+export function KDirectionSelector({
+  crystalSystem,
+  setting,
+  thetaX,
+  thetaY,
+  psi0,
+  setThetaX,
+  setThetaY,
+  setPsi0,
+  labFrame,
+  compact,
+  onNavigate,
+}: KDirectionSelectorProps) {
   const presets = getPresetsForSystem(crystalSystem, setting);
   return (
     <div className="space-y-3">
@@ -167,7 +196,11 @@ export function KDirectionSelector({ crystalSystem, setting, thetaX, thetaY, psi
         {presets.map((ori) => (
           <button
             key={ori.label}
-            onClick={() => { setThetaX(ori.tx); setThetaY(ori.ty); setPsi0(ori.psi0); }}
+            onClick={() => {
+              setThetaX(ori.tx);
+              setThetaY(ori.ty);
+              setPsi0(ori.psi0);
+            }}
             className={`${compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-xs'} tracking-[0.1em] transition-all border border-ink ${
               thetaX === ori.tx && thetaY === ori.ty && psi0 === ori.psi0
                 ? 'bg-ink text-paper'

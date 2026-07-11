@@ -62,12 +62,21 @@ const toKey = (sym: string) => SYMBOL_TO_KEY[sym] ?? sym;
 // monoclinic direction is printed unique-axis-b and must be permuted to c-unique.
 const DIR_TO_AXES: Record<string, number[]> = {
   '[uvw]': [0, 1, 2], // class 1: every direction polar
-  '[001]': [2],       // z-axis groups (mm2, 4, 4mm, 3, 3m, 6, 6mm)
-  '[010]': [2],       // group 2, unique axis b -> 2-fold along z in the app frame
-  '[u0w]': [0, 1],    // group m, unique axis b (mirror plane) -> xy plane in the app frame
+  '[001]': [2], // z-axis groups (mm2, 4, 4mm, 3, 3m, 6, 6mm)
+  '[010]': [2], // group 2, unique axis b -> 2-fold along z in the app frame
+  '[u0w]': [0, 1], // group m, unique axis b (mirror plane) -> xy plane in the app frame
 };
 
-interface Row { symbol: string; key: string; known: boolean; r1: number; r3: number; a2: number; enantio: boolean; dir: string | null }
+interface Row {
+  symbol: string;
+  key: string;
+  known: boolean;
+  r1: number;
+  r3: number;
+  a2: number;
+  enantio: boolean;
+  dir: string | null;
+}
 
 function parseCount(cell: string): number {
   if (cell === '-') return 0;
@@ -80,7 +89,7 @@ function parseRows(): Row[] {
   const out: Row[] = [];
   for (const line of REF.split('\n')) {
     if (!line.startsWith('|')) continue;
-    const f = line.split('|').map(c => c.trim());
+    const f = line.split('|').map((c) => c.trim());
     // f: ['', System, Laue, Group, Rank-1, Rank-3, Enantiomorphism, Axial-rank-2, '']
     if (f.length < 8) continue;
     const group = f[3];
@@ -101,15 +110,19 @@ function parseRows(): Row[] {
 }
 
 const ROWS = parseRows();
-const APP = ROWS.filter(r => r.known);            // the 21 noncentrosymmetric classical groups
-const CENTRO = POINT_GROUPS.filter(g => g.type === 'I' && isCentrosymmetric(g.name)).map(g => g.name);
+const APP = ROWS.filter((r) => r.known); // the 21 noncentrosymmetric classical groups
+const CENTRO = POINT_GROUPS.filter((g) => g.type === 'I' && isCentrosymmetric(g.name)).map((g) => g.name);
 
 describe('ITC Table 3.2.2.1 -- structural parsing', () => {
   it('parses 23 rows: 21 app groups + icosahedral + spherical (the latter two skipped)', () => {
     expect(ROWS.length).toBe(23);
     expect(APP.length).toBe(21);
     // the two skipped rows are exactly the non-crystallographic ones
-    expect(ROWS.filter(r => !r.known).map(r => r.symbol).sort()).toEqual(['2-inf (inf inf)', '235 (532)']);
+    expect(
+      ROWS.filter((r) => !r.known)
+        .map((r) => r.symbol)
+        .sort(),
+    ).toEqual(['2-inf (inf inf)', '235 (532)']);
   });
   it('the 11 centrosymmetric classical (Laue) groups are exactly the Type-I centro keys', () => {
     expect(CENTRO.length).toBe(11);
@@ -135,7 +148,7 @@ describe('ITC Table 3.2.2.1 -- independent-component counts vs computeTensorForm
 });
 
 describe('ITC Table 3.2.2.1 -- rank-1 polar-axis directions (setting-mapped)', () => {
-  for (const row of APP.filter(r => r.r1 > 0)) {
+  for (const row of APP.filter((r) => r.r1 > 0)) {
     it(`${row.symbol}: free rank-1 component lies on the expected axes (${row.dir})`, () => {
       const expected = DIR_TO_AXES[row.dir!];
       expect(expected, `no axis mapping for printed direction ${row.dir}`).toBeDefined();
@@ -146,13 +159,13 @@ describe('ITC Table 3.2.2.1 -- rank-1 polar-axis directions (setting-mapped)', (
 
 describe('ITC Table 3.2.2.1 -- structural totals and property flags', () => {
   it('10 pyroelectric, 20 piezoelectric, 15 optically active classes', () => {
-    expect(APP.filter(r => r.r1 > 0).length, 'pyroelectric').toBe(10);
-    expect(APP.filter(r => r.r3 > 0).length, 'piezoelectric').toBe(20);
-    expect(APP.filter(r => r.a2 > 0).length, 'optically active').toBe(15);
+    expect(APP.filter((r) => r.r1 > 0).length, 'pyroelectric').toBe(10);
+    expect(APP.filter((r) => r.r3 > 0).length, 'piezoelectric').toBe(20);
+    expect(APP.filter((r) => r.a2 > 0).length, 'optically active').toBe(15);
   });
 
   it('monoclinic rank-1: 1 (group 2) + 2 (group m) = 3 (group 1)', () => {
-    const by = (s: string) => APP.find(r => r.symbol === s)!;
+    const by = (s: string) => APP.find((r) => r.symbol === s)!;
     expect(by('2').r1 + by('m').r1).toBe(by('1').r1);
     expect(by('2').r1).toBe(1);
     expect(by('m').r1).toBe(2);
@@ -161,7 +174,7 @@ describe('ITC Table 3.2.2.1 -- structural totals and property flags', () => {
 
   it('enantiomorphism column == isChiral over the 21 groups (11 marked +); centro groups all "-"', () => {
     for (const r of APP) expect(isChiral(r.key), `${r.symbol} enantiomorphism`).toBe(r.enantio);
-    expect(APP.filter(r => r.enantio).length).toBe(11);
+    expect(APP.filter((r) => r.enantio).length).toBe(11);
     for (const g of CENTRO) expect(isChiral(g), `${g} (centro) must be non-chiral`).toBe(false);
   });
 });

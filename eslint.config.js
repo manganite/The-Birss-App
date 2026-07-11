@@ -23,13 +23,7 @@ const toWarn = (config) =>
 export default tseslint.config(
   {
     // Vendored (byte-identity discipline), generated, and build output are never linted.
-    ignores: [
-      'dist/',
-      'coverage/',
-      'birss-tables/',
-      'docs/references/',
-      'src/data/table7Data.ts',
-    ],
+    ignores: ['dist/', 'coverage/', 'birss-tables/', 'docs/references/', 'src/data/table7Data.ts'],
   },
   {
     files: ['src/**/*.{ts,tsx}'],

@@ -19,7 +19,14 @@ function normalInLab(h: number, k: number, l: number) {
 
 describe('azimuth-zero convention (ROADMAP §Azimuth-zero)', () => {
   it('aligns the surface normal with the beam axis for every cut', () => {
-    for (const [h, k, l] of [[1, 0, 0], [0, 0, 1], [1, 1, 0], [1, 1, 1], [1, 2, 3], [0, 1, 1]]) {
+    for (const [h, k, l] of [
+      [1, 0, 0],
+      [0, 0, 1],
+      [1, 1, 0],
+      [1, 1, 1],
+      [1, 2, 3],
+      [0, 1, 1],
+    ]) {
       const v = normalInLab(h, k, l);
       expect(v[0]).toBeCloseTo(0, 10);
       expect(v[1]).toBeCloseTo(0, 10);
@@ -28,17 +35,27 @@ describe('azimuth-zero convention (ROADMAP §Azimuth-zero)', () => {
   });
 
   it('anchors non-principal cuts so the c-axis projection lands at azimuth 0', () => {
-    for (const [h, k, l] of [[1, 1, 0], [1, 1, 1], [1, 2, 3], [0, 1, 1], [2, 1, 3]]) {
+    for (const [h, k, l] of [
+      [1, 1, 0],
+      [1, 1, 1],
+      [1, 2, 3],
+      [0, 1, 1],
+      [2, 1, 3],
+    ]) {
       const { c } = cAxisInLab(h, k, l);
       const projMag = Math.hypot(c[0], c[1]);
       expect(projMag).toBeGreaterThan(1e-6); // c not parallel to beam for non-principal cuts
-      const azimuth = Math.atan2(c[1], c[0]) * 180 / Math.PI;
+      const azimuth = (Math.atan2(c[1], c[0]) * 180) / Math.PI;
       expect(azimuth).toBeCloseTo(0, 9);
     }
   });
 
   it('leaves principal cuts unchanged (psi0 = 0)', () => {
-    for (const [h, k, l] of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
+    for (const [h, k, l] of [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ]) {
       expect(hklToPresetAngles(h, k, l)!.psi0).toBe(0);
     }
   });

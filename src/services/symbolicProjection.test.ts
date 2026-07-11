@@ -19,7 +19,11 @@ function evalSymPoly(sym: SymPoly, phiX: number, phiY: number, psi: number): Map
   return result;
 }
 
-function comparePolys(symPoly: Map<string, Map<string, number>>, numPoly: Map<string, Map<string, number>>, label: string) {
+function comparePolys(
+  symPoly: Map<string, Map<string, number>>,
+  numPoly: Map<string, Map<string, number>>,
+  label: string,
+) {
   const allChis = new Set([...symPoly.keys(), ...numPoly.keys()]);
   for (const chi of allChis) {
     const symPairs = symPoly.get(chi) || new Map();
@@ -40,8 +44,7 @@ describe('buildSymbolicR', () => {
     const R_sym = buildSymbolicR(0, 0);
     const R_num = mat3mul(rotY(0), mat3mul(rotX(0), mat3mul(rotZ(0), mat3mul(rotY(0), rotX(0)))));
     for (let i = 0; i < 3; i++)
-      for (let j = 0; j < 3; j++)
-        expect(Math.abs(trigEval(R_sym[i][j], 0, 0, 0) - R_num[i][j])).toBeLessThan(1e-12);
+      for (let j = 0; j < 3; j++) expect(Math.abs(trigEval(R_sym[i][j], 0, 0, 0) - R_num[i][j])).toBeLessThan(1e-12);
   });
 
   it('evaluates to numeric R at (30, 45, 60) for k||z', () => {
@@ -49,8 +52,7 @@ describe('buildSymbolicR', () => {
     const R_preset = mat3mul(rotY(0), rotX(0));
     const R_num = mat3mul(rotY(45), mat3mul(rotX(30), mat3mul(rotZ(60), R_preset)));
     for (let i = 0; i < 3; i++)
-      for (let j = 0; j < 3; j++)
-        expect(Math.abs(trigEval(R_sym[i][j], 30, 45, 60) - R_num[i][j])).toBeLessThan(1e-10);
+      for (let j = 0; j < 3; j++) expect(Math.abs(trigEval(R_sym[i][j], 30, 45, 60) - R_num[i][j])).toBeLessThan(1e-10);
   });
 
   it('evaluates to numeric R at (30, 45, 60) for k||x preset', () => {
@@ -58,8 +60,7 @@ describe('buildSymbolicR', () => {
     const R_preset = mat3mul(rotY(-90), rotX(0));
     const R_num = mat3mul(rotY(45), mat3mul(rotX(30), mat3mul(rotZ(60), R_preset)));
     for (let i = 0; i < 3; i++)
-      for (let j = 0; j < 3; j++)
-        expect(Math.abs(trigEval(R_sym[i][j], 30, 45, 60) - R_num[i][j])).toBeLessThan(1e-10);
+      for (let j = 0; j < 3; j++) expect(Math.abs(trigEval(R_sym[i][j], 30, 45, 60) - R_num[i][j])).toBeLessThan(1e-10);
   });
 
   it('evaluates to numeric R at (15, -20, 75) for k||y preset', () => {
@@ -118,22 +119,27 @@ describe('symbolic vs numeric reproduction at rotated angles', () => {
     for (const angles of TEST_ANGLES) {
       it(`${group} ED i-type at (${angles.phiX},${angles.phiY},${angles.psi})`, () => {
         const opts: SHGOptions = {
-          groupName: group, tensorType: 'ED', trType: 'i',
-          thetaX: 0, thetaY: 0,
-          phiX: angles.phiX, phiY: angles.phiY, psi: angles.psi,
+          groupName: group,
+          tensorType: 'ED',
+          trType: 'i',
+          thetaX: 0,
+          thetaY: 0,
+          phiX: angles.phiX,
+          phiY: angles.phiY,
+          psi: angles.psi,
         };
 
         const numResult = calculateSHGExpressions(opts);
         const symResult = calculateSymbolicSHGExpressions({ ...opts, phiX: 0, phiY: 0, psi: 0 });
 
         for (let s = 0; s < symResult.source.length; s++) {
-          const evaluatedPoly = evalSymPoly(
-            symResult.source[s].symbolicPoly,
-            angles.phiX, angles.phiY, angles.psi
-          );
+          const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, angles.phiX, angles.phiY, angles.psi);
           const numPoly = numResult.source[s].rawPoly!;
-          comparePolys(evaluatedPoly, numPoly,
-            `${group} ${symResult.source[s].component} at (${angles.phiX},${angles.phiY},${angles.psi})`);
+          comparePolys(
+            evaluatedPoly,
+            numPoly,
+            `${group} ${symResult.source[s].component} at (${angles.phiX},${angles.phiY},${angles.psi})`,
+          );
         }
       });
     }
@@ -149,34 +155,47 @@ describe('symbolic vs numeric at non-zero preset (k||x, k||y)', () => {
   for (const preset of PRESETS) {
     it(`mm2 ED i-type at ${preset.label}, (0,0,0)`, () => {
       const opts: SHGOptions = {
-        groupName: 'mm2', tensorType: 'ED', trType: 'i',
-        thetaX: preset.thetaX, thetaY: preset.thetaY,
+        groupName: 'mm2',
+        tensorType: 'ED',
+        trType: 'i',
+        thetaX: preset.thetaX,
+        thetaY: preset.thetaY,
       };
       const numResult = calculateSHGExpressions(opts);
       const symResult = calculateSymbolicSHGExpressions(opts);
 
       for (let s = 0; s < symResult.source.length; s++) {
         const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, 0, 0, 0);
-        comparePolys(evaluatedPoly, numResult.source[s].rawPoly!,
-          `${preset.label} ${symResult.source[s].component}`);
+        comparePolys(evaluatedPoly, numResult.source[s].rawPoly!, `${preset.label} ${symResult.source[s].component}`);
       }
     });
 
     it(`mm2 ED i-type at ${preset.label}, (30,45,60)`, () => {
       const opts: SHGOptions = {
-        groupName: 'mm2', tensorType: 'ED', trType: 'i',
-        thetaX: preset.thetaX, thetaY: preset.thetaY,
-        phiX: 30, phiY: 45, psi: 60,
+        groupName: 'mm2',
+        tensorType: 'ED',
+        trType: 'i',
+        thetaX: preset.thetaX,
+        thetaY: preset.thetaY,
+        phiX: 30,
+        phiY: 45,
+        psi: 60,
       };
       const numResult = calculateSHGExpressions(opts);
       const symResult = calculateSymbolicSHGExpressions({
-        ...opts, phiX: 0, phiY: 0, psi: 0,
+        ...opts,
+        phiX: 0,
+        phiY: 0,
+        psi: 0,
       });
 
       for (let s = 0; s < symResult.source.length; s++) {
         const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, 30, 45, 60);
-        comparePolys(evaluatedPoly, numResult.source[s].rawPoly!,
-          `${preset.label} ${symResult.source[s].component} rotated`);
+        comparePolys(
+          evaluatedPoly,
+          numResult.source[s].rawPoly!,
+          `${preset.label} ${symResult.source[s].component} rotated`,
+        );
       }
     });
   }
@@ -185,21 +204,26 @@ describe('symbolic vs numeric at non-zero preset (k||x, k||y)', () => {
 describe('symbolic output evaluates correctly at (0,0,0)', () => {
   it('mm2 ED i-type symbolic source terms evaluate to correct numeric values at (0,0,0)', () => {
     const symResult = calculateSymbolicSHGExpressions({
-      groupName: 'mm2', tensorType: 'ED', trType: 'i',
+      groupName: 'mm2',
+      tensorType: 'ED',
+      trType: 'i',
     });
     const numResult = calculateSHGExpressions({
-      groupName: 'mm2', tensorType: 'ED', trType: 'i',
+      groupName: 'mm2',
+      tensorType: 'ED',
+      trType: 'i',
     });
     for (let s = 0; s < symResult.source.length; s++) {
       const evaluated = evalSymPoly(symResult.source[s].symbolicPoly, 0, 0, 0);
-      comparePolys(evaluated, numResult.source[s].rawPoly!,
-        `mm2 ${symResult.source[s].component}`);
+      comparePolys(evaluated, numResult.source[s].rawPoly!, `mm2 ${symResult.source[s].component}`);
     }
   });
 
   it('symbolic output contains non-constant TrigPoly (angle dependence is preserved)', () => {
     const result = calculateSymbolicSHGExpressions({
-      groupName: 'mm2', tensorType: 'ED', trType: 'i',
+      groupName: 'mm2',
+      tensorType: 'ED',
+      trType: 'i',
     });
     let hasNonConst = false;
     for (const src of result.source) {
@@ -221,25 +245,30 @@ describe('MD and EQ tensor types', () => {
 
     for (let s = 0; s < symResult.source.length; s++) {
       const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, 0, 0, 0);
-      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!,
-        `MD ${symResult.source[s].component}`);
+      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!, `MD ${symResult.source[s].component}`);
     }
   });
 
   it('MD source terms reproduce numeric at (30, 45, 0)', () => {
     const opts: SHGOptions = {
-      groupName: '3m', tensorType: 'MD', trType: 'c',
-      phiX: 30, phiY: 45, psi: 0,
+      groupName: '3m',
+      tensorType: 'MD',
+      trType: 'c',
+      phiX: 30,
+      phiY: 45,
+      psi: 0,
     };
     const numResult = calculateSHGExpressions(opts);
     const symResult = calculateSymbolicSHGExpressions({
-      ...opts, phiX: 0, phiY: 0, psi: 0,
+      ...opts,
+      phiX: 0,
+      phiY: 0,
+      psi: 0,
     });
 
     for (let s = 0; s < symResult.source.length; s++) {
       const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, 30, 45, 0);
-      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!,
-        `MD ${symResult.source[s].component} rotated`);
+      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!, `MD ${symResult.source[s].component} rotated`);
     }
   });
 
@@ -250,25 +279,30 @@ describe('MD and EQ tensor types', () => {
 
     for (let s = 0; s < symResult.source.length; s++) {
       const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, 0, 0, 0);
-      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!,
-        `EQ ${symResult.source[s].component}`);
+      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!, `EQ ${symResult.source[s].component}`);
     }
   });
 
   it('EQ source terms reproduce numeric at (20, -15, 40)', () => {
     const opts: SHGOptions = {
-      groupName: 'mm2', tensorType: 'EQ', trType: 'i',
-      phiX: 20, phiY: -15, psi: 40,
+      groupName: 'mm2',
+      tensorType: 'EQ',
+      trType: 'i',
+      phiX: 20,
+      phiY: -15,
+      psi: 40,
     };
     const numResult = calculateSHGExpressions(opts);
     const symResult = calculateSymbolicSHGExpressions({
-      ...opts, phiX: 0, phiY: 0, psi: 0,
+      ...opts,
+      phiX: 0,
+      phiY: 0,
+      psi: 0,
     });
 
     for (let s = 0; s < symResult.source.length; s++) {
       const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, 20, -15, 40);
-      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!,
-        `EQ ${symResult.source[s].component} rotated`);
+      comparePolys(evaluatedPoly, numResult.source[s].rawPoly!, `EQ ${symResult.source[s].component} rotated`);
     }
   });
 });

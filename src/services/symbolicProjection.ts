@@ -7,11 +7,30 @@
  * remains unchanged and is used for live Simulator evaluation.
  */
 
-import { type TrigPoly, trigConst, trigCos, trigSin, trigAdd, trigMul, trigScale, trigIsZero, trigSimplify, TRIG_ZERO } from './trigPoly';
 import {
-  type SHGOptions, type SHGExpression,
-  rotX, rotY, rotZ, mat3mul,
-  averageTensor, getIndices, getLabel, formatCoeff, cleanupExpressionSigns,
+  type TrigPoly,
+  trigConst,
+  trigCos,
+  trigSin,
+  trigAdd,
+  trigMul,
+  trigScale,
+  trigIsZero,
+  trigSimplify,
+  TRIG_ZERO,
+} from './trigPoly';
+import {
+  type SHGOptions,
+  type SHGExpression,
+  rotX,
+  rotY,
+  rotZ,
+  mat3mul,
+  averageTensor,
+  getIndices,
+  getLabel,
+  formatCoeff,
+  cleanupExpressionSigns,
 } from './tensorProjection';
 import { EPSILON, GENERATORS, getCachedFullGroup, getTransformedGenerators } from './symmetryGroups';
 
@@ -30,26 +49,26 @@ export interface SymbolicSHGResult {
 export type TrigMat3 = TrigPoly[][];
 
 function trigMat3Mul(A: TrigMat3, B: TrigMat3): TrigMat3 {
-  const R: TrigMat3 = Array.from({ length: 3 }, () =>
-    Array.from({ length: 3 }, () => TRIG_ZERO)
-  );
+  const R: TrigMat3 = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => TRIG_ZERO));
   for (let i = 0; i < 3; i++)
     for (let j = 0; j < 3; j++) {
       let sum = TRIG_ZERO;
-      for (let k = 0; k < 3; k++)
-        sum = trigAdd(sum, trigMul(A[i][k], B[k][j]));
+      for (let k = 0; k < 3; k++) sum = trigAdd(sum, trigMul(A[i][k], B[k][j]));
       R[i][j] = sum;
     }
   return R;
 }
 
 function numToTrigMat3(m: number[][]): TrigMat3 {
-  return m.map(row => row.map(v => trigConst(v)));
+  return m.map((row) => row.map((v) => trigConst(v)));
 }
 
 function symRotX(): TrigMat3 {
-  const c = trigCos('phiX'), s = trigSin('phiX');
-  const one = trigConst(1), zero = TRIG_ZERO, ns = trigScale(s, -1);
+  const c = trigCos('phiX'),
+    s = trigSin('phiX');
+  const one = trigConst(1),
+    zero = TRIG_ZERO,
+    ns = trigScale(s, -1);
   return [
     [one, zero, zero],
     [zero, c, ns],
@@ -58,8 +77,11 @@ function symRotX(): TrigMat3 {
 }
 
 function symRotY(): TrigMat3 {
-  const c = trigCos('phiY'), s = trigSin('phiY');
-  const one = trigConst(1), zero = TRIG_ZERO, ns = trigScale(s, -1);
+  const c = trigCos('phiY'),
+    s = trigSin('phiY');
+  const one = trigConst(1),
+    zero = TRIG_ZERO,
+    ns = trigScale(s, -1);
   return [
     [c, zero, s],
     [zero, one, zero],
@@ -68,8 +90,11 @@ function symRotY(): TrigMat3 {
 }
 
 function symRotZ(): TrigMat3 {
-  const c = trigCos('psi'), s = trigSin('psi');
-  const one = trigConst(1), zero = TRIG_ZERO, ns = trigScale(s, -1);
+  const c = trigCos('psi'),
+    s = trigSin('psi');
+  const one = trigConst(1),
+    zero = TRIG_ZERO,
+    ns = trigScale(s, -1);
   return [
     [c, ns, zero],
     [s, c, zero],
@@ -85,8 +110,12 @@ export function buildSymbolicR(thetaX: number, thetaY: number, psi0 = 0): TrigMa
 
 function multiplyLinearSym(A: TrigPoly[], B: TrigPoly[]): Record<string, TrigPoly> {
   const res: Record<string, TrigPoly> = {
-    '00': TRIG_ZERO, '11': TRIG_ZERO, '22': TRIG_ZERO,
-    '01': TRIG_ZERO, '02': TRIG_ZERO, '12': TRIG_ZERO,
+    '00': TRIG_ZERO,
+    '11': TRIG_ZERO,
+    '22': TRIG_ZERO,
+    '01': TRIG_ZERO,
+    '02': TRIG_ZERO,
+    '12': TRIG_ZERO,
   };
   for (let i = 0; i < 3; i++) {
     for (let m = 0; m < 3; m++) {
@@ -121,9 +150,7 @@ function addPolySym(a: SymPoly, b: SymPoly, scaleB: TrigPoly): SymPoly {
 export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSHGResult {
   const { groupName, tensorType, trType, thetaX = 0, thetaY = 0, psi0 = 0, setting = 1 } = options;
 
-  const generators = setting > 1
-    ? getTransformedGenerators(groupName, setting)
-    : GENERATORS[groupName];
+  const generators = setting > 1 ? getTransformedGenerators(groupName, setting) : GENERATORS[groupName];
   if (!generators || generators.length === 0) return { induced: [], source: [] };
 
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
@@ -143,7 +170,11 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
     [R_sym[0][2], R_sym[1][2], TRIG_ZERO],
   ];
 
-  const E_vec_full = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  const E_vec_full = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+  ];
 
   const outputCount = tensorType === 'EQ' ? 9 : 3;
   const inducedPolysLab: SymPoly[] = [];
@@ -151,9 +182,10 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
 
   for (let outIdx = 0; outIdx < outputCount; outIdx++) {
     const outIndices = tensorType === 'EQ' ? [Math.floor(outIdx / 3), outIdx % 3] : [outIdx];
-    const outLabel = tensorType === 'EQ'
-      ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}`
-      : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
+    const outLabel =
+      tensorType === 'EQ'
+        ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}`
+        : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
 
     const terms: Map<string, Map<string, number>> = new Map();
     let termsTransverse: SymPoly = new Map();
@@ -162,16 +194,14 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
       for (let k = 0; k < 3; k++) {
         const fullIndices = [...outIndices, j, k];
         let flatIdx = 0;
-        for (let r = 0; r < rank; r++)
-          flatIdx += fullIndices[r] * Math.pow(3, rank - 1 - r);
+        for (let r = 0; r < rank; r++) flatIdx += fullIndices[r] * Math.pow(3, rank - 1 - r);
 
         const swappedIndices = [...fullIndices];
         const temp = swappedIndices[rank - 1];
         swappedIndices[rank - 1] = swappedIndices[rank - 2];
         swappedIndices[rank - 2] = temp;
         let swappedIdx = 0;
-        for (let r = 0; r < rank; r++)
-          swappedIdx += swappedIndices[r] * Math.pow(3, rank - 1 - r);
+        for (let r = 0; r < rank; r++) swappedIdx += swappedIndices[r] * Math.pow(3, rank - 1 - r);
 
         const basisVector = new Array(dim).fill(0);
         basisVector[flatIdx] = 1;
@@ -218,8 +248,12 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
     // Format crystal-frame induced expression (numeric)
     const inducedParts: string[] = [];
     const fieldLabels: Record<string, string> = {
-      '00': 'E_x^2', '11': 'E_y^2', '22': 'E_z^2',
-      '01': 'E_x E_y', '02': 'E_x E_z', '12': 'E_y E_z',
+      '00': 'E_x^2',
+      '11': 'E_y^2',
+      '22': 'E_z^2',
+      '01': 'E_x E_y',
+      '02': 'E_x E_z',
+      '12': 'E_y E_z',
     };
     for (const chi of Array.from(terms.keys()).sort()) {
       const pairMap = terms.get(chi)!;
@@ -233,11 +267,13 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
         const { pair, coeff } = fieldParts[0];
         inducedParts.push(`${coeff < 0 ? '-' : ''}${formatCoeff(coeff)}${chi}${fieldLabels[pair]}`);
       } else {
-        const inner = fieldParts.map((fp, idx) => {
-          const coeffStr = formatCoeff(fp.coeff);
-          if (idx === 0) return `${fp.coeff < 0 ? '-' : ''}${coeffStr}${fieldLabels[fp.pair]}`;
-          return `${fp.coeff < 0 ? '-' : '+'} ${coeffStr}${fieldLabels[fp.pair]}`;
-        }).join(' ');
+        const inner = fieldParts
+          .map((fp, idx) => {
+            const coeffStr = formatCoeff(fp.coeff);
+            if (idx === 0) return `${fp.coeff < 0 ? '-' : ''}${coeffStr}${fieldLabels[fp.pair]}`;
+            return `${fp.coeff < 0 ? '-' : '+'} ${coeffStr}${fieldLabels[fp.pair]}`;
+          })
+          .join(' ');
         inducedParts.push(`${chi}(${inner})`);
       }
     }
@@ -257,15 +293,12 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
     let sPoly: SymPoly = new Map();
 
     if (tensorType === 'ED') {
-      for (let i = 0; i < 3; i++)
-        sPoly = addPolySym(sPoly, inducedPolysLab[i], R_sym[I][i]);
+      for (let i = 0; i < 3; i++) sPoly = addPolySym(sPoly, inducedPolysLab[i], R_sym[I][i]);
     } else if (tensorType === 'MD') {
       if (I === 0) {
-        for (let i = 0; i < 3; i++)
-          sPoly = addPolySym(sPoly, inducedPolysLab[i], trigScale(R_sym[1][i], -1));
+        for (let i = 0; i < 3; i++) sPoly = addPolySym(sPoly, inducedPolysLab[i], trigScale(R_sym[1][i], -1));
       } else if (I === 1) {
-        for (let i = 0; i < 3; i++)
-          sPoly = addPolySym(sPoly, inducedPolysLab[i], R_sym[0][i]);
+        for (let i = 0; i < 3; i++) sPoly = addPolySym(sPoly, inducedPolysLab[i], R_sym[0][i]);
       }
     } else if (tensorType === 'EQ') {
       for (let i = 0; i < 3; i++)

@@ -11,7 +11,15 @@
  *      particularization: intrinsic symmetry = last two indices only).
  */
 
-import { type Matrix3x3, EPSILON, AXIS_EPSILON, GENERATORS, getCachedFullGroup, det, getTransformedGenerators } from './symmetryGroups';
+import {
+  type Matrix3x3,
+  EPSILON,
+  AXIS_EPSILON,
+  GENERATORS,
+  getCachedFullGroup,
+  det,
+  getTransformedGenerators,
+} from './symmetryGroups';
 
 export type TensorType = 'ED' | 'MD' | 'EQ';
 export type TensorTimeReversal = 'i' | 'c'; // i = time-even, c = time-odd
@@ -19,26 +27,42 @@ export type TensorTimeReversal = 'i' | 'c'; // i = time-even, c = time-odd
 const DEG = Math.PI / 180;
 
 export function rotX(deg: number): number[][] {
-  const c = Math.cos(deg * DEG), s = Math.sin(deg * DEG);
-  return [[1, 0, 0], [0, c, -s], [0, s, c]];
+  const c = Math.cos(deg * DEG),
+    s = Math.sin(deg * DEG);
+  return [
+    [1, 0, 0],
+    [0, c, -s],
+    [0, s, c],
+  ];
 }
 
 export function rotY(deg: number): number[][] {
-  const c = Math.cos(deg * DEG), s = Math.sin(deg * DEG);
-  return [[c, 0, s], [0, 1, 0], [-s, 0, c]];
+  const c = Math.cos(deg * DEG),
+    s = Math.sin(deg * DEG);
+  return [
+    [c, 0, s],
+    [0, 1, 0],
+    [-s, 0, c],
+  ];
 }
 
 export function rotZ(deg: number): number[][] {
-  const c = Math.cos(deg * DEG), s = Math.sin(deg * DEG);
-  return [[c, -s, 0], [s, c, 0], [0, 0, 1]];
+  const c = Math.cos(deg * DEG),
+    s = Math.sin(deg * DEG);
+  return [
+    [c, -s, 0],
+    [s, c, 0],
+    [0, 0, 1],
+  ];
 }
 
 export function mat3mul(A: number[][], B: number[][]): number[][] {
-  const R: number[][] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  for (let i = 0; i < 3; i++)
-    for (let j = 0; j < 3; j++)
-      for (let k = 0; k < 3; k++)
-        R[i][j] += A[i][k] * B[k][j];
+  const R: number[][] = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) for (let k = 0; k < 3; k++) R[i][j] += A[i][k] * B[k][j];
   return R;
 }
 
@@ -48,7 +72,7 @@ const COEFF_EPSILON = 1e-5;
 const ROOT_MATCH_EPSILON = 1e-4;
 
 /** Collapses "+ -X" into "- X" after joining signed terms into a display string. */
-export const cleanupExpressionSigns = (s: string): string => s.replace(/\+ -/g, "- ");
+export const cleanupExpressionSigns = (s: string): string => s.replace(/\+ -/g, '- ');
 
 export function getIndices(idx: number, rank: number): number[] {
   const indices = [];
@@ -62,16 +86,16 @@ export function getIndices(idx: number, rank: number): number[] {
 
 export function getLabel(indices: number[]): string {
   const chars = ['x', 'y', 'z'];
-  return '\\chi_{' + indices.map(i => chars[i]).join('') + '}';
+  return '\\chi_{' + indices.map((i) => chars[i]).join('') + '}';
 }
 
 export function formatCoeff(c: number): string {
   const absC = Math.abs(c);
-  if (absC < COEFF_EPSILON) return "0";
+  if (absC < COEFF_EPSILON) return '0';
 
   const rounded = Math.round(absC);
   if (Math.abs(absC - rounded) < COEFF_EPSILON) {
-    if (rounded === 1) return "";
+    if (rounded === 1) return '';
     return rounded.toString();
   }
 
@@ -84,18 +108,18 @@ export function formatCoeff(c: number): string {
 
   // Common fractions
   const fractions = [
-    { val: 0.5, str: "\\frac{1}{2}" },
-    { val: 0.25, str: "\\frac{1}{4}" },
-    { val: 0.75, str: "\\frac{3}{4}" },
-    { val: 0.125, str: "\\frac{1}{8}" },
-    { val: 0.375, str: "\\frac{3}{8}" },
-    { val: 0.625, str: "\\frac{5}{8}" },
-    { val: 0.875, str: "\\frac{7}{8}" },
-    { val: 1.5, str: "\\frac{3}{2}" },
-    { val: 2.5, str: "\\frac{5}{2}" },
-    { val: 1/3, str: "\\frac{1}{3}" },
-    { val: 2/3, str: "\\frac{2}{3}" },
-    { val: 4/3, str: "\\frac{4}{3}" },
+    { val: 0.5, str: '\\frac{1}{2}' },
+    { val: 0.25, str: '\\frac{1}{4}' },
+    { val: 0.75, str: '\\frac{3}{4}' },
+    { val: 0.125, str: '\\frac{1}{8}' },
+    { val: 0.375, str: '\\frac{3}{8}' },
+    { val: 0.625, str: '\\frac{5}{8}' },
+    { val: 0.875, str: '\\frac{7}{8}' },
+    { val: 1.5, str: '\\frac{3}{2}' },
+    { val: 2.5, str: '\\frac{5}{2}' },
+    { val: 1 / 3, str: '\\frac{1}{3}' },
+    { val: 2 / 3, str: '\\frac{2}{3}' },
+    { val: 4 / 3, str: '\\frac{4}{3}' },
   ];
 
   for (const frac of fractions) {
@@ -104,26 +128,26 @@ export function formatCoeff(c: number): string {
 
   // Square roots and their combinations
   const roots = [
-    { val: Math.SQRT2, str: "\\sqrt{2}" },
-    { val: Math.sqrt(3), str: "\\sqrt{3}" },
-    { val: 1 / Math.SQRT2, str: "\\frac{1}{\\sqrt{2}}" },
-    { val: Math.sqrt(3) / 2, str: "\\frac{\\sqrt{3}}{2}" },
-    { val: 1 / Math.sqrt(3), str: "\\frac{1}{\\sqrt{3}}" },
-    { val: 1 / (2 * Math.SQRT2), str: "\\frac{1}{2\\sqrt{2}}" },
-    { val: 1 / (4 * Math.SQRT2), str: "\\frac{1}{4\\sqrt{2}}" },
-    { val: Math.sqrt(3) / 4, str: "\\frac{\\sqrt{3}}{4}" },
-    { val: 1 / (2 * Math.sqrt(3)), str: "\\frac{1}{2\\sqrt{3}}" },
-    { val: Math.sqrt(3) / 8, str: "\\frac{\\sqrt{3}}{8}" },
-    { val: 3 * Math.sqrt(3) / 8, str: "\\frac{3\\sqrt{3}}{8}" },
-    { val: 2 * Math.SQRT2, str: "2\\sqrt{2}" },
-    { val: 2 * Math.sqrt(3), str: "2\\sqrt{3}" },
-    { val: Math.sqrt(2) / 3, str: "\\frac{\\sqrt{2}}{3}" },
-    { val: 2 * Math.sqrt(2) / 3, str: "\\frac{2\\sqrt{2}}{3}" },
-    { val: Math.sqrt(6), str: "\\sqrt{6}" },
-    { val: 1 / Math.sqrt(6), str: "\\frac{1}{\\sqrt{6}}" },
-    { val: Math.sqrt(6) / 2, str: "\\frac{\\sqrt{6}}{2}" },
-    { val: 2 / Math.sqrt(6), str: "\\frac{2}{\\sqrt{6}}" },
-    { val: Math.sqrt(6) / 4, str: "\\frac{\\sqrt{6}}{4}" },
+    { val: Math.SQRT2, str: '\\sqrt{2}' },
+    { val: Math.sqrt(3), str: '\\sqrt{3}' },
+    { val: 1 / Math.SQRT2, str: '\\frac{1}{\\sqrt{2}}' },
+    { val: Math.sqrt(3) / 2, str: '\\frac{\\sqrt{3}}{2}' },
+    { val: 1 / Math.sqrt(3), str: '\\frac{1}{\\sqrt{3}}' },
+    { val: 1 / (2 * Math.SQRT2), str: '\\frac{1}{2\\sqrt{2}}' },
+    { val: 1 / (4 * Math.SQRT2), str: '\\frac{1}{4\\sqrt{2}}' },
+    { val: Math.sqrt(3) / 4, str: '\\frac{\\sqrt{3}}{4}' },
+    { val: 1 / (2 * Math.sqrt(3)), str: '\\frac{1}{2\\sqrt{3}}' },
+    { val: Math.sqrt(3) / 8, str: '\\frac{\\sqrt{3}}{8}' },
+    { val: (3 * Math.sqrt(3)) / 8, str: '\\frac{3\\sqrt{3}}{8}' },
+    { val: 2 * Math.SQRT2, str: '2\\sqrt{2}' },
+    { val: 2 * Math.sqrt(3), str: '2\\sqrt{3}' },
+    { val: Math.sqrt(2) / 3, str: '\\frac{\\sqrt{2}}{3}' },
+    { val: (2 * Math.sqrt(2)) / 3, str: '\\frac{2\\sqrt{2}}{3}' },
+    { val: Math.sqrt(6), str: '\\sqrt{6}' },
+    { val: 1 / Math.sqrt(6), str: '\\frac{1}{\\sqrt{6}}' },
+    { val: Math.sqrt(6) / 2, str: '\\frac{\\sqrt{6}}{2}' },
+    { val: 2 / Math.sqrt(6), str: '\\frac{2}{\\sqrt{6}}' },
+    { val: Math.sqrt(6) / 4, str: '\\frac{\\sqrt{6}}{4}' },
   ];
 
   for (const root of roots) {
@@ -133,7 +157,13 @@ export function formatCoeff(c: number): string {
   return Number(absC.toFixed(3)).toString();
 }
 
-export function transformTensor(tensor: number[], g: Matrix3x3, rank: number, isAxial: boolean, isTimeOdd: boolean): number[] {
+export function transformTensor(
+  tensor: number[],
+  g: Matrix3x3,
+  rank: number,
+  isAxial: boolean,
+  isTimeOdd: boolean,
+): number[] {
   const dim = tensor.length;
   const result = new Array(dim).fill(0);
   const detG = det(g);
@@ -160,7 +190,13 @@ export function transformTensor(tensor: number[], g: Matrix3x3, rank: number, is
   return result;
 }
 
-export function averageTensor(tensor: number[], group: Matrix3x3[], rank: number, isAxial: boolean, isTimeOdd: boolean): number[] {
+export function averageTensor(
+  tensor: number[],
+  group: Matrix3x3[],
+  rank: number,
+  isAxial: boolean,
+  isTimeOdd: boolean,
+): number[] {
   const dim = tensor.length;
   const sum = new Array(dim).fill(0);
 
@@ -171,17 +207,20 @@ export function averageTensor(tensor: number[], group: Matrix3x3[], rank: number
     }
   }
 
-  return sum.map(v => v / group.length);
+  return sum.map((v) => v / group.length);
 }
 
 /**
  * Computes the independent, symmetrized tensor-component basis vectors for a group.
  * Returns null if the group is not in GENERATORS (caller decides how to report that).
  */
-export function calculateTensorBasisResults(groupName: string, tensorType: TensorType, trType: TensorTimeReversal, setting: number = 1): { basisResults: number[][]; rank: number } | null {
-  const generators = setting > 1
-    ? getTransformedGenerators(groupName, setting)
-    : GENERATORS[groupName];
+export function calculateTensorBasisResults(
+  groupName: string,
+  tensorType: TensorType,
+  trType: TensorTimeReversal,
+  setting: number = 1,
+): { basisResults: number[][]; rank: number } | null {
+  const generators = setting > 1 ? getTransformedGenerators(groupName, setting) : GENERATORS[groupName];
   if (!generators || generators.length === 0) return null;
 
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
@@ -215,7 +254,7 @@ export function calculateTensorBasisResults(groupName: string, tensorType: Tenso
 
     let isNew = true;
 
-    if (averaged.every(v => Math.abs(v) < EPSILON)) {
+    if (averaged.every((v) => Math.abs(v) < EPSILON)) {
       isNew = false;
     } else {
       for (const existing of basisResults) {
@@ -276,10 +315,20 @@ export interface SHGOptions {
 }
 
 export function calculateSHGExpressions(options: SHGOptions): SHGResult {
-  const { groupName, tensorType, trType, thetaX = 0, thetaY = 0, psi0 = 0, phiX = 0, phiY = 0, psi = 0, setting = 1, labFrameDisplayMode = 'EX_EY' } = options;
-  const generators = setting > 1
-    ? getTransformedGenerators(groupName, setting)
-    : GENERATORS[groupName];
+  const {
+    groupName,
+    tensorType,
+    trType,
+    thetaX = 0,
+    thetaY = 0,
+    psi0 = 0,
+    phiX = 0,
+    phiY = 0,
+    psi = 0,
+    setting = 1,
+    labFrameDisplayMode = 'EX_EY',
+  } = options;
+  const generators = setting > 1 ? getTransformedGenerators(groupName, setting) : GENERATORS[groupName];
   if (!generators || generators.length === 0) return { induced: [], source: [] };
 
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
@@ -301,15 +350,19 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
   const E_vec_lab_in_cryst = [
     [R[0][0], R[1][0], 0],
     [R[0][1], R[1][1], 0],
-    [R[0][2], R[1][2], 0]
+    [R[0][2], R[1][2], 0],
   ];
 
-  const E_vec_full = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  const E_vec_full = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+  ];
 
   function multiplyLinear(A: number[], B: number[]): Record<string, number> {
     const res: Record<string, number> = { '00': 0, '11': 0, '22': 0, '01': 0, '02': 0, '12': 0 };
-    for (let i=0; i<3; i++) {
-      for (let m=0; m<3; m++) {
+    for (let i = 0; i < 3; i++) {
+      for (let m = 0; m < 3; m++) {
         const coeff = A[i] * B[m];
         if (Math.abs(coeff) > EPSILON) {
           const key = i <= m ? `${i}${m}` : `${m}${i}`;
@@ -344,7 +397,7 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
 
     for (const chi of sortedChis) {
       const pairMap = poly.get(chi)!;
-      const fieldParts: { pair: string, coeff: number }[] = [];
+      const fieldParts: { pair: string; coeff: number }[] = [];
       const sortedPairs = Array.from(pairMap.keys()).sort();
       for (const pair of sortedPairs) {
         let coeff = pairMap.get(pair)!;
@@ -355,39 +408,55 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
 
       if (fieldParts.length === 0) continue;
 
-      const fieldLabels: Record<string, string> = isLabFrame ? (
-        labFrameDisplayMode === 'E0_THETA' ? {
-          '00': 'E_0^2 \\cos^2(\\theta_{pol})', '11': 'E_0^2 \\sin^2(\\theta_{pol})', '22': '0',
-          '01': 'E_0^2 \\cos(\\theta_{pol}) \\sin(\\theta_{pol})', '02': '0', '12': '0'
-        } : {
-          '00': 'E_X^2', '11': 'E_Y^2', '22': 'E_Z^2',
-          '01': 'E_X E_Y', '02': 'E_X E_Z', '12': 'E_Y E_Z'
-        }
-      ) : {
-        '00': 'E_x^2', '11': 'E_y^2', '22': 'E_z^2',
-        '01': 'E_x E_y', '02': 'E_x E_z', '12': 'E_y E_z'
-      };
+      const fieldLabels: Record<string, string> = isLabFrame
+        ? labFrameDisplayMode === 'E0_THETA'
+          ? {
+              '00': 'E_0^2 \\cos^2(\\theta_{pol})',
+              '11': 'E_0^2 \\sin^2(\\theta_{pol})',
+              '22': '0',
+              '01': 'E_0^2 \\cos(\\theta_{pol}) \\sin(\\theta_{pol})',
+              '02': '0',
+              '12': '0',
+            }
+          : {
+              '00': 'E_X^2',
+              '11': 'E_Y^2',
+              '22': 'E_Z^2',
+              '01': 'E_X E_Y',
+              '02': 'E_X E_Z',
+              '12': 'E_Y E_Z',
+            }
+        : {
+            '00': 'E_x^2',
+            '11': 'E_y^2',
+            '22': 'E_z^2',
+            '01': 'E_x E_y',
+            '02': 'E_x E_z',
+            '12': 'E_y E_z',
+          };
 
       if (fieldParts.length === 1) {
         const { pair, coeff } = fieldParts[0];
         const fieldStr = fieldLabels[pair];
-        const sign = coeff < 0 ? "-" : "";
+        const sign = coeff < 0 ? '-' : '';
         finalParts.push(`${sign}${formatCoeff(coeff)}${chi}${fieldStr}`);
       } else {
-        const innerExpr = fieldParts.map((fp, idx) => {
-          const fieldStr = fieldLabels[fp.pair];
-          const c = fp.coeff;
-          const coeffStr = formatCoeff(c);
-          if (idx === 0) {
-            return `${c < 0 ? '-' : ''}${coeffStr}${fieldStr}`;
-          } else {
-            return `${c < 0 ? '-' : '+'} ${coeffStr}${fieldStr}`;
-          }
-        }).join(" ");
+        const innerExpr = fieldParts
+          .map((fp, idx) => {
+            const fieldStr = fieldLabels[fp.pair];
+            const c = fp.coeff;
+            const coeffStr = formatCoeff(c);
+            if (idx === 0) {
+              return `${c < 0 ? '-' : ''}${coeffStr}${fieldStr}`;
+            } else {
+              return `${c < 0 ? '-' : '+'} ${coeffStr}${fieldStr}`;
+            }
+          })
+          .join(' ');
         finalParts.push(`${chi}(${innerExpr})`);
       }
     }
-    return finalParts.length > 0 ? cleanupExpressionSigns(finalParts.join(" + ")) : "0";
+    return finalParts.length > 0 ? cleanupExpressionSigns(finalParts.join(' + ')) : '0';
   }
 
   const outputCount = tensorType === 'EQ' ? 9 : 3;
@@ -397,7 +466,10 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
 
   for (let outIdx = 0; outIdx < outputCount; outIdx++) {
     const outIndices = tensorType === 'EQ' ? [Math.floor(outIdx / 3), outIdx % 3] : [outIdx];
-    const outLabel = tensorType === 'EQ' ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}` : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
+    const outLabel =
+      tensorType === 'EQ'
+        ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}`
+        : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
 
     const terms: Poly = new Map();
     const termsTransverse: Poly = new Map();
@@ -427,7 +499,7 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
         }
         const averaged = averageTensor(basisVector, group, rank, isAxial, isTimeOdd);
 
-        let foundRelation: { label: string, coeff: number } | null = null;
+        let foundRelation: { label: string; coeff: number } | null = null;
         for (let i = 0; i < dim; i++) {
           if (Math.abs(averaged[i]) > EPSILON) {
             const label = getLabel(getIndices(i, rank));
@@ -465,7 +537,7 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
     inducedPolysLab.push(termsTransverse);
     inducedExprs.push({
       component: outLabel,
-      expression: formatPoly(terms)
+      expression: formatPoly(terms),
     });
   }
 
@@ -477,18 +549,18 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
       const c = coeffs[i];
       if (Math.abs(c) > EPSILON) {
         const cStr = formatCoeff(c);
-        const sign = c > 0 ? (parts.length === 0 ? "" : "+ ") : (parts.length === 0 ? "-" : "- ");
+        const sign = c > 0 ? (parts.length === 0 ? '' : '+ ') : parts.length === 0 ? '-' : '- ';
         parts.push(`${sign}${cStr}${labels[i]}`);
       }
     }
-    return parts.length > 0 ? cleanupExpressionSigns(parts.join(" ")) : "0";
+    return parts.length > 0 ? cleanupExpressionSigns(parts.join(' ')) : '0';
   }
 
   const tLabelsLab = ['X', 'Y', 'Z'];
   for (let I = 0; I < 3; I++) {
     const outLabel = `S_${tLabelsLab[I]}`;
     let sPoly: Poly = new Map();
-    let relation = "";
+    let relation = '';
 
     if (tensorType === 'ED') {
       const labels = ['P_x', 'P_y', 'P_z'];
@@ -538,13 +610,13 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
       component: outLabel,
       expression: expr,
       relation,
-      rawPoly: sPoly
+      rawPoly: sPoly,
     });
   }
 
   return {
     induced: inducedExprs,
-    source: sourceExprs
+    source: sourceExprs,
   };
 }
 
@@ -566,11 +638,11 @@ export function getLabFrameVectors(options: LabFrameOptions = {}) {
     for (let i = 0; i < 3; i++) {
       if (Math.abs(v[i]) > AXIS_EPSILON) {
         const coeff = formatCoeff(v[i]);
-        const sign = v[i] < 0 ? "-" : (terms.length > 0 ? "+" : "");
+        const sign = v[i] < 0 ? '-' : terms.length > 0 ? '+' : '';
         terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}_{LAB}`);
       }
     }
-    return terms.length > 0 ? terms.join(" ") : "0";
+    return terms.length > 0 ? terms.join(' ') : '0';
   };
 
   const formatVecCryst = (v: number[]) => {
@@ -579,11 +651,11 @@ export function getLabFrameVectors(options: LabFrameOptions = {}) {
     for (let i = 0; i < 3; i++) {
       if (Math.abs(v[i]) > AXIS_EPSILON) {
         const coeff = formatCoeff(v[i]);
-        const sign = v[i] < 0 ? "-" : (terms.length > 0 ? "+" : "");
+        const sign = v[i] < 0 ? '-' : terms.length > 0 ? '+' : '';
         terms.push(`${sign}${coeff}\\mathbf{${labels[i]}}_{crys}`);
       }
     }
-    return terms.length > 0 ? terms.join(" ") : "0";
+    return terms.length > 0 ? terms.join(' ') : '0';
   };
 
   // R = Ry(φ_y) · Rx(φ_x) · Rz(ψ) · R_preset

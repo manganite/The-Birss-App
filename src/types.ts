@@ -19,18 +19,27 @@ export interface TensorConfig {
 }
 
 export interface OrientationState {
-  thetaX: number; setThetaX: (v: number) => void;
-  thetaY: number; setThetaY: (v: number) => void;
-  psi0: number; setPsi0: (v: number) => void;
-  phiX: number; setPhiX: (v: number) => void;
-  phiY: number; setPhiY: (v: number) => void;
-  psi: number; setPsi: (v: number) => void;
+  thetaX: number;
+  setThetaX: (v: number) => void;
+  thetaY: number;
+  setThetaY: (v: number) => void;
+  psi0: number;
+  setPsi0: (v: number) => void;
+  phiX: number;
+  setPhiX: (v: number) => void;
+  phiY: number;
+  setPhiY: (v: number) => void;
+  psi: number;
+  setPsi: (v: number) => void;
 }
 
 export interface PresetAnglesState {
-  thetaX: number; setThetaX: (v: number) => void;
-  thetaY: number; setThetaY: (v: number) => void;
-  psi0: number; setPsi0: (v: number) => void;
+  thetaX: number;
+  setThetaX: (v: number) => void;
+  thetaY: number;
+  setThetaY: (v: number) => void;
+  psi0: number;
+  setPsi0: (v: number) => void;
 }
 
 export interface SimulationState {

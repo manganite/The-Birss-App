@@ -29,7 +29,7 @@ describe('conventionMapping — label behaviour for representative groups', () =
     expect(getGroupDisplayName("6'mm'", 'itc')).toBe("6'mm'");
   });
 
-  it("-42m (tetragonal 45° pair): setting-dependent HM name, identical in both conventions, no standard-setting divergence", () => {
+  it('-42m (tetragonal 45° pair): setting-dependent HM name, identical in both conventions, no standard-setting divergence', () => {
     expect(getFrameDisplayName('-42m', 1, 'birss')).toEqual({ primary: '-42m' });
     expect(getFrameDisplayName('-42m', 1, 'itc')).toEqual({ primary: '-42m' });
     expect(getFrameDisplayName('-42m', 2, 'birss')).toEqual({ primary: '-4m2' });
@@ -152,14 +152,14 @@ describe('conventionMapping — architectural rule: convention never reaches ten
   });
 });
 
-describe('grey (Type II) groups WITH alternate settings — every setting label carries the 1\' suffix', () => {
-  const greyGroupsWithSettings = Object.keys(ALTERNATE_SETTINGS).filter(k => k.endsWith("1'"));
+describe("grey (Type II) groups WITH alternate settings — every setting label carries the 1' suffix", () => {
+  const greyGroupsWithSettings = Object.keys(ALTERNATE_SETTINGS).filter((k) => k.endsWith("1'"));
 
   it('the fixture itself is non-empty (guards against a silently-vacuous it.each below)', () => {
     expect(greyGroupsWithSettings.length).toBeGreaterThan(0);
   });
 
-  it.each(greyGroupsWithSettings)('%s: all setting labels end with 1\' in both conventions', (group) => {
+  it.each(greyGroupsWithSettings)("%s: all setting labels end with 1' in both conventions", (group) => {
     for (const convention of ['birss', 'itc'] as const) {
       const labels = getSettingLabels(group, convention);
       expect(labels.length).toBeGreaterThan(0);

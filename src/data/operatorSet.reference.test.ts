@@ -3,7 +3,13 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { GENERATORS, getCachedFullGroup } from '../services/symmetryGroups';
-import { sigma, sigmaPrime, refClose, refSetsEqual, type RefMatrix3x3 } from '../services/birssGenerators.reference.fixtures';
+import {
+  sigma,
+  sigmaPrime,
+  refClose,
+  refSetsEqual,
+  type RefMatrix3x3,
+} from '../services/birssGenerators.reference.fixtures';
 
 /**
  * Steps 2-4 of BIRSS-APP-CONVENTIONS-REFERENCE.md: for every Default-setting group,
@@ -46,13 +52,18 @@ function extractSection(startHeading: string, endHeading?: string): string {
 function parseRows(section: string): string[][] {
   return section
     .split('\n')
-    .filter(line => line.trim().startsWith('|'))
-    .map(line => line.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+    .filter((line) => line.trim().startsWith('|'))
+    .map((line) =>
+      line
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 
 function extractSigmaIndices(s: string): number[] {
-  return [...s.matchAll(/\((\d)\)/g)].map(m => Number(m[1]));
+  return [...s.matchAll(/\((\d)\)/g)].map((m) => Number(m[1]));
 }
 
 interface GeneratorSpec {
@@ -77,7 +88,9 @@ const tableBRows = parseRows(extractSection('## Table B', '## Table C'));
 const tableBHeader = tableBRows[0];
 const EXPECTED_TABLE_B_HEADER = ['Schoenflies', 'App key', 'Symmetry operators', "σ(N) / σ'(N)"];
 if (JSON.stringify(tableBHeader) !== JSON.stringify(EXPECTED_TABLE_B_HEADER)) {
-  throw new Error(`Table B header changed shape, parser needs updating.\nExpected: ${JSON.stringify(EXPECTED_TABLE_B_HEADER)}\nActual:   ${JSON.stringify(tableBHeader)}`);
+  throw new Error(
+    `Table B header changed shape, parser needs updating.\nExpected: ${JSON.stringify(EXPECTED_TABLE_B_HEADER)}\nActual:   ${JSON.stringify(tableBHeader)}`,
+  );
 }
 const TABLE_B = new Map<string, GeneratorSpec>();
 for (const cells of tableBRows.slice(1)) {
@@ -89,7 +102,9 @@ const tableCRows = parseRows(extractSection('## Table C'));
 const tableCHeader = tableCRows[0];
 const EXPECTED_TABLE_C_HEADER = ['System', 'Schoenflies', 'App key', 'HM full', 'Shubnikov', 'Parent'];
 if (JSON.stringify(tableCHeader) !== JSON.stringify(EXPECTED_TABLE_C_HEADER)) {
-  throw new Error(`Table C header changed shape, parser needs updating.\nExpected: ${JSON.stringify(EXPECTED_TABLE_C_HEADER)}\nActual:   ${JSON.stringify(tableCHeader)}`);
+  throw new Error(
+    `Table C header changed shape, parser needs updating.\nExpected: ${JSON.stringify(EXPECTED_TABLE_C_HEADER)}\nActual:   ${JSON.stringify(tableCHeader)}`,
+  );
 }
 const TABLE_C = new Map<string, string>();
 for (const cells of tableCRows.slice(1)) {
@@ -104,7 +119,8 @@ function referenceGeneratorsFor(key: string): RefMatrix3x3[] {
   if (parentKey === undefined) throw new Error(`Key not found in Table B or Table C: ${key}`);
   const parentSpec = TABLE_B.get(parentKey);
   if (!parentSpec) throw new Error(`Grey group ${key}'s parent ${parentKey} not found in Table B`);
-  if (parentSpec.antiunitaryIdx.length > 0) throw new Error(`Grey group ${key}'s parent ${parentKey} unexpectedly has antiunitary generators`);
+  if (parentSpec.antiunitaryIdx.length > 0)
+    throw new Error(`Grey group ${key}'s parent ${parentKey} unexpectedly has antiunitary generators`);
   return [...parentSpec.unitaryIdx.map(sigma), sigmaPrime(0)];
 }
 
@@ -155,10 +171,13 @@ describe('operatorSet.reference — app operator set matches Birss Table 6 (via 
       expect(refSetsEqual(refGroup, appGroup)).toBe(true);
     });
 
-    it.each(['m-3', "m'-3'", 'm-3m', "m-3m'", "m'-3'm'", "m'-3'm"])('%s: cubic bar family operator set matches Table 6 (name-only symbol divergence)', (key) => {
-      const refGroup = refClose(referenceGeneratorsFor(key));
-      const appGroup = appClosedGroup(key);
-      expect(refSetsEqual(refGroup, appGroup)).toBe(true);
-    });
+    it.each(['m-3', "m'-3'", 'm-3m', "m-3m'", "m'-3'm'", "m'-3'm"])(
+      '%s: cubic bar family operator set matches Table 6 (name-only symbol divergence)',
+      (key) => {
+        const refGroup = refClose(referenceGeneratorsFor(key));
+        const appGroup = appClosedGroup(key);
+        expect(refSetsEqual(refGroup, appGroup)).toBe(true);
+      },
+    );
   });
 });

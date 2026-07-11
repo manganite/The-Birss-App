@@ -26,7 +26,7 @@ describe('audit Phase 3b — grey groups: c-tensor ≡ 0 (Step 5e)', () => {
   }
 });
 
-describe("audit Phase 3c — particularization (Step 5d): symmetric in the last two indices only", () => {
+describe('audit Phase 3c — particularization (Step 5d): symmetric in the last two indices only', () => {
   it('ED (rank 3) of group 1 has 18 independent components (jk-symmetrized from 27, no crystal constraint)', () => {
     expect(calculateTensorComponents('1', 'ED', 'i')).toHaveLength(18);
   });

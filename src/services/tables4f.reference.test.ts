@@ -3,7 +3,13 @@ import { GENERATORS } from './symmetryGroups';
 import { computeTensorForm, type TensorParity } from './tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
 import {
-  CLASS_ROWS, FF_HEADERS, FF_ROWS_BY_LETTER, relationsForClass, matrixRank, tableDim, type ClassRow,
+  CLASS_ROWS,
+  FF_HEADERS,
+  FF_ROWS_BY_LETTER,
+  relationsForClass,
+  matrixRank,
+  tableDim,
+  type ClassRow,
 } from './testUtils/birssTableParsers';
 
 /**
@@ -34,7 +40,7 @@ describe('Part C rank 4 -- Table 4f guard (32 classical groups, lockstep pairing
     expect(CLASS_ROWS).toHaveLength(32);
     for (const c of CLASS_ROWS) {
       expect(GENERATORS[c.group], c.group).toBeDefined();
-      expect(POINT_GROUPS.find(p => p.name === c.group)?.type, c.group).toBe('I');
+      expect(POINT_GROUPS.find((p) => p.name === c.group)?.type, c.group).toBe('I');
     }
     expect(FF_HEADERS).toHaveLength(2);
     expect(FF_ROWS_BY_LETTER.size).toBe(21);
@@ -42,29 +48,40 @@ describe('Part C rank 4 -- Table 4f guard (32 classical groups, lockstep pairing
   });
 
   it('classical i-form == c-form for every group (no antiunitary elements)', () => {
-    for (const c of CLASS_ROWS) for (const parity of ['polar', 'axial'] as TensorParity[]) {
-      const i = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'i', intrinsic: 'none' })!;
-      const cc = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'c', intrinsic: 'none' })!;
-      expect(cc.relations, `${c.group} ${parity}`).toEqual(i.relations);
-    }
+    for (const c of CLASS_ROWS)
+      for (const parity of ['polar', 'axial'] as TensorParity[]) {
+        const i = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'i', intrinsic: 'none' })!;
+        const cc = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'c', intrinsic: 'none' })!;
+        expect(cc.relations, `${c.group} ${parity}`).toEqual(i.relations);
+      }
   }, 120000); // generous explicit timeout: this rank-4 i-vs-c sweep (128 form computations) can
   // exceed the previous 30s cap under the heavier parallel CPU load added by the Table-7
   // rank-0/1/2/4 guard (which roughly doubles the suite's rank-4 workload). Assertions unchanged.
 
   const checkParity = (c: ClassRow, parity: TensorParity, letter: string | null) => {
     const basis = computeTensorForm(c.group, 1, { rank: 4, parity, timeParity: 'i', intrinsic: 'none' })!.basisResults;
-    if (letter === null) { expect(basis.length, `${c.group} ${parity}: Table 4a blank -> must vanish`).toBe(0); return; }
+    if (letter === null) {
+      expect(basis.length, `${c.group} ${parity}: Table 4a blank -> must vanish`).toBe(0);
+      return;
+    }
     const relations = relationsForClass(letter);
     // (a) the engine's projected subspace satisfies every parsed table relation
-    for (const v of basis) for (const rel of relations) {
-      let s = v[rel.idx]; for (const t of rel.terms) s -= t.coeff * v[t.idx];
-      expect(Math.abs(s) < 1e-6, `${c.group}[${letter}] ${parity}: engine violates a Table-4f relation at idx ${rel.idx}`).toBe(true);
-    }
+    for (const v of basis)
+      for (const rel of relations) {
+        let s = v[rel.idx];
+        for (const t of rel.terms) s -= t.coeff * v[t.idx];
+        expect(
+          Math.abs(s) < 1e-6,
+          `${c.group}[${letter}] ${parity}: engine violates a Table-4f relation at idx ${rel.idx}`,
+        ).toBe(true);
+      }
     // (b) dimensions match. Compare the RANK of the engine's span, not basisResults.length: for a
     // general (intrinsic-none) rank-4 tensor the seed-projection returns a non-minimal spanning set
     // (deduped only by proportionality), so its length can exceed the true independent-component
     // count. (a)+(b) => engine span == table solution space (subspace equality). See findings Sec. 8.
-    expect(matrixRank(basis), `${c.group}[${letter}] ${parity}: independent-count != Table 4f`).toBe(tableDim(relations));
+    expect(matrixRank(basis), `${c.group}[${letter}] ${parity}: independent-count != Table 4f`).toBe(
+      tableDim(relations),
+    );
   };
 
   for (const c of CLASS_ROWS) {

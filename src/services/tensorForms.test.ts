@@ -21,18 +21,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ref = (name: string) => readFileSync(path.resolve(__dirname, '../../docs/references', name), 'utf-8');
 const NOMENCLATURE = readFileSync(path.resolve(__dirname, '../../birss-tables/table-nomenclature.md'), 'utf-8');
 
-const ALL = POINT_GROUPS.map(g => g.name);
-const typeOf = (name: string) => POINT_GROUPS.find(p => p.name === name)!.type;
-const isZeroForm = (name: string, setting: number, spec: TensorSpec) =>
-  computeTensorForm(name, setting, spec)!.isZero;
+const ALL = POINT_GROUPS.map((g) => g.name);
+const typeOf = (name: string) => POINT_GROUPS.find((p) => p.name === name)!.type;
+const isZeroForm = (name: string, setting: number, spec: TensorSpec) => computeTensorForm(name, setting, spec)!.isZero;
 
 // ---- shared markdown helpers (same shapes as propertyFlags.reference.test.ts) ----
 const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
 function tableRows(section: string): string[][] {
-  return section.split('\n')
-    .filter(l => l.trim().startsWith('|'))
-    .map(l => l.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+  return section
+    .split('\n')
+    .filter((l) => l.trim().startsWith('|'))
+    .map((l) =>
+      l
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 function sliceBetween(content: string, start: string, end: string): string {
   const s = content.indexOf(start);
@@ -55,14 +60,16 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
 
   it('{3,polar,i,jk} == ED i-type for all 122 groups', () => {
     for (const g of ALL) {
-      expect(relsOf(g, { rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g)
-        .toEqual(calculateTensorComponents(g, 'ED', 'i', 1));
+      expect(relsOf(g, { rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g).toEqual(
+        calculateTensorComponents(g, 'ED', 'i', 1),
+      );
     }
   }, 30000);
   it('{3,axial,c,jk} == MD c-type for all 122 groups', () => {
     for (const g of ALL) {
-      expect(relsOf(g, { rank: 3, parity: 'axial', timeParity: 'c', intrinsic: 'jk' }), g)
-        .toEqual(calculateTensorComponents(g, 'MD', 'c', 1));
+      expect(relsOf(g, { rank: 3, parity: 'axial', timeParity: 'c', intrinsic: 'jk' }), g).toEqual(
+        calculateTensorComponents(g, 'MD', 'c', 1),
+      );
     }
   }, 30000);
   it('{4,polar,i,jk} == EQ i-type (representative groups spanning all systems/types)', () => {
@@ -72,17 +79,30 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
     // full-suite parallel load); the low-symmetry general case is covered by the rank-3 all-122
     // check above, which shares the exact basis-reduction code path.
     const sample = [
-      'mm2', '222', '-42m', '422', '32', '3m', '-6m2', '622', '23', '432', 'm-3m', "-3'm'", "m'-3'm'",
-    ].filter(g => GENERATORS[g]);
+      'mm2',
+      '222',
+      '-42m',
+      '422',
+      '32',
+      '3m',
+      '-6m2',
+      '622',
+      '23',
+      '432',
+      'm-3m',
+      "-3'm'",
+      "m'-3'm'",
+    ].filter((g) => GENERATORS[g]);
     for (const g of sample) {
-      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g)
-        .toEqual(calculateTensorComponents(g, 'EQ', 'i', 1));
+      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g).toEqual(
+        calculateTensorComponents(g, 'EQ', 'i', 1),
+      );
     }
   }, 60000);
   it('reproduces ED/MD/EQ in alternate settings too (spot-check dual-setting groups)', () => {
-    const dual = Object.keys(ALTERNATE_SETTINGS).filter(k => GENERATORS[k]);
+    const dual = Object.keys(ALTERNATE_SETTINGS).filter((k) => GENERATORS[k]);
     for (const g of dual) {
-      for (let s = 1; s <= (ALTERNATE_SETTINGS[g].length + 1); s++) {
+      for (let s = 1; s <= ALTERNATE_SETTINGS[g].length + 1; s++) {
         const f = computeTensorForm(g, s, { rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' })!;
         const rels = f.isZero ? zeroSentinel : f.relations;
         expect(rels, `${g} setting ${s}`).toEqual(calculateTensorComponents(g, 'ED', 'i', s));
@@ -97,14 +117,14 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
 describe('B.1 rank-1 forms match the property flags (all 122 groups)', () => {
   it('{1,polar,i} nonzero  <=>  isPolar', () => {
     for (const g of ALL) {
-      expect(!isZeroForm(g, 1, { rank: 1, parity: 'polar', timeParity: 'i', intrinsic: 'none' }), g)
-        .toBe(isPolar(g));
+      expect(!isZeroForm(g, 1, { rank: 1, parity: 'polar', timeParity: 'i', intrinsic: 'none' }), g).toBe(isPolar(g));
     }
   });
   it('{1,axial,c} nonzero  <=>  isFerromagnetic', () => {
     for (const g of ALL) {
-      expect(!isZeroForm(g, 1, { rank: 1, parity: 'axial', timeParity: 'c', intrinsic: 'none' }), g)
-        .toBe(isFerromagnetic(g));
+      expect(!isZeroForm(g, 1, { rank: 1, parity: 'axial', timeParity: 'c', intrinsic: 'none' }), g).toBe(
+        isFerromagnetic(g),
+      );
     }
   });
 });
@@ -127,17 +147,17 @@ describe('B.0 rank-0 scalar kinds (all 122 groups)', () => {
   });
   it('{0,polar,c} (time-odd scalar) allowed  <=>  Type I (no primed operation)', () => {
     for (const g of ALL) {
-      expect(allowed(g, { rank: 0, parity: 'polar', timeParity: 'c', intrinsic: 'none' }), g)
-        .toBe(typeOf(g) === 'I');
+      expect(allowed(g, { rank: 0, parity: 'polar', timeParity: 'c', intrinsic: 'none' }), g).toBe(typeOf(g) === 'I');
     }
   });
-  it('{0,axial,c} (ME monopole) allowed  <=>  the group\'s ITC 1.5.8.1 block has nonzero trace', () => {
+  it("{0,axial,c} (ME monopole) allowed  <=>  the group's ITC 1.5.8.1 block has nonzero trace", () => {
     // Derive the monopole set from the parsed 1.5.8.1 matrix forms (trace not identically zero),
     // not a hardcoded block list -- anti-circular against the vendored table.
     expect(monopoleAllowedSet.size).toBeGreaterThan(0);
     for (const g of ALL) {
-      expect(allowed(g, { rank: 0, parity: 'axial', timeParity: 'c', intrinsic: 'none' }), g)
-        .toBe(monopoleAllowedSet.has(g));
+      expect(allowed(g, { rank: 0, parity: 'axial', timeParity: 'c', intrinsic: 'none' }), g).toBe(
+        monopoleAllowedSet.has(g),
+      );
     }
   });
 });
@@ -195,7 +215,7 @@ const monopoleAllowedSet = new Set<string>();
       const sym = t.replace('-', '');
       coeff.set(sym, (coeff.get(sym) ?? 0) + sign);
     }
-    return [...coeff.values()].some(v => Math.abs(v) > 0);
+    return [...coeff.values()].some((v) => Math.abs(v) > 0);
   };
   for (const [key, block] of Object.entries(groupBlock)) {
     if (traceNonzero(blockTokens[block])) monopoleAllowedSet.add(key);
@@ -203,11 +223,15 @@ const monopoleAllowedSet = new Set<string>();
 }
 
 // ---- family canonicalization (same shape as itcPiezomagnetic.reference.test.ts, 3x3) ----
-interface Cell { row: number; col: number; val: number }
+interface Cell {
+  row: number;
+  col: number;
+  val: number;
+}
 function canon(cells: Cell[]): Cell[] {
   const sorted = [...cells].sort((a, b) => a.row - b.row || a.col - b.col);
   const refVal = sorted[0].val;
-  return sorted.map(c => ({ row: c.row, col: c.col, val: c.val / refVal }));
+  return sorted.map((c) => ({ row: c.row, col: c.col, val: c.val / refVal }));
 }
 function itcFamilies(tokens: string[]): Cell[][] {
   const bySym = new Map<string, Cell[]>();
@@ -222,7 +246,7 @@ function itcFamilies(tokens: string[]): Cell[][] {
   return [...bySym.values()].map(canon);
 }
 function engineFamilies(basis: number[][]): Cell[][] {
-  return basis.map(vec => {
+  return basis.map((vec) => {
     const cells: Cell[] = [];
     for (let idx = 0; idx < 9; idx++) {
       if (Math.abs(vec[idx]) > EPSILON) cells.push({ row: Math.floor(idx / 3), col: idx % 3, val: vec[idx] });
@@ -235,9 +259,11 @@ function familiesEqual(a: Cell[], b: Cell[]): boolean {
   return a.every((c, i) => c.row === b[i].row && c.col === b[i].col && Math.abs(c.val - b[i].val) < 1e-4);
 }
 function familySetsMatch(a: Cell[][], b: Cell[][]): boolean {
-  return a.length === b.length &&
-    a.every(x => b.some(y => familiesEqual(x, y))) &&
-    b.every(y => a.some(x => familiesEqual(x, y)));
+  return (
+    a.length === b.length &&
+    a.every((x) => b.some((y) => familiesEqual(x, y))) &&
+    b.every((y) => a.some((x) => familiesEqual(x, y)))
+  );
 }
 
 const ME_SPEC: TensorSpec = { rank: 2, parity: 'axial', timeParity: 'c', intrinsic: 'none' };
@@ -273,9 +299,10 @@ describe('B.2 rank-2 axial c-tensor == ITC Table 1.5.8.1 (linear magnetoelectric
 
   for (const [group, block] of Object.entries(groupBlock)) {
     it(`${group} (block ${block}): rank-2 axial-c form matches ITC in at least one setting`, () => {
-      expect(matchesITC(group, block).length,
-        `${group} (block ${block}) matched NEITHER setting -- genuine discrepancy, do not relax`)
-        .toBeGreaterThan(0);
+      expect(
+        matchesITC(group, block).length,
+        `${group} (block ${block}) matched NEITHER setting -- genuine discrepancy, do not relax`,
+      ).toBeGreaterThan(0);
     });
   }
 });

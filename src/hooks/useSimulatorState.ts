@@ -5,7 +5,7 @@ import {
   TensorTimeReversal,
   getLabFrameVectors,
   calculateSHGExpressions,
-  formatSubstitutedPolySum
+  formatSubstitutedPolySum,
 } from '../services/tensorCalculator';
 
 export function useSimulatorState(
@@ -24,7 +24,10 @@ export function useSimulatorState(
   phases: Record<string, number>,
   setPhases: React.Dispatch<React.SetStateAction<Record<string, number>>>,
 ) {
-  const labFrame = useMemo(() => getLabFrameVectors({ thetaX, thetaY, psi0, phiX, phiY, psi }), [thetaX, thetaY, psi0, phiX, phiY, psi]);
+  const labFrame = useMemo(
+    () => getLabFrameVectors({ thetaX, thetaY, psi0, phiX, phiY, psi }),
+    [thetaX, thetaY, psi0, phiX, phiY, psi],
+  );
 
   const sourceTerms = useMemo(() => {
     if (!selectedGroup) return [];
@@ -61,39 +64,35 @@ export function useSimulatorState(
   }, [selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY, psi0, phiX, phiY, psi, selectedSetting]);
 
   const expandedFormulas = useMemo(() => {
-    const sxTermTheta = sourceTerms.find(t => t.component === 'S_X')?.rawPoly;
-    const syTermTheta = sourceTerms.find(t => t.component === 'S_Y')?.rawPoly;
-    const sxTermExEy = sourceTermsExEy.find(t => t.component === 'S_X')?.rawPoly;
-    const syTermExEy = sourceTermsExEy.find(t => t.component === 'S_Y')?.rawPoly;
+    const sxTermTheta = sourceTerms.find((t) => t.component === 'S_X')?.rawPoly;
+    const syTermTheta = sourceTerms.find((t) => t.component === 'S_Y')?.rawPoly;
+    const sxTermExEy = sourceTermsExEy.find((t) => t.component === 'S_X')?.rawPoly;
+    const syTermExEy = sourceTermsExEy.find((t) => t.component === 'S_Y')?.rawPoly;
 
     if (!sxTermTheta || !syTermTheta || !sxTermExEy || !syTermExEy) return null;
 
     const aniParStr = formatSubstitutedPolySum([
       { poly: sxTermTheta, mode: 'THETA', scale: 1, multiplyTrig: '\\cos\\theta' },
-      { poly: syTermTheta, mode: 'THETA', scale: 1, multiplyTrig: '\\sin\\theta' }
+      { poly: syTermTheta, mode: 'THETA', scale: 1, multiplyTrig: '\\sin\\theta' },
     ]);
 
     const aniPerpStr = formatSubstitutedPolySum([
       { poly: sxTermTheta, mode: 'THETA', scale: -1, multiplyTrig: '\\sin\\theta' },
-      { poly: syTermTheta, mode: 'THETA', scale: 1, multiplyTrig: '\\cos\\theta' }
+      { poly: syTermTheta, mode: 'THETA', scale: 1, multiplyTrig: '\\cos\\theta' },
     ]);
 
-    const polA0Str = formatSubstitutedPolySum([
-      { poly: sxTermTheta, mode: 'THETA' }
-    ]);
+    const polA0Str = formatSubstitutedPolySum([{ poly: sxTermTheta, mode: 'THETA' }]);
 
-    const polA90Str = formatSubstitutedPolySum([
-      { poly: syTermTheta, mode: 'THETA' }
-    ]);
+    const polA90Str = formatSubstitutedPolySum([{ poly: syTermTheta, mode: 'THETA' }]);
 
     const anaP0Str = formatSubstitutedPolySum([
       { poly: sxTermExEy, mode: 'ZERO', scale: 1, multiplyTrig: '\\cos\\theta' },
-      { poly: syTermExEy, mode: 'ZERO', scale: 1, multiplyTrig: '\\sin\\theta' }
+      { poly: syTermExEy, mode: 'ZERO', scale: 1, multiplyTrig: '\\sin\\theta' },
     ]);
 
     const anaP90Str = formatSubstitutedPolySum([
       { poly: sxTermExEy, mode: 'NINETY', scale: 1, multiplyTrig: '\\cos\\theta' },
-      { poly: syTermExEy, mode: 'NINETY', scale: 1, multiplyTrig: '\\sin\\theta' }
+      { poly: syTermExEy, mode: 'NINETY', scale: 1, multiplyTrig: '\\sin\\theta' },
     ]);
 
     return {
@@ -109,7 +108,7 @@ export function useSimulatorState(
   // Extract unique independent tensor components from the raw polynomials
   const independentComponents = useMemo(() => {
     const components = new Set<string>();
-    sourceTerms.forEach(term => {
+    sourceTerms.forEach((term) => {
       if ((term.component === 'S_X' || term.component === 'S_Y') && term.rawPoly) {
         for (const [chi, pairMap] of term.rawPoly.entries()) {
           let hasNonZero = false;
@@ -130,16 +129,16 @@ export function useSimulatorState(
 
   // Initialize amplitudes and phases when components change
   useEffect(() => {
-    setAmplitudes(prev => {
+    setAmplitudes((prev) => {
       const next = { ...prev };
-      independentComponents.forEach(comp => {
+      independentComponents.forEach((comp) => {
         if (next[comp] === undefined) next[comp] = 1;
       });
       return next;
     });
-    setPhases(prev => {
+    setPhases((prev) => {
       const next = { ...prev };
-      independentComponents.forEach(comp => {
+      independentComponents.forEach((comp) => {
         if (next[comp] === undefined) next[comp] = 0;
       });
       return next;
@@ -159,10 +158,20 @@ export function useSimulatorState(
     let maxAnaP0 = 0;
     let maxAnaP90 = 0;
 
-    const sXPoly = sourceTerms.find(t => t.component === 'S_X')?.rawPoly;
-    const sYPoly = sourceTerms.find(t => t.component === 'S_Y')?.rawPoly;
+    const sXPoly = sourceTerms.find((t) => t.component === 'S_X')?.rawPoly;
+    const sYPoly = sourceTerms.find((t) => t.component === 'S_Y')?.rawPoly;
 
-    if (!sXPoly || !sYPoly) return { data: [], maxIntensity: 0, maxParallel: 0, maxCrossed: 0, maxPolA0: 0, maxPolA90: 0, maxAnaP0: 0, maxAnaP90: 0 };
+    if (!sXPoly || !sYPoly)
+      return {
+        data: [],
+        maxIntensity: 0,
+        maxParallel: 0,
+        maxCrossed: 0,
+        maxPolA0: 0,
+        maxPolA90: 0,
+        maxAnaP0: 0,
+        maxAnaP90: 0,
+      };
 
     const evaluatePoly = (poly: Map<string, Map<string, number>>, Ex: number, Ey: number) => {
       let real = 0;
@@ -181,7 +190,8 @@ export function useSimulatorState(
           let E_val = 0;
           if (pair === '00') E_val = Ex * Ex;
           else if (pair === '11') E_val = Ey * Ey;
-          else if (pair === '22') E_val = 0; // Ez = 0
+          else if (pair === '22')
+            E_val = 0; // Ez = 0
           else if (pair === '01') E_val = Ex * Ey;
           else if (pair === '02') E_val = 0;
           else if (pair === '12') E_val = 0;
@@ -238,7 +248,7 @@ export function useSimulatorState(
         pol_a0: I_pol_a0,
         pol_a90: I_pol_a90,
         ana_p0: I_ana_p0,
-        ana_p90: I_ana_p90
+        ana_p90: I_ana_p90,
       });
     }
 

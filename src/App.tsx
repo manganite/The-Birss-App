@@ -7,10 +7,7 @@ import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Search, Github } from 'lucide-react';
 import { POINT_GROUPS, PointGroupData } from './data/pointGroups';
-import {
-  TensorTimeReversal,
-  TensorType,
-} from './services/tensorCalculator';
+import { TensorTimeReversal, TensorType } from './services/tensorCalculator';
 import { getDefaultSetting, getGroupDisplayName } from './services/conventionMapping';
 import type { Convention } from './services/conventionMapping';
 import { PointGroupExplorer } from './components/PointGroupExplorer';
@@ -36,7 +33,7 @@ const normalizeString = (str: string) => {
   return str
     .toLowerCase()
     .replace(/[‘’''`´,]/g, "'")
-    .replace(/\s+/g, "");
+    .replace(/\s+/g, '');
 };
 
 type GroupCategory = 'All' | 'Ordinary' | 'Gray' | 'Black & White';
@@ -48,7 +45,9 @@ const getGroupCategory = (name: string): GroupCategory => {
 };
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'calculator' | 'simulator' | 'explorer' | 'tables' | 'help'>('explorer');
+  const [currentView, setCurrentView] = useState<'calculator' | 'simulator' | 'explorer' | 'tables' | 'help'>(
+    'explorer',
+  );
   const [helpActiveTab, setHelpActiveTab] = useState<string>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -81,13 +80,14 @@ export default function App() {
   const filteredGroups = useMemo(() => {
     let groups = POINT_GROUPS;
     if (activeCategory !== 'All') {
-      groups = groups.filter(pg => getGroupCategory(pg.name) === activeCategory);
+      groups = groups.filter((pg) => getGroupCategory(pg.name) === activeCategory);
     }
     if (searchQuery) {
       const normalizedQuery = normalizeString(searchQuery);
-      groups = groups.filter(pg =>
-        normalizeString(getGroupDisplayName(pg.name, convention)).includes(normalizedQuery) ||
-        normalizeString(pg.crystalSystem).includes(normalizedQuery)
+      groups = groups.filter(
+        (pg) =>
+          normalizeString(getGroupDisplayName(pg.name, convention)).includes(normalizedQuery) ||
+          normalizeString(pg.crystalSystem).includes(normalizedQuery),
       );
     }
     return groups;
@@ -122,19 +122,36 @@ export default function App() {
   };
 
   const tensorConfig = {
-    type: selectedTensorType, setType: setSelectedTensorType,
-    timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal,
-    setting: selectedSetting, setSetting: setSelectedSetting,
-    convention, setConvention,
+    type: selectedTensorType,
+    setType: setSelectedTensorType,
+    timeReversal: selectedTimeReversal,
+    setTimeReversal: setSelectedTimeReversal,
+    setting: selectedSetting,
+    setSetting: setSelectedSetting,
+    convention,
+    setConvention,
   };
 
   const orientation = {
-    thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0,
-    phiX, setPhiX, phiY, setPhiY, psi, setPsi,
+    thetaX,
+    setThetaX,
+    thetaY,
+    setThetaY,
+    psi0,
+    setPsi0,
+    phiX,
+    setPhiX,
+    phiY,
+    setPhiY,
+    psi,
+    setPsi,
   };
 
   const simulation = {
-    amplitudes, setAmplitudes, phases, setPhases,
+    amplitudes,
+    setAmplitudes,
+    phases,
+    setPhases,
   };
 
   return (
@@ -142,12 +159,9 @@ export default function App() {
       {/* Header */}
       <header className="border-b border-ink bg-paper px-6 py-4 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-
           {/* Left: Title & Tagline */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-serif italic tracking-tight leading-none">
-              The Birss App
-            </h1>
+            <h1 className="text-2xl font-serif italic tracking-tight leading-none">The Birss App</h1>
             <span className="hidden md:inline-block text-xs text-ink/70 ml-4 border-l border-ink border-opacity-20 pl-4">
               Nonlinear optical tensors for magnetic point groups
             </span>
@@ -174,7 +188,10 @@ export default function App() {
               Simulator
             </button>
             <button
-              onClick={() => { setTablesEffectId(null); setCurrentView('tables'); }}
+              onClick={() => {
+                setTablesEffectId(null);
+                setCurrentView('tables');
+              }}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'tables' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Tables
@@ -189,7 +206,11 @@ export default function App() {
 
           {/* Right: Convention, Search & GitHub */}
           <div className="flex items-center gap-4 self-start lg:self-auto w-full lg:w-auto">
-            <div className="flex items-center gap-1 bg-white/40 border border-ink border-opacity-10 rounded-full p-1 shrink-0" role="group" aria-label="Symbol convention">
+            <div
+              className="flex items-center gap-1 bg-white/40 border border-ink border-opacity-10 rounded-full p-1 shrink-0"
+              role="group"
+              aria-label="Symbol convention"
+            >
               {(['birss', 'itc'] as const).map((c) => (
                 <button
                   key={c}
@@ -201,7 +222,9 @@ export default function App() {
                   {c === 'birss' ? 'Birss' : 'ITC'}
                 </button>
               ))}
-              <span className="pl-0.5 pr-1.5"><TermInfo id="convention" onNavigate={handleNavigate} /></span>
+              <span className="pl-0.5 pr-1.5">
+                <TermInfo id="convention" onNavigate={handleNavigate} />
+              </span>
             </div>
             <div className="relative w-full lg:w-64">
               <div className="flex items-center bg-white/50 border border-ink border-opacity-20 rounded-full px-3 py-1.5 focus-within:border-opacity-100 focus-within:bg-white transition-all">
@@ -211,21 +234,26 @@ export default function App() {
                   placeholder="Search groups (e.g., 4/m, 4'/m, 11')"
                   className="bg-transparent border-none outline-none w-full text-xs ml-2 placeholder:opacity-70"
                   value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setHighlightedIndex(-1); }}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setHighlightedIndex(-1);
+                  }}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                   role="combobox"
                   aria-expanded={isSearchFocused}
                   aria-controls="group-search-listbox"
                   aria-autocomplete="list"
-                  aria-activedescendant={highlightedIndex >= 0 ? `group-option-${filteredGroups[highlightedIndex]?.name}` : undefined}
+                  aria-activedescendant={
+                    highlightedIndex >= 0 ? `group-option-${filteredGroups[highlightedIndex]?.name}` : undefined
+                  }
                   onKeyDown={(e) => {
                     if (e.key === 'ArrowDown') {
                       e.preventDefault();
-                      setHighlightedIndex(i => Math.min(i + 1, filteredGroups.length - 1));
+                      setHighlightedIndex((i) => Math.min(i + 1, filteredGroups.length - 1));
                     } else if (e.key === 'ArrowUp') {
                       e.preventDefault();
-                      setHighlightedIndex(i => Math.max(i - 1, -1));
+                      setHighlightedIndex((i) => Math.max(i - 1, -1));
                     } else if (e.key === 'Enter') {
                       if (highlightedIndex >= 0 && filteredGroups[highlightedIndex]) {
                         e.preventDefault();
@@ -254,7 +282,7 @@ export default function App() {
                     </div>
 
                     <div className="p-2 border-b border-ink/10 flex flex-wrap gap-1 bg-white/10 sticky top-0 z-10">
-                      {(['All', 'Ordinary', 'Gray', 'Black & White'] as GroupCategory[]).map(cat => (
+                      {(['All', 'Ordinary', 'Gray', 'Black & White'] as GroupCategory[]).map((cat) => (
                         <button
                           key={cat}
                           onMouseDown={(e) => e.preventDefault()}
@@ -267,20 +295,26 @@ export default function App() {
                     </div>
 
                     <div className="overflow-y-auto flex-1 p-2">
-                      {filteredGroups.length > 0 ? filteredGroups.map((group, idx) => (
-                        <button
-                          key={group.name}
-                          id={`group-option-${group.name}`}
-                          role="option"
-                          aria-selected={idx === highlightedIndex}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => handleSelect(group)}
-                          className={`w-full text-left px-3 py-2 hover:bg-ink hover:text-paper transition-colors flex justify-between items-center group rounded-md ${idx === highlightedIndex ? 'bg-ink/10' : ''}`}
-                        >
-                          <span className="text-sm font-serif italic"><FormatPointGroup name={getGroupDisplayName(group.name, convention)} /></span>
-                          <span className="text-xs uppercase tracking-widest opacity-70 group-hover:opacity-100">{group.crystalSystem}</span>
-                        </button>
-                      )) : (
+                      {filteredGroups.length > 0 ? (
+                        filteredGroups.map((group, idx) => (
+                          <button
+                            key={group.name}
+                            id={`group-option-${group.name}`}
+                            role="option"
+                            aria-selected={idx === highlightedIndex}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => handleSelect(group)}
+                            className={`w-full text-left px-3 py-2 hover:bg-ink hover:text-paper transition-colors flex justify-between items-center group rounded-md ${idx === highlightedIndex ? 'bg-ink/10' : ''}`}
+                          >
+                            <span className="text-sm font-serif italic">
+                              <FormatPointGroup name={getGroupDisplayName(group.name, convention)} />
+                            </span>
+                            <span className="text-xs uppercase tracking-widest opacity-70 group-hover:opacity-100">
+                              {group.crystalSystem}
+                            </span>
+                          </button>
+                        ))
+                      ) : (
                         <div className="p-4 text-center text-xs text-ink/70">No groups found</div>
                       )}
                     </div>
@@ -320,7 +354,9 @@ export default function App() {
             onSelectGroupForTables={openInTables}
           />
         ) : (
-          <Suspense fallback={<div className="text-center text-xs uppercase tracking-widest text-ink/70 py-24">Loading…</div>}>
+          <Suspense
+            fallback={<div className="text-center text-xs uppercase tracking-widest text-ink/70 py-24">Loading…</div>}
+          >
             {currentView === 'help' ? (
               <HelpPage activeTab={helpActiveTab} onTabChange={setHelpActiveTab} />
             ) : currentView === 'tables' ? (
@@ -353,9 +389,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="mt-24 border-t border-ink p-8 text-center space-y-2">
-        <p className="text-xs uppercase tracking-[0.5em] opacity-30">
-          The Birss App &copy; 2026
-        </p>
+        <p className="text-xs uppercase tracking-[0.5em] opacity-30">The Birss App &copy; 2026</p>
         <p className="text-xs uppercase tracking-[0.2em] opacity-30">
           By{' '}
           <a
@@ -375,8 +409,8 @@ export default function App() {
             className="hover:opacity-100 transition-opacity"
           >
             v{__APP_VERSION__}
-          </a>
-          {' '}&middot;{' '}
+          </a>{' '}
+          &middot;{' '}
           <a
             href={`https://github.com/manganite/birss-app/releases/tag/v${__APP_VERSION__}`}
             target="_blank"
@@ -384,8 +418,8 @@ export default function App() {
             className="hover:opacity-100 transition-opacity"
           >
             What&apos;s new
-          </a>
-          {' '}&middot;{' '}
+          </a>{' '}
+          &middot;{' '}
           <a
             href="https://github.com/manganite/birss-app/blob/main/LICENSE"
             target="_blank"

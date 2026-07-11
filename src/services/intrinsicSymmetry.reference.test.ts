@@ -8,7 +8,7 @@ import { POINT_GROUPS } from '../data/pointGroups';
  * alongside the existing `jk`. Counts are span rank of the basis (never basisResults.length).
  */
 
-const CLASSICAL = POINT_GROUPS.filter(g => g.type === 'I').map(g => g.name);
+const CLASSICAL = POINT_GROUPS.filter((g) => g.type === 'I').map((g) => g.name);
 
 const count = (group: string, rank: TensorRank, intrinsic: TensorIntrinsic): number => {
   const form = computeTensorForm(group, 1, { rank, parity: 'polar', timeParity: 'i', intrinsic })!;

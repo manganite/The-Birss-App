@@ -24,7 +24,7 @@ const TENSOR_TYPES = ['ED', 'MD', 'EQ'];
 const TR_TYPES = ['i', 'c'];
 
 const pinnedKeys = new Set(
-  GOLDEN_FIXTURES.filter((f) => !f.setting || f.setting === 1).map((f) => `${f.group}::${f.tensor}::${f.tr}`)
+  GOLDEN_FIXTURES.filter((f) => !f.setting || f.setting === 1).map((f) => `${f.group}::${f.tensor}::${f.tr}`),
 );
 
 function zeroReason(groupName, tensor, tr, isGrey) {
@@ -33,7 +33,9 @@ function zeroReason(groupName, tensor, tr, isGrey) {
   const generators = GENERATORS[groupName];
   const group = generators ? getCachedFullGroup(groupName, generators) : [];
   const hasUnitaryInversion = group.some((m) => !m.isAntiUnitary && isSameMatrix(m, inversion));
-  const hasPrimedInversion = group.some((m) => m.isAntiUnitary && isSameMatrix({ ...m, isAntiUnitary: false }, inversion));
+  const hasPrimedInversion = group.some(
+    (m) => m.isAntiUnitary && isSameMatrix({ ...m, isAntiUnitary: false }, inversion),
+  );
 
   if (tensor === 'ED') {
     if (tr === 'i' && (hasUnitaryInversion || hasPrimedInversion)) {
@@ -65,7 +67,13 @@ for (const pg of POINT_GROUPS) {
         status = 'UNPINNED';
         unpinned.push({ group: pg.name, tensor, tr, form: result });
       }
-      rows.push({ group: pg.name, tensor, tr, status, reason: isZero ? zeroReason(pg.name, tensor, tr, isGrey) : null });
+      rows.push({
+        group: pg.name,
+        tensor,
+        tr,
+        status,
+        reason: isZero ? zeroReason(pg.name, tensor, tr, isGrey) : null,
+      });
     }
   }
 }
@@ -86,7 +94,9 @@ for (const tensor of TENSOR_TYPES) {
 const totalZero = rows.filter((r) => r.status === 'ZERO').length;
 const totalPinned = rows.filter((r) => r.status === 'PINNED').length;
 const totalUnpinned = rows.filter((r) => r.status === 'UNPINNED').length;
-console.log(`| **All** | **both** | **${totalZero}** | **${totalPinned}** | **${totalUnpinned}** | **${rows.length}** |`);
+console.log(
+  `| **All** | **both** | **${totalZero}** | **${totalPinned}** | **${totalUnpinned}** | **${rows.length}** |`,
+);
 
 console.log(`\n## UNPINNED cells (${unpinned.length}), grouped by tensor/tr\n`);
 console.log('| Tensor | tr | Count | Groups |');

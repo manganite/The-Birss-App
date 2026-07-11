@@ -30,14 +30,17 @@ const ref = (name: string) => readFileSync(path.resolve(__dirname, '../../docs/r
 // ---------------------------------------------------------------------------------------------
 // Parse ITC Table 3.2.2.2 into a map keyed by `${systemContext}||${class}`.
 // ---------------------------------------------------------------------------------------------
-interface ItcRow { polar: string[]; nonpolar: string[][] }
+interface ItcRow {
+  polar: string[];
+  nonpolar: string[][];
+}
 
 function parse3222(): Map<string, ItcRow> {
   const out = new Map<string, ItcRow>();
   let system = '';
   for (const line of ref('ITC-table-3.2.2.2-polar-axes.md').split('\n')) {
     if (!line.startsWith('|')) continue;
-    const f = line.split('|').map(c => c.trim());
+    const f = line.split('|').map((c) => c.trim());
     if (f.length < 5) continue;
     if (f[1] === 'System' || /^:?-+:?$/.test(f[1])) continue; // header / separator
     if (f[1]) system = f[1];
@@ -45,15 +48,17 @@ function parse3222(): Map<string, ItcRow> {
     if (!klass) continue;
     const stripFootnote = (s: string) => s.replace(/\s*\([a-z]\)\s*$/, '').trim();
     const polarCell = stripFootnote(f[3]);
-    const polar = polarCell === 'None'
-      ? []
-      : /^\[/.test(polarCell)
-        ? polarCell.split(',').map(s => s.trim())   // direction list
-        : [polarCell];                              // descriptive phrase (cubic 23/-43m)
+    const polar =
+      polarCell === 'None'
+        ? []
+        : /^\[/.test(polarCell)
+          ? polarCell.split(',').map((s) => s.trim()) // direction list
+          : [polarCell]; // descriptive phrase (cubic 23/-43m)
     const nonpolarCell = stripFootnote(f[4]);
-    const nonpolar = nonpolarCell === 'None'
-      ? []
-      : nonpolarCell.split(';').map(setStr => setStr.trim().split(/\s+/).filter(Boolean));
+    const nonpolar =
+      nonpolarCell === 'None'
+        ? []
+        : nonpolarCell.split(';').map((setStr) => setStr.trim().split(/\s+/).filter(Boolean));
     out.set(`${system}||${klass}`, { polar, nonpolar });
   }
   return out;
@@ -65,28 +70,28 @@ const ITC = parse3222();
 const ITC_ROW: Record<string, string> = {
   '1': 'Triclinic||1',
   '2': 'Monoclinic, unique c||2',
-  'm': 'Monoclinic, unique c||m',
+  m: 'Monoclinic, unique c||m',
   '222': 'Orthorhombic||222',
-  'mm2': 'Orthorhombic||mm2',
+  mm2: 'Orthorhombic||mm2',
   '4': 'Tetragonal||4',
   '-4': 'Tetragonal||-4',
   '422': 'Tetragonal||422',
   '4mm': 'Tetragonal||4mm',
   '-42m': 'Tetragonal||-42m',
   '3': 'Trigonal (hexagonal axes)||3',
-  '32': 'Trigonal (hexagonal axes)||312',   // 30 deg divergence
-  '3m': 'Trigonal (hexagonal axes)||31m',   // 30 deg divergence
+  '32': 'Trigonal (hexagonal axes)||312', // 30 deg divergence
+  '3m': 'Trigonal (hexagonal axes)||31m', // 30 deg divergence
   '6': 'Hexagonal||6',
   '-6': 'Hexagonal||-6',
   '622': 'Hexagonal||622',
   '6mm': 'Hexagonal||6mm',
-  '-6m2': 'Hexagonal||-62m',                // 30 deg divergence
+  '-6m2': 'Hexagonal||-62m', // 30 deg divergence
   '23': 'Cubic||23',
   '432': 'Cubic||432',
   '-43m': 'Cubic||-43m',
 };
 
-const flatNonpolar = (row: PolarDirectionRow) => row.nonpolar.flatMap(s => s.directions);
+const flatNonpolar = (row: PolarDirectionRow) => row.nonpolar.flatMap((s) => s.directions);
 
 describe('polarDirections.ts drift vs ITC Table 3.2.2.2', () => {
   it('covers exactly the 21 noncentrosymmetric classical keys', () => {
@@ -105,19 +110,22 @@ describe('polarDirections.ts drift vs ITC Table 3.2.2.2', () => {
       if (key === '622') {
         // 622: module == printed PLUS the restored [uv0] primary set; footnote present.
         const printed = itc!.nonpolar.flat();
-        expect(printed).not.toContain('[uv0]');                       // the documented omission
-        expect(flatNonpolar(mod)).toEqual(['[uv0]', ...printed]);     // exactly [uv0] restored
+        expect(printed).not.toContain('[uv0]'); // the documented omission
+        expect(flatNonpolar(mod)).toEqual(['[uv0]', ...printed]); // exactly [uv0] restored
         expect(mod.printOmission, '622 must carry the print-omission footnote').toBeTruthy();
       } else {
         // grouping (per set) must match, direction-for-direction
-        expect(mod.nonpolar.map(s => s.directions)).toEqual(itc!.nonpolar);
+        expect(mod.nonpolar.map((s) => s.directions)).toEqual(itc!.nonpolar);
         expect(mod.printOmission).toBeUndefined();
       }
     });
   }
 
   it('flags exactly the three 30 deg-divergent classes', () => {
-    const flagged = Object.entries(POLAR_DIRECTIONS).filter(([, r]) => r.frameDivergent).map(([k]) => k).sort();
+    const flagged = Object.entries(POLAR_DIRECTIONS)
+      .filter(([, r]) => r.frameDivergent)
+      .map(([k]) => k)
+      .sort();
     expect(flagged).toEqual(['-6m2', '32', '3m']);
   });
 });
@@ -134,15 +142,21 @@ function parse2111(): Record<string, { freeParams: string[]; bravais: string[] }
   let system = '';
   for (const line of ref('ITC-table-2.1.1.1-crystal-systems.md').split('\n')) {
     if (!line.startsWith('|')) continue;
-    const f = line.split('|').map(c => c.trim());
+    const f = line.split('|').map((c) => c.trim());
     if (f.length < 9) continue;
     if (f[1] === 'Crystal family' || /^:?-+:?$/.test(f[1])) continue;
     if (f[3]) system = f[3];
     rows.push({ system, restrictions: f[6], params: f[7], bravais: f[8] });
   }
   const parseRow = (r: { params: string; bravais: string }) => ({
-    freeParams: dropParens(r.params).split(',').map(s => normParam(s.trim())).filter(Boolean),
-    bravais: dropParens(r.bravais).split(',').map(s => s.trim()).filter(Boolean),
+    freeParams: dropParens(r.params)
+      .split(',')
+      .map((s) => normParam(s.trim()))
+      .filter(Boolean),
+    bravais: dropParens(r.bravais)
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
   });
   const bySystem: Record<string, { freeParams: string[]; bravais: string[] }> = {};
   for (const r of rows) {
@@ -157,9 +171,15 @@ const ITC2111 = parse2111();
 
 describe('crystalSystems.ts drift vs ITC Table 2.1.1.1', () => {
   it('covers the 7 crystal systems', () => {
-    expect(Object.keys(CRYSTAL_SYSTEMS).sort()).toEqual(
-      ['Cubic', 'Hexagonal', 'Monoclinic', 'Orthorhombic', 'Tetragonal', 'Triclinic', 'Trigonal'],
-    );
+    expect(Object.keys(CRYSTAL_SYSTEMS).sort()).toEqual([
+      'Cubic',
+      'Hexagonal',
+      'Monoclinic',
+      'Orthorhombic',
+      'Tetragonal',
+      'Triclinic',
+      'Trigonal',
+    ]);
   });
   for (const system of Object.keys(CRYSTAL_SYSTEMS)) {
     it(`${system}: free parameters and Bravais lattices match the reference`, () => {
@@ -182,15 +202,30 @@ function parseIndices(s: string): { u: number; v: number; w: number; c: number }
   let i = 0;
   while (i < s.length && toks.length < 3) {
     let sign = 1;
-    if (s[i] === '-') { sign = -1; i++; }
-    let coeff = 1, cst = 0, isConst = false;
+    if (s[i] === '-') {
+      sign = -1;
+      i++;
+    }
+    let coeff = 1,
+      cst = 0,
+      isConst = false;
     if (/[0-9]/.test(s[i])) {
-      const d = Number(s[i]); i++;
-      if (d !== 0 && i < s.length && /[uvw]/.test(s[i])) { coeff = d; } else { cst = d; isConst = true; }
+      const d = Number(s[i]);
+      i++;
+      if (d !== 0 && i < s.length && /[uvw]/.test(s[i])) {
+        coeff = d;
+      } else {
+        cst = d;
+        isConst = true;
+      }
     }
     const t = { u: 0, v: 0, w: 0, c: 0 };
-    if (!isConst && i < s.length && /[uvw]/.test(s[i])) { t[s[i] as 'u' | 'v' | 'w'] = sign * coeff; i++; }
-    else { t.c = sign * cst; }
+    if (!isConst && i < s.length && /[uvw]/.test(s[i])) {
+      t[s[i] as 'u' | 'v' | 'w'] = sign * coeff;
+      i++;
+    } else {
+      t.c = sign * cst;
+    }
     toks.push(t);
   }
   if (toks.length !== 3) throw new Error(`parseIndices: "${s}" did not yield 3 indices`);
@@ -202,7 +237,7 @@ function parseIndices(s: string): { u: number; v: number; w: number; c: number }
 function toIndexTriple(dir: string, U = 3, V = 1, W = 2): [number, number, number] {
   const inner = dir.replace(/[[\]]/g, '');
   const t = parseIndices(inner);
-  return t.map(x => x.u * U + x.v * V + x.w * W + x.c) as [number, number, number];
+  return t.map((x) => x.u * U + x.v * V + x.w * W + x.c) as [number, number, number];
 }
 
 const SQRT3_2 = Math.sqrt(3) / 2;
@@ -214,7 +249,7 @@ function toCartesian(system: string, [u, v, w]: [number, number, number]): [numb
 }
 
 const applyMat = (m: number[][], d: number[]): number[] =>
-  [0, 1, 2].map(i => m[i][0] * d[0] + m[i][1] * d[1] + m[i][2] * d[2]);
+  [0, 1, 2].map((i) => m[i][0] * d[0] + m[i][1] * d[1] + m[i][2] * d[2]);
 
 /** A direction is polar iff no group operation sends it to its negative. */
 function isPolarByOps(ops: { m: number[][] }[], d: number[]): boolean {
@@ -237,7 +272,7 @@ describe('OPS consistency: module polarity == app operators (all 21 classes)', (
 
   for (const key of Object.keys(POLAR_DIRECTIONS)) {
     it(`${key}: every polar axis is polar and every nonpolar direction is nonpolar (by ops)`, () => {
-      const system = POINT_GROUPS.find(g => g.name === key)!.crystalSystem;
+      const system = POINT_GROUPS.find((g) => g.name === key)!.crystalSystem;
       const ops = getCachedFullGroup(key, GENERATORS[key]);
       const mod = POLAR_DIRECTIONS[key];
       const cart = (dir: string) => toCartesian(system, toIndexTriple(dir));

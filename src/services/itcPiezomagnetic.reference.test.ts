@@ -83,7 +83,7 @@ function extractGroupsText(body: string): string | null {
 
 function extractGroupKeysFromEntry(entry: string): GroupKey[] {
   const uncertain = entry.includes('(?)');
-  const spans = [...entry.matchAll(/`([^`]+)`/g)].map(m => m[1]);
+  const spans = [...entry.matchAll(/`([^`]+)`/g)].map((m) => m[1]);
   // "A = B" cross-reference entries (e.g. "`32` = `321`") list the same group twice; keep only the first span.
   const hasEquals = entry.includes(' = ');
   const chosenSpans = hasEquals ? [spans[0]] : spans;
@@ -92,11 +92,11 @@ function extractGroupKeysFromEntry(entry: string): GroupKey[] {
     const bracketMatch = span.match(/^(.*?)\s*\[([^\]]+)\]\s*$/);
     if (bracketMatch) {
       const primary = bracketMatch[1].trim();
-      const altCandidates = bracketMatch[2].split(/[;,]/).map(s => s.trim());
+      const altCandidates = bracketMatch[2].split(/[;,]/).map((s) => s.trim());
       const candidates = [primary, ...altCandidates];
       // Resolve by GENERATORS membership, not bracket position: ITC's own primary-listed form
       // is not always an app key (see Block 5's `m'2m [2'm'm]`, documented in the reference file).
-      const resolved = candidates.filter(c => GENERATORS[c]);
+      const resolved = candidates.filter((c) => GENERATORS[c]);
       const pick = resolved.includes(primary) ? primary : resolved[0];
       keys.push({ key: pick ?? primary, uncertain: uncertain || resolved.length === 0 });
     } else {
@@ -109,17 +109,17 @@ function extractGroupKeysFromEntry(entry: string): GroupKey[] {
 function extractGroupKeysFromText(text: string): GroupKey[] {
   return text
     .split(';')
-    .map(s => s.trim())
+    .map((s) => s.trim())
     .filter(Boolean)
     .flatMap(extractGroupKeysFromEntry);
 }
 
 function extractMatrices(body: string): string[][][] {
-  return [...body.matchAll(/```\n([\s\S]*?)\n```/g)].map(m =>
+  return [...body.matchAll(/```\n([\s\S]*?)\n```/g)].map((m) =>
     m[1]
       .trim()
       .split('\n')
-      .map(row => row.trim().split(/\s+/)),
+      .map((row) => row.trim().split(/\s+/)),
   );
 }
 
@@ -132,16 +132,40 @@ function buildEntries(): Entry[] {
       // and a z-unique (c-unique = app setting 1/default) matrix transcribed from running text.
       const forLineMatch = b.body.match(/for ((?:`[^`]+`,?\s*)+):/);
       const forKeys: GroupKey[] = forLineMatch
-        ? [...forLineMatch[1].matchAll(/`([^`]+)`/g)].map(m => ({ key: m[1].replace(/^11\s*/, ''), uncertain: false }))
+        ? [...forLineMatch[1].matchAll(/`([^`]+)`/g)].map((m) => ({
+            key: m[1].replace(/^11\s*/, ''),
+            uncertain: false,
+          }))
         : [];
       const mainText = extractGroupsText(b.body);
       const mainKeys = mainText ? extractGroupKeysFromText(mainText) : [];
-      for (const k of mainKeys) entries.push({ group: k.key, matrix: matrices[0], block: `${b.num}-main`, uncertain: k.uncertain, expectedSetting: 2 });
-      for (const k of forKeys) entries.push({ group: k.key, matrix: matrices[1], block: `${b.num}-zunique`, uncertain: k.uncertain, expectedSetting: 1 });
+      for (const k of mainKeys)
+        entries.push({
+          group: k.key,
+          matrix: matrices[0],
+          block: `${b.num}-main`,
+          uncertain: k.uncertain,
+          expectedSetting: 2,
+        });
+      for (const k of forKeys)
+        entries.push({
+          group: k.key,
+          matrix: matrices[1],
+          block: `${b.num}-zunique`,
+          uncertain: k.uncertain,
+          expectedSetting: 1,
+        });
     } else {
       const text = extractGroupsText(b.body);
       const keys = text ? extractGroupKeysFromText(text) : [];
-      for (const k of keys) entries.push({ group: k.key, matrix: matrices[0], block: b.num, uncertain: k.uncertain, expectedSetting: null });
+      for (const k of keys)
+        entries.push({
+          group: k.key,
+          matrix: matrices[0],
+          block: b.num,
+          uncertain: k.uncertain,
+          expectedSetting: null,
+        });
     }
   }
   return entries;
@@ -175,7 +199,7 @@ function voigtIndex(b: number, c: number): number {
 function canonicalize(list: Cell[]): RatioCell[] {
   const sorted = [...list].sort((x, y) => x.row - y.row || x.col - y.col);
   const ref = sorted[0].val;
-  return sorted.map(e => ({ row: e.row, col: e.col, ratio: e.val / ref }));
+  return sorted.map((e) => ({ row: e.row, col: e.col, ratio: e.val / ref }));
 }
 
 /** Converts one app basis vector (27 raw rank-3 coefficients) into a canonicalized Voigt family. */
@@ -190,10 +214,12 @@ function appFamilyFromBasis(vec: number[]): RatioCell[] {
     const val = col >= 4 ? vec[idx] * 2 : vec[idx];
     cells.set(`${row},${col}`, val);
   }
-  return canonicalize([...cells.entries()].map(([k, v]) => {
-    const [row, col] = k.split(',').map(Number);
-    return { row, col, val: v };
-  }));
+  return canonicalize(
+    [...cells.entries()].map(([k, v]) => {
+      const [row, col] = k.split(',').map(Number);
+      return { row, col, val: v };
+    }),
+  );
 }
 
 /** Parses one ITC matrix into its canonicalized L<ij>-symbol families (already in Voigt shape, no correction needed). */
@@ -226,8 +252,8 @@ function familiesEqual(f1: RatioCell[], f2: RatioCell[]): boolean {
 function familySetsMatch(f1: RatioCell[][], f2: RatioCell[][]): boolean {
   return (
     f1.length === f2.length &&
-    f1.every(a => f2.some(b => familiesEqual(a, b))) &&
-    f2.every(b => f1.some(a => familiesEqual(a, b)))
+    f1.every((a) => f2.some((b) => familiesEqual(a, b))) &&
+    f2.every((b) => f1.some((a) => familiesEqual(a, b)))
   );
 }
 
@@ -250,7 +276,7 @@ function matchedSettings(e: Entry): number[] {
 }
 
 const ALL_ENTRIES = buildEntries();
-const CERTAIN_ENTRIES = ALL_ENTRIES.filter(e => !e.uncertain);
+const CERTAIN_ENTRIES = ALL_ENTRIES.filter((e) => !e.uncertain);
 
 describe('itcPiezomagnetic.reference — app MD-c projection matches ITC Table 1.5.7.1', () => {
   it('parses at least 70 certain group/setting entries across all 16 blocks', () => {
@@ -266,14 +292,17 @@ describe('itcPiezomagnetic.reference — app MD-c projection matches ITC Table 1
   for (const e of CERTAIN_ENTRIES) {
     it(`${e.group} (block ${e.block}): app MD-c matches ITC in at least one setting`, () => {
       const matches = matchedSettings(e);
-      expect(matches.length, `${e.group} (block ${e.block}) matched NEITHER setting 1 nor setting 2 -- genuine discrepancy, do not relax`).toBeGreaterThan(0);
+      expect(
+        matches.length,
+        `${e.group} (block ${e.block}) matched NEITHER setting 1 nor setting 2 -- genuine discrepancy, do not relax`,
+      ).toBeGreaterThan(0);
     });
   }
 
   it("the five Block-15 (R_n) hexagonal groups match in the app's alternate setting (30° frame divergence)", () => {
     const rGroups = ["6'22'", "6'mm'", "-6'2m'", "-6'm2'", "6'/m'mm'"];
     for (const group of rGroups) {
-      const entry = CERTAIN_ENTRIES.find(e => e.group === group && e.block === '15');
+      const entry = CERTAIN_ENTRIES.find((e) => e.group === group && e.block === '15');
       expect(entry, `${group} not found in block 15`).toBeDefined();
       expect(matchedSettings(entry!)).toEqual([2]);
     }

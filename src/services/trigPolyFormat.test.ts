@@ -89,9 +89,7 @@ describe('formatSymbolicSourceTerm', () => {
   });
 
   it('formats single constant coefficient', () => {
-    const poly: SymPoly = new Map([
-      ['\\chi_{xxz}', new Map([['01', trigConst(2)]])],
-    ]);
+    const poly: SymPoly = new Map([['\\chi_{xxz}', new Map([['01', trigConst(2)]])]]);
     const formatted = formatSymbolicSourceTerm(poly);
     expect(formatted).toContain('\\chi_{xxz}');
     expect(formatted).toContain('2');
@@ -99,9 +97,7 @@ describe('formatSymbolicSourceTerm', () => {
   });
 
   it('formats symbolic coefficient', () => {
-    const poly: SymPoly = new Map([
-      ['\\chi_{zzz}', new Map([['00', trigCos('phiX')]])],
-    ]);
+    const poly: SymPoly = new Map([['\\chi_{zzz}', new Map([['00', trigCos('phiX')]])]]);
     const formatted = formatSymbolicSourceTerm(poly);
     expect(formatted).toContain('\\chi_{zzz}');
     expect(formatted).toContain('\\cos \\varphi_x');

@@ -7,9 +7,9 @@ describe('getPresetsForSystem', () => {
   it('Monoclinic setting 1 (c-unique) vs setting 2 (b-unique) return different label sets', () => {
     const c = getPresetsForSystem('Monoclinic', 1);
     const b = getPresetsForSystem('Monoclinic', 2);
-    expect(c.map(p => p.label)).toEqual(['[001]', '[100]', 'y']);
-    expect(b.map(p => p.label)).toEqual(['[001]', 'x', '[010]']);
-    expect(c.map(p => p.math)).not.toEqual(b.map(p => p.math));
+    expect(c.map((p) => p.label)).toEqual(['[001]', '[100]', 'y']);
+    expect(b.map((p) => p.label)).toEqual(['[001]', 'x', '[010]']);
+    expect(c.map((p) => p.math)).not.toEqual(b.map((p) => p.math));
   });
 
   it('defaults to setting 1 (c-unique) when no setting is given', () => {
@@ -37,7 +37,10 @@ describe('getPresetsForSystem', () => {
 
     // atan2-derived angles carry float noise (e.g. -0, 90.00000000000001), so compare with a
     // tolerance rather than exact equality.
-    const expectAngles = (presets: { tx: number; ty: number; psi0: number }[], expected: { tx: number; ty: number; psi0: number }[]) => {
+    const expectAngles = (
+      presets: { tx: number; ty: number; psi0: number }[],
+      expected: { tx: number; ty: number; psi0: number }[],
+    ) => {
       expect(presets).toHaveLength(expected.length);
       presets.forEach((p, i) => {
         expect(p.tx).toBeCloseTo(expected[i].tx, 9);
@@ -101,9 +104,11 @@ describe('getAxisTooltipId', () => {
   });
 
   it('every id returned by getAxisTooltipId resolves to a real glossary entry under the conventions help tab', () => {
-    const ids = new Set(['Triclinic', 'Monoclinic', 'Orthorhombic', 'Tetragonal', 'Cubic', 'Trigonal', 'Hexagonal'].map(getAxisTooltipId));
+    const ids = new Set(
+      ['Triclinic', 'Monoclinic', 'Orthorhombic', 'Tetragonal', 'Cubic', 'Trigonal', 'Hexagonal'].map(getAxisTooltipId),
+    );
     for (const id of ids) {
-      const term = GLOSSARY_TERMS.find(t => t.id === id);
+      const term = GLOSSARY_TERMS.find((t) => t.id === id);
       expect(term).toBeDefined();
       expect(term?.helpTab).toBe('conventions');
     }
@@ -112,7 +117,7 @@ describe('getAxisTooltipId', () => {
   it('the trigonal/hexagonal position-2 explanation is reachable independent of convention (no convention parameter gates it)', () => {
     // getAxisTooltipId takes only crystalSystem -- there is no convention branch, so the tooltip
     // (and hence the position-2 explanation) is available in both Birss and ITC mode alike.
-    const term = GLOSSARY_TERMS.find(t => t.id === getAxisTooltipId('Trigonal'));
+    const term = GLOSSARY_TERMS.find((t) => t.id === getAxisTooltipId('Trigonal'));
     expect(term?.brief.toLowerCase()).toContain('position-2');
     expect(term?.brief).toContain('30°');
   });

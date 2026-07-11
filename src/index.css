@@ -1,8 +1,8 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-ink: #141414;
-  --color-paper: #E4E3E0;
+  --color-paper: #e4e3e0;
 }
 
 @layer utilities {
@@ -21,8 +21,12 @@
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin-slow {

@@ -3,7 +3,15 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
-import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, TABLE_4A_CLASS_LETTERS, getFamilyClass, classicalChainApplies, getTable7Chain } from './groupNotation';
+import {
+  SHUBNIKOV,
+  FULL_HM,
+  REFERENCE_AXES,
+  TABLE_4A_CLASS_LETTERS,
+  getFamilyClass,
+  classicalChainApplies,
+  getTable7Chain,
+} from './groupNotation';
 
 /**
  * Anti-drift guard tests for the supplementary Birss notation maps. Each test re-parses the
@@ -25,9 +33,14 @@ function stripBackticks(s: string): string {
 function parseRows(section: string): string[][] {
   return section
     .split('\n')
-    .filter(line => line.trim().startsWith('|'))
-    .map(line => line.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+    .filter((line) => line.trim().startsWith('|'))
+    .map((line) =>
+      line
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 
 function sliceBetween(content: string, startHeading: string, endHeading: string): string {
@@ -114,11 +127,22 @@ describe('TABLE_4A_CLASS_LETTERS vs table-4a.md (columns 3-6)', () => {
   const CUBIC_RENAME: Record<string, string> = { m3: 'm-3', m3m: 'm-3m' };
   const rows = parseRows(readFileSync(TABLE_4A_PATH, 'utf-8'));
   const header = rows[0];
-  const letter = (cell: string): string | null => { const m = cell.match(/^([A-U])_[mn]$/); return m ? m[1] : null; };
-  const parsed: Record<string, { polarEven: string | null; axialEven: string | null; polarOdd: string | null; axialOdd: string | null }> = {};
+  const letter = (cell: string): string | null => {
+    const m = cell.match(/^([A-U])_[mn]$/);
+    return m ? m[1] : null;
+  };
+  const parsed: Record<
+    string,
+    { polarEven: string | null; axialEven: string | null; polarOdd: string | null; axialOdd: string | null }
+  > = {};
   for (const cells of rows.slice(1)) {
     const key = CUBIC_RENAME[cells[1]] ?? cells[1];
-    parsed[key] = { polarEven: letter(cells[3]), axialEven: letter(cells[4]), polarOdd: letter(cells[5]), axialOdd: letter(cells[6]) };
+    parsed[key] = {
+      polarEven: letter(cells[3]),
+      axialEven: letter(cells[4]),
+      polarOdd: letter(cells[5]),
+      axialOdd: letter(cells[6]),
+    };
   }
 
   it('reads the expected tensor-type columns', () => {
@@ -166,13 +190,13 @@ describe('getFamilyClass', () => {
 });
 
 describe('classicalChainApplies', () => {
-  const typeOf = (name: string) => POINT_GROUPS.find(p => p.name === name)!.type;
+  const typeOf = (name: string) => POINT_GROUPS.find((p) => p.name === name)!.type;
   it('the classical Table-4a chain applies iff the tensor is i-type or the group is Type I', () => {
     expect(classicalChainApplies(typeOf("-3'm'"), 'c')).toBe(false); // Type III, c -> Table 7
-    expect(classicalChainApplies(typeOf("-3'm'"), 'i')).toBe(true);  // i-tensor reduces to family class
-    expect(classicalChainApplies(typeOf("321'"), 'c')).toBe(false);  // Type II grey, c
-    expect(classicalChainApplies(typeOf('432'), 'c')).toBe(true);    // Type I: c coincides with i
-    expect(classicalChainApplies(typeOf("m'm'm"), 'i')).toBe(true);  // any i-tensor
+    expect(classicalChainApplies(typeOf("-3'm'"), 'i')).toBe(true); // i-tensor reduces to family class
+    expect(classicalChainApplies(typeOf("321'"), 'c')).toBe(false); // Type II grey, c
+    expect(classicalChainApplies(typeOf('432'), 'c')).toBe(true); // Type I: c coincides with i
+    expect(classicalChainApplies(typeOf("m'm'm"), 'i')).toBe(true); // any i-tensor
   });
 });
 
@@ -220,7 +244,7 @@ describe('getTable7Chain', () => {
     const chain = getTable7Chain("-6m'2'", 'axial', 2)!;
     expect(chain.source).toBe('A');
     expect(chain.sourceSymbol).toBe('-6m2');
-    expect(chain.sourceBracketed).toBe(true);       // forced despite the printed unbracketed A
+    expect(chain.sourceBracketed).toBe(true); // forced despite the printed unbracketed A
     expect(chain.transformLabel).toBe('Rz(30°)');
     expect(chain.letter).toBe('R');
     expect(chain.bookErrorNote).not.toBeNull();
@@ -228,11 +252,11 @@ describe('getTable7Chain', () => {
 
   it('grey (Type II) and Type I groups have no Table-7 chain', () => {
     expect(getTable7Chain("321'", 'polar', 2)).toBeNull(); // Type II grey
-    expect(getTable7Chain('432', 'polar', 2)).toBeNull();  // Type I
+    expect(getTable7Chain('432', 'polar', 2)).toBeNull(); // Type I
   });
 
   it('the source class is always a valid REFERENCE_AXES / Table-4a key for every BW c-tensor', () => {
-    for (const g of POINT_GROUPS.filter(p => p.type === 'III')) {
+    for (const g of POINT_GROUPS.filter((p) => p.type === 'III')) {
       for (const parity of ['polar', 'axial'] as const) {
         for (const rank of [1, 2, 3, 4]) {
           const chain = getTable7Chain(g.name, parity, rank);

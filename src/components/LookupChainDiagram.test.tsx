@@ -14,11 +14,17 @@ import { POINT_GROUPS } from '../data/pointGroups';
  * portal tooltips are not exercised here.
  */
 
-const typeOf = (name: string) => POINT_GROUPS.find(p => p.name === name)!.type;
+const typeOf = (name: string) => POINT_GROUPS.find((p) => p.name === name)!.type;
 
 const render = (name: string, parity: 'polar' | 'axial', rank: TensorRank, timeParity: 'i' | 'c') =>
   renderToStaticMarkup(
-    <LookupChainDiagram groupName={name} groupType={typeOf(name)} parity={parity} rank={rank} timeParity={timeParity} />,
+    <LookupChainDiagram
+      groupName={name}
+      groupType={typeOf(name)}
+      parity={parity}
+      rank={rank}
+      timeParity={timeParity}
+    />,
   );
 
 describe('LookupChainDiagram', () => {
@@ -31,10 +37,10 @@ describe('LookupChainDiagram', () => {
   it("m'm'm polar rank-2 c: source B = mm2, Axial-even read, class E, Table 4d row E2, crossover", () => {
     const html = render("m'm'm", 'polar', 2, 'c');
     expect(html).toContain('B =');
-    expect(html).toContain('mm2');          // KaTeX annotation text for the source symbol
-    expect(html).toContain('Axial, even');  // the highlighted Table-4a column
+    expect(html).toContain('mm2'); // KaTeX annotation text for the source symbol
+    expect(html).toContain('Axial, even'); // the highlighted Table-4a column
     expect(html).toContain('parity crossover');
-    expect(html).toContain('E2');           // class E at rank 2
+    expect(html).toContain('E2'); // class E at rank 2
     expect(html).toContain('Table 4d');
   });
 
@@ -54,7 +60,7 @@ describe('LookupChainDiagram', () => {
     expect(html).toContain('time reversal');
   });
 
-  it('classical variant (i-tensor) reads the group\'s own family class', () => {
+  it("classical variant (i-tensor) reads the group's own family class", () => {
     // 32 polar rank-3 i -> class L, Table 4e row L3 (classical chain, no fork).
     const html = render('32', 'polar', 3, 'i');
     expect(html).toContain('L3');

@@ -20,7 +20,7 @@ import {
  */
 
 function crystalSystemOf(group: string): string {
-  const entry = POINT_GROUPS.find(pg => pg.name === group);
+  const entry = POINT_GROUPS.find((pg) => pg.name === group);
   if (!entry) throw new Error(`No POINT_GROUPS entry for ${group}`);
   return entry.crystalSystem;
 }
@@ -30,13 +30,13 @@ function crystalSystemOf(group: string): string {
  * proper (non-roto-inversion) unprimed 6-fold -- i.e. is trigonal, not hexagonal. */
 function hasUnprimedProperSixFold(group: string): boolean {
   const ops = getSymmetryOperations(group, 1);
-  return ops.some(op => /^6_z/.test(op) && !op.endsWith("'"));
+  return ops.some((op) => /^6_z/.test(op) && !op.endsWith("'"));
 }
 
 describe('conventionMapping.derivation — classification re-derived from group algebra', () => {
   it('NAME_SWAP_GROUPS = every Trigonal/Hexagonal group with an alternate setting and no unprimed proper 6-fold', () => {
     const derived = new Set(
-      Object.keys(ALTERNATE_SETTINGS).filter(group => {
+      Object.keys(ALTERNATE_SETTINGS).filter((group) => {
         const system = crystalSystemOf(group);
         if (system !== 'Trigonal' && system !== 'Hexagonal') return false;
         return !hasUnprimedProperSixFold(group);
@@ -45,7 +45,7 @@ describe('conventionMapping.derivation — classification re-derived from group 
     expect([...derived].sort()).toEqual([...NAME_SWAP_GROUPS].sort());
   });
 
-  it("every Trigonal/Hexagonal alternate-setting group is EITHER a name-swap group OR has an unprimed proper 6-fold (no third case)", () => {
+  it('every Trigonal/Hexagonal alternate-setting group is EITHER a name-swap group OR has an unprimed proper 6-fold (no third case)', () => {
     for (const group of Object.keys(ALTERNATE_SETTINGS)) {
       const system = crystalSystemOf(group);
       if (system !== 'Trigonal' && system !== 'Hexagonal') continue;
@@ -54,15 +54,13 @@ describe('conventionMapping.derivation — classification re-derived from group 
   });
 
   it('MONOCLINIC_GROUPS = every Monoclinic group with an alternate setting', () => {
-    const derived = new Set(
-      Object.keys(ALTERNATE_SETTINGS).filter(group => crystalSystemOf(group) === 'Monoclinic'),
-    );
+    const derived = new Set(Object.keys(ALTERNATE_SETTINGS).filter((group) => crystalSystemOf(group) === 'Monoclinic'));
     expect([...derived].sort()).toEqual([...MONOCLINIC_GROUPS].sort());
   });
 
   it('ORTHO_AXIS_GROUPS = every Orthorhombic group with an alternate setting', () => {
     const derived = new Set(
-      Object.keys(ALTERNATE_SETTINGS).filter(group => crystalSystemOf(group) === 'Orthorhombic'),
+      Object.keys(ALTERNATE_SETTINGS).filter((group) => crystalSystemOf(group) === 'Orthorhombic'),
     );
     expect([...derived].sort()).toEqual([...ORTHO_AXIS_GROUPS].sort());
   });
@@ -113,7 +111,7 @@ describe('conventionMapping.derivation — classification re-derived from group 
     }
   });
 
-  it('the standard (default) setting: Birss is always setting 1; ITC is setting 2 for naming-conflict/monoclinic/m\'m\'m groups and setting 1 for 6\'/mm\'m and all unaffected groups', () => {
+  it("the standard (default) setting: Birss is always setting 1; ITC is setting 2 for naming-conflict/monoclinic/m'm'm groups and setting 1 for 6'/mm'm and all unaffected groups", () => {
     for (const group of Object.keys(ALTERNATE_SETTINGS)) {
       expect(getDefaultSetting(group, 'birss')).toBe(1);
 

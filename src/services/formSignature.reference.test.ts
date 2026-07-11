@@ -22,9 +22,16 @@ const NOMENCLATURE = readFileSync(path.resolve(__dirname, '../../birss-tables/ta
 
 const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
 function tableRows(section: string): string[][] {
-  return section.split('\n').filter(l => l.trim().startsWith('|'))
-    .map(l => l.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+  return section
+    .split('\n')
+    .filter((l) => l.trim().startsWith('|'))
+    .map((l) =>
+      l
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 function sliceBetween(content: string, start: string, end: string): string {
   const s = content.indexOf(start);
@@ -46,14 +53,16 @@ for (const cells of [
 
 // ITC 1.5.8.1: app key -> form block (F1..F11).
 const groupBlock: Record<string, string> = {};
-for (const cells of tableRows(sliceBetween(ref('ITC-table-1.5.8.1-magnetoelectric-groups.md'), '## Group list', '## Matrix forms'))) {
+for (const cells of tableRows(
+  sliceBetween(ref('ITC-table-1.5.8.1-magnetoelectric-groups.md'), '## Group list', '## Matrix forms'),
+)) {
   if (!/^F\d+$/.test(cells[0])) continue;
   const key = schToKey[cells[1].replace(/S6/g, 'C3i')];
   if (key) groupBlock[key] = cells[0];
 }
 
 const ME_SPEC: TensorSpec = { rank: 2, parity: 'axial', timeParity: 'c', intrinsic: 'none' };
-const ALL = POINT_GROUPS.map(g => g.name);
+const ALL = POINT_GROUPS.map((g) => g.name);
 
 /** Canonicalize a partition (map from key -> bucket id) into a comparable set of sorted group lists. */
 function partitionAsSetOfSets(bucketOf: Map<string, string>): Set<string> {
@@ -62,7 +71,7 @@ function partitionAsSetOfSets(bucketOf: Map<string, string>): Set<string> {
     if (!buckets.has(bucket)) buckets.set(bucket, []);
     buckets.get(bucket)!.push(group);
   }
-  return new Set([...buckets.values()].map(gs => gs.slice().sort().join(',')));
+  return new Set([...buckets.values()].map((gs) => gs.slice().sort().join(',')));
 }
 
 describe('getFormSignature partition == ITC 1.5.8.1 form blocks (magnetoelectric)', () => {
@@ -72,13 +81,13 @@ describe('getFormSignature partition == ITC 1.5.8.1 form blocks (magnetoelectric
 
   it('the canonical-signature partition of the 58 ME groups equals their F1-F11 block partition', () => {
     const meGroups = Object.keys(groupBlock);
-    const byBlock = new Map<string, string>(meGroups.map(g => [g, groupBlock[g]]));
-    const bySignature = new Map<string, string>(meGroups.map(g => [g, getCanonicalFormSignature(g, ME_SPEC)]));
+    const byBlock = new Map<string, string>(meGroups.map((g) => [g, groupBlock[g]]));
+    const bySignature = new Map<string, string>(meGroups.map((g) => [g, getCanonicalFormSignature(g, ME_SPEC)]));
     expect(partitionAsSetOfSets(bySignature)).toEqual(partitionAsSetOfSets(byBlock));
   });
 
   it('the other 64 (non-ME) groups all share the zero signature', () => {
-    const nonME = ALL.filter(g => !(g in groupBlock));
+    const nonME = ALL.filter((g) => !(g in groupBlock));
     expect(nonME).toHaveLength(64);
     for (const g of nonME) {
       expect(getCanonicalFormSignature(g, ME_SPEC), g).toBe('r2:zero');

@@ -34,16 +34,16 @@ export const identity: Matrix3x3 = {
   m: [
     [1, 0, 0],
     [0, 1, 0],
-    [0, 0, 1]
-  ]
+    [0, 0, 1],
+  ],
 };
 
 export const inversion: Matrix3x3 = {
   m: [
     [-1, 0, 0],
     [0, -1, 0],
-    [0, 0, -1]
-  ]
+    [0, 0, -1],
+  ],
 };
 
 // Rotation matrices
@@ -55,8 +55,8 @@ export function getRotationZ(angleDeg: number): Matrix3x3 {
     m: [
       [c, -s, 0],
       [s, c, 0],
-      [0, 0, 1]
-    ]
+      [0, 0, 1],
+    ],
   };
 }
 
@@ -68,8 +68,8 @@ export function getRotationX(angleDeg: number): Matrix3x3 {
     m: [
       [1, 0, 0],
       [0, c, -s],
-      [0, s, c]
-    ]
+      [0, s, c],
+    ],
   };
 }
 
@@ -81,13 +81,17 @@ export function getRotationY(angleDeg: number): Matrix3x3 {
     m: [
       [c, 0, s],
       [0, 1, 0],
-      [-s, 0, c]
-    ]
+      [-s, 0, c],
+    ],
   };
 }
 
 export function multiply(a: Matrix3x3, b: Matrix3x3): Matrix3x3 {
-  const res = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  const res = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ];
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
@@ -97,14 +101,16 @@ export function multiply(a: Matrix3x3, b: Matrix3x3): Matrix3x3 {
   }
   return {
     m: res,
-    isAntiUnitary: (a.isAntiUnitary || false) !== (b.isAntiUnitary || false)
+    isAntiUnitary: (a.isAntiUnitary || false) !== (b.isAntiUnitary || false),
   };
 }
 
 export function det(a: Matrix3x3): number {
-  return a.m[0][0] * (a.m[1][1] * a.m[2][2] - a.m[1][2] * a.m[2][1]) -
-         a.m[0][1] * (a.m[1][0] * a.m[2][2] - a.m[1][2] * a.m[2][0]) +
-         a.m[0][2] * (a.m[1][0] * a.m[2][1] - a.m[1][1] * a.m[2][0]);
+  return (
+    a.m[0][0] * (a.m[1][1] * a.m[2][2] - a.m[1][2] * a.m[2][1]) -
+    a.m[0][1] * (a.m[1][0] * a.m[2][2] - a.m[1][2] * a.m[2][0]) +
+    a.m[0][2] * (a.m[1][0] * a.m[2][1] - a.m[1][1] * a.m[2][0])
+  );
 }
 
 export const timeReversal: Matrix3x3 = { ...identity, isAntiUnitary: true };
@@ -112,85 +118,360 @@ export const timeReversal: Matrix3x3 = { ...identity, isAntiUnitary: true };
 // Point Group Generators
 export const GENERATORS: Record<string, Matrix3x3[]> = {
   // Type I: Standard Point Groups
-  "1": [identity],
-  "-1": [inversion],
-  "2": [getRotationZ(180)],
-  "m": [{ m: [[1, 0, 0], [0, 1, 0], [0, 0, -1]] }],
-  "2/m": [getRotationZ(180), inversion],
-  "222": [getRotationZ(180), getRotationX(180)],
-  "mm2": [getRotationZ(180), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }],
-  "mmm": [getRotationZ(180), getRotationX(180), inversion],
-  "4": [getRotationZ(90)],
-  "-4": [multiply(getRotationZ(90), inversion)],
-  "4/m": [getRotationZ(90), inversion],
-  "422": [getRotationZ(90), getRotationX(180)],
-  "4mm": [getRotationZ(90), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }],
-  "-42m": [multiply(getRotationZ(90), inversion), getRotationX(180)],
-  "4/mmm": [getRotationZ(90), getRotationX(180), inversion],
-  "3": [getRotationZ(120)],
-  "-3": [multiply(getRotationZ(120), inversion)],
-  "32": [getRotationZ(120), getRotationY(180)],
-  "3m": [getRotationZ(120), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }],
-  "-3m": [getRotationZ(120), getRotationY(180), inversion],
-  "6": [getRotationZ(60)],
-  "-6": [multiply(getRotationZ(60), inversion)],
-  "6/m": [getRotationZ(60), inversion],
-  "622": [getRotationZ(60), getRotationY(180)],
-  "6mm": [getRotationZ(60), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }],
-  "-6m2": [multiply(getRotationZ(60), inversion), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }],
-  "6/mmm": [getRotationZ(60), getRotationY(180), inversion],
-  "23": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }],
-  "m-3": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, inversion],
-  "432": [getRotationZ(90), getRotationX(90), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }],
-  "-43m": [multiply(getRotationZ(90), inversion), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, { m: [[0, 1, 0], [1, 0, 0], [0, 0, 1]] }],
-  "m-3m": [getRotationZ(90), getRotationX(90), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, inversion],
+  '1': [identity],
+  '-1': [inversion],
+  '2': [getRotationZ(180)],
+  m: [
+    {
+      m: [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, -1],
+      ],
+    },
+  ],
+  '2/m': [getRotationZ(180), inversion],
+  '222': [getRotationZ(180), getRotationX(180)],
+  mm2: [
+    getRotationZ(180),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  mmm: [getRotationZ(180), getRotationX(180), inversion],
+  '4': [getRotationZ(90)],
+  '-4': [multiply(getRotationZ(90), inversion)],
+  '4/m': [getRotationZ(90), inversion],
+  '422': [getRotationZ(90), getRotationX(180)],
+  '4mm': [
+    getRotationZ(90),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  '-42m': [multiply(getRotationZ(90), inversion), getRotationX(180)],
+  '4/mmm': [getRotationZ(90), getRotationX(180), inversion],
+  '3': [getRotationZ(120)],
+  '-3': [multiply(getRotationZ(120), inversion)],
+  '32': [getRotationZ(120), getRotationY(180)],
+  '3m': [
+    getRotationZ(120),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  '-3m': [getRotationZ(120), getRotationY(180), inversion],
+  '6': [getRotationZ(60)],
+  '-6': [multiply(getRotationZ(60), inversion)],
+  '6/m': [getRotationZ(60), inversion],
+  '622': [getRotationZ(60), getRotationY(180)],
+  '6mm': [
+    getRotationZ(60),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  '-6m2': [
+    multiply(getRotationZ(60), inversion),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  '6/mmm': [getRotationZ(60), getRotationY(180), inversion],
+  '23': [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+  ],
+  'm-3': [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    inversion,
+  ],
+  '432': [
+    getRotationZ(90),
+    getRotationX(90),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+  ],
+  '-43m': [
+    multiply(getRotationZ(90), inversion),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    {
+      m: [
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  'm-3m': [
+    getRotationZ(90),
+    getRotationX(90),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    inversion,
+  ],
 
   // Type II: Gray Groups (G + 1'G)
   "11'": [timeReversal],
   "-11'": [inversion, timeReversal],
   "21'": [getRotationZ(180), timeReversal],
-  "m1'": [{ m: [[1, 0, 0], [0, 1, 0], [0, 0, -1]] }, timeReversal],
+  "m1'": [
+    {
+      m: [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, -1],
+      ],
+    },
+    timeReversal,
+  ],
   "2/m1'": [getRotationZ(180), inversion, timeReversal],
   "2221'": [getRotationZ(180), getRotationX(180), timeReversal],
-  "mm21'": [getRotationZ(180), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }, timeReversal],
+  "mm21'": [
+    getRotationZ(180),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+    timeReversal,
+  ],
   "mmm1'": [getRotationZ(180), getRotationX(180), inversion, timeReversal],
   "41'": [getRotationZ(90), timeReversal],
   "-41'": [multiply(getRotationZ(90), inversion), timeReversal],
   "4/m1'": [getRotationZ(90), inversion, timeReversal],
   "4221'": [getRotationZ(90), getRotationX(180), timeReversal],
-  "4mm1'": [getRotationZ(90), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }, timeReversal],
+  "4mm1'": [
+    getRotationZ(90),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+    timeReversal,
+  ],
   "-42m1'": [multiply(getRotationZ(90), inversion), getRotationX(180), timeReversal],
   "4/mmm1'": [getRotationZ(90), getRotationX(180), inversion, timeReversal],
   "31'": [getRotationZ(120), timeReversal],
   "-31'": [multiply(getRotationZ(120), inversion), timeReversal],
   "321'": [getRotationZ(120), getRotationY(180), timeReversal],
-  "3m1'": [getRotationZ(120), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, timeReversal],
+  "3m1'": [
+    getRotationZ(120),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+    timeReversal,
+  ],
   "-3m1'": [getRotationZ(120), getRotationY(180), inversion, timeReversal],
   "61'": [getRotationZ(60), timeReversal],
   "-61'": [multiply(getRotationZ(60), inversion), timeReversal],
   "6/m1'": [getRotationZ(60), inversion, timeReversal],
   "6221'": [getRotationZ(60), getRotationY(180), timeReversal],
-  "6mm1'": [getRotationZ(60), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, timeReversal],
-  "-6m21'": [multiply(getRotationZ(60), inversion), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, timeReversal],
+  "6mm1'": [
+    getRotationZ(60),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+    timeReversal,
+  ],
+  "-6m21'": [
+    multiply(getRotationZ(60), inversion),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+    timeReversal,
+  ],
   "6/mmm1'": [getRotationZ(60), getRotationY(180), inversion, timeReversal],
-  "231'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, timeReversal],
-  "m-31'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, inversion, timeReversal],
-  "4321'": [getRotationZ(90), getRotationX(90), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, timeReversal],
-  "-43m1'": [multiply(getRotationZ(90), inversion), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, { m: [[0, 1, 0], [1, 0, 0], [0, 0, 1]] }, timeReversal],
-  "m-3m1'": [getRotationZ(90), getRotationX(90), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, inversion, timeReversal],
+  "231'": [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    timeReversal,
+  ],
+  "m-31'": [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    inversion,
+    timeReversal,
+  ],
+  "4321'": [
+    getRotationZ(90),
+    getRotationX(90),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    timeReversal,
+  ],
+  "-43m1'": [
+    multiply(getRotationZ(90), inversion),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    {
+      m: [
+        [0, 1, 0],
+        [1, 0, 0],
+        [0, 0, 1],
+      ],
+    },
+    timeReversal,
+  ],
+  "m-3m1'": [
+    getRotationZ(90),
+    getRotationX(90),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    inversion,
+    timeReversal,
+  ],
 
   // Type III: Black-and-White Groups (H + 1'(G-H))
   "-1'": [multiply(inversion, timeReversal)],
   "2'": [multiply(getRotationZ(180), timeReversal)],
-  "m'": [multiply({ m: [[1, 0, 0], [0, 1, 0], [0, 0, -1]] }, timeReversal)],
+  "m'": [
+    multiply(
+      {
+        m: [
+          [1, 0, 0],
+          [0, 1, 0],
+          [0, 0, -1],
+        ],
+      },
+      timeReversal,
+    ),
+  ],
   "2'/m'": [multiply(getRotationZ(180), timeReversal), inversion],
   "2/m'": [getRotationZ(180), multiply(inversion, timeReversal)],
   "2'/m": [multiply(getRotationZ(180), timeReversal), multiply(inversion, timeReversal)],
   "2'2'2": [getRotationZ(180), multiply(getRotationX(180), timeReversal)],
-  "m'm'2": [getRotationZ(180), multiply({ m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }, timeReversal)],
-  "2'm'm": [{ m: [[1, 0, 0], [0, 1, 0], [0, 0, -1]] }, multiply(getRotationX(180), timeReversal)],
+  "m'm'2": [
+    getRotationZ(180),
+    multiply(
+      {
+        m: [
+          [-1, 0, 0],
+          [0, 1, 0],
+          [0, 0, 1],
+        ],
+      },
+      timeReversal,
+    ),
+  ],
+  "2'm'm": [
+    {
+      m: [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, -1],
+      ],
+    },
+    multiply(getRotationX(180), timeReversal),
+  ],
   "m'm'm'": [getRotationZ(180), getRotationX(180), multiply(inversion, timeReversal)],
-  "mmm'": [getRotationZ(180), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }, multiply(inversion, timeReversal)],
+  "mmm'": [
+    getRotationZ(180),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
   "m'm'm": [getRotationZ(180), inversion, multiply(getRotationX(180), timeReversal)],
   "4'": [multiply(getRotationZ(90), timeReversal)],
   "-4'": [multiply(multiply(getRotationZ(90), inversion), timeReversal)],
@@ -199,21 +480,83 @@ export const GENERATORS: Record<string, Matrix3x3[]> = {
   "4'/m": [multiply(getRotationZ(90), timeReversal), inversion],
   "4'22'": [multiply(getRotationZ(90), timeReversal), getRotationX(180)],
   "42'2'": [getRotationZ(90), multiply(getRotationX(180), timeReversal)],
-  "4'mm'": [multiply(getRotationZ(90), timeReversal), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }],
-  "4m'm'": [getRotationZ(90), multiply({ m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }, timeReversal)],
+  "4'mm'": [
+    multiply(getRotationZ(90), timeReversal),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  "4m'm'": [
+    getRotationZ(90),
+    multiply(
+      {
+        m: [
+          [-1, 0, 0],
+          [0, 1, 0],
+          [0, 0, 1],
+        ],
+      },
+      timeReversal,
+    ),
+  ],
   "-4'2m'": [multiply(multiply(getRotationZ(90), inversion), timeReversal), getRotationX(180)],
-  "-4'm2'": [multiply(multiply(getRotationZ(90), inversion), timeReversal), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }],
+  "-4'm2'": [
+    multiply(multiply(getRotationZ(90), inversion), timeReversal),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
   "-42'm'": [multiply(getRotationZ(90), inversion), multiply(getRotationX(180), timeReversal)],
   "4/m'm'm'": [getRotationZ(90), getRotationX(180), multiply(inversion, timeReversal)],
-  "4/m'mm": [getRotationZ(90), { m: [[-1, 0, 0], [0, 1, 0], [0, 0, 1]] }, multiply(inversion, timeReversal)],
+  "4/m'mm": [
+    getRotationZ(90),
+    {
+      m: [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
   "4'/mmm'": [multiply(getRotationZ(90), timeReversal), getRotationX(180), inversion],
   "4'/m'm'm": [multiply(getRotationZ(90), inversion), getRotationY(180), multiply(inversion, timeReversal)],
   "4/mm'm'": [getRotationZ(90), inversion, multiply(getRotationX(180), timeReversal)],
   "-3'": [getRotationZ(120), multiply(inversion, timeReversal)],
   "32'": [getRotationZ(120), multiply(getRotationY(180), timeReversal)],
-  "3m'": [getRotationZ(120), multiply({ m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, timeReversal)],
+  "3m'": [
+    getRotationZ(120),
+    multiply(
+      {
+        m: [
+          [1, 0, 0],
+          [0, -1, 0],
+          [0, 0, 1],
+        ],
+      },
+      timeReversal,
+    ),
+  ],
   "-3'm'": [getRotationZ(120), getRotationY(180), multiply(inversion, timeReversal)],
-  "-3'm": [getRotationZ(120), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, multiply(inversion, timeReversal)],
+  "-3'm": [
+    getRotationZ(120),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
   "-3m'": [getRotationZ(120), inversion, multiply(getRotationY(180), timeReversal)],
   "6'": [multiply(getRotationZ(60), timeReversal)],
   "-6'": [multiply(multiply(getRotationZ(60), inversion), timeReversal)],
@@ -222,33 +565,150 @@ export const GENERATORS: Record<string, Matrix3x3[]> = {
   "6'/m": [multiply(getRotationZ(60), timeReversal), multiply(inversion, timeReversal)],
   "6'22'": [multiply(getRotationZ(60), timeReversal), getRotationY(180)],
   "62'2'": [getRotationZ(60), multiply(getRotationY(180), timeReversal)],
-  "6'mm'": [multiply(getRotationZ(60), timeReversal), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }],
-  "6m'm'": [getRotationZ(60), multiply({ m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, timeReversal)],
+  "6'mm'": [
+    multiply(getRotationZ(60), timeReversal),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  "6m'm'": [
+    getRotationZ(60),
+    multiply(
+      {
+        m: [
+          [1, 0, 0],
+          [0, -1, 0],
+          [0, 0, 1],
+        ],
+      },
+      timeReversal,
+    ),
+  ],
   "-6'2m'": [multiply(multiply(getRotationZ(60), inversion), timeReversal), getRotationY(180)],
-  "-6'm2'": [multiply(multiply(getRotationZ(60), inversion), timeReversal), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }],
-  "-6m'2'": [multiply(getRotationZ(60), inversion), multiply({ m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, timeReversal)],
+  "-6'm2'": [
+    multiply(multiply(getRotationZ(60), inversion), timeReversal),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+  ],
+  "-6m'2'": [
+    multiply(getRotationZ(60), inversion),
+    multiply(
+      {
+        m: [
+          [1, 0, 0],
+          [0, -1, 0],
+          [0, 0, 1],
+        ],
+      },
+      timeReversal,
+    ),
+  ],
   "6/m'm'm'": [getRotationZ(60), getRotationY(180), multiply(inversion, timeReversal)],
-  "6/m'mm": [getRotationZ(60), { m: [[1, 0, 0], [0, -1, 0], [0, 0, 1]] }, multiply(inversion, timeReversal)],
+  "6/m'mm": [
+    getRotationZ(60),
+    {
+      m: [
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
   "6'/m'mm'": [multiply(getRotationZ(60), timeReversal), getRotationY(180), inversion],
   "6'/mm'm": [multiply(getRotationZ(60), timeReversal), getRotationY(180), multiply(inversion, timeReversal)],
   "6/mm'm'": [getRotationZ(60), inversion, multiply(getRotationY(180), timeReversal)],
-  "m'-3'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(inversion, timeReversal)],
-  "4'32'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(getRotationZ(90), timeReversal)],
-  "-4'3m'": [getRotationZ(180), getRotationX(180), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(multiply(getRotationZ(90), inversion), timeReversal)],
-  "m'-3'm'": [getRotationZ(90), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(inversion, timeReversal)],
-  "m'-3'm": [multiply(getRotationZ(90), inversion), { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(inversion, timeReversal)],
-  "m-3m'": [inversion, { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] }, multiply(getRotationZ(90), timeReversal)],
+  "m'-3'": [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
+  "4'32'": [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    multiply(getRotationZ(90), timeReversal),
+  ],
+  "-4'3m'": [
+    getRotationZ(180),
+    getRotationX(180),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    multiply(multiply(getRotationZ(90), inversion), timeReversal),
+  ],
+  "m'-3'm'": [
+    getRotationZ(90),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
+  "m'-3'm": [
+    multiply(getRotationZ(90), inversion),
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    multiply(inversion, timeReversal),
+  ],
+  "m-3m'": [
+    inversion,
+    {
+      m: [
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+      ],
+    },
+    multiply(getRotationZ(90), timeReversal),
+  ],
 };
 
 /** Snaps each matrix entry to the nearest SNAP_VALUES member (within SNAP_EPSILON), to stop floating-point drift from accumulating across repeated products during closure. */
 export function snapMatrix(a: Matrix3x3): Matrix3x3 {
   return {
-    m: a.m.map(row => row.map(v => {
-      for (const snap of SNAP_VALUES) {
-        if (Math.abs(v - snap) < SNAP_EPSILON) return snap;
-      }
-      return v;
-    })),
+    m: a.m.map((row) =>
+      row.map((v) => {
+        for (const snap of SNAP_VALUES) {
+          if (Math.abs(v - snap) < SNAP_EPSILON) return snap;
+        }
+        return v;
+      }),
+    ),
     isAntiUnitary: a.isAntiUnitary,
   };
 }
@@ -262,7 +722,7 @@ export function getFullGroup(generators: Matrix3x3[], groupName = '<unknown>'): 
     for (let i = 0; i < currentSize; i++) {
       for (let j = 0; j < currentSize; j++) {
         const prod = snapMatrix(multiply(group[i], group[j]));
-        if (!group.some(m => isSameMatrix(m, prod))) {
+        if (!group.some((m) => isSameMatrix(m, prod))) {
           if (group.length >= MAX_GROUP_SIZE) {
             throw new Error(`Group closure failed to terminate for ${groupName} — check GENERATORS entry`);
           }
@@ -299,7 +759,7 @@ export function isCentrosymmetric(groupName: string): boolean {
   const generators = GENERATORS[groupName];
   if (!generators) return false;
   const group = getCachedFullGroup(groupName, generators);
-  return group.some(m => isSameMatrix(m, inversion));
+  return group.some((m) => isSameMatrix(m, inversion));
 }
 
 export function getParentGroup(groupName: string): string | null {
@@ -314,9 +774,9 @@ export function getHalvingSubgroup(groupName: string): string[] | null {
   const generators = GENERATORS[groupName];
   if (!generators) return null;
   const group = getCachedFullGroup(groupName, generators);
-  const unitary = group.filter(m => !m.isAntiUnitary);
+  const unitary = group.filter((m) => !m.isAntiUnitary);
   return unitary.map(formatMatrixSymbol).sort((a, b) => {
-    const order = ["1", "-1", "2", "3", "4", "6", "-3", "-4", "-6", "m"];
+    const order = ['1', '-1', '2', '3', '4', '6', '-3', '-4', '-6', 'm'];
     const getBase = (s: string) => s.replace(/_.*$/, '').replace(/[⁺⁻']/g, '');
     return order.indexOf(getBase(a)) - order.indexOf(getBase(b));
   });
@@ -331,9 +791,27 @@ export interface SettingDef {
   rotation: Matrix3x3;
 }
 
-const ORTHO_CYCLIC: Matrix3x3 = { m: [[0, 0, 1], [1, 0, 0], [0, 1, 0]] };
-const ORTHO_REVERSE: Matrix3x3 = { m: [[0, 1, 0], [0, 0, 1], [1, 0, 0]] };
-const MONO_YZ_SWAP: Matrix3x3 = { m: [[-1, 0, 0], [0, 0, 1], [0, 1, 0]] };
+const ORTHO_CYCLIC: Matrix3x3 = {
+  m: [
+    [0, 0, 1],
+    [1, 0, 0],
+    [0, 1, 0],
+  ],
+};
+const ORTHO_REVERSE: Matrix3x3 = {
+  m: [
+    [0, 1, 0],
+    [0, 0, 1],
+    [1, 0, 0],
+  ],
+};
+const MONO_YZ_SWAP: Matrix3x3 = {
+  m: [
+    [-1, 0, 0],
+    [0, 0, 1],
+    [0, 1, 0],
+  ],
+};
 
 export const ALTERNATE_SETTINGS: Record<string, SettingDef[]> = {
   // Phase 1 — Mechanism B (time-reversal-broken equivalence)
@@ -341,80 +819,100 @@ export const ALTERNATE_SETTINGS: Record<string, SettingDef[]> = {
   // each entry's own computed operations (getSymmetryOperations) — see B2.3 derivation
   // in WORKORDER-close-open-items.md; cross-checked for name collisions against the
   // canonical 122-group list (pointGroups.ts).
-  "4'mm'":    [{ name: "4'm'm", rotation: getRotationZ(45) }],
-  "4'22'":    [{ name: "4'2'2", rotation: getRotationZ(45) }],
+  "4'mm'": [{ name: "4'm'm", rotation: getRotationZ(45) }],
+  "4'22'": [{ name: "4'2'2", rotation: getRotationZ(45) }],
   "4'/m'm'm": [{ name: "4'/m'mm'", rotation: getRotationZ(45) }],
-  "4'/mmm'":  [{ name: "4'/mm'm", rotation: getRotationZ(45) }],
-  "6'mm'":    [{ name: "6'm'm", rotation: getRotationZ(30) }],
-  "6'22'":    [{ name: "6'2'2", rotation: getRotationZ(30) }],
+  "4'/mmm'": [{ name: "4'/mm'm", rotation: getRotationZ(45) }],
+  "6'mm'": [{ name: "6'm'm", rotation: getRotationZ(30) }],
+  "6'22'": [{ name: "6'2'2", rotation: getRotationZ(30) }],
   "6'/m'mm'": [{ name: "6'/m'm'm", rotation: getRotationZ(30) }],
-  "6'/mm'm":  [{ name: "6'/mmm'", rotation: getRotationZ(30) }],
+  "6'/mm'm": [{ name: "6'/mmm'", rotation: getRotationZ(30) }],
 
   // Phase 2 — Mechanism A (classical setting ambiguity)
-  "-4'2m'":  [{ name: "-4'm'2", rotation: getRotationZ(45) }],
-  "-4'm2'":  [{ name: "-4'2'm", rotation: getRotationZ(45) }],
-  "-42'm'":  [{ name: "-4m'2'", rotation: getRotationZ(45) }],
-  "32'":     [{ name: "312'", rotation: getRotationZ(30) }],
-  "3m'":     [{ name: "31m'", rotation: getRotationZ(30) }],
+  "-4'2m'": [{ name: "-4'm'2", rotation: getRotationZ(45) }],
+  "-4'm2'": [{ name: "-4'2'm", rotation: getRotationZ(45) }],
+  "-42'm'": [{ name: "-4m'2'", rotation: getRotationZ(45) }],
+  "32'": [{ name: "312'", rotation: getRotationZ(30) }],
+  "3m'": [{ name: "31m'", rotation: getRotationZ(30) }],
   // -3'm, -3'm', -3m' (trigonal D3d family) — labels derived from each entry's own
   // operations, by the digit-insertion convention of the existing "-3m" -> "-31m"
   // pair: the mirror token's prime status is fixed per entry, only the disambiguating
   // digit changes (e.g. -3'm: mirror stays unprimed at both settings -> -3'1m).
-  "-3'm":    [{ name: "-3'1m", rotation: getRotationZ(30) }],
-  "-3'm'":   [{ name: "-3'1m'", rotation: getRotationZ(30) }],
-  "-3m'":    [{ name: "-31m'", rotation: getRotationZ(30) }],
+  "-3'm": [{ name: "-3'1m", rotation: getRotationZ(30) }],
+  "-3'm'": [{ name: "-3'1m'", rotation: getRotationZ(30) }],
+  "-3m'": [{ name: "-31m'", rotation: getRotationZ(30) }],
   // -6'2m', -6'm2', -6m'2' (hexagonal D3h family) — labels derived the same way,
   // using the slot convention confirmed against the existing "-6m2" -> "-62m" pair
   // (position 2 = the {150°,30°,y} mirror/2-fold family, position 3 = {120°,60°,x}).
-  "-6'2m'":  [{ name: "-6'm'2", rotation: getRotationZ(30) }],
-  "-6'm2'":  [{ name: "-6'2'm", rotation: getRotationZ(30) }],
-  "-6m'2'":  [{ name: "-62'm'", rotation: getRotationZ(30) }],
+  "-6'2m'": [{ name: "-6'm'2", rotation: getRotationZ(30) }],
+  "-6'm2'": [{ name: "-6'2'm", rotation: getRotationZ(30) }],
+  "-6m'2'": [{ name: "-62'm'", rotation: getRotationZ(30) }],
 
   // Phase 2 — Orthorhombic axis orientation (3 settings)
-  "2'2'2":  [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
-  "2'm'm":  [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
-  "m'm'2":  [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
-  "m'm'm":  [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
-  "mmm'":   [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
+  "2'2'2": [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
+  "2'm'm": [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
+  "m'm'2": [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
+  "m'm'm": [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
+  "mmm'": [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
 
   // Phase 2 — Monoclinic axis choice (z-unique Birss → b-unique ITC)
-  "2'":     [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "m'":     [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "2'/m":   [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "2'/m'":  [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "2/m'":   [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
+  "2'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  "m'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  "2'/m": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  "2'/m'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  "2/m'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
 
   // --- B1: Type I (colourless) ---
   // Orthorhombic axis orientation (3 settings). 222 and mmm have no entry: all three
   // axes are symmetry-equivalent for them, so the rotated "settings" are byte-identical
   // to the Default and the selector would be spurious.
-  "mm2":   [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
+  mm2: [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
   // Monoclinic axis choice (z/c-unique Birss → b-unique ITC)
-  "2":     [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "m":     [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "2/m":   [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
+  '2': [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  m: [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  '2/m': [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
   // Mechanism A (classical setting ambiguity)
-  "-42m":  [{ name: "-4m2", rotation: getRotationZ(45) }],
-  "32":    [{ name: "312",  rotation: getRotationZ(30) }],
-  "3m":    [{ name: "31m",  rotation: getRotationZ(30) }],
-  "-3m":   [{ name: "-31m", rotation: getRotationZ(30) }],
-  "-6m2":  [{ name: "-62m", rotation: getRotationZ(30) }],
+  '-42m': [{ name: '-4m2', rotation: getRotationZ(45) }],
+  '32': [{ name: '312', rotation: getRotationZ(30) }],
+  '3m': [{ name: '31m', rotation: getRotationZ(30) }],
+  '-3m': [{ name: '-31m', rotation: getRotationZ(30) }],
+  '-6m2': [{ name: '-62m', rotation: getRotationZ(30) }],
 
   // --- B1: Type II (grey) — same transforms; ε preserved automatically ---
   // 2221' and mmm1' have no entry for the same reason as 222/mmm above.
-  "mm21'":  [{ name: "a-unique", rotation: ORTHO_CYCLIC }, { name: "b-unique", rotation: ORTHO_REVERSE }],
-  "21'":    [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "m1'":    [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
-  "2/m1'":  [{ name: "Second (b-unique, ITC)", rotation: MONO_YZ_SWAP }],
+  "mm21'": [
+    { name: 'a-unique', rotation: ORTHO_CYCLIC },
+    { name: 'b-unique', rotation: ORTHO_REVERSE },
+  ],
+  "21'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  "m1'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
+  "2/m1'": [{ name: 'Second (b-unique, ITC)', rotation: MONO_YZ_SWAP }],
   "-42m1'": [{ name: "-4m21'", rotation: getRotationZ(45) }],
-  "321'":   [{ name: "3121'",  rotation: getRotationZ(30) }],
-  "3m1'":   [{ name: "31m1'",  rotation: getRotationZ(30) }],
-  "-3m1'":  [{ name: "-31m1'", rotation: getRotationZ(30) }],
+  "321'": [{ name: "3121'", rotation: getRotationZ(30) }],
+  "3m1'": [{ name: "31m1'", rotation: getRotationZ(30) }],
+  "-3m1'": [{ name: "-31m1'", rotation: getRotationZ(30) }],
   "-6m21'": [{ name: "-62m1'", rotation: getRotationZ(30) }],
 };
 
-const GROUPS_WITH_FUTURE_SETTINGS: Record<string, number> = {
-};
+const GROUPS_WITH_FUTURE_SETTINGS: Record<string, number> = {};
 
 export function getAlternateSettings(groupName: string): SettingDef[] | null {
   return ALTERNATE_SETTINGS[groupName] ?? null;
@@ -445,7 +943,7 @@ export function getTransformedGenerators(groupName: string, setting: number): Ma
   const S = settingDefs[setting - 2].rotation;
   const S_inv = transpose(S);
 
-  return baseGenerators.map(g => {
+  return baseGenerators.map((g) => {
     const transformed = multiply(multiply(S, g), S_inv);
     return snapMatrix({ ...transformed, isAntiUnitary: g.isAntiUnitary });
   });
@@ -455,134 +953,190 @@ function formatMatrixSymbol(m: Matrix3x3): string {
   const { m: mat, isAntiUnitary } = m;
   const tr = Math.round(mat[0][0] + mat[1][1] + mat[2][2]);
   const d = Math.round(det(m));
-  const prime = isAntiUnitary ? "'" : "";
-  let base = "";
-  let axis = "";
-  let sign = "";
+  const prime = isAntiUnitary ? "'" : '';
+  let base = '';
+  let axis = '';
+  let sign = '';
 
-    const formatAxis = (x: number, y: number, z: number): { label: string; nx: number; ny: number; nz: number } => {
-      const max = Math.max(Math.abs(x), Math.abs(y), Math.abs(z));
-      if (max < AXIS_EPSILON) return { label: "", nx: 0, ny: 0, nz: 0 };
-      let nx = x / max;
-      let ny = y / max;
-      let nz = z / max;
+  const formatAxis = (x: number, y: number, z: number): { label: string; nx: number; ny: number; nz: number } => {
+    const max = Math.max(Math.abs(x), Math.abs(y), Math.abs(z));
+    if (max < AXIS_EPSILON) return { label: '', nx: 0, ny: 0, nz: 0 };
+    let nx = x / max;
+    let ny = y / max;
+    let nz = z / max;
 
-      if (nx < -AXIS_EPSILON || (Math.abs(nx) < AXIS_EPSILON && ny < -AXIS_EPSILON) || (Math.abs(nx) < AXIS_EPSILON && Math.abs(ny) < AXIS_EPSILON && nz < -AXIS_EPSILON)) {
-        nx = -nx; ny = -ny; nz = -nz;
-      }
+    if (
+      nx < -AXIS_EPSILON ||
+      (Math.abs(nx) < AXIS_EPSILON && ny < -AXIS_EPSILON) ||
+      (Math.abs(nx) < AXIS_EPSILON && Math.abs(ny) < AXIS_EPSILON && nz < -AXIS_EPSILON)
+    ) {
+      nx = -nx;
+      ny = -ny;
+      nz = -nz;
+    }
 
-      if (Math.abs(nx - 1) < CARDINAL_AXIS_EPSILON && Math.abs(ny) < CARDINAL_AXIS_EPSILON && Math.abs(nz) < CARDINAL_AXIS_EPSILON) return { label: "x", nx, ny, nz };
-      if (Math.abs(nx) < CARDINAL_AXIS_EPSILON && Math.abs(ny - 1) < CARDINAL_AXIS_EPSILON && Math.abs(nz) < CARDINAL_AXIS_EPSILON) return { label: "y", nx, ny, nz };
-      if (Math.abs(nx) < CARDINAL_AXIS_EPSILON && Math.abs(ny) < CARDINAL_AXIS_EPSILON && Math.abs(nz - 1) < CARDINAL_AXIS_EPSILON) return { label: "z", nx, ny, nz };
+    if (
+      Math.abs(nx - 1) < CARDINAL_AXIS_EPSILON &&
+      Math.abs(ny) < CARDINAL_AXIS_EPSILON &&
+      Math.abs(nz) < CARDINAL_AXIS_EPSILON
+    )
+      return { label: 'x', nx, ny, nz };
+    if (
+      Math.abs(nx) < CARDINAL_AXIS_EPSILON &&
+      Math.abs(ny - 1) < CARDINAL_AXIS_EPSILON &&
+      Math.abs(nz) < CARDINAL_AXIS_EPSILON
+    )
+      return { label: 'y', nx, ny, nz };
+    if (
+      Math.abs(nx) < CARDINAL_AXIS_EPSILON &&
+      Math.abs(ny) < CARDINAL_AXIS_EPSILON &&
+      Math.abs(nz - 1) < CARDINAL_AXIS_EPSILON
+    )
+      return { label: 'z', nx, ny, nz };
 
-      if (Math.abs(nz) < CARDINAL_AXIS_EPSILON) {
-        let angle = Math.round(Math.atan2(ny, nx) * 180 / Math.PI);
-        if (angle < 0) angle += 180;
-        if (angle === 180) angle = 0;
-        return { label: `${angle}°`, nx, ny, nz };
-      }
+    if (Math.abs(nz) < CARDINAL_AXIS_EPSILON) {
+      let angle = Math.round((Math.atan2(ny, nx) * 180) / Math.PI);
+      if (angle < 0) angle += 180;
+      if (angle === 180) angle = 0;
+      return { label: `${angle}°`, nx, ny, nz };
+    }
 
-      let bestMult = 1;
-      let minError = 100;
-      for (let mult = 1; mult <= 6; mult++) {
-         const err = Math.abs(nx*mult - Math.round(nx*mult)) +
-                     Math.abs(ny*mult - Math.round(ny*mult)) +
-                     Math.abs(nz*mult - Math.round(nz*mult));
-         if (err < minError) {
-            minError = err;
-            bestMult = mult;
-         }
-      }
-
-      if (minError < MILLER_ERROR_THRESHOLD) {
-         const rx = Math.round(nx * bestMult);
-         const ry = Math.round(ny * bestMult);
-         const rz = Math.round(nz * bestMult);
-         const formatNum = (n: number) => n < 0 ? `-${Math.abs(n)}` : `${n}`;
-         return { label: `[${formatNum(rx)}${formatNum(ry)}${formatNum(rz)}]`, nx, ny, nz };
-      } else {
-         const rx = Number(nx.toFixed(2));
-         const ry = Number(ny.toFixed(2));
-         const rz = Number(nz.toFixed(2));
-         return { label: `[${rx},${ry},${rz}]`, nx, ny, nz };
-      }
-    };
-
-    /** "⁺"/"⁻"/"" based on the sign of a dot product, using AXIS_EPSILON as the zero threshold. */
-    const signFromDot = (dot: number): string => {
-      if (dot > AXIS_EPSILON) return "⁺";
-      if (dot < -AXIS_EPSILON) return "⁻";
-      return "";
-    };
-
-    if (d === 1) {
-      if (tr === 3) return "1" + prime;
-      if (tr === 2) base = "6";
-      if (tr === 1) base = "4";
-      if (tr === 0) base = "3";
-      if (tr === -1) base = "2";
-
-      if (base === "2") {
-        const rx = mat[0][0] + 1, ry = mat[1][0], rz = mat[2][0];
-        const cx = mat[0][1], cy = mat[1][1] + 1, cz = mat[2][1];
-        const bx = mat[0][2], by = mat[1][2], bz = mat[2][2] + 1;
-        let ax=0, ay=0, az=0;
-        if (Math.abs(rx)>AXIS_EPSILON || Math.abs(ry)>AXIS_EPSILON || Math.abs(rz)>AXIS_EPSILON) { ax=rx; ay=ry; az=rz; }
-        else if (Math.abs(cx)>AXIS_EPSILON || Math.abs(cy)>AXIS_EPSILON || Math.abs(cz)>AXIS_EPSILON) { ax=cx; ay=cy; az=cz; }
-        else { ax=bx; ay=by; az=bz; }
-        axis = formatAxis(ax, ay, az).label;
-      } else {
-        const vx = mat[2][1] - mat[1][2];
-        const vy = mat[0][2] - mat[2][0];
-        const vz = mat[1][0] - mat[0][1];
-        const result = formatAxis(vx, vy, vz);
-        axis = result.label;
-
-        const dot = vx * result.nx + vy * result.ny + vz * result.nz;
-        sign = signFromDot(dot);
-      }
-    } else {
-      if (tr === -3) return "-1" + prime;
-      if (tr === -2) base = "-6";
-      if (tr === -1) base = "-4";
-      if (tr === 0) base = "-3";
-      if (tr === 1) base = "m";
-
-      if (base === "m") {
-        const rx = 1 - mat[0][0], ry = -mat[1][0], rz = -mat[2][0];
-        const cx = -mat[0][1], cy = 1 - mat[1][1], cz = -mat[2][1];
-        const bx = -mat[0][2], by = -mat[1][2], bz = 1 - mat[2][2];
-        let ax=0, ay=0, az=0;
-        if (Math.abs(rx)>AXIS_EPSILON || Math.abs(ry)>AXIS_EPSILON || Math.abs(rz)>AXIS_EPSILON) { ax=rx; ay=ry; az=rz; }
-        else if (Math.abs(cx)>AXIS_EPSILON || Math.abs(cy)>AXIS_EPSILON || Math.abs(cz)>AXIS_EPSILON) { ax=cx; ay=cy; az=cz; }
-        else { ax=bx; ay=by; az=bz; }
-        axis = formatAxis(ax, ay, az).label;
-      } else {
-        const vx = -(mat[2][1] - mat[1][2]);
-        const vy = -(mat[0][2] - mat[2][0]);
-        const vz = -(mat[1][0] - mat[0][1]);
-        const result = formatAxis(vx, vy, vz);
-        axis = result.label;
-
-        const dot = vx * result.nx + vy * result.ny + vz * result.nz;
-        sign = signFromDot(dot);
+    let bestMult = 1;
+    let minError = 100;
+    for (let mult = 1; mult <= 6; mult++) {
+      const err =
+        Math.abs(nx * mult - Math.round(nx * mult)) +
+        Math.abs(ny * mult - Math.round(ny * mult)) +
+        Math.abs(nz * mult - Math.round(nz * mult));
+      if (err < minError) {
+        minError = err;
+        bestMult = mult;
       }
     }
+
+    if (minError < MILLER_ERROR_THRESHOLD) {
+      const rx = Math.round(nx * bestMult);
+      const ry = Math.round(ny * bestMult);
+      const rz = Math.round(nz * bestMult);
+      const formatNum = (n: number) => (n < 0 ? `-${Math.abs(n)}` : `${n}`);
+      return { label: `[${formatNum(rx)}${formatNum(ry)}${formatNum(rz)}]`, nx, ny, nz };
+    } else {
+      const rx = Number(nx.toFixed(2));
+      const ry = Number(ny.toFixed(2));
+      const rz = Number(nz.toFixed(2));
+      return { label: `[${rx},${ry},${rz}]`, nx, ny, nz };
+    }
+  };
+
+  /** "⁺"/"⁻"/"" based on the sign of a dot product, using AXIS_EPSILON as the zero threshold. */
+  const signFromDot = (dot: number): string => {
+    if (dot > AXIS_EPSILON) return '⁺';
+    if (dot < -AXIS_EPSILON) return '⁻';
+    return '';
+  };
+
+  if (d === 1) {
+    if (tr === 3) return '1' + prime;
+    if (tr === 2) base = '6';
+    if (tr === 1) base = '4';
+    if (tr === 0) base = '3';
+    if (tr === -1) base = '2';
+
+    if (base === '2') {
+      const rx = mat[0][0] + 1,
+        ry = mat[1][0],
+        rz = mat[2][0];
+      const cx = mat[0][1],
+        cy = mat[1][1] + 1,
+        cz = mat[2][1];
+      const bx = mat[0][2],
+        by = mat[1][2],
+        bz = mat[2][2] + 1;
+      let ax = 0,
+        ay = 0,
+        az = 0;
+      if (Math.abs(rx) > AXIS_EPSILON || Math.abs(ry) > AXIS_EPSILON || Math.abs(rz) > AXIS_EPSILON) {
+        ax = rx;
+        ay = ry;
+        az = rz;
+      } else if (Math.abs(cx) > AXIS_EPSILON || Math.abs(cy) > AXIS_EPSILON || Math.abs(cz) > AXIS_EPSILON) {
+        ax = cx;
+        ay = cy;
+        az = cz;
+      } else {
+        ax = bx;
+        ay = by;
+        az = bz;
+      }
+      axis = formatAxis(ax, ay, az).label;
+    } else {
+      const vx = mat[2][1] - mat[1][2];
+      const vy = mat[0][2] - mat[2][0];
+      const vz = mat[1][0] - mat[0][1];
+      const result = formatAxis(vx, vy, vz);
+      axis = result.label;
+
+      const dot = vx * result.nx + vy * result.ny + vz * result.nz;
+      sign = signFromDot(dot);
+    }
+  } else {
+    if (tr === -3) return '-1' + prime;
+    if (tr === -2) base = '-6';
+    if (tr === -1) base = '-4';
+    if (tr === 0) base = '-3';
+    if (tr === 1) base = 'm';
+
+    if (base === 'm') {
+      const rx = 1 - mat[0][0],
+        ry = -mat[1][0],
+        rz = -mat[2][0];
+      const cx = -mat[0][1],
+        cy = 1 - mat[1][1],
+        cz = -mat[2][1];
+      const bx = -mat[0][2],
+        by = -mat[1][2],
+        bz = 1 - mat[2][2];
+      let ax = 0,
+        ay = 0,
+        az = 0;
+      if (Math.abs(rx) > AXIS_EPSILON || Math.abs(ry) > AXIS_EPSILON || Math.abs(rz) > AXIS_EPSILON) {
+        ax = rx;
+        ay = ry;
+        az = rz;
+      } else if (Math.abs(cx) > AXIS_EPSILON || Math.abs(cy) > AXIS_EPSILON || Math.abs(cz) > AXIS_EPSILON) {
+        ax = cx;
+        ay = cy;
+        az = cz;
+      } else {
+        ax = bx;
+        ay = by;
+        az = bz;
+      }
+      axis = formatAxis(ax, ay, az).label;
+    } else {
+      const vx = -(mat[2][1] - mat[1][2]);
+      const vy = -(mat[0][2] - mat[2][0]);
+      const vz = -(mat[1][0] - mat[0][1]);
+      const result = formatAxis(vx, vy, vz);
+      axis = result.label;
+
+      const dot = vx * result.nx + vy * result.ny + vz * result.nz;
+      sign = signFromDot(dot);
+    }
+  }
 
   return `${base}${axis ? '_' + axis : ''}${sign}${prime}`;
 }
 
 export function getSymmetryOperations(groupName: string, setting?: number): string[] {
-  const generators = setting && setting > 1
-    ? getTransformedGenerators(groupName, setting)
-    : GENERATORS[groupName];
+  const generators = setting && setting > 1 ? getTransformedGenerators(groupName, setting) : GENERATORS[groupName];
   if (!generators || generators.length === 0) return [];
   const cacheKey = setting && setting > 1 ? `${groupName}::setting${setting}` : groupName;
   const group = getCachedFullGroup(cacheKey, generators);
 
   const symbols = group.map(formatMatrixSymbol);
 
-  const order = ["1", "-1", "2", "3", "4", "6", "-3", "-4", "-6", "m"];
+  const order = ['1', '-1', '2', '3', '4', '6', '-3', '-4', '-6', 'm'];
   return symbols.sort((a, b) => {
     const getBase = (s: string) => s.replace(/_.*$/, '').replace(/[⁺⁻']/g, '');
     const baseA = getBase(a);
@@ -593,15 +1147,15 @@ export function getSymmetryOperations(groupName: string, setting?: number): stri
 
     const getAxis = (s: string) => {
       const match = s.match(/_([a-z\[\]0-9-°]+)/);
-      return match ? match[1] : "";
+      return match ? match[1] : '';
     };
     const axisA = getAxis(a);
     const axisB = getAxis(b);
     if (axisA !== axisB) return axisA.localeCompare(axisB);
 
     const getSign = (s: string) => {
-      if (s.includes("⁺")) return 1;
-      if (s.includes("⁻")) return -1;
+      if (s.includes('⁺')) return 1;
+      if (s.includes('⁻')) return -1;
       return 0;
     };
     const signA = getSign(a);
@@ -615,9 +1169,7 @@ export function getSymmetryOperations(groupName: string, setting?: number): stri
 }
 
 export function getGeneratorSymbols(groupName: string, setting?: number): string[] {
-  const generators = setting && setting > 1
-    ? getTransformedGenerators(groupName, setting)
-    : GENERATORS[groupName];
+  const generators = setting && setting > 1 ? getTransformedGenerators(groupName, setting) : GENERATORS[groupName];
   if (!generators || generators.length === 0) return [];
   return generators.map(formatMatrixSymbol);
 }

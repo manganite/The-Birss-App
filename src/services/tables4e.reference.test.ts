@@ -31,9 +31,16 @@ import { POINT_GROUPS } from '../data/pointGroups';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tbl = (name: string) => readFileSync(path.resolve(__dirname, '../../birss-tables', name), 'utf-8');
 function tableRows(content: string): string[][] {
-  return content.split('\n').filter(l => l.trim().startsWith('|'))
-    .map(l => l.split('|').slice(1, -1).map(c => c.trim()))
-    .filter(cells => !cells.every(c => /^:?-+:?$/.test(c)));
+  return content
+    .split('\n')
+    .filter((l) => l.trim().startsWith('|'))
+    .map((l) =>
+      l
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim()),
+    )
+    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 
 const RANK = 3;
@@ -45,7 +52,10 @@ const strToIdx = (s: string) => [...s].reduce((a, ch) => a * 3 + SYM.indexOf(ch)
 function perms(s: string): string[] {
   const out = new Set<string>();
   const rec = (cur: string, rest: string) => {
-    if (!rest) { out.add(cur); return; }
+    if (!rest) {
+      out.add(cur);
+      return;
+    }
     for (let i = 0; i < rest.length; i++) rec(cur + rest[i], rest.slice(0, i) + rest.slice(i + 1));
   };
   rec('', s);
@@ -64,7 +74,8 @@ function familyOf(header: string): string[] {
 function relabel(fromBase: string, toBase: string): Record<string, string> | null {
   const map: Record<string, string> = {};
   for (let i = 0; i < fromBase.length; i++) {
-    const a = fromBase[i], b = toBase[i];
+    const a = fromBase[i],
+      b = toBase[i];
     if (map[a] && map[a] !== b) return null;
     map[a] = b;
   }
@@ -72,35 +83,46 @@ function relabel(fromBase: string, toBase: string): Record<string, string> | nul
   if (new Set(vals).size !== vals.length) return null; // must be injective
   return map;
 }
-const applyRelabel = (s: string, map: Record<string, string>) => [...s].map(c => map[c] ?? c).join('');
+const applyRelabel = (s: string, map: Record<string, string>) => [...s].map((c) => map[c] ?? c).join('');
 
-interface Relation { idx: number; terms: { idx: number; coeff: number }[] } // chi_idx = sum coeff*chi_term
+interface Relation {
+  idx: number;
+  terms: { idx: number; coeff: number }[];
+} // chi_idx = sum coeff*chi_term
 
 /** Parse one table row (given the header) into linear relations among the 27 components. Throws if a
  * cell convention is not one of the established 4e forms (so an unexpected cell fails loudly). */
 function buildConstraints(header: string[], row: string[]): Relation[] {
   const families = header.slice(1).map(familyOf);
-  const bases = header.slice(1).map(h => h.match(/^([a-z]+)/)![1]);
+  const bases = header.slice(1).map((h) => h.match(/^([a-z]+)/)![1]);
   const compToFamily = new Map<string, { members: string[]; base: string }>();
-  families.forEach((fam, k) => fam.forEach(mm => compToFamily.set(mm, { members: fam, base: bases[k] })));
+  families.forEach((fam, k) => fam.forEach((mm) => compToFamily.set(mm, { members: fam, base: bases[k] })));
 
   const relations: Relation[] = [];
   for (let k = 0; k < families.length; k++) {
-    const fam = families[k], base = bases[k], cell = row[k + 1];
-    if (cell === '0') { for (const mm of fam) relations.push({ idx: strToIdx(mm), terms: [] }); continue; }
+    const fam = families[k],
+      base = bases[k],
+      cell = row[k + 1];
+    if (cell === '0') {
+      for (const mm of fam) relations.push({ idx: strToIdx(mm), terms: [] });
+      continue;
+    }
     const sign = cell.startsWith('-') ? -1 : 1;
     const ref = cell.replace('-', '');
     if (ref === base) continue; // self-reference: family is free
     const refFam = compToFamily.get(ref);
     if (!refFam) throw new Error(`4e cell "${cell}" references unknown component`);
-    if (refFam.members.length === 1) { // single mult-1 component: every family member = sign*ref
+    if (refFam.members.length === 1) {
+      // single mult-1 component: every family member = sign*ref
       for (const mm of fam) relations.push({ idx: strToIdx(mm), terms: [{ idx: strToIdx(ref), coeff: sign }] });
       continue;
     }
     if (refFam.members.length === fam.length) {
       const map = relabel(refFam.base, base);
-      if (map) { // positional pairing via the relabel: chi_{relabel(m)} = sign*chi_m
-        for (const mm of refFam.members) relations.push({ idx: strToIdx(applyRelabel(mm, map)), terms: [{ idx: strToIdx(mm), coeff: sign }] });
+      if (map) {
+        // positional pairing via the relabel: chi_{relabel(m)} = sign*chi_m
+        for (const mm of refFam.members)
+          relations.push({ idx: strToIdx(applyRelabel(mm, map)), terms: [{ idx: strToIdx(mm), coeff: sign }] });
         continue;
       }
     }
@@ -111,7 +133,7 @@ function buildConstraints(header: string[], row: string[]): Relation[] {
 
 /** Dimension of the solution space of the parsed relations (27 - rank of the constraint matrix). */
 function tableDim(relations: Relation[]): number {
-  const M = relations.map(r => {
+  const M = relations.map((r) => {
     const row = new Array(DIM).fill(0);
     row[r.idx] += 1;
     for (const t of r.terms) row[t.idx] -= t.coeff;
@@ -120,15 +142,20 @@ function tableDim(relations: Relation[]): number {
   let rank = 0;
   for (let c = 0; c < DIM && rank < M.length; c++) {
     let piv = -1;
-    for (let r = rank; r < M.length; r++) if (Math.abs(M[r][c]) > 1e-9) { piv = r; break; }
+    for (let r = rank; r < M.length; r++)
+      if (Math.abs(M[r][c]) > 1e-9) {
+        piv = r;
+        break;
+      }
     if (piv < 0) continue;
     [M[rank], M[piv]] = [M[piv], M[rank]];
     const pv = M[rank][c];
     for (let j = 0; j < DIM; j++) M[rank][j] /= pv;
-    for (let r = 0; r < M.length; r++) if (r !== rank && Math.abs(M[r][c]) > 1e-12) {
-      const f = M[r][c];
-      for (let j = 0; j < DIM; j++) M[r][j] -= f * M[rank][j];
-    }
+    for (let r = 0; r < M.length; r++)
+      if (r !== rank && Math.abs(M[r][c]) > 1e-12) {
+        const f = M[r][c];
+        for (let j = 0; j < DIM; j++) M[r][j] -= f * M[rank][j];
+      }
     rank++;
   }
   return DIM - rank;
@@ -140,7 +167,11 @@ const classLetter = (cell: string): string | null => {
   const m = cell.match(/^([A-U])_[mn]$/);
   return m ? m[1] : null;
 };
-interface ClassRow { group: string; polarOdd: string | null; axialOdd: string | null }
+interface ClassRow {
+  group: string;
+  polarOdd: string | null;
+  axialOdd: string | null;
+}
 const CLASS_ROWS: ClassRow[] = [];
 for (const cells of tableRows(tbl('table-4a.md'))) {
   if (cells[0] === 'System') continue;
@@ -149,7 +180,7 @@ for (const cells of tableRows(tbl('table-4a.md'))) {
 
 // ---- Table 4e: header + one row per symbol class ----
 const FE_ROWS = tableRows(tbl('table-4e.md'));
-const FE_HEADER = FE_ROWS.find(r => r[0] === 'Row')!;
+const FE_HEADER = FE_ROWS.find((r) => r[0] === 'Row')!;
 const FE_BY_LETTER: Record<string, string[]> = {};
 for (const r of FE_ROWS) {
   const m = r[0].match(/^([A-U])3$/);
@@ -165,7 +196,7 @@ describe('Part C rank 3 -- Table 4e guard (32 classical groups via Table 4a)', (
     expect(CLASS_ROWS).toHaveLength(32);
     for (const c of CLASS_ROWS) {
       expect(GENERATORS[c.group], c.group).toBeDefined();
-      expect(POINT_GROUPS.find(p => p.name === c.group)?.type, c.group).toBe('I');
+      expect(POINT_GROUPS.find((p) => p.name === c.group)?.type, c.group).toBe('I');
     }
     expect(Object.keys(FE_BY_LETTER)).toHaveLength(21);
   });

@@ -29,18 +29,41 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
   const [mobileSetupExpanded, setMobileSetupExpanded] = useState(false);
 
   const { thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0 } = presetAngles;
-  const { type: selectedTensorType, setType: setSelectedTensorType, timeReversal: selectedTimeReversal, setTimeReversal: setSelectedTimeReversal, setting: selectedSetting, setSetting: setSelectedSetting, convention } = tensorConfig;
+  const {
+    type: selectedTensorType,
+    setType: setSelectedTensorType,
+    timeReversal: selectedTimeReversal,
+    setTimeReversal: setSelectedTimeReversal,
+    setting: selectedSetting,
+    setSetting: setSelectedSetting,
+    convention,
+  } = tensorConfig;
 
   const currentComponents = useMemo(() => {
     if (!selectedGroup) return [];
     return calculateTensorComponents(selectedGroup.name, selectedTensorType, selectedTimeReversal, selectedSetting);
   }, [selectedGroup, selectedTensorType, selectedTimeReversal, selectedSetting]);
 
-  const labFrameBase = useMemo(() => getLabFrameVectors({ thetaX, thetaY, psi0, phiX: 0, phiY: 0, psi: 0 }), [thetaX, thetaY, psi0]);
+  const labFrameBase = useMemo(
+    () => getLabFrameVectors({ thetaX, thetaY, psi0, phiX: 0, phiY: 0, psi: 0 }),
+    [thetaX, thetaY, psi0],
+  );
 
   const currentExpressions = useMemo(
-    () => calculateSHGExpressions({ groupName: selectedGroup?.name || "", tensorType: selectedTensorType, trType: selectedTimeReversal, thetaX, thetaY, psi0, phiX: 0, phiY: 0, psi: 0, setting: selectedSetting }),
-    [selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY, psi0, selectedSetting]
+    () =>
+      calculateSHGExpressions({
+        groupName: selectedGroup?.name || '',
+        tensorType: selectedTensorType,
+        trType: selectedTimeReversal,
+        thetaX,
+        thetaY,
+        psi0,
+        phiX: 0,
+        phiY: 0,
+        psi: 0,
+        setting: selectedSetting,
+      }),
+    [selectedGroup, selectedTensorType, selectedTimeReversal, thetaX, thetaY, psi0, selectedSetting],
   );
 
   const sourceTerms = currentExpressions.source;
@@ -61,12 +84,7 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
   }
 
   return (
-    <motion.div
-      key={selectedGroup.name}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
+    <motion.div key={selectedGroup.name} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       {/* Group identity header — shared with Simulator */}
       <GroupIdentityHeader
         group={selectedGroup}
@@ -94,10 +112,21 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
           )}
 
           {/* Full setup controls — always on desktop, expandable on mobile */}
-          <div className={selectedTensorType === 'ED' && selectedTimeReversal === 'i' && !mobileSetupExpanded ? 'hidden md:block' : ''}>
+          <div
+            className={
+              selectedTensorType === 'ED' && selectedTimeReversal === 'i' && !mobileSetupExpanded
+                ? 'hidden md:block'
+                : ''
+            }
+          >
             <div className="flex items-center justify-between md:hidden mb-4">
               {mobileSetupExpanded && (
-                <button type="button" aria-label="Collapse setup controls" onClick={() => setMobileSetupExpanded(false)} className="opacity-50 hover:opacity-100">
+                <button
+                  type="button"
+                  aria-label="Collapse setup controls"
+                  onClick={() => setMobileSetupExpanded(false)}
+                  className="opacity-50 hover:opacity-100"
+                >
                   <ChevronUp className="w-3.5 h-3.5" />
                 </button>
               )}
@@ -119,11 +148,16 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
 
         {/* Mobile-only preset strip — always visible */}
         <div className="md:hidden py-3">
-          <KDirectionSelector compact
+          <KDirectionSelector
+            compact
             crystalSystem={selectedGroup.crystalSystem}
             setting={selectedSetting}
-            thetaX={thetaX} thetaY={thetaY} psi0={psi0}
-            setThetaX={setThetaX} setThetaY={setThetaY} setPsi0={setPsi0}
+            thetaX={thetaX}
+            thetaY={thetaY}
+            psi0={psi0}
+            setThetaX={setThetaX}
+            setThetaY={setThetaY}
+            setPsi0={setPsi0}
             labFrame={labFrameBase}
             onNavigate={onNavigate}
           />
@@ -167,13 +201,17 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                   {currentComponents.map((comp, i) => {
-                    const isNull = comp.toLowerCase().includes('zero') || comp.toLowerCase().includes('none') || comp.includes('not supported');
+                    const isNull =
+                      comp.toLowerCase().includes('zero') ||
+                      comp.toLowerCase().includes('none') ||
+                      comp.includes('not supported');
                     if (isNull) {
                       return (
-                        <div key={i} className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
-                          <div className="text-lg font-mono tracking-tighter opacity-30">
-                            {comp}
-                          </div>
+                        <div
+                          key={i}
+                          className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all"
+                        >
+                          <div className="text-lg font-mono tracking-tighter opacity-30">{comp}</div>
                           <div className="text-xs uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
                             Null State
                           </div>
@@ -181,17 +219,23 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                       );
                     }
 
-                    const parts = comp.split('=').map(p => p.trim());
+                    const parts = comp.split('=').map((p) => p.trim());
                     return (
-                      <div key={i} className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all">
+                      <div
+                        key={i}
+                        className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all"
+                      >
                         <div className="text-lg font-mono tracking-tighter flex flex-wrap items-baseline gap-2">
                           <TensorTerm term={parts[0]} isNull={false} />
-                          {parts.length > 1 && parts.slice(1).map((part, pi) => (
-                            <div key={pi} className="flex items-baseline gap-2">
-                              <span className="text-xs opacity-30"><InlineMath math="=" /></span>
-                              <TensorTerm term={part} isNull={false} />
-                            </div>
-                          ))}
+                          {parts.length > 1 &&
+                            parts.slice(1).map((part, pi) => (
+                              <div key={pi} className="flex items-baseline gap-2">
+                                <span className="text-xs opacity-30">
+                                  <InlineMath math="=" />
+                                </span>
+                                <TensorTerm term={part} isNull={false} />
+                              </div>
+                            ))}
                         </div>
                         <div className="text-xs uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
                           Active Component
@@ -219,21 +263,31 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                 <div className="flex justify-between items-center border-b border-ink border-opacity-10 pb-4 pt-4 md:pt-0 border-t md:border-t-0 border-ink/10">
                   <div className="text-xs uppercase tracking-[0.2em] text-ink/70 font-semibold flex items-center gap-2">
                     <Compass className="w-3 h-3" />
-                    {selectedTensorType === 'ED' ? 'Induced Polarization' : selectedTensorType === 'MD' ? 'Induced Magnetization' : 'Induced Quadrupole'} (CRYSTAL FRAME)
+                    {selectedTensorType === 'ED'
+                      ? 'Induced Polarization'
+                      : selectedTensorType === 'MD'
+                        ? 'Induced Magnetization'
+                        : 'Induced Quadrupole'}{' '}
+                    (CRYSTAL FRAME)
                   </div>
                   <div className="text-xs font-mono text-ink/70">FULL FIELD COMPONENTS</div>
                 </div>
 
                 <div className="space-y-6">
                   {inducedTerms.map((expr, i) => {
-                    const isNull = expr.expression === "0";
+                    const isNull = expr.expression === '0';
                     return (
-                      <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-ink border-opacity-10 pb-4">
+                      <div
+                        key={i}
+                        className="flex flex-col md:flex-row md:items-center gap-4 border-b border-ink border-opacity-10 pb-4"
+                      >
                         <div className="w-16 font-mono text-xl">
                           <TensorTerm term={expr.component} isNull={isNull} />
                         </div>
                         <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto overflow-y-hidden whitespace-nowrap pb-2 md:pb-0">
-                          <span className="opacity-30 mr-4"><InlineMath math="=" /></span>
+                          <span className="opacity-30 mr-4">
+                            <InlineMath math="=" />
+                          </span>
                           <TensorTerm term={expr.expression} isNull={isNull} />
                         </div>
                       </div>
@@ -242,8 +296,8 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                 </div>
 
                 <div className="p-4 border border-ink/60 border-dashed text-xs uppercase tracking-widest text-ink/70 leading-relaxed mt-8">
-                  Note: This calculation assumes two identical input fields <InlineMath math="E(\omega)" />.
-                  The full electric field vector is considered for the induced response.
+                  Note: This calculation assumes two identical input fields <InlineMath math="E(\omega)" />. The full
+                  electric field vector is considered for the induced response.
                 </div>
               </div>
             </div>
@@ -260,7 +314,11 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                   <Compass className="w-3 h-3" />
                   Source Terms (Lab Frame)
                 </span>
-                {mobileSourceExpanded ? <ChevronUp className="w-3.5 h-3.5 opacity-50" /> : <ChevronDown className="w-3.5 h-3.5 opacity-50" />}
+                {mobileSourceExpanded ? (
+                  <ChevronUp className="w-3.5 h-3.5 opacity-50" />
+                ) : (
+                  <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                )}
               </button>
 
               <div className={!mobileSourceExpanded ? 'hidden md:block' : ''}>
@@ -271,7 +329,13 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                       Source Terms (Lab Frame)
                     </div>
                     <div className="text-xs font-mono text-ink/70">
-                      {selectedTensorType === 'ED' ? <InlineMath math="S \propto P" /> : selectedTensorType === 'MD' ? <InlineMath math="S \propto \nabla \times M" /> : <InlineMath math="S \propto \nabla \cdot Q" />}
+                      {selectedTensorType === 'ED' ? (
+                        <InlineMath math="S \propto P" />
+                      ) : selectedTensorType === 'MD' ? (
+                        <InlineMath math="S \propto \nabla \times M" />
+                      ) : (
+                        <InlineMath math="S \propto \nabla \cdot Q" />
+                      )}
                     </div>
                   </div>
 
@@ -279,8 +343,12 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                     <KDirectionSelector
                       crystalSystem={selectedGroup.crystalSystem}
                       setting={selectedSetting}
-                      thetaX={thetaX} thetaY={thetaY} psi0={psi0}
-                      setThetaX={setThetaX} setThetaY={setThetaY} setPsi0={setPsi0}
+                      thetaX={thetaX}
+                      thetaY={thetaY}
+                      psi0={psi0}
+                      setThetaX={setThetaX}
+                      setThetaY={setThetaY}
+                      setPsi0={setPsi0}
                       labFrame={labFrameBase}
                       onNavigate={onNavigate}
                     />
@@ -288,14 +356,19 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
 
                   <div className="space-y-6">
                     {sourceTerms.map((expr, i) => {
-                      const isNull = expr.expression === "0";
+                      const isNull = expr.expression === '0';
                       return (
-                        <div key={i} className="flex flex-col md:flex-row md:items-center gap-4 border-b border-ink border-opacity-10 pb-4">
+                        <div
+                          key={i}
+                          className="flex flex-col md:flex-row md:items-center gap-4 border-b border-ink border-opacity-10 pb-4"
+                        >
                           <div className="w-16 font-mono text-xl">
                             <TensorTerm term={expr.component} isNull={isNull} />
                           </div>
                           <div className="flex-1 font-mono text-xl tracking-tight overflow-x-auto overflow-y-hidden whitespace-nowrap pb-2 md:pb-0">
-                            <span className="opacity-30 mr-4"><InlineMath math="\propto" /></span>
+                            <span className="opacity-30 mr-4">
+                              <InlineMath math="\propto" />
+                            </span>
                             <TensorTerm term={expr.expression} isNull={isNull} />
                           </div>
                         </div>
@@ -303,16 +376,18 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                     })}
                   </div>
 
-                  {sourceTerms.length > 0 && sourceTerms.every(t => t.expression === '0') && (
+                  {sourceTerms.length > 0 && sourceTerms.every((t) => t.expression === '0') && (
                     <div className="p-6 border border-ink border-opacity-10 bg-ink/5 space-y-4 mt-2">
                       <div className="flex items-start gap-3">
                         <Info className="w-4 h-4 mt-0.5 shrink-0 opacity-60" />
                         <p className="text-sm leading-relaxed">
-                          {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && selectedTimeReversal === 'i'
+                          {selectedTensorType === 'ED' &&
+                          isCentrosymmetric(selectedGroup.name) &&
+                          selectedTimeReversal === 'i'
                             ? 'ED SHG is symmetry-forbidden for centrosymmetric groups (i-type).'
                             : selectedGroup.type === 'II' && selectedTimeReversal === 'c'
-                            ? "c-type tensors vanish for grey groups (G1')."
-                            : 'No non-zero components for this configuration.'}
+                              ? "c-type tensors vanish for grey groups (G1')."
+                              : 'No non-zero components for this configuration.'}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2 ml-7">
@@ -353,7 +428,8 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                   )}
 
                   <div className="p-4 border border-ink/60 border-dashed text-xs uppercase tracking-widest text-ink/70 leading-relaxed mt-8">
-                    Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is purely transverse: <InlineMath math="\vec{E} = (E_X, E_Y, 0)" />.
+                    Note: The incoming light propagates along the Z-axis in the Lab Frame, meaning the electric field is
+                    purely transverse: <InlineMath math="\vec{E} = (E_X, E_Y, 0)" />.
                   </div>
                 </div>
               </div>
@@ -369,12 +445,18 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
           <div>
             {(selectedTensorType === 'MD' || selectedTensorType === 'EQ') && (
               <p className="text-xs text-ink/70 leading-relaxed">
-                {selectedTensorType === 'MD' && "Note: Magnetic Dipole (Axial 3rd rank) tensors do not necessarily vanish in centrosymmetric groups."}
-                {selectedTensorType === 'EQ' && "Note: Electric Quadrupole (Polar 4th rank) tensors survive inversion symmetry."}
+                {selectedTensorType === 'MD' &&
+                  'Note: Magnetic Dipole (Axial 3rd rank) tensors do not necessarily vanish in centrosymmetric groups.'}
+                {selectedTensorType === 'EQ' &&
+                  'Note: Electric Quadrupole (Polar 4th rank) tensors survive inversion symmetry.'}
               </p>
             )}
             <p className="text-xs text-ink/70 leading-relaxed mt-2">
-              For more details on conventions, physics background, and references, please see the <button onClick={() => onNavigate('help')} className="underline hover:opacity-100 font-medium">Help page</button>.
+              For more details on conventions, physics background, and references, please see the{' '}
+              <button onClick={() => onNavigate('help')} className="underline hover:opacity-100 font-medium">
+                Help page
+              </button>
+              .
             </p>
           </div>
         </div>

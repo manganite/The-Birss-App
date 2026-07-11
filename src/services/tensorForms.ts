@@ -18,7 +18,14 @@
  * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md (projection & particularization)
  */
 
-import { EPSILON, GENERATORS, getCachedFullGroup, getTransformedGenerators, getAlternateSettings, type Matrix3x3 } from './symmetryGroups';
+import {
+  EPSILON,
+  GENERATORS,
+  getCachedFullGroup,
+  getTransformedGenerators,
+  getAlternateSettings,
+  type Matrix3x3,
+} from './symmetryGroups';
 import { averageTensor, getIndices, getLabel, formatCoeff } from './tensorProjection';
 
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
@@ -70,10 +77,21 @@ function intrinsicGenerators(rank: number, intrinsic: TensorIntrinsic): number[]
     case 'ij_kl':
       // Rank-4 pairs-only: each pair individually symmetric, NO pair exchange (e.g. the photoelastic
       // / electrostriction index symmetry -- a general, not symmetric, 6x6 Voigt matrix).
-      return rank === 4 ? [[1, 0, 2, 3], [0, 1, 3, 2]] : [];
+      return rank === 4
+        ? [
+            [1, 0, 2, 3],
+            [0, 1, 3, 2],
+          ]
+        : [];
     case 'voigt':
       // Rank-4 pair symmetry: swap within pair (0,1), swap within pair (2,3), exchange the pairs.
-      return rank === 4 ? [[1, 0, 2, 3], [0, 1, 3, 2], [2, 3, 0, 1]] : [];
+      return rank === 4
+        ? [
+            [1, 0, 2, 3],
+            [0, 1, 3, 2],
+            [2, 3, 0, 1],
+          ]
+        : [];
     case 'none':
     default:
       return [];
@@ -172,7 +190,7 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
 
     const averaged = averageTensor(seed, group, rank, isAxial, isTimeOdd);
 
-    if (averaged.every(v => Math.abs(v) < EPSILON)) continue;
+    if (averaged.every((v) => Math.abs(v) < EPSILON)) continue;
 
     let isNew = true;
     for (const existing of basisResults) {
@@ -250,7 +268,7 @@ export function getFormSignature(groupName: string, setting: number, spec: Tenso
   if (form.isZero) return `r${spec.rank}:zero`;
   const dim = Math.pow(3, spec.rank);
 
-  const perBasis = form.basisResults.map(basis => {
+  const perBasis = form.basisResults.map((basis) => {
     let leadIdx = -1;
     const entries: string[] = [];
     for (let i = 0; i < dim; i++) {
