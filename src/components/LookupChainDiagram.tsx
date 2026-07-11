@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { InlineMath } from 'react-katex';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
   classicalChainApplies, getFamilyClass, getClassLetter, getTable7Chain,
   TABLE_4A_CLASS_LETTERS, REFERENCE_AXES, type ClassLetters,
@@ -63,7 +63,16 @@ function Chip({ tone = 'plain', children }: { tone?: 'plain' | 'source' | 'dim' 
   return <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-sm ${cls}`}>{children}</div>;
 }
 
-const Down = () => <ChevronDown className="w-4 h-4 text-ink/40 my-0.5" aria-hidden />;
+// The chain flows top-to-bottom when stacked (narrow) and left-to-right when the layout is a row
+// (>= md); the connector follows that flow axis -- down while stacked, right while side by side.
+const Connector = () => (
+  <span className="flex items-center text-ink/40 shrink-0" aria-hidden>
+    <ChevronDown className="w-4 h-4 md:hidden" />
+    <ChevronRight className="w-4 h-4 hidden md:inline" />
+  </span>
+);
+const FLOW = 'flex flex-col md:flex-row md:flex-wrap md:items-center gap-2 border border-ink/10 bg-ink/5 rounded-sm p-5';
+const STAGE = 'flex flex-col items-start gap-1';
 
 /** The source's Table-4a row: four columns, the read column highlighted. */
 function Table4aStrip({ classKey, readCol }: { classKey: string; readCol: ColKey }) {
@@ -102,9 +111,9 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
   // Terminal chips shared by the classical / Table-7 variants (class -> rank-table row, or "no form").
   const terminal = (letter: string | null) => (
     letter ? (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
         <Chip tone="plain">class <span className="font-mono font-bold ml-1">{letter}</span></Chip>
-        <Down />
+        <Connector />
         <Chip tone="invert">Table {RANK_TABLE[rank]} · row <span className="font-mono ml-1">{letter}{rank}</span></Chip>
       </div>
     ) : (
@@ -119,11 +128,11 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
   // ---- grey variant: Type II c-tensor -------------------------------------------------------
   if (!chainValid && !chain) {
     return (
-      <div className="flex flex-col items-start gap-1 border border-ink/10 bg-ink/5 rounded-sm p-5">
+      <div className={FLOW}>
         {groupChip}
-        <Down />
+        <Connector />
         <Chip tone="invert">time reversal <InlineMath math="1'" /> is a symmetry</Chip>
-        <Down />
+        <Connector />
         <Chip tone="plain"><span className="italic">c-tensor vanishes identically</span>
           {onNavigate && <TermInfo id="tbl-grey-tail" onNavigate={onNavigate} />}
         </Chip>
@@ -136,48 +145,59 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
     const readCol = chain.fourAColumn === 'Axial-even' ? 'axialEven' : 'polarOdd';
     const srcAxes = REFERENCE_AXES[chain.sourceClass];
     return (
-      <div className="flex flex-col items-start gap-1 border border-ink/10 bg-ink/5 rounded-sm p-5">
-        {groupChip}
-        <div className="text-[10px] uppercase tracking-widest text-ink/45 pl-1 pt-0.5">Table 7 · {chain.column}</div>
-        <Down />
-        {/* A / B fork: unchosen source dimmed, chosen marked SOURCE */}
-        <div className="flex flex-wrap items-start gap-3">
-          <Chip tone={chain.source === 'A' ? 'source' : 'dim'}>
-            A = <span className="font-serif italic"><Sym s={chain.source === 'A' ? chain.sourceSymbol : altSymbol(groupName, 'A')} /></span>
-            {chain.source === 'A' && chain.sourceBracketed && chain.transformLabel && (
-              <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {chain.transformLabel}
-                {onNavigate && <TermInfo id="tbl-rotated" onNavigate={onNavigate} />}
-              </span>
-            )}
-          </Chip>
-          <Chip tone={chain.source === 'B' ? 'source' : 'dim'}>
-            B = <span className="font-serif italic"><Sym s={chain.source === 'B' ? chain.sourceSymbol : altSymbol(groupName, 'B')} /></span>
-            {chain.source === 'B' && chain.sourceBracketed && chain.transformLabel && (
-              <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {chain.transformLabel}
-                {onNavigate && <TermInfo id="tbl-rotated" onNavigate={onNavigate} />}
-              </span>
-            )}
-          </Chip>
-        </div>
-        <div className="text-[11px] text-ink/55 pl-1 pt-1">rule: {parity} + {evenLabel} rank → read {chain.source}</div>
-        <Down />
-        <div className="flex flex-wrap items-center gap-2 pb-1">
-          {tensorTag}
-          {chain.parityCrossover && (
-            <span className="inline-flex items-center gap-1 text-[11px] italic font-semibold text-ink">
-              <span className="inline-block border-t-2 border-dashed border-ink w-6" aria-hidden /> parity crossover
-              {onNavigate && <TermInfo id="tbl-crossover" onNavigate={onNavigate} />}
-            </span>
-          )}
-        </div>
-        <Table4aStrip classKey={chain.sourceClass} readCol={readCol} />
-        {srcAxes && (
-          <div className="text-[11px] text-ink/50 pl-1 pt-1">source reference axes: {srcAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(srcAxes)} />}
-            {onNavigate && <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />}
+      <div>
+        <div className={FLOW}>
+          <div className={STAGE}>
+            {groupChip}
+            <div className="text-[10px] uppercase tracking-widest text-ink/45">Table 7 · {chain.column}</div>
           </div>
-        )}
-        <Down />
-        {terminal(chain.letter)}
+          <Connector />
+          {/* A / B fork: unchosen source dimmed, chosen marked SOURCE */}
+          <div className={STAGE}>
+            <div className="flex flex-wrap items-start gap-3">
+              <Chip tone={chain.source === 'A' ? 'source' : 'dim'}>
+                A = <span className="font-serif italic"><Sym s={chain.source === 'A' ? chain.sourceSymbol : altSymbol(groupName, 'A')} /></span>
+                {chain.source === 'A' && chain.sourceBracketed && chain.transformLabel && (
+                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {chain.transformLabel}
+                    {onNavigate && <TermInfo id="tbl-rotated" onNavigate={onNavigate} />}
+                  </span>
+                )}
+              </Chip>
+              <Chip tone={chain.source === 'B' ? 'source' : 'dim'}>
+                B = <span className="font-serif italic"><Sym s={chain.source === 'B' ? chain.sourceSymbol : altSymbol(groupName, 'B')} /></span>
+                {chain.source === 'B' && chain.sourceBracketed && chain.transformLabel && (
+                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm">rotated: {chain.transformLabel}
+                    {onNavigate && <TermInfo id="tbl-rotated" onNavigate={onNavigate} />}
+                  </span>
+                )}
+              </Chip>
+            </div>
+            <div className="text-[11px] text-ink/55">rule: {parity} + {evenLabel} rank → read {chain.source}</div>
+          </div>
+          <Connector />
+          <div className={STAGE}>
+            <div className="flex flex-wrap items-center gap-2">
+              {tensorTag}
+              {chain.parityCrossover && (
+                <span className="inline-flex items-center gap-1 text-[11px] italic font-semibold text-ink">
+                  <span className="inline-block border-t-2 border-dashed border-ink w-6" aria-hidden /> parity crossover
+                  {onNavigate && <TermInfo id="tbl-crossover" onNavigate={onNavigate} />}
+                </span>
+              )}
+            </div>
+          </div>
+          <Connector />
+          <div className={STAGE}>
+            <Table4aStrip classKey={chain.sourceClass} readCol={readCol} />
+            {srcAxes && (
+              <div className="text-[11px] text-ink/50">source reference axes: {srcAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(srcAxes)} />}
+                {onNavigate && <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />}
+              </div>
+            )}
+          </div>
+          <Connector />
+          {terminal(chain.letter)}
+        </div>
         {chain.bookErrorNote && <p className="text-[11px] text-ink/50 italic pt-2">⚠ {chain.bookErrorNote}</p>}
       </div>
     );
@@ -189,18 +209,23 @@ export function LookupChainDiagram({ groupName, groupType, parity, rank, timePar
   const letter = getClassLetter(groupName, parity, rank);
   const famAxes = REFERENCE_AXES[familyClass];
   return (
-    <div className="flex flex-col items-start gap-1 border border-ink/10 bg-ink/5 rounded-sm p-5">
-      {groupChip}
-      <div className="text-[10px] uppercase tracking-widest text-ink/45 pl-1 pt-0.5">family class <span className="font-serif italic"><Sym s={familyClass} /></span></div>
-      <Down />
-      <div className="pb-1">{tensorTag}</div>
-      <Table4aStrip classKey={familyClass} readCol={readCol} />
-      {famAxes && (
-        <div className="text-[11px] text-ink/50 pl-1 pt-1">reference axes: {famAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(famAxes)} />}
-          {onNavigate && <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />}
-        </div>
-      )}
-      <Down />
+    <div className={FLOW}>
+      <div className={STAGE}>
+        {groupChip}
+        <div className="text-[10px] uppercase tracking-widest text-ink/45">family class <span className="font-serif italic"><Sym s={familyClass} /></span></div>
+      </div>
+      <Connector />
+      {tensorTag}
+      <Connector />
+      <div className={STAGE}>
+        <Table4aStrip classKey={familyClass} readCol={readCol} />
+        {famAxes && (
+          <div className="text-[11px] text-ink/50">reference axes: {famAxes === 'any' ? <span className="italic">any</span> : <InlineMath math={axes(famAxes)} />}
+            {onNavigate && <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />}
+          </div>
+        )}
+      </div>
+      <Connector />
       {terminal(letter)}
     </div>
   );

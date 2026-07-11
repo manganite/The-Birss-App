@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Tables page: the index-symmetry selector now offers the first-pair symmetry `(ij)k` at rank 3 and a
+  pairs-only `(ij)(kl)` symmetry at rank 4 (the photoelastic / electrostriction case) alongside full
+  `(ij)(kl) sym` Voigt symmetry. Forms with a compressible index pair render as a Voigt-compressed
+  matrix -- 6x3 for rank-3 `(ij)k`, 6x6 for the rank-4 pair symmetries (header order XX YY ZZ YZ ZX
+  XY) -- with genuine sums shown correctly (e.g. the hexagonal c66 = (c11 - c12)/2).
+- Tables page: the "Groups sharing this form" list is grouped by point-group type -- colourless
+  (Type I), grey (Type II), black-white (Type III).
 - Explorer group popup: a "Polar directions" block -- the polar (symmetry) axes and nonpolar
   direction sets for the group (ITC Vol. D Table 3.2.2.2), each nonpolar set labelled by its ITC
   2.1.3.1 symmetry-direction class. Centrosymmetric groups show "no polar directions"; magnetic
@@ -48,6 +55,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Tables page: the result section is titled "Tensor form"; the lookup-chain diagram's connectors
+  follow the layout flow (right between side-by-side chips on desktop, down when stacked).
+- Effect citations: the classical effects (pyroelectricity, permittivity, piezoelectricity,
+  elasticity) now cite ITC Vol. D (with DOI) instead of Birss ch. 4 (the magnetic-properties
+  chapter); the magnetic effects keep Birss ch. 4 and gain the ITC DOI.
 - Tables page: the lookup mode toggle shows "By tensor type" (the core function) before "By effect".
 - Testing: added a class-indexed Table-7 guard putting `computeTensorForm` under Birss's i-/c-tensor
   cross-formula at ranks 0/1/2/4 (Tables 4b/4c/4d/4f) for all 58 black-white groups, backed by a

@@ -2,6 +2,7 @@ import React from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronRight } from 'lucide-react';
 import { TENSOR_EFFECTS } from '../data/tensorEffects';
+import { intrinsicLabel } from '../data/intrinsicLabels';
 import type { TensorRank } from '../services/tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { LookupChainDiagram } from './LookupChainDiagram';
@@ -33,8 +34,8 @@ const MODES: { title: string; body: React.ReactNode }[] = [
 
 const RESULTS: { title: string; body: React.ReactNode }[] = [
   {
-    title: 'Symmetry-reduced form',
-    body: <>Rendered to fit the rank: a one-line statement (rank 0), a vector (rank 1), a <InlineMath math="3\times3" /> matrix (rank 2), the <InlineMath math="3\times6" /> Nye scheme (rank 3 with jk-symmetry), or a list of the independent components and their relations (general rank 3 and rank 4).</>,
+    title: 'Tensor form',
+    body: <>Rendered to fit the rank and its index symmetry: a one-line statement (rank 0), a vector (rank 1), a <InlineMath math="3\times3" /> matrix (rank 2), or a Voigt-compressed matrix wherever an index pair is symmetric — the <InlineMath math="3\times6" /> Nye scheme (rank 3, <InlineMath math="i(jk)" />), a <InlineMath math="6\times3" /> matrix (rank 3, <InlineMath math="(ij)k" />) or a <InlineMath math="6\times6" /> matrix (rank 4 pair symmetries). Otherwise (general rank 3 and rank 4) a list of the independent components and their relations.</>,
   },
   {
     title: 'Independent components',
@@ -69,7 +70,6 @@ const SELECTORS: { title: string; body: React.ReactNode }[] = [
   },
 ];
 
-const INTRINSIC_LABEL: Record<string, string> = { none: '—', ij: 'ij', jk: 'jk', voigt: 'Voigt' };
 
 const Chevron = () => <ChevronRight className="w-3 h-3 opacity-40 inline align-middle" aria-hidden />;
 
@@ -170,7 +170,7 @@ export function TablesHelp() {
                   <td className="p-2 font-mono">{e.spec.rank}</td>
                   <td className="p-2">{e.spec.parity}</td>
                   <td className="p-2">{e.spec.timeParity}</td>
-                  <td className="p-2">{INTRINSIC_LABEL[e.spec.intrinsic]}</td>
+                  <td className="p-2">{intrinsicLabel(e.spec.intrinsic, e.spec.rank)}</td>
                 </tr>
               ))}
             </tbody>

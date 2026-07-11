@@ -253,6 +253,12 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     helpTab: 'deeper',
   },
   {
+    id: 'tbl-voigt-matrix',
+    term: 'Voigt-compressed matrix',
+    brief: 'Each symmetric index pair is one Voigt index in the fixed order xx, yy, zz, yz, zx, xy; a single-index axis is x, y, z. Rows then columns give the component indices.',
+    helpTab: 'deeper',
+  },
+  {
     id: 'tbl-relations',
     term: 'Independent components & relations',
     brief: 'The independent components, and the equalities and sign flips symmetry enforces among all the others.',
