@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-10. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-11. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -42,7 +42,16 @@ lattices from ITC 2.1.1.1 (2.1.1.1 and 2.1.3.1 vendored alongside). Plus **Table
 result section renamed "Tensor form"; the sharing list grouped by colour type; direction-aware
 lookup-chain diagram connectors; corrected effect citations; new index symmetries (rank-3 `(ij)k`,
 rank-4 pairs-only `(ij)(kl)` and full Voigt) with Voigt-compressed 6x3/6x6 renderings (RREF-canonical,
-sums like c66=(c11-c12)/2 correct) and guards. See `CHANGELOG.md` `[Unreleased]`.
+sums like c66=(c11-c12)/2 correct) and guards. Plus **tech-debt Wave 1 (guardrails)**: ESLint + Prettier
+(hooks-deps / unused-vars as errors, rest as warnings; 0 errors, 8 warnings) wired into CI, a one-time
+Prettier reformat, `npm ci` + exact-pinned toolchain, non-blocking V8 coverage (baseline lines 86.72% /
+branches 74.45%), dead-code/hygiene cleanup (`getFutureSettingCount`, test rename, AGENTS.md doc fix),
+and the 2026-07-11 tech-debt audit's actionable items ported to a new `E#` backlog in `TODO-next.md`.
+That backlog opens with a **correctness** item, **E1**: the extended symbolic↔numeric agreement sweep
+found the symbolic SHG path diverges from the trusted numeric engine for **EQ (rank-4) tensors on
+3-/6-fold groups** (`3m`, `6mm`, `-6m2`, `-3'm`) at off-normal azimuth — so those displayed symbolic
+formulas are wrong off-normal; the sweep is parked until the engine is fixed (E8). See `CHANGELOG.md`
+`[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 

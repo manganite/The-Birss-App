@@ -1,5 +1,9 @@
 # Technical Debt Audit — 2026-07-11
 
+> **Findings snapshot as of 2026-07-11; actionable items are tracked as `E#` entries
+> in [`docs/planning/TODO-next.md`](../planning/TODO-next.md) — this file is not updated.**
+> Wave 1 (H1, M9, M10, M11, L1, L2, L6, L12) has since shipped on `chore/tech-debt-wave1`.
+
 _Scope: engineering/code-quality debt across `src/` (16.5k LOC, 83 files, 33 test
 files), plus build/tooling and doc-sync surface. This is complementary to
 `docs/planning/TODO-next.md`, which tracks **physics/feature** backlog (`A#` bugs,

@@ -1688,3 +1688,61 @@ informally; prefer precise wording (e.g. "selects the lower-term-count form").
 - [ ] Fix "Haussühl"; add Fiebig (2005); mark/prefer free sources and free
       mirrors for paywalled ones.
 - [ ] Tighten the informal wording in "Formula Simplification".
+
+---
+
+## Tech-debt backlog (engineering) — E-series
+
+Engineering / code-quality items, distinct from the physics `A#`/`B#` backlog.
+Sourced from the 2026-07-11 tech-debt audit
+([docs/findings/TECH-DEBT-AUDIT-2026-07-11.md](../findings/TECH-DEBT-AUDIT-2026-07-11.md));
+audit finding IDs in parens. **Wave 1** (H1, M9, M10, M11, L1, L2, L6, L12) shipped on
+`chore/tech-debt-wave1` and is not repeated here. The audit doc is a point-in-time
+snapshot; these `E#` entries are the living tracker. Anything touching tensor math is
+fixtures-first + PR per the physics-output rule.
+
+### Correctness (new — highest priority)
+- **E1** — Symbolic SHG path diverges from the numeric engine for **EQ (rank-4) tensors
+  on groups with a 3-/6-fold axis** (`3m`, `6mm`, `-6m2`, `-3'm`) at generic azimuth:
+  χ_xxxx off by a few % (e.g. symbolic −0.9034 vs numeric −0.8566 at (30,45,60); 0.4863
+  vs 0.4686 at (15,−20,75)), while ED/MD on all groups and EQ on non-3/6-fold groups
+  agree to 1e-6 and everything agrees at (0,0,0). The numeric path is the trusted
+  reference, so the app's **displayed symbolic hexagonal/trigonal-EQ formulas are wrong
+  off-normal**. Found by the extended symbolic↔numeric agreement sweep (tech-debt Wave 1,
+  Part 5); that sweep is parked (uncommitted) until this is fixed — do not adjust epsilon
+  or trim it. Structurally related to **E8** (unifying the two SHG pipelines would prevent
+  this class of divergence). Fixtures-first + PR. (new, found by Part 5 agreement sweep)
+
+### Wave 2 — de-duplicate safety-net & primitives (behaviour-preserving)
+- **E2** — Consolidate the ~12 hand-rolled markdown-table parsers into `testUtils/birssTableParsers.ts`; delete local redefinitions. (H7)
+- **E3** — Extract one rotation/matmul module (`Matrix3x3` + generic multiply); have `tensorProjection` + `symbolicProjection` consume it. (H3)
+- **E4** — Extract the shared independent-basis reducer ("isNew" ratio matcher) reimplemented in three places into one helper. (M1)
+- **E5** — Unify the duplicated `\chi=…` relation formatter (`formatResults` / `formatFormRelations`, kept in lockstep by hand). (M4)
+- **E6** — Collapse the duplicated epsilon constants (`COEFF_EPSILON`×2, `AXIS_EPSILON`, `EPSILON`, `ROOT_MATCH_EPSILON`) into one shared module. (L3)
+- **E7** — Extract the duplicated field-label maps and add a `toFlatIndex` inverse to `getIndices`. (L4)
+
+### Wave 3 — tame the numeric/symbolic split (highest liability; PR + fixtures-first)
+- **E8** — Unify `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic scalar/semiring interface (`number` & `TrigPoly` instances) so the contraction logic exists once. (H2) — directly bears on **E1**.
+- **E9** — Refactor `formatSubstitutedPolySum` (~210 lines, six inline magic harmonic tables) behind fixtures. (M2)
+- **E10** — Refactor `formatMatrixSymbol` (~120 lines, duplicated rotation-vs-mirror axis extraction) behind fixtures. (M3)
+
+### Wave 4 — component structure & types
+- **E11** — `useMemo` the grouped prop objects in `App.tsx` (`tensorConfig`/`orientation`/`simulation`). (M5)
+- **E12** — Move the SHG-intensity sweep out of `useSimulatorState` into `services/`; have the hook accept the prop objects. (M6)
+- **E13** — Split `TablesPage` (518 lines): extract linalg to `tensorForms`, sub-views to components. (H4)
+- **E14** — Split `HelpPage` (684 lines): content → `data/`, one component per tab. (H5)
+- **E15** — Extract a shared `<NoComponentsFallback>` for the triplicated empty-state / recovery buttons. (M7)
+- **E16** — Return structured null-state `{ isNull, lhs, rhs }` from the service; kill the display-string scanning. (M8)
+- **E17** — Fold the ~9 inlined section headers into the shared `SectionHeader`. (L5)
+- **E18** — Table-drive the repeated markup (nav pills, `PolarimetryPlot` blocks, tab menus, footer rows). (L7)
+- **E19** — Introduce `GroupKey` / `CrystalSystem` unions and a shared `parity`/`timeParity` type. (H6)
+- **E20** — Give `types.ts` (or a new `domain/` module) the scattered domain types; stop re-inlining unions. (M12)
+- **E21** — Tighten `TENSOR_META` (numeric `rank`; narrow `type` union; add `setConvention` to `TensorConfig`). (L10)
+
+### Wave 5 — longer-horizon / optional
+- **E22** — Add jsdom + testing-library; interaction tests for `App` routing/search, `useSimulatorState`, Calculator/Tables flows. (H8)
+- **E23** — One policy for the group registry: generate `groupNotation.ts` from the vendored tables, or centralize a single source-of-truth registry object. (M13)
+- **E24** — A11y: tab semantics (`role=tablist/tab/tabpanel`, `aria-selected`), `aria-current` on nav, slider/number labels. (L8)
+- **E25** — Narrow the `as any` on `RADAR_TICKS`; tighten the loose `PolarimetryPlot` data prop. (L9)
+- **E26** — Code-split `recharts` in `manualChunks`; point the `@` alias at `src/`, not the repo root. (L11)
+- **E27** — Add a lightweight doc-sync check (or trim the 1690-line `TODO-next.md`). (L13)
