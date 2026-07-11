@@ -2,6 +2,7 @@ import React from 'react';
 import { InlineMath } from 'react-katex';
 import { ChevronRight } from 'lucide-react';
 import { TENSOR_EFFECTS } from '../data/tensorEffects';
+import { intrinsicLabel } from '../data/intrinsicLabels';
 import type { TensorRank } from '../services/tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { LookupChainDiagram } from './LookupChainDiagram';
@@ -69,7 +70,6 @@ const SELECTORS: { title: string; body: React.ReactNode }[] = [
   },
 ];
 
-const INTRINSIC_LABEL: Record<string, string> = { none: '—', ij: 'ij', jk: 'jk', voigt: 'Voigt' };
 
 const Chevron = () => <ChevronRight className="w-3 h-3 opacity-40 inline align-middle" aria-hidden />;
 
@@ -170,7 +170,7 @@ export function TablesHelp() {
                   <td className="p-2 font-mono">{e.spec.rank}</td>
                   <td className="p-2">{e.spec.parity}</td>
                   <td className="p-2">{e.spec.timeParity}</td>
-                  <td className="p-2">{INTRINSIC_LABEL[e.spec.intrinsic]}</td>
+                  <td className="p-2">{intrinsicLabel(e.spec.intrinsic, e.spec.rank)}</td>
                 </tr>
               ))}
             </tbody>

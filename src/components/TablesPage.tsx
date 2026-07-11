@@ -15,6 +15,7 @@ import { LookupChainDiagram } from './LookupChainDiagram';
 import { TermInfo } from './TermInfo';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import { TENSOR_EFFECTS, getEffect, effectBaseSymbol } from '../data/tensorEffects';
+import { intrinsicLabel, INTRINSIC_TOOLTIP } from '../data/intrinsicLabels';
 import type { TensorConfig } from '../types';
 
 interface TablesPageProps {
@@ -93,7 +94,7 @@ function spanRank(basis: number[][]): number {
   return rank;
 }
 
-const INTRINSIC_BY_RANK: Record<number, TensorIntrinsic[]> = { 0: ['none'], 1: ['none'], 2: ['none', 'ij'], 3: ['none', 'jk'], 4: ['none', 'voigt'] };
+const INTRINSIC_BY_RANK: Record<number, TensorIntrinsic[]> = { 0: ['none'], 1: ['none'], 2: ['none', 'ij'], 3: ['none', 'ij', 'jk'], 4: ['none', 'ij_kl', 'voigt'] };
 
 const RANK0_READING: Record<string, string> = {
   'polar-i': 'ordinary scalar — always allowed',
@@ -253,7 +254,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
                 <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">Index symmetry <TermInfo id="tbl-index-symmetry" onNavigate={onNavigate} /></span>
                 <div className="flex gap-2">
                   {validIntrinsics.map(v => (
-                    <button key={v} type="button" aria-pressed={effIntrinsic === v} onClick={() => setIntrinsic(v)} className={`${chipBase} ${effIntrinsic === v ? chipOn : chipOff}`}>{v}</button>
+                    <button key={v} type="button" aria-pressed={effIntrinsic === v} title={INTRINSIC_TOOLTIP[v]} onClick={() => setIntrinsic(v)} className={`${chipBase} ${effIntrinsic === v ? chipOn : chipOff}`}>{intrinsicLabel(v, rank)}</button>
                   ))}
                 </div>
               </div>

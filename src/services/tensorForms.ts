@@ -26,7 +26,7 @@ export type TensorParity = 'polar' | 'axial';
 export type TensorTimeParity = 'i' | 'c';
 /** Intrinsic index-permutation symmetry (v1 set). `ij` = swap first two indices; `jk` = swap last
  * two (the ED/MD/EQ SHG particularization); `voigt` = rank-4 pair symmetry. */
-export type TensorIntrinsic = 'none' | 'ij' | 'jk' | 'voigt';
+export type TensorIntrinsic = 'none' | 'ij' | 'jk' | 'ij_kl' | 'voigt';
 
 export interface TensorSpec {
   rank: TensorRank;
@@ -65,6 +65,10 @@ function intrinsicGenerators(rank: number, intrinsic: TensorIntrinsic): number[]
       return rank >= 2 ? [swap(0, 1)] : [];
     case 'jk':
       return rank >= 2 ? [swap(rank - 2, rank - 1)] : [];
+    case 'ij_kl':
+      // Rank-4 pairs-only: each pair individually symmetric, NO pair exchange (e.g. the photoelastic
+      // / electrostriction index symmetry -- a general, not symmetric, 6x6 Voigt matrix).
+      return rank === 4 ? [[1, 0, 2, 3], [0, 1, 3, 2]] : [];
     case 'voigt':
       // Rank-4 pair symmetry: swap within pair (0,1), swap within pair (2,3), exchange the pairs.
       return rank === 4 ? [[1, 0, 2, 3], [0, 1, 3, 2], [2, 3, 0, 1]] : [];
