@@ -24,8 +24,10 @@ import { averageTensor, getIndices, getLabel, formatCoeff } from './tensorProjec
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
 export type TensorParity = 'polar' | 'axial';
 export type TensorTimeParity = 'i' | 'c';
-/** Intrinsic index-permutation symmetry (v1 set). `ij` = swap first two indices; `jk` = swap last
- * two (the ED/MD/EQ SHG particularization); `voigt` = rank-4 pair symmetry. */
+/** Intrinsic index-permutation symmetry. `ij` = swap the first two indices; `jk` = swap the last two
+ * (the ED/MD/EQ SHG particularization); `ij_kl` = rank-4 pair symmetries only -- each pair symmetric
+ * with NO exchange between the pairs (e.g. the photoelastic tensor); `voigt` = rank-4 full Voigt
+ * symmetry, i.e. `ij_kl` plus the pair exchange (ij <-> kl). */
 export type TensorIntrinsic = 'none' | 'ij' | 'jk' | 'ij_kl' | 'voigt';
 
 export interface TensorSpec {

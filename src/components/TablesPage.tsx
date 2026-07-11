@@ -367,7 +367,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
       <div className="space-y-4">
         <div className="flex items-baseline justify-between">
           <h2 className="text-sm uppercase tracking-[0.2em] text-ink/70 flex items-center gap-1">Tensor form
-            {!form!.isZero && (aRank === 4 || (aRank === 3 && aIntrinsic !== 'jk')) && <TermInfo id="tbl-relations" onNavigate={onNavigate} />}
+            {!form!.isZero && !usesMatrix && aRank >= 3 && <TermInfo id="tbl-relations" onNavigate={onNavigate} />}
           </h2>
           {!form!.isZero && aRank > 0 && <span className="text-xs text-ink/50 flex items-center gap-1">{independentCount} independent component{independentCount === 1 ? '' : 's'} <TermInfo id="tbl-indep-count" onNavigate={onNavigate} /></span>}
         </div>
@@ -386,11 +386,11 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
              Voigt-compressed matrix (rows/cols are the compressed pairs); otherwise the relation
              list; ranks <= 2 render natively above. */
           aRank === 3 && aIntrinsic === 'jk' ? (
-          <CompressedMatrix labels={labels} rowSlots={SINGLE_SLOTS} colSlots={PAIR_SLOTS} onNavigate={onNavigate} />
+          <CompressedMatrix labels={labels} rowSlots={SINGLE_SLOTS} colSlots={PAIR_SLOTS} cornerTip="tbl-nye" onNavigate={onNavigate} />
         ) : aRank === 3 && aIntrinsic === 'ij' ? (
-          <CompressedMatrix labels={labels} rowSlots={PAIR_SLOTS} colSlots={SINGLE_SLOTS} onNavigate={onNavigate} />
+          <CompressedMatrix labels={labels} rowSlots={PAIR_SLOTS} colSlots={SINGLE_SLOTS} cornerTip="tbl-voigt-matrix" onNavigate={onNavigate} />
         ) : aRank === 4 && (aIntrinsic === 'ij_kl' || aIntrinsic === 'voigt') ? (
-          <CompressedMatrix labels={labels} rowSlots={PAIR_SLOTS} colSlots={PAIR_SLOTS} onNavigate={onNavigate} />
+          <CompressedMatrix labels={labels} rowSlots={PAIR_SLOTS} colSlots={PAIR_SLOTS} cornerTip="tbl-voigt-matrix" onNavigate={onNavigate} />
         ) : (
           <RelationList relations={form!.relations.map(toSym)} />
         )}
@@ -460,10 +460,12 @@ const flatOf = (indices: number[]) => indices.reduce((a, x) => a * 3 + x, 0);
  * whose indices are the row's slot followed by the column's slot. Header labels use the fixed Voigt
  * order (XX YY ZZ YZ ZX XY) via PAIR_SLOTS.
  */
-function CompressedMatrix({ labels, rowSlots, colSlots, onNavigate }: {
+function CompressedMatrix({ labels, rowSlots, colSlots, cornerTip, onNavigate }: {
   labels: string[];
   rowSlots: Slot[];
   colSlots: Slot[];
+  /** glossary id for the top-left help icon (the Nye 3x6 vs the general Voigt-pair layouts differ). */
+  cornerTip: string;
   onNavigate?: (view: string, tab?: string) => void;
 }) {
   const isPair = (s: Slot) => s.idx.length === 2;
@@ -472,7 +474,7 @@ function CompressedMatrix({ labels, rowSlots, colSlots, onNavigate }: {
       <table className="border-collapse text-center">
         <thead>
           <tr>
-            <th className="p-2"><TermInfo id="tbl-nye" onNavigate={onNavigate} /></th>
+            <th className="p-2"><TermInfo id={cornerTip} onNavigate={onNavigate} /></th>
             {colSlots.map(c => (
               <th key={c.label} className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider min-w-[3.5rem]">
                 {isPair(c) ? <InlineMath math={`(${c.label})`} /> : c.label}

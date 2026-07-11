@@ -35,7 +35,7 @@ const MODES: { title: string; body: React.ReactNode }[] = [
 const RESULTS: { title: string; body: React.ReactNode }[] = [
   {
     title: 'Tensor form',
-    body: <>Rendered to fit the rank: a one-line statement (rank 0), a vector (rank 1), a <InlineMath math="3\times3" /> matrix (rank 2), the <InlineMath math="3\times6" /> Nye scheme (rank 3 with jk-symmetry), or a list of the independent components and their relations (general rank 3 and rank 4).</>,
+    body: <>Rendered to fit the rank and its index symmetry: a one-line statement (rank 0), a vector (rank 1), a <InlineMath math="3\times3" /> matrix (rank 2), or a Voigt-compressed matrix wherever an index pair is symmetric — the <InlineMath math="3\times6" /> Nye scheme (rank 3, <InlineMath math="i(jk)" />), a <InlineMath math="6\times3" /> matrix (rank 3, <InlineMath math="(ij)k" />) or a <InlineMath math="6\times6" /> matrix (rank 4 pair symmetries). Otherwise (general rank 3 and rank 4) a list of the independent components and their relations.</>,
   },
   {
     title: 'Independent components',
