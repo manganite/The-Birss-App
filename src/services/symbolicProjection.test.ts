@@ -104,6 +104,56 @@ describe('symbolic vs numeric reproduction at (0,0,0)', () => {
   }
 });
 
+// Extend the full GROUPS x TENSOR_TYPES x TR_TYPES agreement sweep (above only exercises the
+// (0,0,0) frame) to two additional generic angle triples. The symbolic path is built once at the
+// (0,0,0) preset and evaluated via trigEval at each triple; it must reproduce the numeric path
+// (which rotates directly) within the same EPSILON. Triples reuse the file's established generic
+// angles (see the buildSymbolicR cases above).
+describe('symbolic vs numeric reproduction at generic angles (full sweep)', () => {
+  const GROUPS = ['1', 'mm2', '3m', '4mm', '6mm', '-43m', 'm-3m', '2', '-1', '-6m2', "4'mm'", "-3'm"];
+  const TENSOR_TYPES: Array<'ED' | 'MD' | 'EQ'> = ['ED', 'MD', 'EQ'];
+  const TR_TYPES: Array<'i' | 'c'> = ['i', 'c'];
+  const TRIPLES = [
+    { phiX: 30, phiY: 45, psi: 60 },
+    { phiX: 15, phiY: -20, psi: 75 },
+  ];
+
+  for (const group of GROUPS) {
+    for (const tt of TENSOR_TYPES) {
+      for (const tr of TR_TYPES) {
+        for (const a of TRIPLES) {
+          it(`${group} ${tt} ${tr}-type at (${a.phiX},${a.phiY},${a.psi})`, () => {
+            const opts: SHGOptions = {
+              groupName: group,
+              tensorType: tt,
+              trType: tr,
+              thetaX: 0,
+              thetaY: 0,
+              phiX: a.phiX,
+              phiY: a.phiY,
+              psi: a.psi,
+            };
+
+            const numResult = calculateSHGExpressions(opts);
+            const symResult = calculateSymbolicSHGExpressions({ ...opts, phiX: 0, phiY: 0, psi: 0 });
+
+            expect(symResult.source.length).toBe(numResult.source.length);
+            for (let s = 0; s < symResult.source.length; s++) {
+              expect(symResult.source[s].component).toBe(numResult.source[s].component);
+              const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, a.phiX, a.phiY, a.psi);
+              comparePolys(
+                evaluatedPoly,
+                numResult.source[s].rawPoly!,
+                `${group} ${tt} ${tr} ${symResult.source[s].component} at (${a.phiX},${a.phiY},${a.psi})`,
+              );
+            }
+          });
+        }
+      }
+    }
+  }
+});
+
 describe('symbolic vs numeric reproduction at rotated angles', () => {
   const TEST_ANGLES = [
     { phiX: 30, phiY: 0, psi: 0 },

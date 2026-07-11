@@ -1701,17 +1701,19 @@ audit finding IDs in parens. **Wave 1** (H1, M9, M10, M11, L1, L2, L6, L12) ship
 snapshot; these `E#` entries are the living tracker. Anything touching tensor math is
 fixtures-first + PR per the physics-output rule.
 
-### Correctness (new — highest priority)
-- **E1** — Symbolic SHG path diverges from the numeric engine for **EQ (rank-4) tensors
-  on groups with a 3-/6-fold axis** (`3m`, `6mm`, `-6m2`, `-3'm`) at generic azimuth:
-  χ_xxxx off by a few % (e.g. symbolic −0.9034 vs numeric −0.8566 at (30,45,60); 0.4863
-  vs 0.4686 at (15,−20,75)), while ED/MD on all groups and EQ on non-3/6-fold groups
-  agree to 1e-6 and everything agrees at (0,0,0). The numeric path is the trusted
-  reference, so the app's **displayed symbolic hexagonal/trigonal-EQ formulas are wrong
-  off-normal**. Found by the extended symbolic↔numeric agreement sweep (tech-debt Wave 1,
-  Part 5); that sweep is parked (uncommitted) until this is fixed — do not adjust epsilon
-  or trim it. Structurally related to **E8** (unifying the two SHG pipelines would prevent
-  this class of divergence). Fixtures-first + PR. (new, found by Part 5 agreement sweep)
+### Correctness
+- **E1 — FIXED** (`fix/symbolic-eq-divergence`). The symbolic SHG path diverged from the
+  numeric engine for **EQ (rank-4) tensors on groups with a 3-/6-fold axis** (`3m`, `6mm`,
+  `-6m2`, `-3'm`) at generic azimuth (χ_xxxx off by exactly 3/64 at (30,45,60)), while
+  ED/MD everywhere and EQ on non-3/6-fold groups agreed and everything agreed at (0,0,0).
+  **Root cause:** `applyPythagorean` in `trigPoly.ts` used a stale entries snapshot when
+  mutating the term map in place, so a monomial taking part in more than one cos²+sin²
+  reduction per pass got corrupted — right at special angles, wrong off-normal. The fix
+  reads coefficients live; `trigMul`/`trigEval` and the numeric pipeline were already
+  correct and untouched. Independently confirmed the numeric engine is right via a
+  from-first-principles rank-4 contraction (agreement to ~1e-16). Guarded by
+  `symbolicEQHexagonal.reference.test.ts` (14 golden cells), the extended generic-angle
+  agreement sweep in `symbolicProjection.test.ts`, and unit regressions in `trigPoly.test.ts`.
 
 ### Wave 2 — de-duplicate safety-net & primitives (behaviour-preserving)
 - **E2** — Consolidate the ~12 hand-rolled markdown-table parsers into `testUtils/birssTableParsers.ts`; delete local redefinitions. (H7)
@@ -1722,7 +1724,7 @@ fixtures-first + PR per the physics-output rule.
 - **E7** — Extract the duplicated field-label maps and add a `toFlatIndex` inverse to `getIndices`. (L4)
 
 ### Wave 3 — tame the numeric/symbolic split (highest liability; PR + fixtures-first)
-- **E8** — Unify `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic scalar/semiring interface (`number` & `TrigPoly` instances) so the contraction logic exists once. (H2) — directly bears on **E1**.
+- **E8** — Unify `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic scalar/semiring interface (`number` & `TrigPoly` instances) so the contraction logic exists once. (H2) — E1's root cause was a bug in the symbolic-only `trigSimplify` stage that has no numeric counterpart; unifying the two paths (or dropping the separate symbolic simplifier) would structurally prevent this class of symbolic-only divergence.
 - **E9** — Refactor `formatSubstitutedPolySum` (~210 lines, six inline magic harmonic tables) behind fixtures. (M2)
 - **E10** — Refactor `formatMatrixSymbol` (~120 lines, duplicated rotation-vs-mirror axis extraction) behind fixtures. (M3)
 

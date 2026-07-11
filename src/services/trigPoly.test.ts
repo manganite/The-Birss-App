@@ -248,6 +248,38 @@ describe('trigSimplify', () => {
     const simplified = trigSimplify(p);
     expect(simplified.terms.size).toBe(1);
   });
+
+  // Regression for E1: when a single monomial takes part in more than one
+  // cos^2+sin^2 reduction within one pass, the simplifier must not corrupt the
+  // value. (cos^2+sin^2)^2 = 1 has c^4 + 2 c^2 s^2 + s^4, whose c^2 s^2 term
+  // pairs with BOTH c^4 and s^4 -- the stale-coefficient bug left c^2 s^2 + 1,
+  // which is right at 0 deg but wrong (by 0.25 at 45 deg) elsewhere.
+  it('(cos^2 + sin^2)^2 simplifies to 1 at every angle', () => {
+    const c2 = trigMul(trigCos('phiX'), trigCos('phiX'));
+    const s2 = trigMul(trigSin('phiX'), trigSin('phiX'));
+    const sq = trigMul(trigAdd(c2, s2), trigAdd(c2, s2));
+    const simplified = trigSimplify(sq);
+    expect(trigIsConst(simplified)).toBe(true);
+    for (const a of [0, 17, 45, 88, 123]) expectEvalClose(simplified, a, 0, 0, 1);
+  });
+
+  it('trigSimplify never changes the value it evaluates to (multi-pairing)', () => {
+    // (cos^2+sin^2)^3 across all three angles -- lots of overlapping reductions.
+    const cube = (angle: 'phiX' | 'phiY' | 'psi') => {
+      const one = trigAdd(trigMul(trigCos(angle), trigCos(angle)), trigMul(trigSin(angle), trigSin(angle)));
+      return trigMul(one, trigMul(one, one));
+    };
+    const p = trigMul(cube('phiX'), trigMul(cube('phiY'), cube('psi'))); // == 1
+    const simplified = trigSimplify(p);
+    for (const [x, y, z] of [
+      [30, 45, 60],
+      [15, -20, 75],
+      [123, -47, 200],
+    ]) {
+      expectClose(trigEval(simplified, x, y, z), trigEval(p, x, y, z));
+      expectClose(trigEval(simplified, x, y, z), 1);
+    }
+  });
 });
 
 describe('trigPoly edge cases', () => {
