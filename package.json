@@ -24,6 +24,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "nomenclature": "python3 birss-tables/tools/generate_nomenclature.py",
     "table7data": "node birss-tables/tools/generate_table7_data.mjs"
   },
@@ -45,6 +46,7 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@types/react-katex": "3.0.4",
+    "@vitest/coverage-v8": "4.1.9",
     "autoprefixer": "10.4.21",
     "eslint": "^9.39.5",
     "eslint-plugin-react-hooks": "^5.2.0",
