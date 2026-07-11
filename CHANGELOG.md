@@ -83,6 +83,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   could only ever return `null`) and its two no-op render branches in the operations and group-identity
   headers. No user-visible change.
 
+### Fixed
+
+- Symbolic SHG source-term formulas for electric-quadrupole (EQ) tensors on the point groups with a
+  3- or 6-fold axis (`3m`, `6mm`, `-6m2`, `-3'm`) were wrong at off-normal incidence (generic tilt /
+  azimuth) — a few-percent error that vanished at normal incidence. The cause was a stale-snapshot bug
+  in the `cos²+sin²=1` simplifier of the symbolic trig-polynomial algebra; the live numeric Simulator
+  path and the displayed formulas at normal incidence were unaffected. Anyone who copied a symbolic EQ
+  formula for one of these groups at a nonzero tilt/azimuth should regenerate it. Guarded by golden
+  fixtures (independently confirmed from first principles) and an extended symbolic↔numeric agreement
+  sweep at generic angles (backlog item E1).
+
 ## [0.20.0] - 2026-07-10
 
 ### Added

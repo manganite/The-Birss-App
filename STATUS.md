@@ -47,11 +47,13 @@ sums like c66=(c11-c12)/2 correct) and guards. Plus **tech-debt Wave 1 (guardrai
 Prettier reformat, `npm ci` + exact-pinned toolchain, non-blocking V8 coverage (baseline lines 86.72% /
 branches 74.45%), dead-code/hygiene cleanup (`getFutureSettingCount`, test rename, AGENTS.md doc fix),
 and the 2026-07-11 tech-debt audit's actionable items ported to a new `E#` backlog in `TODO-next.md`.
-That backlog opens with a **correctness** item, **E1**: the extended symbolic↔numeric agreement sweep
-found the symbolic SHG path diverges from the trusted numeric engine for **EQ (rank-4) tensors on
-3-/6-fold groups** (`3m`, `6mm`, `-6m2`, `-3'm`) at off-normal azimuth — so those displayed symbolic
-formulas are wrong off-normal; the sweep is parked until the engine is fixed (E8). See `CHANGELOG.md`
-`[Unreleased]`.
+That backlog's first item, the **correctness** fix **E1**, is now **shipped** (`fix/symbolic-eq-divergence`):
+the extended symbolic↔numeric agreement sweep had found the symbolic SHG path diverging from the trusted
+numeric engine for **EQ (rank-4) tensors on 3-/6-fold groups** (`3m`, `6mm`, `-6m2`, `-3'm`) at off-normal
+azimuth. Root cause was a stale-snapshot bug in the symbolic `cos²+sin²=1` simplifier (`trigPoly.ts`); the
+numeric Simulator path was unaffected. Fixed (read coefficients live), the numeric engine independently
+confirmed correct from first principles (~1e-16), and now guarded by golden fixtures + the generic-angle
+agreement sweep. See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 
