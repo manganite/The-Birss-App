@@ -103,6 +103,7 @@ export function trigIsZero(p: TrigPoly, eps: number = TRIG_EPSILON): boolean {
   return true;
 }
 
+// test-load-bearing: the symbolic<->numeric agreement guard depends on this
 export function trigIsConst(p: TrigPoly, eps: number = TRIG_EPSILON): boolean {
   for (const [key, coeff] of p.terms) {
     if (Math.abs(coeff) < eps) continue;
@@ -111,10 +112,12 @@ export function trigIsConst(p: TrigPoly, eps: number = TRIG_EPSILON): boolean {
   return true;
 }
 
+// test-load-bearing: the symbolic<->numeric agreement guard depends on this
 export function trigGetConst(p: TrigPoly): number {
   return p.terms.get(ZERO_KEY) || 0;
 }
 
+// test-load-bearing: the symbolic<->numeric agreement guard depends on this
 export function trigEval(p: TrigPoly, phiXDeg: number, phiYDeg: number, psiDeg: number): number {
   const DEG = Math.PI / 180;
   const cx = Math.cos(phiXDeg * DEG),

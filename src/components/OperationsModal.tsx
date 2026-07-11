@@ -6,7 +6,6 @@ import {
   getSymmetryOperations,
   getGeneratorSymbols,
   getAlternateSettings,
-  getFutureSettingCount,
   getParentGroup,
   getHalvingSubgroup,
   isCentrosymmetric,
@@ -163,7 +162,6 @@ export const OperationsModal = ({
   const operations = getSymmetryOperations(group.name);
   const generators = getGeneratorSymbols(group.name);
   const altSettings = getAlternateSettings(group.name);
-  const futureSettingCount = getFutureSettingCount(group.name);
   const groupTitle = getGroupDisplayName(group.name, convention);
 
   const shubnikov = SHUBNIKOV[group.name];
@@ -232,12 +230,6 @@ export const OperationsModal = ({
               <span>Type {group.type}</span>
               <span>•</span>
               <span>{isCentrosymmetric(group.name) ? 'Centrosymmetric' : 'Non-Centrosymmetric'}</span>
-              {!altSettings && futureSettingCount && (
-                <>
-                  <span>•</span>
-                  <span className="normal-case">{futureSettingCount} settings — selection coming</span>
-                </>
-              )}
               <span>•</span>
               <span>{convention === 'birss' ? 'Birss' : 'ITC'}</span>
             </div>

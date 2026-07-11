@@ -912,14 +912,8 @@ export const ALTERNATE_SETTINGS: Record<string, SettingDef[]> = {
   "-6m21'": [{ name: "-62m1'", rotation: getRotationZ(30) }],
 };
 
-const GROUPS_WITH_FUTURE_SETTINGS: Record<string, number> = {};
-
 export function getAlternateSettings(groupName: string): SettingDef[] | null {
   return ALTERNATE_SETTINGS[groupName] ?? null;
-}
-
-export function getFutureSettingCount(groupName: string): number | null {
-  return GROUPS_WITH_FUTURE_SETTINGS[groupName] ?? null;
 }
 
 export function transpose(a: Matrix3x3): Matrix3x3 {

@@ -11,7 +11,6 @@ export {
   getSymmetryOperations,
   getGeneratorSymbols,
   getAlternateSettings,
-  getFutureSettingCount,
   getTransformedGenerators,
   getParentGroup,
   getHalvingSubgroup,

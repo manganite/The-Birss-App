@@ -160,7 +160,7 @@ in-repo) or ITC 1.5.2.3 — **never** derived from the app's own output (anti-ci
 - Global palette: background `#E4E3E0`, foreground/text `#141414`.
 - No CSS Modules, no Styled Components. All styling is inline Tailwind utility classes.
 - One custom utility in `index.css`: `.overline` for text-decoration.
-- **Section header pattern**: `text-[10px] uppercase tracking-[0.2em] opacity-50 flex items-center gap-2` — use the shared `SectionHeader` component from `MathComponents.tsx` rather than inlining this string.
+- **Section header pattern**: `text-xs uppercase tracking-[0.2em] text-ink/70 flex items-center gap-2` — use the shared `SectionHeader` component from `notation.tsx` rather than inlining this string.
 
 ### Component patterns
 - All page components receive state as grouped prop objects from `App.tsx` (`TensorConfig`, `OrientationState`, etc.) — no Context API or Zustand.

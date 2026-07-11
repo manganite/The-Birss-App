@@ -6,7 +6,6 @@ import {
   getHalvingSubgroup,
   getSHGConsequenceShort,
   getAlternateSettings,
-  getFutureSettingCount,
 } from '../services/tensorCalculator';
 import { getGroupDisplayName, getSettingLabels } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
@@ -31,8 +30,7 @@ export function CrystalSettingControl({
   onNavigate?: (view: string, tab?: string) => void;
 }) {
   const altSettings = getAlternateSettings(groupName);
-  const futureCount = getFutureSettingCount(groupName);
-  if (!altSettings && !futureCount) return null;
+  if (!altSettings) return null;
   const settingLabels = getSettingLabels(groupName, convention);
   return (
     <div className={`space-y-2${className ? ` ${className}` : ''}`}>
@@ -40,28 +38,22 @@ export function CrystalSettingControl({
         <SectionHeader>
           Crystal Setting <TermInfo id="crystal-setting" onNavigate={onNavigate} />
         </SectionHeader>
-        {altSettings ? (
-          <div className="flex flex-wrap gap-3">
-            {settingLabels.map(({ setting, axisWord, hm }) => (
-              <button
-                key={setting}
-                type="button"
-                aria-pressed={value === setting}
-                onClick={() => onChange(setting)}
-                className={`px-4 py-2 text-xs transition-all border border-ink ${
-                  value === setting
-                    ? 'bg-ink text-paper'
-                    : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
-                }`}
-              >
-                {axisWord && <span className="normal-case tracking-normal">{axisWord} </span>}
-                <FormatPointGroup name={hm} />
-              </button>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs text-ink/70 italic">{futureCount} settings — selection coming</p>
-        )}
+        <div className="flex flex-wrap gap-3">
+          {settingLabels.map(({ setting, axisWord, hm }) => (
+            <button
+              key={setting}
+              type="button"
+              aria-pressed={value === setting}
+              onClick={() => onChange(setting)}
+              className={`px-4 py-2 text-xs transition-all border border-ink ${
+                value === setting ? 'bg-ink text-paper' : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
+              }`}
+            >
+              {axisWord && <span className="normal-case tracking-normal">{axisWord} </span>}
+              <FormatPointGroup name={hm} />
+            </button>
+          ))}
+        </div>
       </div>
       <ConventionNote groupName={groupName} />
     </div>
