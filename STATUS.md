@@ -30,7 +30,11 @@ golden fixtures" backlog item at the symbol-class level. Also the **Tables docum
 a new Help "Tables" tab (lookup modes, choosing a tensor, the classical Table-4a chain and the
 magnetic Table-7 route, all worked), two new Deeper Topics entries (Voigt notation; reading Table 7's
 letter columns), a collapsible `LookupChainDiagram` on the Tables page and in the help examples, and
-tooltips across the Tables selectors, results and lookup chain. See `CHANGELOG.md` `[Unreleased]`.
+tooltips across the Tables selectors, results and lookup chain. Plus **ITC reference vendoring** —
+four transcribed ITC tables under `docs/references/` (Vol. D 3.2.2.1/3.2.2.2, Vol. A 2.1.3.1/2.1.1.1)
+and an anti-circular guard holding `computeTensorForm` to ITC 3.2.2.1's independent-component counts,
+property occurrence, structural totals and enantiomorphism (`isChiral`) across the 21 noncentro +
+11 centro classical classes. See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 
