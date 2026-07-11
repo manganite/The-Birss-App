@@ -11,7 +11,7 @@ import { TermInfo } from './TermInfo';
 import { PointGroupData } from '../data/pointGroups';
 import { SHUBNIKOV, FULL_HM, REFERENCE_AXES, getFamilyClass } from '../data/groupNotation';
 import { CHIP_TO_EFFECT } from '../data/tensorEffects';
-import { POLAR_DIRECTIONS, FRAME_DIVERGENT_CLASSES, type SymDirClass } from '../data/polarDirections';
+import { POLAR_DIRECTIONS, type SymDirClass } from '../data/polarDirections';
 import { CRYSTAL_SYSTEMS } from '../data/crystalSystems';
 import { useDialogA11y } from '../hooks/useDialogA11y';
 
@@ -246,6 +246,7 @@ export const OperationsModal = ({ group, convention, onClose, onOpenInCalculator
                 </div>
                 {systemInfo.note && (
                   <div className="sm:col-span-2">
+                    <dt className="sr-only">Crystal-system note</dt>
                     <dd className="text-xs text-ink/60 leading-relaxed">{systemInfo.note}</dd>
                   </div>
                 )}
