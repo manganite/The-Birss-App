@@ -46,27 +46,56 @@ function toIndices(idx: number, rank: number): number[] {
 }
 const compSymbol = (idx: number, rank: number, base: string) => `${base}_{${toIndices(idx, rank).map(i => CHARS[i]).join('')}}`;
 
-function signedTerm(coeff: number, symbol: string): string {
-  const sign = coeff < 0 ? '-' : '';
-  return `${sign}${formatCoeff(Math.abs(coeff))}${symbol}`;
+/**
+ * Per-component display labels (length 3^rank): each is `0`, an independent symbol, or a linear
+ * combination of the independent symbols, using `base` as the tensor letter (`T`, `\alpha`, ...).
+ * Each basis vector is normalised to its lead component = 1 (that lead names a free parameter);
+ * a component's label ACCUMULATES its contribution from every basis vector, so genuine sums like the
+ * hexagonal Voigt cell c_66 = (c_11 - c_12)/2 render correctly (not just monomial forms).
+ */
+/** Reduced row echelon form: makes each free parameter the lowest-index independent component, so
+ * labels come out in the natural form (pivots monomial, dependents as clean combinations of them --
+ * e.g. the Voigt c_66 = (c_11 - c_12)/2 rather than an arbitrary basis combination). */
+function rref(basis: number[][], dim: number): number[][] {
+  const M = basis.map(v => [...v]);
+  let pr = 0;
+  for (let c = 0; c < dim && pr < M.length; c++) {
+    let piv = pr;
+    for (let r = pr + 1; r < M.length; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+    if (Math.abs(M[piv][c]) < RANK_PIVOT_EPS) continue;
+    [M[pr], M[piv]] = [M[piv], M[pr]];
+    const pv = M[pr][c];
+    for (let j = 0; j < dim; j++) M[pr][j] /= pv;
+    for (let r = 0; r < M.length; r++) if (r !== pr && Math.abs(M[r][c]) > RANK_ELIM_EPS) {
+      const f = M[r][c];
+      for (let j = 0; j < dim; j++) M[r][j] -= f * M[pr][j];
+    }
+    pr++;
+  }
+  return M.slice(0, pr);
 }
 
-/**
- * Per-component display labels (length 3^rank): each is `0`, an independent symbol, or a signed
- * multiple of one, using `base` as the tensor letter (`T`, `\alpha`, ...). Valid for the grid
- * renderings (ranks 1-3 crystallographic forms); the relation-list path handles genuine sums.
- */
-function buildLabels(basis: number[][], rank: number, base: string): string[] {
+function buildLabels(rawBasis: number[][], rank: number, base: string): string[] {
   const dim = 3 ** rank;
-  const labels = new Array<string>(dim).fill('0');
-  for (const b of basis) {
-    let lead = -1;
-    for (let i = 0; i < dim; i++) if (Math.abs(b[i]) > EPS) { lead = i; break; }
-    if (lead < 0) continue;
-    const sym = compSymbol(lead, rank, base);
-    for (let i = 0; i < dim; i++) if (Math.abs(b[i]) > EPS) labels[i] = signedTerm(b[i] / b[lead], sym);
-  }
-  return labels;
+  const basis = rref(rawBasis, dim);
+  const terms = basis
+    .map(b => {
+      let lead = -1;
+      for (let i = 0; i < dim; i++) if (Math.abs(b[i]) > EPS) { lead = i; break; }
+      return lead < 0 ? null : { sym: compSymbol(lead, rank, base), vec: b.map(x => x / b[lead]) };
+    })
+    .filter((t): t is { sym: string; vec: number[] } => t !== null);
+
+  return Array.from({ length: dim }, (_, c) => {
+    let s = '';
+    for (const t of terms) {
+      const coeff = t.vec[c];
+      if (Math.abs(coeff) <= EPS) continue;
+      const piece = formatCoeff(Math.abs(coeff)) + t.sym;
+      s += s === '' ? (coeff < 0 ? '-' : '') + piece : (coeff < 0 ? ' - ' : ' + ') + piece;
+    }
+    return s === '' ? '0' : s;
+  });
 }
 
 // Gaussian-elimination tolerances (distinct from the display EPS): looser pivot cutoff so float
@@ -169,7 +198,12 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   const displayName = getGroupDisplayName(selectedGroup.name, convention);
   const basis = form!.basisResults;
   const dim = 3 ** aRank;
-  const labels = aRank >= 1 && aRank <= 3 ? buildLabels(basis, aRank, base) : [];
+  // A Voigt-compressed matrix (or a native rank-1/2 form) is rendered whenever the spec is a matrix
+  // rendering; those need per-component labels. Rank-3/4 with no compressible pair use the list.
+  const usesMatrix = (aRank >= 1 && aRank <= 2)
+    || (aRank === 3 && (aIntrinsic === 'jk' || aIntrinsic === 'ij'))
+    || (aRank === 4 && (aIntrinsic === 'ij_kl' || aIntrinsic === 'voigt'));
+  const labels = usesMatrix ? buildLabels(basis, aRank, base) : [];
 
   const nonzero = new Set<number>();
   for (const b of basis) for (let i = 0; i < dim; i++) if (Math.abs(b[i]) > EPS) nonzero.add(i);
@@ -348,8 +382,15 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
           <div className="p-2"><BlockMath math={`${formLabel} = \\begin{pmatrix} ${labels[0]} \\\\ ${labels[1]} \\\\ ${labels[2]} \\end{pmatrix}`} /></div>
         ) : aRank === 2 ? (
           <div className="p-2"><BlockMath math={`${formLabel} = \\begin{pmatrix} ${[0, 1, 2].map(i => [0, 1, 2].map(j => labels[i * 3 + j]).join(' & ')).join(' \\\\ ')} \\end{pmatrix}`} /></div>
-        ) : aRank === 3 && aIntrinsic === 'jk' ? (
-          <NyeScheme labels={labels} onNavigate={onNavigate} />
+        ) : /* Rendering rule: where the chosen intrinsic symmetry compresses an index pair, render the
+             Voigt-compressed matrix (rows/cols are the compressed pairs); otherwise the relation
+             list; ranks <= 2 render natively above. */
+          aRank === 3 && aIntrinsic === 'jk' ? (
+          <CompressedMatrix labels={labels} rowSlots={SINGLE_SLOTS} colSlots={PAIR_SLOTS} onNavigate={onNavigate} />
+        ) : aRank === 3 && aIntrinsic === 'ij' ? (
+          <CompressedMatrix labels={labels} rowSlots={PAIR_SLOTS} colSlots={SINGLE_SLOTS} onNavigate={onNavigate} />
+        ) : aRank === 4 && (aIntrinsic === 'ij_kl' || aIntrinsic === 'voigt') ? (
+          <CompressedMatrix labels={labels} rowSlots={PAIR_SLOTS} colSlots={PAIR_SLOTS} onNavigate={onNavigate} />
         ) : (
           <RelationList relations={form!.relations.map(toSym)} />
         )}
@@ -403,28 +444,52 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   );
 }
 
-/** Rank-3, jk-symmetric: the 3x6 Nye scheme (rows i = x,y,z; columns jk = xx,yy,zz,yz,zx,xy). */
-function NyeScheme({ labels, onNavigate }: { labels: string[]; onNavigate?: (view: string, tab?: string) => void }) {
-  const cols: [string, number][] = [['xx', 0], ['yy', 4], ['zz', 8], ['yz', 5], ['zx', 6], ['xy', 1]]; // (j,k) flat within a row
+/** A "slot" is the crystallographic indices a row/column header stands for: a single index (x/y/z)
+ * or a Voigt-compressed pair (xx,yy,zz,yz,zx,xy in the standard 1..6 order). */
+interface Slot { label: string; idx: number[] }
+const SINGLE_SLOTS: Slot[] = [{ label: 'x', idx: [0] }, { label: 'y', idx: [1] }, { label: 'z', idx: [2] }];
+const PAIR_SLOTS: Slot[] = [
+  { label: 'xx', idx: [0, 0] }, { label: 'yy', idx: [1, 1] }, { label: 'zz', idx: [2, 2] },
+  { label: 'yz', idx: [1, 2] }, { label: 'zx', idx: [2, 0] }, { label: 'xy', idx: [0, 1] },
+];
+const flatOf = (indices: number[]) => indices.reduce((a, x) => a * 3 + x, 0);
+
+/**
+ * Voigt-compressed matrix rendering, shared by the Nye scheme and the new 6x3 / 6x6 forms: the row
+ * and column headers are the chosen slots (singles or pairs), and each cell is the tensor component
+ * whose indices are the row's slot followed by the column's slot. Header labels use the fixed Voigt
+ * order (XX YY ZZ YZ ZX XY) via PAIR_SLOTS.
+ */
+function CompressedMatrix({ labels, rowSlots, colSlots, onNavigate }: {
+  labels: string[];
+  rowSlots: Slot[];
+  colSlots: Slot[];
+  onNavigate?: (view: string, tab?: string) => void;
+}) {
+  const isPair = (s: Slot) => s.idx.length === 2;
   return (
     <div className="overflow-x-auto">
       <table className="border-collapse text-center">
         <thead>
           <tr>
             <th className="p-2"><TermInfo id="tbl-nye" onNavigate={onNavigate} /></th>
-            {cols.map(([name]) => (
-              <th key={name} className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider min-w-[3.5rem]"><InlineMath math={`(${name})`} /></th>
+            {colSlots.map(c => (
+              <th key={c.label} className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider min-w-[3.5rem]">
+                {isPair(c) ? <InlineMath math={`(${c.label})`} /> : c.label}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {[0, 1, 2].map(i => (
-            <tr key={i}>
-              <th className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider">{CHARS[i]}</th>
-              {cols.map(([name, off]) => {
-                const v = labels[i * 9 + off];
+          {rowSlots.map(r => (
+            <tr key={r.label}>
+              <th className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider">
+                {isPair(r) ? <InlineMath math={`(${r.label})`} /> : r.label}
+              </th>
+              {colSlots.map(c => {
+                const v = labels[flatOf([...r.idx, ...c.idx])];
                 return (
-                  <td key={name} className="p-2 border border-ink/10 font-mono text-sm">
+                  <td key={c.label} className="p-2 border border-ink/10 font-mono text-sm">
                     {v === '0' ? <span className="opacity-30">0</span> : <InlineMath math={v} />}
                   </td>
                 );
