@@ -11,7 +11,13 @@ on drift)._
 
 ---
 
-## Current release: v0.20.0 (2026-07-10)
+## Current release: v0.21.0 (2026-07-11)
+
+Table-7 guards + lookup-chain breadcrumb/diagram, Tables help + tooltips, vendored ITC references +
+count guards, Explorer polar directions + lattice info, Tables refinements, ESLint/CI guardrails, and
+the symbolic-EQ correctness fix (E1). See `CHANGELOG.md` `[0.21.0]`.
+
+### v0.20.0 (2026-07-10)
 
 Tables **"By effect" mode**: a seven-effect catalogue (pyroelectricity, spontaneous magnetization,
 permittivity, linear magnetoelectric effect, piezoelectricity, piezomagnetism, elasticity), each with
@@ -19,41 +25,6 @@ its defining equation and its own tensor symbol; allowed Explorer property chips
 matching effect; and a frame-canonical "groups sharing this form" view whose partition is anchored to
 the ITC 1.5.8.1 magnetoelectric F-blocks. Also corrects the lookup-chain breadcrumb for magnetic
 c-tensors (a Table-7 note instead of the classical Table-4a tail). See `CHANGELOG.md` `[0.20.0]`.
-
-**Unreleased on `main`:** the Table-7 lookup-chain breadcrumb for magnetic c-tensors (Type III groups
-now show the full Birss cross-formula chain — associated classical group A/B, rotated-setting badge,
-Table-4a column with the parity crossover made explicit, class letter, rank-table row, and book-error
-footnotes; grey groups show the time-reversal-forbidden tail), plus a class-indexed Table-7 guard
-holding `computeTensorForm` to Birss's i-/c cross-formula at ranks 0/1/2/4 across all 58 black-white
-rows (generated `table7Data.ts`, `npm run table7data`). The latter subsumes the "magnetic EQ rank-4
-golden fixtures" backlog item at the symbol-class level. Also the **Tables documentation** workstream:
-a new Help "Tables" tab (lookup modes, choosing a tensor, the classical Table-4a chain and the
-magnetic Table-7 route, all worked), two new Deeper Topics entries (Voigt notation; reading Table 7's
-letter columns), a collapsible `LookupChainDiagram` on the Tables page and in the help examples, and
-tooltips across the Tables selectors, results and lookup chain. Plus **ITC reference vendoring** —
-four transcribed ITC tables under `docs/references/` (Vol. D 3.2.2.1/3.2.2.2, Vol. A 2.1.3.1/2.1.1.1)
-and an anti-circular guard holding `computeTensorForm` to ITC 3.2.2.1's independent-component counts,
-property occurrence, structural totals and enantiomorphism (`isChiral`) across the 21 noncentro +
-11 centro classical classes. Plus **Explorer polar directions + lattice info**: a "Polar directions"
-block in the group popup (polar/nonpolar directions from ITC 3.2.2.2, in the app's Birss frame with
-the documented 30 deg trigonal remapping machine-verified against the app operators, and the 622
-print omission corrected), and the crystal-system cell restrictions / free parameters / Bravais
-lattices from ITC 2.1.1.1 (2.1.1.1 and 2.1.3.1 vendored alongside). Plus **Tables refinements**: the
-result section renamed "Tensor form"; the sharing list grouped by colour type; direction-aware
-lookup-chain diagram connectors; corrected effect citations; new index symmetries (rank-3 `(ij)k`,
-rank-4 pairs-only `(ij)(kl)` and full Voigt) with Voigt-compressed 6x3/6x6 renderings (RREF-canonical,
-sums like c66=(c11-c12)/2 correct) and guards. Plus **tech-debt Wave 1 (guardrails)**: ESLint + Prettier
-(hooks-deps / unused-vars as errors, rest as warnings; 0 errors, 8 warnings) wired into CI, a one-time
-Prettier reformat, `npm ci` + exact-pinned toolchain, non-blocking V8 coverage (baseline lines 86.72% /
-branches 74.45%), dead-code/hygiene cleanup (`getFutureSettingCount`, test rename, AGENTS.md doc fix),
-and the 2026-07-11 tech-debt audit's actionable items ported to a new `E#` backlog in `TODO-next.md`.
-That backlog's first item, the **correctness** fix **E1**, is now **shipped** (`fix/symbolic-eq-divergence`):
-the extended symbolic↔numeric agreement sweep had found the symbolic SHG path diverging from the trusted
-numeric engine for **EQ (rank-4) tensors on 3-/6-fold groups** (`3m`, `6mm`, `-6m2`, `-3'm`) at off-normal
-azimuth. Root cause was a stale-snapshot bug in the symbolic `cos²+sin²=1` simplifier (`trigPoly.ts`); the
-numeric Simulator path was unaffected. Fixed (read coefficients live), the numeric engine independently
-confirmed correct from first principles (~1e-16), and now guarded by golden fixtures + the generic-angle
-agreement sweep. See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.19.0 (2026-07-10)
 
