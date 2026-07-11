@@ -26,7 +26,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 1, parity: 'polar', timeParity: 'i', intrinsic: 'none' },
     blurb: 'A change in temperature induces a change in spontaneous polarization along the pyroelectric vector.',
     equation: '\\Delta P_i = p_i\\,\\Delta T',
-    reference: 'Birss, Symmetry and Magnetism (1966), ch. 4; ITC Vol. D §1.5.',
+    reference: 'ITC Vol. D (doi:10.1107/97809553602060000113)',
   },
   {
     id: 'spontaneous-magnetization',
@@ -35,7 +35,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 1, parity: 'axial', timeParity: 'c', intrinsic: 'none' },
     blurb: 'A change in temperature induces a change in spontaneous magnetization (a time-odd axial vector).',
     equation: '\\Delta M_i = q_i\\,\\Delta T',
-    reference: 'Birss, Symmetry and Magnetism (1966), ch. 4; ITC Vol. D §1.5.',
+    reference: 'Birss, Symmetry and Magnetism (1966), ch. 4; ITC Vol. D (doi:10.1107/97809553602060000113).',
   },
   {
     id: 'permittivity',
@@ -44,7 +44,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 2, parity: 'polar', timeParity: 'i', intrinsic: 'ij' },
     blurb: 'The symmetric second-rank tensor relating the electric displacement to the applied field.',
     equation: 'D_i = \\varepsilon_0\\,\\varepsilon_{ij} E_j',
-    reference: 'Birss, Symmetry and Magnetism (1966), ch. 4; ITC Vol. D §1.5.',
+    reference: 'ITC Vol. D (doi:10.1107/97809553602060000113)',
   },
   {
     id: 'magnetoelectric',
@@ -53,7 +53,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 2, parity: 'axial', timeParity: 'c', intrinsic: 'none' },
     blurb: 'A magnetic field induces an electric polarization (and, conversely, an electric field induces a magnetization: $M_j = \\alpha_{ij} E_i$).',
     equation: 'P_i = \\alpha_{ij} H_j',
-    reference: 'ITC Vol. D Table 1.5.8.1; Birss (1966), ch. 4.',
+    reference: 'ITC Vol. D Table 1.5.8.1 (doi:10.1107/97809553602060000113); Birss (1966), ch. 4.',
   },
   {
     id: 'piezoelectricity',
@@ -62,7 +62,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' },
     blurb: 'Mechanical stress induces an electric polarization (the same symmetry class as electric-dipole SHG).',
     equation: 'P_i = d_{ijk}\\,\\sigma_{jk}',
-    reference: 'Birss, Symmetry and Magnetism (1966), ch. 4; ITC Vol. D §1.5.',
+    reference: 'ITC Vol. D (doi:10.1107/97809553602060000113)',
   },
   {
     id: 'piezomagnetism',
@@ -71,7 +71,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 3, parity: 'axial', timeParity: 'c', intrinsic: 'jk' },
     blurb: 'Mechanical stress induces a magnetization (a time-odd axial third-rank tensor).',
     equation: 'M_i = \\Lambda_{ijk}\\,\\sigma_{jk}',
-    reference: 'ITC Vol. D Table 1.5.7.1; Birss (1966), ch. 4.',
+    reference: 'ITC Vol. D Table 1.5.7.1 (doi:10.1107/97809553602060000113); Birss (1966), ch. 4.',
   },
   {
     id: 'elasticity',
@@ -80,7 +80,7 @@ export const TENSOR_EFFECTS: TensorEffect[] = [
     spec: { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'voigt' },
     blurb: 'The fourth-rank stiffness tensor relating stress to strain, with full Voigt (pair) index symmetry.',
     equation: '\\sigma_{ij} = c_{ijkl}\\,\\varepsilon_{kl}',
-    reference: 'Birss, Symmetry and Magnetism (1966), ch. 4; ITC Vol. D §1.5.',
+    reference: 'ITC Vol. D (doi:10.1107/97809553602060000113)',
   },
 ];
 
