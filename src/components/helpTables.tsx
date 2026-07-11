@@ -33,7 +33,7 @@ const MODES: { title: string; body: React.ReactNode }[] = [
 
 const RESULTS: { title: string; body: React.ReactNode }[] = [
   {
-    title: 'Symmetry-reduced form',
+    title: 'Tensor form',
     body: <>Rendered to fit the rank: a one-line statement (rank 0), a vector (rank 1), a <InlineMath math="3\times3" /> matrix (rank 2), the <InlineMath math="3\times6" /> Nye scheme (rank 3 with jk-symmetry), or a list of the independent components and their relations (general rank 3 and rank 4).</>,
   },
   {

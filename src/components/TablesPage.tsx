@@ -323,7 +323,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
       {/* Result */}
       <div className="space-y-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-sm uppercase tracking-[0.2em] text-ink/70 flex items-center gap-1">Symmetry-reduced form
+          <h2 className="text-sm uppercase tracking-[0.2em] text-ink/70 flex items-center gap-1">Tensor form
             {!form!.isZero && (aRank === 4 || (aRank === 3 && aIntrinsic !== 'jk')) && <TermInfo id="tbl-relations" onNavigate={onNavigate} />}
           </h2>
           {!form!.isZero && aRank > 0 && <span className="text-xs text-ink/50 flex items-center gap-1">{independentCount} independent component{independentCount === 1 ? '' : 's'} <TermInfo id="tbl-indep-count" onNavigate={onNavigate} /></span>}
