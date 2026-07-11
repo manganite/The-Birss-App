@@ -102,6 +102,14 @@ const RANK0_READING: Record<string, string> = {
   'axial-c': 'time-odd pseudoscalar — the magnetoelectric monopole (trace of α_ij)',
 };
 
+/** Sub-blocks for the "Groups sharing this form" list, in colour-name-primary nomenclature, ordered
+ * I -> II -> III. Empty blocks are omitted at render. */
+const SHARING_TYPE_BLOCKS: [PointGroupData['type'], string][] = [
+  ['I', 'colourless (Type I)'],
+  ['II', 'grey (Type II)'],
+  ['III', 'black-white (Type III)'],
+];
+
 const chipBase = 'px-3 py-1.5 text-xs tracking-[0.05em] transition-all border border-ink';
 const chipOn = 'bg-ink text-paper';
 const chipOff = 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20';
@@ -360,20 +368,31 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
           <TermInfo id="tbl-sharing" onNavigate={onNavigate} />
         </div>
         {sharingOpen && sharing && (
-          <div className="mt-4 flex flex-wrap gap-2 max-h-64 overflow-y-auto">
-            {sharing.map(g => {
-              const isCurrent = g.name === selectedGroup.name;
-              const interactive = !isCurrent && !!onSelectGroup;
+          <div className="mt-4 space-y-3 max-h-64 overflow-y-auto">
+            {(SHARING_TYPE_BLOCKS).map(([type, label]) => {
+              const groups = sharing.filter(g => g.type === type);
+              if (groups.length === 0) return null;
               return (
-                <button
-                  key={g.name}
-                  type="button"
-                  disabled={!interactive}
-                  onClick={() => interactive && onSelectGroup!(g)}
-                  className={`px-2.5 py-1 text-sm border transition-colors ${isCurrent ? 'bg-ink text-paper border-ink' : interactive ? 'border-ink/20 hover:bg-ink hover:text-paper' : 'border-ink/20 text-ink/50 cursor-default'}`}
-                >
-                  <FormatPointGroup name={getGroupDisplayName(g.name, convention)} />
-                </button>
+                <div key={type}>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-ink/40 mb-1.5">{label}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {groups.map(g => {
+                      const isCurrent = g.name === selectedGroup.name;
+                      const interactive = !isCurrent && !!onSelectGroup;
+                      return (
+                        <button
+                          key={g.name}
+                          type="button"
+                          disabled={!interactive}
+                          onClick={() => interactive && onSelectGroup!(g)}
+                          className={`px-2.5 py-1 text-sm border transition-colors ${isCurrent ? 'bg-ink text-paper border-ink' : interactive ? 'border-ink/20 hover:bg-ink hover:text-paper' : 'border-ink/20 text-ink/50 cursor-default'}`}
+                        >
+                          <FormatPointGroup name={getGroupDisplayName(g.name, convention)} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
