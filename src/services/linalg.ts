@@ -1,27 +1,14 @@
 /**
- * linalg.ts -- shared 3x3 rotation / matmul primitives and the field-pair "outer-product" builders
- * used by BOTH the numeric (tensorProjection) and symbolic (symbolicProjection) SHG pipelines.
+ * linalg.ts -- shared 3x3 rotation / matmul primitives (numeric `number[][]` and symbolic `TrigPoly`)
+ * used by BOTH SHG pipelines, plus the independent-basis reducer.
  *
- * Wave-2 E3 extraction (audit H3/M1-adjacent): the numeric number[][] rotations + `mat3mul` lived in
- * tensorProjection and were imported cross-module; the TrigPoly rotations + `trigMat3Mul` were
- * duplicated in symbolicProjection; and the field-pair builder existed in two scalar variants
- * (`multiplyLinear` numeric, `multiplyLinearSym` TrigPoly). They are moved here verbatim -- behaviour
- * is unchanged. The two scalar variants deliberately stay as TWO functions; the generic-scalar
- * unification is Wave 3 (E8). The Float64Array flat-op hot path in tensorForms.ts (PR #91) is
- * intentionally NOT routed through this module.
+ * Wave-2 E3 extraction (audit H3): the numeric rotations + `mat3mul` and the symbolic rotations +
+ * `trigMat3Mul` were duplicated across the two projection modules; they live here now. The field-pair
+ * outer-product builder that also lived here (`multiplyLinear` / `multiplyLinearSym`) was collapsed
+ * into the single generic `computeShg` core in tensorProjection.ts by E8 and removed. The
+ * Float64Array flat-op hot path in tensorForms.ts (PR #91) is intentionally NOT routed through here.
  */
-import { EPSILON } from './symmetryGroups';
-import {
-  type TrigPoly,
-  trigConst,
-  trigCos,
-  trigSin,
-  trigScale,
-  trigAdd,
-  trigMul,
-  trigIsZero,
-  TRIG_ZERO,
-} from './trigPoly';
+import { type TrigPoly, trigConst, trigCos, trigSin, trigScale, trigAdd, trigMul, TRIG_ZERO } from './trigPoly';
 
 const DEG = Math.PI / 180;
 
@@ -125,22 +112,6 @@ export function symRotZ(): TrigMat3 {
   ];
 }
 
-// ---- field-pair outer product: E_i E_m -> symmetric field-pair coefficients (keys '00'..'12') ----
-
-export function multiplyLinear(A: number[], B: number[]): Record<string, number> {
-  const res: Record<string, number> = { '00': 0, '11': 0, '22': 0, '01': 0, '02': 0, '12': 0 };
-  for (let i = 0; i < 3; i++) {
-    for (let m = 0; m < 3; m++) {
-      const coeff = A[i] * B[m];
-      if (Math.abs(coeff) > EPSILON) {
-        const key = i <= m ? `${i}${m}` : `${m}${i}`;
-        res[key] += coeff;
-      }
-    }
-  }
-  return res;
-}
-
 /**
  * Independent-basis test for the symmetry-averaged projectors: `true` iff `candidate` is NOT a
  * scalar multiple of any vector already in `basis` (i.e. it spans a new direction). Two vectors are
@@ -180,25 +151,4 @@ export function isIndependentOf(
     if (match) return false; // candidate is parallel to `existing` -> not a new direction
   }
   return true;
-}
-
-export function multiplyLinearSym(A: TrigPoly[], B: TrigPoly[]): Record<string, TrigPoly> {
-  const res: Record<string, TrigPoly> = {
-    '00': TRIG_ZERO,
-    '11': TRIG_ZERO,
-    '22': TRIG_ZERO,
-    '01': TRIG_ZERO,
-    '02': TRIG_ZERO,
-    '12': TRIG_ZERO,
-  };
-  for (let i = 0; i < 3; i++) {
-    for (let m = 0; m < 3; m++) {
-      const coeff = trigMul(A[i], B[m]);
-      if (!trigIsZero(coeff)) {
-        const key = i <= m ? `${i}${m}` : `${m}${i}`;
-        res[key] = trigAdd(res[key], coeff);
-      }
-    }
-  }
-  return res;
 }
