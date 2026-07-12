@@ -129,10 +129,11 @@ function indexOrbit(idx: number, rank: number, gens: number[][]): number[] {
 }
 
 /**
- * Formats independent basis vectors into equality/sign relation strings, identical in form to
- * `latexFormatting.formatResults` (kept in lockstep so `{...,jk}` output equals
- * `calculateTensorComponents`). Rank 0 has no index label, so its single surviving scalar is
- * reported as the sentinel `\chi` (a bare, allowed scalar) rather than an empty `\chi_{}`.
+ * Formats independent basis vectors into equality/sign relation strings. The per-vector builder is
+ * shared with `latexFormatting.formatResults` via `tensorProjection.formatBasisRelation` (Wave-2 E5),
+ * so `{...,jk}` output equals `calculateTensorComponents` by construction. Rank 0 has no index label,
+ * so its single surviving scalar is reported as the sentinel `\chi` (a bare, allowed scalar) rather
+ * than an empty `\chi_{}`.
  */
 function formatFormRelations(basisResults: number[][], rank: number): string[] {
   if (basisResults.length === 0) return ['Identically zero.'];

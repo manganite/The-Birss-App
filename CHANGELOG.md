@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the rotation/matmul primitives, the independent-basis reducer, the χ-relation string builder,
   the comparison tolerances, and the field-label maps each live in a single home. Behaviour and all
   computed outputs are unchanged (the 2140-test suite is the guard).
+- Internal (tech-debt Wave 3 / E8, no user-visible change): the numeric and symbolic SHG contraction
+  pipelines, previously two ~200-line hand-duplicated copies, are unified behind one generic core
+  (`computeShg`, generic over a scalar with `number` and `TrigPoly` instances). The symbolic-only
+  `cos²+sin²` simplification is now an explicit post-stage outside the shared core, structurally
+  preventing the class of symbolic-only divergence behind the earlier off-normal EQ bug. No change to
+  any computed output (numeric byte-identical, symbolic guarded byte-identical by the agreement sweep
+  and the print-anchored goldens); numeric-path performance unchanged.
 
 ## [0.21.0] - 2026-07-11
 

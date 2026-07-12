@@ -1724,7 +1724,7 @@ fixtures-first + PR per the physics-output rule.
 - **E7 — DONE** — Shared field-label maps (`FIELD_LABELS_CRYSTAL` / `FIELD_LABELS_LAB` in `tensorProjection`) + a `toFlatIndex` inverse to `getIndices`. (L4)
 
 ### Wave 3 — tame the numeric/symbolic split (highest liability; PR + fixtures-first)
-- **E8** — Unify `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic scalar/semiring interface (`number` & `TrigPoly` instances) so the contraction logic exists once. (H2) — E1's root cause was a bug in the symbolic-only `trigSimplify` stage that has no numeric counterpart; unifying the two paths (or dropping the separate symbolic simplifier) would structurally prevent this class of symbolic-only divergence.
+- **E8 — DONE** (`refactor/shg-unification`) — Unified `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic `Scalar<S>` interface (`number` & `TrigPoly` instances) via the single `computeShg` core in `tensorProjection.ts`; the contraction logic now exists once. `trigSimplify` is an explicit symbolic-only post-stage OUTSIDE the core, so the E1-class symbolic-only divergence cannot recur invisibly. Homed in tensorProjection (not a separate shgCore.ts) to avoid an import cycle; numeric-path perf unchanged; symbolic guarded byte-identical by the agreement sweep + the 14 symbolicEQHexagonal goldens. (H2)
 - **E9** — Refactor `formatSubstitutedPolySum` (~210 lines, six inline magic harmonic tables) behind fixtures. (M2)
 - **E10** — Refactor `formatMatrixSymbol` (~120 lines, duplicated rotation-vs-mirror axis extraction) behind fixtures. (M3)
 
@@ -1750,3 +1750,8 @@ fixtures-first + PR per the physics-output rule.
 - **E25** — Narrow the `as any` on `RADAR_TICKS`; tighten the loose `PolarimetryPlot` data prop. (L9)
 - **E26** — Code-split `recharts` in `manualChunks`; point the `@` alias at `src/`, not the repo root. (L11)
 - **E27** — Add a lightweight doc-sync check (or trim the 1690-line `TODO-next.md`). (L13)
+
+### Discovered during E8 (2026-07-12)
+_(The E8 work order named these E22/E23, but those numbers were already taken by the audit port above, so they are filed here as E28/E29.)_
+- **E28** — Harden `linalg.isIndependentOf`: replace the `ratio === 0` sentinel (which conflates "unset" with "true ratio 0") with an explicit locked flag or null sentinel, fixtures-first, plus a synthetic-vector unit test for the (0,0,1)-vs-(1,0,1) pattern. Currently unreachable for group-average projector columns (symmetric P blocks the zero pattern; pinned by ~150 golden fixtures and the PR#92 bit-identity check), but the helper is a public utility and future non-projector callers could break the assumption. The quirk is documented in-code in the NB block of the `isIndependentOf` doc comment; that block must be updated when the hardening lands. (Copilot review on #92; POST-REVIEW verdict 2026-07-12.)
+- **E29** — The generic-angle numeric↔symbolic agreement sweep's heaviest cells (cubic EQ symbolic, ~5 s) run against vitest's 5 s default timeout — a latent CI flake independent of E8, surfaced by the E8 pin file's suite load. Fix candidates: an explicit per-file `testTimeout` or splitting the sweep's cubic cells; needs its own tiny change outside E8 (rule 2 forbade touching that test in the E8 PR).
