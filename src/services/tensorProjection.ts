@@ -24,16 +24,12 @@ import {
 // existing importers (orientation.ts, the projection/azimuth tests, symbolicProjection) keep their
 // `from './tensorProjection'` import site unchanged.
 import { rotX, rotY, rotZ, mat3mul, multiplyLinear, isIndependentOf } from './linalg';
+import { COEFF_EPSILON, ROOT_MATCH_EPSILON } from './tolerances';
 
 export { rotX, rotY, rotZ, mat3mul };
 
 export type TensorType = 'ED' | 'MD' | 'EQ';
 export type TensorTimeReversal = 'i' | 'c'; // i = time-even, c = time-odd
-
-/** formatCoeff's "is this an integer / matches a simple fraction" tolerance (same value as AXIS_EPSILON, kept separate -- unrelated quantities). */
-const COEFF_EPSILON = 1e-5;
-/** formatCoeff's irrational-root (sqrt) matching tolerance. */
-const ROOT_MATCH_EPSILON = 1e-4;
 
 /** Collapses "+ -X" into "- X" after joining signed terms into a display string. */
 export const cleanupExpressionSigns = (s: string): string => s.replace(/\+ -/g, '- ');

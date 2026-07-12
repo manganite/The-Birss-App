@@ -8,8 +8,7 @@
 import { type TrigPoly, trigIsZero, trigIsConst, trigGetConst } from './trigPoly';
 import { formatCoeff, cleanupExpressionSigns } from './tensorProjection';
 import type { SymPoly } from './symbolicProjection';
-
-const COEFF_EPSILON = 1e-5;
+import { COEFF_EPSILON } from './tolerances';
 
 const ANGLE_NAMES: Record<string, string> = {
   phiX: '\\varphi_x',

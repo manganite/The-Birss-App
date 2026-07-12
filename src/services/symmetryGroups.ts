@@ -10,12 +10,10 @@
  *      generators σ(N)/σ'(N). Birss wins over ITC where they diverge.
  */
 
-/** General tolerance for tensor/coefficient/matrix comparisons. */
-export const EPSILON = 1e-6;
-/** Geometric tolerance for normalized axis-vector "is zero" / dot-product sign checks. */
-export const AXIS_EPSILON = 1e-5;
-/** Cardinal-axis / in-plane-axis detection tolerance in formatAxis. */
-const CARDINAL_AXIS_EPSILON = 1e-3;
+// Comparison tolerances now live in one module (Wave-2 E6). EPSILON and AXIS_EPSILON are re-exported
+// here so the many `import { EPSILON } from './symmetryGroups'` sites stay unchanged.
+import { EPSILON, AXIS_EPSILON, CARDINAL_AXIS_EPSILON } from './tolerances';
+export { EPSILON, AXIS_EPSILON };
 /** Max per-component error when snapping a normalized axis to integer Miller indices. */
 const MILLER_ERROR_THRESHOLD = 0.1;
 /** Matrix-entry values every group element is expected to be an exact combination of. */
