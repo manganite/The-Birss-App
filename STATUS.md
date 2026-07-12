@@ -28,7 +28,12 @@ the initial first-render/KaTeX paint, reported for a future UI-render pass). Plu
 (E2–E7, closed): de-duplicated the reference-test markdown parsers into one `birssTableParsers` module,
 and gave the projections' rotation/matmul primitives, the independent-basis reducer, the χ-relation
 builder, the comparison tolerances, and the field-label maps each a single home — behaviour-preserving
-(2140 tests unchanged, no test edits outside the parser consolidation). See `CHANGELOG.md`
+(2140 tests unchanged, no test edits outside the parser consolidation). Plus **tech-debt Wave 3 / E8**
+(closed): unified the numeric and symbolic SHG contraction pipelines behind one generic `computeShg`
+core (generic over a scalar; `number`/`TrigPoly` instances), with the symbolic-only `cos²+sin²`
+simplification pulled out as an explicit post-stage so the E1-class divergence cannot recur —
+behaviour-preserving (numeric byte-identical via app-surface pins, symbolic byte-identical via the
+agreement sweep + print-anchored goldens; numeric-path perf unchanged). See `CHANGELOG.md`
 `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
