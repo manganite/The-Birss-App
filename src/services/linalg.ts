@@ -120,11 +120,15 @@ export function symRotZ(): TrigMat3 {
  * allocation. Shared verbatim by `calculateTensorBasisResults` (number[]) and `computeBasis`
  * (Float64Array) -- hence the `ArrayLike<number>` signature (Wave-2 E4).
  *
- * NB: this is a byte-for-byte extraction of the two original hand-written reducers, including the
- * `ratio === 0` "unset" sentinel (which cannot distinguish an as-yet-unset ratio from a genuinely
- * zero one). This predicate defines the independent-component identity that the ~150 golden fixtures
- * pin, so it is intentionally preserved exactly; any change to it is a behaviour change and belongs
- * in a fixtures-first correctness pass, not this de-duplication refactor.
+ * NB: extracted from the two original hand-written reducers (Wave-2 E4), which used `ratio === 0`
+ * as an "unset" sentinel. That sentinel could not distinguish an as-yet-unset ratio from a
+ * genuinely zero one (candidate[k]==0, existing[k]!=0), so the first such component silently
+ * skipped the consistency check — see the [0,0,1] vs [[1,0,1]] counterexample in linalg.test.ts.
+ * The production callers feed columns of the SYMMETRIC group-average projector, whose zero-pattern
+ * blocks that case, so it was unreachable in production (all ~150 golden fixtures pass either way);
+ * E28 nonetheless replaced the sentinel with an explicit `locked` flag now that this is a public
+ * utility future non-projector callers could hit. The independent-component identity the golden
+ * fixtures pin is unchanged.
  */
 export function isIndependentOf(
   candidate: ArrayLike<number>,
@@ -134,12 +138,15 @@ export function isIndependentOf(
 ): boolean {
   for (const existing of basis) {
     let ratio = 0;
+    let locked = false;
     let match = true;
     for (let k = 0; k < dim; k++) {
       if (Math.abs(existing[k]) > eps) {
         const r = candidate[k] / existing[k];
-        if (ratio === 0) ratio = r;
-        else if (Math.abs(r - ratio) > eps) {
+        if (!locked) {
+          ratio = r;
+          locked = true;
+        } else if (Math.abs(r - ratio) > eps) {
           match = false;
           break;
         }
