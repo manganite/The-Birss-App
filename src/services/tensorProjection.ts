@@ -472,12 +472,15 @@ const E_VEC_FULL = [
 export function computeShg<S>(
   scalar: Scalar<S>,
   group: Matrix3x3[],
-  rank: number,
-  isAxial: boolean,
-  isTimeOdd: boolean,
   tensorType: TensorType,
+  trType: TensorTimeReversal,
   R: S[][],
 ): ShgCoreResult<S> {
+  // rank / isAxial / isTimeOdd are derived here (not passed in) so an inconsistent combination
+  // (e.g. tensorType 'MD' with isAxial false) is unrepresentable at the call site.
+  const rank = tensorType === 'EQ' ? 4 : 3;
+  const isAxial = tensorType === 'MD';
+  const isTimeOdd = trType === 'c';
   const dim = Math.pow(3, rank);
   const tLabels = ['x', 'y', 'z'];
 
@@ -618,9 +621,6 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
 
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
   const group = getCachedFullGroup(cacheKey, generators);
-  const rank = tensorType === 'EQ' ? 4 : 3;
-  const isAxial = tensorType === 'MD';
-  const isTimeOdd = trType === 'c';
 
   // R = Ry(φ_y) · Rx(φ_x) · Rz(ψ) · R_preset, where R_preset = Rz(psi0) · Ry(thetaY) · Rx(thetaX).
   // Tilts (φ_x, φ_y) are lab-fixed; azimuth (ψ) is crystal-tied. Numeric: angles substituted now, so
@@ -628,7 +628,7 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
   const R_preset = mat3mul(rotZ(psi0), mat3mul(rotY(thetaY), rotX(thetaX)));
   const R = mat3mul(rotY(phiY), mat3mul(rotX(phiX), mat3mul(rotZ(psi), R_preset)));
 
-  const { inducedCrystal, source } = computeShg(numberScalar, group, rank, isAxial, isTimeOdd, tensorType, R);
+  const { inducedCrystal, source } = computeShg(numberScalar, group, tensorType, trType, R);
 
   // Path-specific output shaping (numeric-only): lab-frame source strings, relation strings, rawPoly.
   const labFieldLabels: Record<string, string> =

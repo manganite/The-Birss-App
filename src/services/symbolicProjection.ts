@@ -62,14 +62,11 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
 
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
   const group = getCachedFullGroup(cacheKey, generators);
-  const rank = tensorType === 'EQ' ? 4 : 3;
-  const isAxial = tensorType === 'MD';
-  const isTimeOdd = trType === 'c';
 
   // R_sym keeps phi symbolic (only the preset thetaX/thetaY/psi0 is substituted).
   const R_sym = buildSymbolicR(thetaX, thetaY, psi0);
 
-  const { inducedCrystal, source } = computeShg(trigPolyScalar, group, rank, isAxial, isTimeOdd, tensorType, R_sym);
+  const { inducedCrystal, source } = computeShg(trigPolyScalar, group, tensorType, trType, R_sym);
 
   // Symbolic-only post-stage: cos^2+sin^2 simplification of every source coefficient. This is the
   // stage the applyPythagorean/E1 bug lived in; it is deliberately kept OUT of the shared core so it
