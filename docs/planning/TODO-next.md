@@ -1725,8 +1725,8 @@ fixtures-first + PR per the physics-output rule.
 
 ### Wave 3 — tame the numeric/symbolic split (highest liability; PR + fixtures-first)
 - **E8 — DONE** (`refactor/shg-unification`) — Unified `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic `Scalar<S>` interface (`number` & `TrigPoly` instances) via the single `computeShg` core in `tensorProjection.ts`; the contraction logic now exists once. `trigSimplify` is an explicit symbolic-only post-stage OUTSIDE the core, so the E1-class symbolic-only divergence cannot recur invisibly. Homed in tensorProjection (not a separate shgCore.ts) to avoid an import cycle; numeric-path perf unchanged; symbolic guarded byte-identical by the agreement sweep + the 14 symbolicEQHexagonal goldens. (H2)
-- **E9** — Refactor `formatSubstitutedPolySum` (~210 lines, six inline magic harmonic tables) behind fixtures. (M2)
-- **E10** — Refactor `formatMatrixSymbol` (~120 lines, duplicated rotation-vs-mirror axis extraction) behind fixtures. (M3)
+- **E9 — DONE** (`refactor/formatter-dedup`) — Lifted `formatSubstitutedPolySum`'s six inline harmonic-mapping tables to named module-level constants; added first-time regression coverage (18 branch-coverage pins over small hand-built inputs, closing the Simulator-formula coverage gap). Behaviour byte-identical. The parametric ZERO/NINETY builder stays inline (it depends on `multiplyTrig`). (M2)
+- **E10 — DONE** (`refactor/formatter-dedup`) — Collapsed `formatMatrixSymbol`'s duplicated rotation-axis (columns of M+I) and mirror-normal (columns of I−M) extraction into one `firstSupported` selection helper. No new fixture (guarded by `operatorSet.reference` + a one-time base-vs-HEAD dump over all 122 groups, both byte-identical). (M3)
 
 ### Wave 4 — component structure & types
 - **E11 — DONE** (`perf/rank4-engine-and-sharing`): `useMemo`'d the grouped prop objects in `App.tsx`

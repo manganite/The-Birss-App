@@ -28,6 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   preventing the class of symbolic-only divergence behind the earlier off-normal EQ bug. No change to
   any computed output (numeric byte-identical, symbolic guarded byte-identical by the agreement sweep
   and the print-anchored goldens); numeric-path performance unchanged.
+- Internal (tech-debt Wave 3 tail / E9, E10, no user-visible change): de-duplicated two string
+  formatters. The Simulator's polarization-formula formatter (`formatSubstitutedPolySum`) had its six
+  inline harmonic-mapping tables lifted to named module-level constants, and it now also has
+  first-time regression test coverage (18 branch-coverage pins — previously the user-visible Simulator
+  formulas had no tests). The symmetry-operation symbol formatter (`formatMatrixSymbol`) had its
+  duplicated rotation-axis and mirror-normal extraction collapsed into one selection helper. Both are
+  behaviour byte-identical (the formatter output strings are unchanged; verified for `formatMatrixSymbol`
+  by a base-vs-HEAD dump over all 122 groups).
 
 ## [0.21.0] - 2026-07-11
 
