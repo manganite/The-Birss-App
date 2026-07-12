@@ -736,6 +736,10 @@ export function getFullGroup(generators: Matrix3x3[], groupName = '<unknown>'): 
 }
 
 const fullGroupCache = new Map<string, Matrix3x3[]>();
+/** Bench/test-only: clear the constructed-group cache so a cold run can be measured. Results unaffected. */
+export function _clearGroupCache(): void {
+  fullGroupCache.clear();
+}
 export function getCachedFullGroup(groupName: string, generators: Matrix3x3[]): Matrix3x3[] {
   let group = fullGroupCache.get(groupName);
   if (!group) {

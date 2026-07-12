@@ -24,9 +24,10 @@ import {
   getCachedFullGroup,
   getTransformedGenerators,
   getAlternateSettings,
+  det,
   type Matrix3x3,
 } from './symmetryGroups';
-import { averageTensor, getIndices, getLabel, formatCoeff } from './tensorProjection';
+import { getIndices, getLabel, formatCoeff } from './tensorProjection';
 
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
 export type TensorParity = 'polar' | 'axial';
@@ -164,12 +165,65 @@ function formatFormRelations(basisResults: number[][], rank: number): string[] {
   return output.length > 0 ? output : ['Identically zero.'];
 }
 
+/** Base-3 digit decomposition of every flat index, precomputed once per rank. Same result as calling
+ * `getIndices(idx, rank)` per index, but without the per-call array allocation that dominates the
+ * rank-4 projection profile (getIndices was ~64M allocations per 122-group sweep). */
+const digitTableCache = new Map<number, Uint8Array[]>();
+function digitTable(rank: number): Uint8Array[] {
+  const cached = digitTableCache.get(rank);
+  if (cached) return cached;
+  const dim = Math.pow(3, rank);
+  const table = new Array<Uint8Array>(dim);
+  for (let idx = 0; idx < dim; idx++) {
+    const d = new Uint8Array(rank);
+    let temp = idx;
+    for (let i = rank - 1; i >= 0; i--) {
+      d[i] = temp % 3;
+      temp = Math.floor(temp / 3);
+    }
+    table[idx] = d;
+  }
+  digitTableCache.set(rank, table);
+  return table;
+}
+
+interface FlatOp {
+  /** row-major flattened 3x3 operation matrix (m[3a+b]) */
+  m: Float64Array;
+  det: number;
+  anti: boolean;
+}
+/** Per-group flattened operation matrices (with det and antiunitary flag), computed once and reused
+ * across every seed and every spec. Keyed by the cached full-group array identity (stable per
+ * group/setting via getCachedFullGroup), so the flattening cost is paid once per group, not per seed. */
+let flatOpCache = new WeakMap<Matrix3x3[], FlatOp[]>();
+function flatOps(group: Matrix3x3[]): FlatOp[] {
+  const cached = flatOpCache.get(group);
+  if (cached) return cached;
+  const ops = group.map((g) => {
+    const m = g.m;
+    return {
+      m: Float64Array.of(m[0][0], m[0][1], m[0][2], m[1][0], m[1][1], m[1][2], m[2][0], m[2][1], m[2][2]),
+      det: det(g),
+      anti: g.isAntiUnitary === true,
+    };
+  });
+  flatOpCache.set(group, ops);
+  return ops;
+}
+
 /**
  * The independent, symmetry-averaged basis vectors for `spec` over `group` (already the full,
  * setting-transformed magnetic group with antiunitary flags). Generalizes
  * `calculateTensorBasisResults`: `rank`/`isAxial`/`isTimeOdd` come from the spec, and the
  * intrinsic index symmetry is applied by symmetrizing each seed over its index orbit before the
  * group average (instead of the hardwired last-two-index swap).
+ *
+ * The symmetry average is inlined here as an allocation-free flat-array projection (identical math
+ * to `averageTensor(seed, ...)` -- averaged[out] = (1/N) Σ_op sign(op) Σ_{s∈orbit} Π_r m_op[out_r][s_r]
+ * -- but ~2 orders of magnitude fewer allocations at rank 4). The shared `averageTensor` /
+ * `transformTensor` in tensorProjection.ts are intentionally left unchanged so the ED/MD/EQ and
+ * symbolic paths keep their exact existing behaviour.
  */
 function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
   const { rank, parity, timeParity, intrinsic } = spec;
@@ -178,6 +232,10 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
   const dim = Math.pow(3, rank);
   const gens = intrinsicGenerators(rank, intrinsic);
 
+  const digits = digitTable(rank);
+  const ops = flatOps(group);
+  const invN = 1 / group.length;
+
   const basisResults: number[][] = [];
   for (let i = 0; i < dim; i++) {
     const orbit = indexOrbit(i, rank, gens);
@@ -185,12 +243,33 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
     // skip in calculateTensorBasisResults for the jk case).
     if (i !== Math.min(...orbit)) continue;
 
-    const seed = new Array(dim).fill(0);
-    for (const m of orbit) seed[m] = 1; // intrinsic-symmetric seed
+    // Flat, allocation-free symmetry average of the intrinsic-symmetric unit seed on `orbit`.
+    const averaged = new Float64Array(dim);
+    for (const op of ops) {
+      const sign = (isAxial ? op.det : 1) * (isTimeOdd && op.anti ? -1 : 1);
+      const m = op.m;
+      for (let out = 0; out < dim; out++) {
+        const dOut = digits[out];
+        let acc = 0;
+        for (const s of orbit) {
+          const dS = digits[s];
+          let p = 1;
+          for (let r = 0; r < rank; r++) p *= m[dOut[r] * 3 + dS[r]];
+          acc += p;
+        }
+        averaged[out] += sign * acc;
+      }
+    }
+    for (let k = 0; k < dim; k++) averaged[k] *= invN;
 
-    const averaged = averageTensor(seed, group, rank, isAxial, isTimeOdd);
-
-    if (averaged.every((v) => Math.abs(v) < EPSILON)) continue;
+    let allZero = true;
+    for (let k = 0; k < dim; k++) {
+      if (Math.abs(averaged[k]) >= EPSILON) {
+        allZero = false;
+        break;
+      }
+    }
+    if (allZero) continue;
 
     let isNew = true;
     for (const existing of basisResults) {
@@ -214,7 +293,7 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
         break;
       }
     }
-    if (isNew) basisResults.push(averaged);
+    if (isNew) basisResults.push(Array.from(averaged));
   }
   return basisResults;
 }
@@ -298,6 +377,16 @@ export function getFormSignature(groupName: string, setting: number, spec: Tenso
  * `docs/findings/ANALYSIS-table-4b-4d-semantics.md` §9.
  */
 const canonicalSignatureCache = new Map<string, string>();
+
+/** Bench/test-only: clear every projection memoization cache (form/signature results plus the
+ * per-rank digit tables and per-group flattened ops of the hot path) so a genuinely cold projection
+ * can be measured. Not used by the app; results are unaffected. */
+export function _clearTensorFormCaches(): void {
+  formCache.clear();
+  canonicalSignatureCache.clear();
+  digitTableCache.clear();
+  flatOpCache = new WeakMap<Matrix3x3[], FlatOp[]>();
+}
 
 export function getCanonicalFormSignature(groupName: string, spec: TensorSpec): string {
   const cacheKey = `${groupName}::${specKey(spec)}`;

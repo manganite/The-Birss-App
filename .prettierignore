@@ -8,6 +8,7 @@ docs/
 
 # Generated -- reformatting breaks the `npm run table7data` idempotence check
 src/data/table7Data.ts
+src/data/sharingPartitions.ts
 
 # Hand-maintained docs and lockfile are not code-formatted
 *.md

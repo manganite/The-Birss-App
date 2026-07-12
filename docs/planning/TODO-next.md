@@ -1729,7 +1729,9 @@ fixtures-first + PR per the physics-output rule.
 - **E10** — Refactor `formatMatrixSymbol` (~120 lines, duplicated rotation-vs-mirror axis extraction) behind fixtures. (M3)
 
 ### Wave 4 — component structure & types
-- **E11** — `useMemo` the grouped prop objects in `App.tsx` (`tensorConfig`/`orientation`/`simulation`). (M5)
+- **E11 — DONE** (`perf/rank4-engine-and-sharing`): `useMemo`'d the grouped prop objects in `App.tsx`
+  (`tensorConfig`/`orientation`/`simulation`), landed alongside the rank-4 projector speedup and the
+  precomputed sharing partitions. (M5)
 - **E12** — Move the SHG-intensity sweep out of `useSimulatorState` into `services/`; have the hook accept the prop objects. (M6)
 - **E13** — Split `TablesPage` (518 lines): extract linalg to `tensorForms`, sub-views to components. (H4)
 - **E14** — Split `HelpPage` (684 lines): content → `data/`, one component per tab. (H5)

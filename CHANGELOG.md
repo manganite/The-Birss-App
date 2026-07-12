@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Performance: the Tables page no longer freezes when selecting a rank-4 tensor or opening the
+  "Groups sharing this form" list. The symmetry-form projector was rewritten with an allocation-free
+  flat-array hot path (identical results), cutting a cold rank-4 form from ~256 ms to ~14 ms and the
+  122-group signature sweep from ~19.5 s to ~0.7 s; and the "sharing this form" partition is now
+  precomputed at build time (`npm run sharingdata`) so opening the list is an O(1) lookup instead of
+  a main-thread sweep. No change to any computed tensor form. Overall test-suite runtime is down as
+  well (~66 s to ~60 s).
+
 ## [0.21.0] - 2026-07-11
 
 ### Added
