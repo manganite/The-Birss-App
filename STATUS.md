@@ -39,7 +39,11 @@ polarization-formula formatter; six inline harmonic tables lifted to named const
 regression coverage of the previously-untested Simulator formulas) and `formatMatrixSymbol` (the
 operation-symbol formatter; duplicated rotation-axis/mirror-normal extraction collapsed into one
 helper) — behaviour byte-identical (verified for `formatMatrixSymbol` by a base-vs-HEAD dump over all
-122 groups). Wave 3 is now complete except the standalone hardening items **E28/E29**. See
+122 groups). Plus the standalone hardening items **E28/E29** (closed): `isIndependentOf`'s
+`ratio === 0` "unset" sentinel — a latent edge case unreachable in production (symmetric projector
+columns block it; all ~150 goldens unaffected) — replaced with an explicit locked flag and covered
+by a linear-algebra-anchored unit test, and the symbolic agreement sweep's heaviest cells given an
+explicit 30 s timeout to kill an intermittent CI flake. Wave 3 is now fully complete. See
 `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
