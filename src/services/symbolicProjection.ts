@@ -7,31 +7,31 @@
  * remains unchanged and is used for live Simulator evaluation.
  */
 
-import {
-  type TrigPoly,
-  trigConst,
-  trigCos,
-  trigSin,
-  trigAdd,
-  trigMul,
-  trigScale,
-  trigIsZero,
-  trigSimplify,
-  TRIG_ZERO,
-} from './trigPoly';
+import { type TrigPoly, trigConst, trigAdd, trigMul, trigScale, trigIsZero, trigSimplify, TRIG_ZERO } from './trigPoly';
 import {
   type SHGOptions,
   type SHGExpression,
-  rotX,
-  rotY,
-  rotZ,
-  mat3mul,
   averageTensor,
   getIndices,
   getLabel,
   formatCoeff,
   cleanupExpressionSigns,
+  toFlatIndex,
+  FIELD_LABELS_CRYSTAL,
 } from './tensorProjection';
+import {
+  rotX,
+  rotY,
+  rotZ,
+  mat3mul,
+  symRotX,
+  symRotY,
+  symRotZ,
+  trigMat3Mul,
+  numToTrigMat3,
+  multiplyLinearSym,
+  type TrigMat3,
+} from './linalg';
 import { EPSILON, GENERATORS, getCachedFullGroup, getTransformedGenerators } from './symmetryGroups';
 
 export type SymPoly = Map<string, Map<string, TrigPoly>>;
@@ -46,87 +46,10 @@ export interface SymbolicSHGResult {
   source: SymbolicSHGExpression[];
 }
 
-export type TrigMat3 = TrigPoly[][];
-
-function trigMat3Mul(A: TrigMat3, B: TrigMat3): TrigMat3 {
-  const R: TrigMat3 = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => TRIG_ZERO));
-  for (let i = 0; i < 3; i++)
-    for (let j = 0; j < 3; j++) {
-      let sum = TRIG_ZERO;
-      for (let k = 0; k < 3; k++) sum = trigAdd(sum, trigMul(A[i][k], B[k][j]));
-      R[i][j] = sum;
-    }
-  return R;
-}
-
-function numToTrigMat3(m: number[][]): TrigMat3 {
-  return m.map((row) => row.map((v) => trigConst(v)));
-}
-
-function symRotX(): TrigMat3 {
-  const c = trigCos('phiX'),
-    s = trigSin('phiX');
-  const one = trigConst(1),
-    zero = TRIG_ZERO,
-    ns = trigScale(s, -1);
-  return [
-    [one, zero, zero],
-    [zero, c, ns],
-    [zero, s, c],
-  ];
-}
-
-function symRotY(): TrigMat3 {
-  const c = trigCos('phiY'),
-    s = trigSin('phiY');
-  const one = trigConst(1),
-    zero = TRIG_ZERO,
-    ns = trigScale(s, -1);
-  return [
-    [c, zero, s],
-    [zero, one, zero],
-    [ns, zero, c],
-  ];
-}
-
-function symRotZ(): TrigMat3 {
-  const c = trigCos('psi'),
-    s = trigSin('psi');
-  const one = trigConst(1),
-    zero = TRIG_ZERO,
-    ns = trigScale(s, -1);
-  return [
-    [c, ns, zero],
-    [s, c, zero],
-    [zero, zero, one],
-  ];
-}
-
 export function buildSymbolicR(thetaX: number, thetaY: number, psi0 = 0): TrigMat3 {
   const R_preset = numToTrigMat3(mat3mul(rotZ(psi0), mat3mul(rotY(thetaY), rotX(thetaX))));
   // R = Ry(φ_y) · Rx(φ_x) · Rz(ψ) · R_preset — tilts lab-fixed, azimuth crystal-tied
   return trigMat3Mul(symRotY(), trigMat3Mul(symRotX(), trigMat3Mul(symRotZ(), R_preset)));
-}
-
-function multiplyLinearSym(A: TrigPoly[], B: TrigPoly[]): Record<string, TrigPoly> {
-  const res: Record<string, TrigPoly> = {
-    '00': TRIG_ZERO,
-    '11': TRIG_ZERO,
-    '22': TRIG_ZERO,
-    '01': TRIG_ZERO,
-    '02': TRIG_ZERO,
-    '12': TRIG_ZERO,
-  };
-  for (let i = 0; i < 3; i++) {
-    for (let m = 0; m < 3; m++) {
-      const coeff = trigMul(A[i], B[m]);
-      if (!trigIsZero(coeff)) {
-        const key = i <= m ? `${i}${m}` : `${m}${i}`;
-        res[key] = trigAdd(res[key], coeff);
-      }
-    }
-  }
-  return res;
 }
 
 function addPolySym(a: SymPoly, b: SymPoly, scaleB: TrigPoly): SymPoly {
@@ -193,15 +116,13 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
         const fullIndices = [...outIndices, j, k];
-        let flatIdx = 0;
-        for (let r = 0; r < rank; r++) flatIdx += fullIndices[r] * Math.pow(3, rank - 1 - r);
+        const flatIdx = toFlatIndex(fullIndices, rank);
 
         const swappedIndices = [...fullIndices];
         const temp = swappedIndices[rank - 1];
         swappedIndices[rank - 1] = swappedIndices[rank - 2];
         swappedIndices[rank - 2] = temp;
-        let swappedIdx = 0;
-        for (let r = 0; r < rank; r++) swappedIdx += swappedIndices[r] * Math.pow(3, rank - 1 - r);
+        const swappedIdx = toFlatIndex(swappedIndices, rank);
 
         const basisVector = new Array(dim).fill(0);
         basisVector[flatIdx] = 1;
@@ -247,14 +168,7 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
 
     // Format crystal-frame induced expression (numeric)
     const inducedParts: string[] = [];
-    const fieldLabels: Record<string, string> = {
-      '00': 'E_x^2',
-      '11': 'E_y^2',
-      '22': 'E_z^2',
-      '01': 'E_x E_y',
-      '02': 'E_x E_z',
-      '12': 'E_y E_z',
-    };
+    const fieldLabels = FIELD_LABELS_CRYSTAL;
     for (const chi of Array.from(terms.keys()).sort()) {
       const pairMap = terms.get(chi)!;
       const fieldParts: { pair: string; coeff: number }[] = [];

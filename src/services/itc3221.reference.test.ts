@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { computeTensorForm, type TensorSpec } from './tensorForms';
-import { matrixRank } from './testUtils/birssTableParsers';
+import { matrixRank, splitRow } from './testUtils/birssTableParsers';
 import { GENERATORS, isCentrosymmetric } from './symmetryGroups';
 import { isChiral } from './propertyFlags';
 import { POINT_GROUPS } from '../data/pointGroups';
@@ -89,7 +89,7 @@ function parseRows(): Row[] {
   const out: Row[] = [];
   for (const line of REF.split('\n')) {
     if (!line.startsWith('|')) continue;
-    const f = line.split('|').map((c) => c.trim());
+    const f = splitRow(line);
     // f: ['', System, Laue, Group, Rank-1, Rank-3, Enantiomorphism, Axial-rank-2, '']
     if (f.length < 8) continue;
     const group = f[3];

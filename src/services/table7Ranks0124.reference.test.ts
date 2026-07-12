@@ -12,6 +12,7 @@ import {
   relationsForClass,
   matrixRank,
   tableDim,
+  splitRow,
   type FCell,
 } from './testUtils/birssTableParsers';
 
@@ -138,7 +139,7 @@ function parseTable7(): Row[] {
     .split('\n')
     .forEach((line, li) => {
       if (!line.startsWith('|')) return;
-      const f = line.split('|').map((s) => s.trim());
+      const f = splitRow(line);
       if (f.length < 14 || f[2].startsWith('--') || /Magnetic point group/.test(f[2]) || f[3] === '-') return;
       const M = strip(f[2]),
         A = strip(f[3]),

@@ -10,10 +10,9 @@ import { EPSILON } from './symmetryGroups';
 import {
   type TensorTimeReversal,
   calculateTensorBasisResults,
-  getIndices,
-  getLabel,
   formatCoeff,
   cleanupExpressionSigns,
+  formatBasisRelation,
 } from './tensorProjection';
 
 export function calculateTensorComponents(
@@ -279,32 +278,10 @@ export function formatSubstitutedPolySum(
 }
 
 function formatResults(basisResults: number[][], rank: number): string[] {
-  const dim = Math.pow(3, rank);
   const output: string[] = [];
-
   for (const basis of basisResults) {
-    const members: string[] = [];
-    let leadIdx = -1;
-    const addedLabels = new Set<string>();
-
-    for (let i = 0; i < dim; i++) {
-      if (Math.abs(basis[i]) > EPSILON) {
-        const label = getLabel(getIndices(i, rank));
-        if (addedLabels.has(label)) continue;
-        addedLabels.add(label);
-
-        if (leadIdx === -1) leadIdx = i;
-        const scale = basis[i] / basis[leadIdx];
-        const sign = scale > 0 ? (members.length === 0 ? '' : ' = ') : ' = -';
-        const scaleStr = formatCoeff(scale);
-        members.push(`${sign}${scaleStr}${label}`);
-      }
-    }
-
-    if (members.length > 0) {
-      output.push(members.join(''));
-    }
+    const relation = formatBasisRelation(basis, rank);
+    if (relation !== null) output.push(relation);
   }
-
   return output.length > 0 ? output : ['All components are zero.'];
 }

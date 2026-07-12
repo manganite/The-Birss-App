@@ -5,6 +5,7 @@ import path from 'path';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { getFamilyClass } from '../data/groupNotation';
 import { GENERATORS, isCentrosymmetric } from './symmetryGroups';
+import { tableRows } from './testUtils/birssTableParsers';
 import {
   isPolar,
   isFerromagnetic,
@@ -31,18 +32,6 @@ const computedSet = (pred: (g: string) => boolean) => new Set(ALL.filter(pred));
 
 // ---- shared markdown helpers ----
 const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
-function tableRows(section: string): string[][] {
-  return section
-    .split('\n')
-    .filter((l) => l.trim().startsWith('|'))
-    .map((l) =>
-      l
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
 function sliceBetween(content: string, start: string, end: string): string {
   const s = content.indexOf(start);
   if (s === -1) throw new Error(`sliceBetween: start heading not found: "${start}"`);

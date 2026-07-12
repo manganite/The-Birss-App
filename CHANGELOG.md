@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   precomputed at build time (`npm run sharingdata`) so opening the list is an O(1) lookup instead of
   a main-thread sweep. No change to any computed tensor form. Overall test-suite runtime is down as
   well (~66 s to ~60 s).
+- Internal (tech-debt Wave 2, no user-visible change): de-duplicated shared code across the services
+  and reference-test layers -- the markdown-table parsers now come from one `birssTableParsers` module,
+  and the rotation/matmul primitives, the independent-basis reducer, the χ-relation string builder,
+  the comparison tolerances, and the field-label maps each live in a single home. Behaviour and all
+  computed outputs are unchanged (the 2140-test suite is the guard).
 
 ## [0.21.0] - 2026-07-11
 

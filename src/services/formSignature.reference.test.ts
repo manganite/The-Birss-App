@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { getCanonicalFormSignature, type TensorSpec } from './tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
+import { tableRows } from './testUtils/birssTableParsers';
 
 /**
  * Anchor / correctness proof for the Tables "Groups sharing this form" feature: two groups share a
@@ -21,18 +22,6 @@ const ref = (name: string) => readFileSync(path.resolve(__dirname, '../../docs/r
 const NOMENCLATURE = readFileSync(path.resolve(__dirname, '../../birss-tables/table-nomenclature.md'), 'utf-8');
 
 const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
-function tableRows(section: string): string[][] {
-  return section
-    .split('\n')
-    .filter((l) => l.trim().startsWith('|'))
-    .map((l) =>
-      l
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
 function sliceBetween(content: string, start: string, end: string): string {
   const s = content.indexOf(start);
   if (s === -1) throw new Error(`sliceBetween: start marker not found: ${JSON.stringify(start)}`);

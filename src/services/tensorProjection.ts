@@ -20,56 +20,16 @@ import {
   det,
   getTransformedGenerators,
 } from './symmetryGroups';
+// Shared linear-algebra primitives (Wave-2 E3). rotX/rotY/rotZ/mat3mul are re-exported below so
+// existing importers (orientation.ts, the projection/azimuth tests, symbolicProjection) keep their
+// `from './tensorProjection'` import site unchanged.
+import { rotX, rotY, rotZ, mat3mul, multiplyLinear, isIndependentOf } from './linalg';
+import { COEFF_EPSILON, ROOT_MATCH_EPSILON } from './tolerances';
+
+export { rotX, rotY, rotZ, mat3mul };
 
 export type TensorType = 'ED' | 'MD' | 'EQ';
 export type TensorTimeReversal = 'i' | 'c'; // i = time-even, c = time-odd
-
-const DEG = Math.PI / 180;
-
-export function rotX(deg: number): number[][] {
-  const c = Math.cos(deg * DEG),
-    s = Math.sin(deg * DEG);
-  return [
-    [1, 0, 0],
-    [0, c, -s],
-    [0, s, c],
-  ];
-}
-
-export function rotY(deg: number): number[][] {
-  const c = Math.cos(deg * DEG),
-    s = Math.sin(deg * DEG);
-  return [
-    [c, 0, s],
-    [0, 1, 0],
-    [-s, 0, c],
-  ];
-}
-
-export function rotZ(deg: number): number[][] {
-  const c = Math.cos(deg * DEG),
-    s = Math.sin(deg * DEG);
-  return [
-    [c, -s, 0],
-    [s, c, 0],
-    [0, 0, 1],
-  ];
-}
-
-export function mat3mul(A: number[][], B: number[][]): number[][] {
-  const R: number[][] = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-  ];
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) for (let k = 0; k < 3; k++) R[i][j] += A[i][k] * B[k][j];
-  return R;
-}
-
-/** formatCoeff's "is this an integer / matches a simple fraction" tolerance (same value as AXIS_EPSILON, kept separate -- unrelated quantities). */
-const COEFF_EPSILON = 1e-5;
-/** formatCoeff's irrational-root (sqrt) matching tolerance. */
-const ROOT_MATCH_EPSILON = 1e-4;
 
 /** Collapses "+ -X" into "- X" after joining signed terms into a display string. */
 export const cleanupExpressionSigns = (s: string): string => s.replace(/\+ -/g, '- ');
@@ -84,10 +44,38 @@ export function getIndices(idx: number, rank: number): number[] {
   return indices;
 }
 
+/** Inverse of getIndices: the flat index for a base-3 multi-index (most-significant digit first).
+ * Satisfies toFlatIndex(getIndices(i, rank), rank) === i. */
+export function toFlatIndex(indices: number[], rank: number): number {
+  let flat = 0;
+  for (let r = 0; r < rank; r++) flat += indices[r] * Math.pow(3, rank - 1 - r);
+  return flat;
+}
+
 export function getLabel(indices: number[]): string {
   const chars = ['x', 'y', 'z'];
   return '\\chi_{' + indices.map((i) => chars[i]).join('') + '}';
 }
+
+/** Field-pair keys ('00'..'12', i<=j) -> LaTeX quadratic field label. Crystal frame uses lowercase
+ * axes (x,y,z); the lab frame uses uppercase (X,Y,Z). Shared by the numeric, symbolic, and
+ * trig-polynomial formatters (Wave-2 E7). */
+export const FIELD_LABELS_CRYSTAL: Record<string, string> = {
+  '00': 'E_x^2',
+  '11': 'E_y^2',
+  '22': 'E_z^2',
+  '01': 'E_x E_y',
+  '02': 'E_x E_z',
+  '12': 'E_y E_z',
+};
+export const FIELD_LABELS_LAB: Record<string, string> = {
+  '00': 'E_X^2',
+  '11': 'E_Y^2',
+  '22': 'E_Z^2',
+  '01': 'E_X E_Y',
+  '02': 'E_X E_Z',
+  '12': 'E_Y E_Z',
+};
 
 export function formatCoeff(c: number): string {
   const absC = Math.abs(c);
@@ -155,6 +143,39 @@ export function formatCoeff(c: number): string {
   }
 
   return Number(absC.toFixed(3)).toString();
+}
+
+/**
+ * Equality/sign relation string for ONE symmetry-averaged basis vector, e.g.
+ * `\chi_{xxx} = -\chi_{xyy}` -- each surviving component labelled and scaled relative to the lead
+ * component. Returns `null` when no component survives. Shared by `latexFormatting.formatResults`
+ * (ED/MD/EQ display) and `tensorForms.formatFormRelations` (the generalized Tables engine), which
+ * were previously kept in lockstep by hand (Wave-2 E5). This builder does NOT special-case rank 0
+ * (a bare scalar) -- at rank 0 it would emit `\chi_{}` -- so callers that allow a scalar (e.g.
+ * formatFormRelations, which emits a bare `\chi`) must handle rank 0 before calling. The only other
+ * caller, formatResults, is never invoked at rank 0.
+ */
+export function formatBasisRelation(basis: ArrayLike<number>, rank: number): string | null {
+  const dim = Math.pow(3, rank);
+  const members: string[] = [];
+  let leadIdx = -1;
+  const addedLabels = new Set<string>();
+
+  for (let i = 0; i < dim; i++) {
+    if (Math.abs(basis[i]) > EPSILON) {
+      const label = getLabel(getIndices(i, rank));
+      if (addedLabels.has(label)) continue;
+      addedLabels.add(label);
+
+      if (leadIdx === -1) leadIdx = i;
+      const scale = basis[i] / basis[leadIdx];
+      const sign = scale > 0 ? (members.length === 0 ? '' : ' = ') : ' = -';
+      const scaleStr = formatCoeff(scale);
+      members.push(`${sign}${scaleStr}${label}`);
+    }
+  }
+
+  return members.length > 0 ? members.join('') : null;
 }
 
 export function transformTensor(
@@ -252,35 +273,8 @@ export function calculateTensorBasisResults(
     }
     const averaged = averageTensor(basisVector, group, rank, isAxial, isTimeOdd);
 
-    let isNew = true;
-
-    if (averaged.every((v) => Math.abs(v) < EPSILON)) {
-      isNew = false;
-    } else {
-      for (const existing of basisResults) {
-        let ratio = 0;
-        let match = true;
-        for (let k = 0; k < dim; k++) {
-          if (Math.abs(existing[k]) > EPSILON) {
-            const r = averaged[k] / existing[k];
-            if (ratio === 0) ratio = r;
-            else if (Math.abs(r - ratio) > EPSILON) {
-              match = false;
-              break;
-            }
-          } else if (Math.abs(averaged[k]) > EPSILON) {
-            match = false;
-            break;
-          }
-        }
-        if (match) {
-          isNew = false;
-          break;
-        }
-      }
-    }
-
-    if (isNew) {
+    const nonZero = averaged.some((v) => Math.abs(v) >= EPSILON);
+    if (nonZero && isIndependentOf(averaged, basisResults, dim, EPSILON)) {
       basisResults.push(averaged);
     }
   }
@@ -359,20 +353,6 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
     [0, 0, 1],
   ];
 
-  function multiplyLinear(A: number[], B: number[]): Record<string, number> {
-    const res: Record<string, number> = { '00': 0, '11': 0, '22': 0, '01': 0, '02': 0, '12': 0 };
-    for (let i = 0; i < 3; i++) {
-      for (let m = 0; m < 3; m++) {
-        const coeff = A[i] * B[m];
-        if (Math.abs(coeff) > EPSILON) {
-          const key = i <= m ? `${i}${m}` : `${m}${i}`;
-          res[key] += coeff;
-        }
-      }
-    }
-    return res;
-  }
-
   type Poly = Map<string, Map<string, number>>;
 
   function addPoly(a: Poly, b: Poly, scaleB: number = 1): Poly {
@@ -418,22 +398,8 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
               '02': '0',
               '12': '0',
             }
-          : {
-              '00': 'E_X^2',
-              '11': 'E_Y^2',
-              '22': 'E_Z^2',
-              '01': 'E_X E_Y',
-              '02': 'E_X E_Z',
-              '12': 'E_Y E_Z',
-            }
-        : {
-            '00': 'E_x^2',
-            '11': 'E_y^2',
-            '22': 'E_z^2',
-            '01': 'E_x E_y',
-            '02': 'E_x E_z',
-            '12': 'E_y E_z',
-          };
+          : FIELD_LABELS_LAB
+        : FIELD_LABELS_CRYSTAL;
 
       if (fieldParts.length === 1) {
         const { pair, coeff } = fieldParts[0];
