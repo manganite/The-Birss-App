@@ -15,6 +15,95 @@ import {
   formatBasisRelation,
 } from './tensorProjection';
 
+/**
+ * Harmonic decomposition of one field-pair for the SHG polarization sum. Each field-pair key
+ * ('00'/'11'/'01'/… over the two-vector basis) maps to a list of {harmonic, factor} contributions.
+ * `formatSubstitutedPolySum` builds BOTH a power form (e.g. cos²θ sinθ) and a harmonic form
+ * (e.g. ¼sinθ + ¼sin3θ) for every term and keeps whichever is shorter (D4). These tables are the
+ * single source of truth for those decompositions in THETA mode; the ZERO/NINETY builder is
+ * parametric (below) so it stays inline.
+ */
+type HarmonicTerm = { harmonic: string; factor: number };
+type PairMapping = Record<string, HarmonicTerm[]>;
+
+// THETA mode, multiplyTrig = cosθ
+const THETA_COS_POWER: PairMapping = {
+  '00': [{ harmonic: '\\cos^3\\theta', factor: 1 }],
+  '11': [{ harmonic: '\\cos\\theta \\sin^2\\theta', factor: 1 }],
+  '22': [],
+  '01': [{ harmonic: '\\cos^2\\theta \\sin\\theta', factor: 1 }],
+  '02': [],
+  '12': [],
+};
+const THETA_COS_HARMONIC: PairMapping = {
+  '00': [
+    { harmonic: '\\cos\\theta', factor: 0.75 },
+    { harmonic: '\\cos 3\\theta', factor: 0.25 },
+  ],
+  '11': [
+    { harmonic: '\\cos\\theta', factor: 0.25 },
+    { harmonic: '\\cos 3\\theta', factor: -0.25 },
+  ],
+  '22': [],
+  '01': [
+    { harmonic: '\\sin\\theta', factor: 0.25 },
+    { harmonic: '\\sin 3\\theta', factor: 0.25 },
+  ],
+  '02': [],
+  '12': [],
+};
+
+// THETA mode, multiplyTrig = sinθ
+const THETA_SIN_POWER: PairMapping = {
+  '00': [{ harmonic: '\\cos^2\\theta \\sin\\theta', factor: 1 }],
+  '11': [{ harmonic: '\\sin^3\\theta', factor: 1 }],
+  '22': [],
+  '01': [{ harmonic: '\\cos\\theta \\sin^2\\theta', factor: 1 }],
+  '02': [],
+  '12': [],
+};
+const THETA_SIN_HARMONIC: PairMapping = {
+  '00': [
+    { harmonic: '\\sin\\theta', factor: 0.25 },
+    { harmonic: '\\sin 3\\theta', factor: 0.25 },
+  ],
+  '11': [
+    { harmonic: '\\sin\\theta', factor: 0.75 },
+    { harmonic: '\\sin 3\\theta', factor: -0.25 },
+  ],
+  '22': [],
+  '01': [
+    { harmonic: '\\cos\\theta', factor: 0.25 },
+    { harmonic: '\\cos 3\\theta', factor: -0.25 },
+  ],
+  '02': [],
+  '12': [],
+};
+
+// THETA mode, no multiplyTrig
+const THETA_NONE_POWER: PairMapping = {
+  '00': [{ harmonic: '\\cos^2\\theta', factor: 1 }],
+  '11': [{ harmonic: '\\sin^2\\theta', factor: 1 }],
+  '22': [],
+  '01': [{ harmonic: '\\cos\\theta \\sin\\theta', factor: 1 }],
+  '02': [],
+  '12': [],
+};
+const THETA_NONE_HARMONIC: PairMapping = {
+  '00': [
+    { harmonic: '1', factor: 0.5 },
+    { harmonic: '\\cos 2\\theta', factor: 0.5 },
+  ],
+  '11': [
+    { harmonic: '1', factor: 0.5 },
+    { harmonic: '\\cos 2\\theta', factor: -0.5 },
+  ],
+  '22': [],
+  '01': [{ harmonic: '\\sin 2\\theta', factor: 0.5 }],
+  '02': [],
+  '12': [],
+};
+
 export function calculateTensorComponents(
   groupName: string,
   tensorType: 'ED' | 'MD' | 'EQ',
@@ -57,86 +146,19 @@ export function formatSubstitutedPolySum(
       const mode = term.mode;
       const multiplyTrig = term.multiplyTrig;
 
-      type HarmonicTerm = { harmonic: string; factor: number };
-      let powerMappings: Record<string, HarmonicTerm[]>;
-      let harmonicMappings: Record<string, HarmonicTerm[]>;
+      let powerMappings: PairMapping;
+      let harmonicMappings: PairMapping;
 
       if (mode === 'THETA') {
         if (multiplyTrig === '\\cos\\theta') {
-          powerMappings = {
-            '00': [{ harmonic: '\\cos^3\\theta', factor: 1 }],
-            '11': [{ harmonic: '\\cos\\theta \\sin^2\\theta', factor: 1 }],
-            '22': [],
-            '01': [{ harmonic: '\\cos^2\\theta \\sin\\theta', factor: 1 }],
-            '02': [],
-            '12': [],
-          };
-          harmonicMappings = {
-            '00': [
-              { harmonic: '\\cos\\theta', factor: 0.75 },
-              { harmonic: '\\cos 3\\theta', factor: 0.25 },
-            ],
-            '11': [
-              { harmonic: '\\cos\\theta', factor: 0.25 },
-              { harmonic: '\\cos 3\\theta', factor: -0.25 },
-            ],
-            '22': [],
-            '01': [
-              { harmonic: '\\sin\\theta', factor: 0.25 },
-              { harmonic: '\\sin 3\\theta', factor: 0.25 },
-            ],
-            '02': [],
-            '12': [],
-          };
+          powerMappings = THETA_COS_POWER;
+          harmonicMappings = THETA_COS_HARMONIC;
         } else if (multiplyTrig === '\\sin\\theta') {
-          powerMappings = {
-            '00': [{ harmonic: '\\cos^2\\theta \\sin\\theta', factor: 1 }],
-            '11': [{ harmonic: '\\sin^3\\theta', factor: 1 }],
-            '22': [],
-            '01': [{ harmonic: '\\cos\\theta \\sin^2\\theta', factor: 1 }],
-            '02': [],
-            '12': [],
-          };
-          harmonicMappings = {
-            '00': [
-              { harmonic: '\\sin\\theta', factor: 0.25 },
-              { harmonic: '\\sin 3\\theta', factor: 0.25 },
-            ],
-            '11': [
-              { harmonic: '\\sin\\theta', factor: 0.75 },
-              { harmonic: '\\sin 3\\theta', factor: -0.25 },
-            ],
-            '22': [],
-            '01': [
-              { harmonic: '\\cos\\theta', factor: 0.25 },
-              { harmonic: '\\cos 3\\theta', factor: -0.25 },
-            ],
-            '02': [],
-            '12': [],
-          };
+          powerMappings = THETA_SIN_POWER;
+          harmonicMappings = THETA_SIN_HARMONIC;
         } else {
-          powerMappings = {
-            '00': [{ harmonic: '\\cos^2\\theta', factor: 1 }],
-            '11': [{ harmonic: '\\sin^2\\theta', factor: 1 }],
-            '22': [],
-            '01': [{ harmonic: '\\cos\\theta \\sin\\theta', factor: 1 }],
-            '02': [],
-            '12': [],
-          };
-          harmonicMappings = {
-            '00': [
-              { harmonic: '1', factor: 0.5 },
-              { harmonic: '\\cos 2\\theta', factor: 0.5 },
-            ],
-            '11': [
-              { harmonic: '1', factor: 0.5 },
-              { harmonic: '\\cos 2\\theta', factor: -0.5 },
-            ],
-            '22': [],
-            '01': [{ harmonic: '\\sin 2\\theta', factor: 0.5 }],
-            '02': [],
-            '12': [],
-          };
+          powerMappings = THETA_NONE_POWER;
+          harmonicMappings = THETA_NONE_HARMONIC;
         }
       } else {
         const multiplied = multiplyTrig ? multiplyTrig : '1';
