@@ -141,6 +141,41 @@ export function multiplyLinear(A: number[], B: number[]): Record<string, number>
   return res;
 }
 
+/**
+ * Independent-basis test for the symmetry-averaged projectors: `true` iff `candidate` is NOT a
+ * scalar multiple of any vector already in `basis` (i.e. it spans a new direction). Two vectors are
+ * parallel when their nonzero-support ratios all agree within `eps` and neither has support where
+ * the other is zero. Callers pre-screen the all-zero candidate separately. No per-candidate
+ * allocation. Shared verbatim by `calculateTensorBasisResults` (number[]) and `computeBasis`
+ * (Float64Array) -- hence the `ArrayLike<number>` signature (Wave-2 E4).
+ */
+export function isIndependentOf(
+  candidate: ArrayLike<number>,
+  basis: ReadonlyArray<ArrayLike<number>>,
+  dim: number,
+  eps: number,
+): boolean {
+  for (const existing of basis) {
+    let ratio = 0;
+    let match = true;
+    for (let k = 0; k < dim; k++) {
+      if (Math.abs(existing[k]) > eps) {
+        const r = candidate[k] / existing[k];
+        if (ratio === 0) ratio = r;
+        else if (Math.abs(r - ratio) > eps) {
+          match = false;
+          break;
+        }
+      } else if (Math.abs(candidate[k]) > eps) {
+        match = false;
+        break;
+      }
+    }
+    if (match) return false; // candidate is parallel to `existing` -> not a new direction
+  }
+  return true;
+}
+
 export function multiplyLinearSym(A: TrigPoly[], B: TrigPoly[]): Record<string, TrigPoly> {
   const res: Record<string, TrigPoly> = {
     '00': TRIG_ZERO,

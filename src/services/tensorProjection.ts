@@ -23,7 +23,7 @@ import {
 // Shared linear-algebra primitives (Wave-2 E3). rotX/rotY/rotZ/mat3mul are re-exported below so
 // existing importers (orientation.ts, the projection/azimuth tests, symbolicProjection) keep their
 // `from './tensorProjection'` import site unchanged.
-import { rotX, rotY, rotZ, mat3mul, multiplyLinear } from './linalg';
+import { rotX, rotY, rotZ, mat3mul, multiplyLinear, isIndependentOf } from './linalg';
 
 export { rotX, rotY, rotZ, mat3mul };
 
@@ -216,35 +216,8 @@ export function calculateTensorBasisResults(
     }
     const averaged = averageTensor(basisVector, group, rank, isAxial, isTimeOdd);
 
-    let isNew = true;
-
-    if (averaged.every((v) => Math.abs(v) < EPSILON)) {
-      isNew = false;
-    } else {
-      for (const existing of basisResults) {
-        let ratio = 0;
-        let match = true;
-        for (let k = 0; k < dim; k++) {
-          if (Math.abs(existing[k]) > EPSILON) {
-            const r = averaged[k] / existing[k];
-            if (ratio === 0) ratio = r;
-            else if (Math.abs(r - ratio) > EPSILON) {
-              match = false;
-              break;
-            }
-          } else if (Math.abs(averaged[k]) > EPSILON) {
-            match = false;
-            break;
-          }
-        }
-        if (match) {
-          isNew = false;
-          break;
-        }
-      }
-    }
-
-    if (isNew) {
+    const nonZero = averaged.some((v) => Math.abs(v) >= EPSILON);
+    if (nonZero && isIndependentOf(averaged, basisResults, dim, EPSILON)) {
       basisResults.push(averaged);
     }
   }

@@ -28,6 +28,7 @@ import {
   type Matrix3x3,
 } from './symmetryGroups';
 import { getIndices, getLabel, formatCoeff } from './tensorProjection';
+import { isIndependentOf } from './linalg';
 
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
 export type TensorParity = 'polar' | 'axial';
@@ -271,29 +272,7 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
     }
     if (allZero) continue;
 
-    let isNew = true;
-    for (const existing of basisResults) {
-      let ratio = 0;
-      let match = true;
-      for (let k = 0; k < dim; k++) {
-        if (Math.abs(existing[k]) > EPSILON) {
-          const r = averaged[k] / existing[k];
-          if (ratio === 0) ratio = r;
-          else if (Math.abs(r - ratio) > EPSILON) {
-            match = false;
-            break;
-          }
-        } else if (Math.abs(averaged[k]) > EPSILON) {
-          match = false;
-          break;
-        }
-      }
-      if (match) {
-        isNew = false;
-        break;
-      }
-    }
-    if (isNew) basisResults.push(Array.from(averaged));
+    if (isIndependentOf(averaged, basisResults, dim, EPSILON)) basisResults.push(Array.from(averaged));
   }
   return basisResults;
 }
