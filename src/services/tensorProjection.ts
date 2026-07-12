@@ -121,6 +121,37 @@ export function formatCoeff(c: number): string {
   return Number(absC.toFixed(3)).toString();
 }
 
+/**
+ * Equality/sign relation string for ONE symmetry-averaged basis vector, e.g.
+ * `\chi_{xxx} = -\chi_{xyy}` -- each surviving component labelled and scaled relative to the lead
+ * component. Returns `null` when no component survives. Shared by `latexFormatting.formatResults`
+ * (ED/MD/EQ display) and `tensorForms.formatFormRelations` (the generalized Tables engine), which
+ * were previously kept in lockstep by hand (Wave-2 E5). Rank 0 has no index label; callers that
+ * allow a bare scalar handle that sentinel themselves.
+ */
+export function formatBasisRelation(basis: ArrayLike<number>, rank: number): string | null {
+  const dim = Math.pow(3, rank);
+  const members: string[] = [];
+  let leadIdx = -1;
+  const addedLabels = new Set<string>();
+
+  for (let i = 0; i < dim; i++) {
+    if (Math.abs(basis[i]) > EPSILON) {
+      const label = getLabel(getIndices(i, rank));
+      if (addedLabels.has(label)) continue;
+      addedLabels.add(label);
+
+      if (leadIdx === -1) leadIdx = i;
+      const scale = basis[i] / basis[leadIdx];
+      const sign = scale > 0 ? (members.length === 0 ? '' : ' = ') : ' = -';
+      const scaleStr = formatCoeff(scale);
+      members.push(`${sign}${scaleStr}${label}`);
+    }
+  }
+
+  return members.length > 0 ? members.join('') : null;
+}
+
 export function transformTensor(
   tensor: number[],
   g: Matrix3x3,

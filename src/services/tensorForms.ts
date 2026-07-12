@@ -27,7 +27,7 @@ import {
   det,
   type Matrix3x3,
 } from './symmetryGroups';
-import { getIndices, getLabel, formatCoeff } from './tensorProjection';
+import { getIndices, formatBasisRelation } from './tensorProjection';
 import { isIndependentOf } from './linalg';
 
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
@@ -136,7 +136,6 @@ function indexOrbit(idx: number, rank: number, gens: number[][]): number[] {
  */
 function formatFormRelations(basisResults: number[][], rank: number): string[] {
   if (basisResults.length === 0) return ['Identically zero.'];
-  const dim = Math.pow(3, rank);
   const output: string[] = [];
 
   for (const basis of basisResults) {
@@ -144,24 +143,8 @@ function formatFormRelations(basisResults: number[][], rank: number): string[] {
       output.push('\\chi'); // scalar: allowed (nonzero invariant); no index label exists
       continue;
     }
-    const members: string[] = [];
-    let leadIdx = -1;
-    const addedLabels = new Set<string>();
-
-    for (let i = 0; i < dim; i++) {
-      if (Math.abs(basis[i]) > EPSILON) {
-        const label = getLabel(getIndices(i, rank));
-        if (addedLabels.has(label)) continue;
-        addedLabels.add(label);
-
-        if (leadIdx === -1) leadIdx = i;
-        const scale = basis[i] / basis[leadIdx];
-        const sign = scale > 0 ? (members.length === 0 ? '' : ' = ') : ' = -';
-        const scaleStr = formatCoeff(scale);
-        members.push(`${sign}${scaleStr}${label}`);
-      }
-    }
-    if (members.length > 0) output.push(members.join(''));
+    const relation = formatBasisRelation(basis, rank);
+    if (relation !== null) output.push(relation);
   }
   return output.length > 0 ? output : ['Identically zero.'];
 }
