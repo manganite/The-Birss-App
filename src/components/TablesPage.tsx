@@ -5,13 +5,14 @@ import { Table2, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
 import {
   computeTensorForm,
-  getCanonicalFormSignature,
   type TensorSpec,
   type TensorRank,
   type TensorParity,
   type TensorTimeParity,
   type TensorIntrinsic,
 } from '../services/tensorForms';
+import { INTRINSIC_BY_RANK, specKeyOf } from '../data/uiTensorSpecs';
+import { SHARING_PARTITIONS } from '../data/sharingPartitions';
 import { formatCoeff } from '../services/tensorCalculator';
 import { GroupIdentityHeader } from './MathComponents';
 import { FormatPointGroup } from './notation';
@@ -153,14 +154,6 @@ function spanRank(basis: number[][]): number {
   return rank;
 }
 
-const INTRINSIC_BY_RANK: Record<number, TensorIntrinsic[]> = {
-  0: ['none'],
-  1: ['none'],
-  2: ['none', 'ij'],
-  3: ['none', 'ij', 'jk'],
-  4: ['none', 'ij_kl', 'voigt'],
-};
-
 const RANK0_READING: Record<string, string> = {
   'polar-i': 'ordinary scalar — always allowed',
   'axial-i': 'pseudoscalar — allowed for chiral (enantiomorphic) groups',
@@ -179,7 +172,6 @@ const SHARING_TYPE_BLOCKS: [PointGroupData['type'], string][] = [
 const chipBase = 'px-3 py-1.5 text-xs tracking-[0.05em] transition-all border border-ink';
 const chipOn = 'bg-ink text-paper';
 const chipOff = 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20';
-const specKeyOf = (s: TensorSpec) => `${s.rank}:${s.parity}:${s.timeParity}:${s.intrinsic}`;
 
 export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, onSelectGroup }: TablesPageProps) {
   const { setting, setSetting, convention } = tensorConfig;
@@ -214,15 +206,18 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
     [selectedGroup, setting, specKey],
   );
 
-  // The class of groups sharing this form (frame-canonical signature). Computed only when the
-  // section is expanded; heavy for rank 4 but cached in the engine. See findings §9.
+  // The class of groups sharing this form (frame-canonical signature). O(1) lookup into the
+  // precomputed partition (src/data/sharingPartitions.ts, `npm run sharingdata`) -- the 122-group
+  // signature sweep is static per spec, so it is generated at build time rather than run on the main
+  // thread. See findings §9.
   const groupName = selectedGroup?.name;
   const sharing = useMemo(() => {
     if (!sharingOpen || !groupName) return null;
-    const sig = getCanonicalFormSignature(groupName, spec);
-    return POINT_GROUPS.filter((g) => getCanonicalFormSignature(g.name, spec) === sig);
-    // specKey is a stable string derived from spec; see the form useMemo above.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const partition = SHARING_PARTITIONS[specKey];
+    const cls = partition?.find((c) => c.includes(groupName));
+    if (!cls) return null;
+    const byName = new Map(POINT_GROUPS.map((g) => [g.name, g]));
+    return cls.map((n) => byName.get(n)).filter((g): g is PointGroupData => g !== undefined);
   }, [sharingOpen, groupName, specKey]);
 
   if (!selectedGroup) {
