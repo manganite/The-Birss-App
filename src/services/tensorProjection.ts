@@ -44,10 +44,38 @@ export function getIndices(idx: number, rank: number): number[] {
   return indices;
 }
 
+/** Inverse of getIndices: the flat index for a base-3 multi-index (most-significant digit first).
+ * Satisfies toFlatIndex(getIndices(i, rank), rank) === i. */
+export function toFlatIndex(indices: number[], rank: number): number {
+  let flat = 0;
+  for (let r = 0; r < rank; r++) flat += indices[r] * Math.pow(3, rank - 1 - r);
+  return flat;
+}
+
 export function getLabel(indices: number[]): string {
   const chars = ['x', 'y', 'z'];
   return '\\chi_{' + indices.map((i) => chars[i]).join('') + '}';
 }
+
+/** Field-pair keys ('00'..'12', i<=j) -> LaTeX quadratic field label. Crystal frame uses lowercase
+ * axes (x,y,z); the lab frame uses uppercase (X,Y,Z). Shared by the numeric, symbolic, and
+ * trig-polynomial formatters (Wave-2 E7). */
+export const FIELD_LABELS_CRYSTAL: Record<string, string> = {
+  '00': 'E_x^2',
+  '11': 'E_y^2',
+  '22': 'E_z^2',
+  '01': 'E_x E_y',
+  '02': 'E_x E_z',
+  '12': 'E_y E_z',
+};
+export const FIELD_LABELS_LAB: Record<string, string> = {
+  '00': 'E_X^2',
+  '11': 'E_Y^2',
+  '22': 'E_Z^2',
+  '01': 'E_X E_Y',
+  '02': 'E_X E_Z',
+  '12': 'E_Y E_Z',
+};
 
 export function formatCoeff(c: number): string {
   const absC = Math.abs(c);
@@ -368,22 +396,8 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
               '02': '0',
               '12': '0',
             }
-          : {
-              '00': 'E_X^2',
-              '11': 'E_Y^2',
-              '22': 'E_Z^2',
-              '01': 'E_X E_Y',
-              '02': 'E_X E_Z',
-              '12': 'E_Y E_Z',
-            }
-        : {
-            '00': 'E_x^2',
-            '11': 'E_y^2',
-            '22': 'E_z^2',
-            '01': 'E_x E_y',
-            '02': 'E_x E_z',
-            '12': 'E_y E_z',
-          };
+          : FIELD_LABELS_LAB
+        : FIELD_LABELS_CRYSTAL;
 
       if (fieldParts.length === 1) {
         const { pair, coeff } = fieldParts[0];

@@ -1715,13 +1715,13 @@ fixtures-first + PR per the physics-output rule.
   `symbolicEQHexagonal.reference.test.ts` (14 golden cells), the extended generic-angle
   agreement sweep in `symbolicProjection.test.ts`, and unit regressions in `trigPoly.test.ts`.
 
-### Wave 2 — de-duplicate safety-net & primitives (behaviour-preserving)
-- **E2** — Consolidate the ~12 hand-rolled markdown-table parsers into `testUtils/birssTableParsers.ts`; delete local redefinitions. (H7)
-- **E3** — Extract one rotation/matmul module (`Matrix3x3` + generic multiply); have `tensorProjection` + `symbolicProjection` consume it. (H3)
-- **E4** — Extract the shared independent-basis reducer ("isNew" ratio matcher) reimplemented in three places into one helper. (M1)
-- **E5** — Unify the duplicated `\chi=…` relation formatter (`formatResults` / `formatFormRelations`, kept in lockstep by hand). (M4)
-- **E6** — Collapse the duplicated epsilon constants (`COEFF_EPSILON`×2, `AXIS_EPSILON`, `EPSILON`, `ROOT_MATCH_EPSILON`) into one shared module. (L3)
-- **E7** — Extract the duplicated field-label maps and add a `toFlatIndex` inverse to `getIndices`. (L4)
+### Wave 2 — de-duplicate safety-net & primitives (behaviour-preserving) — DONE (`chore/tech-debt-wave2`)
+- **E2 — DONE** — Consolidated the hand-rolled markdown-table parsers across 11 reference-test files into the shared `src/services/testUtils/birssTableParsers.ts` (`tableRows` for the 7 identical local copies; a new `splitRow` for the 4 column-indexed/bespoke parsers). (H7)
+- **E3 — DONE** — Extracted `src/services/linalg.ts` with the numeric + symbolic rotation/matmul primitives and the two `multiplyLinear` variants (kept as two functions; generic-scalar unification is E8). (H3)
+- **E4 — DONE** — Extracted the independent-basis ratio-matcher into `linalg.isIndependentOf` (shared by `calculateTensorBasisResults` and `computeBasis`); `propertyFlags.hasNonzeroInvariant` is a distinct existence check and was left alone. (M1)
+- **E5 — DONE** — Unified the χ-relation string builder as `tensorProjection.formatBasisRelation`, consumed by `formatResults` and `formatFormRelations`. (M4)
+- **E6 — DONE** — Re-homed the comparison tolerances into `src/services/tolerances.ts` (values preserved; only the duplicate `COEFF_EPSILON` merged). (L3)
+- **E7 — DONE** — Shared field-label maps (`FIELD_LABELS_CRYSTAL` / `FIELD_LABELS_LAB` in `tensorProjection`) + a `toFlatIndex` inverse to `getIndices`. (L4)
 
 ### Wave 3 — tame the numeric/symbolic split (highest liability; PR + fixtures-first)
 - **E8** — Unify `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic scalar/semiring interface (`number` & `TrigPoly` instances) so the contraction logic exists once. (H2) — E1's root cause was a bug in the symbolic-only `trigSimplify` stage that has no numeric counterpart; unifying the two paths (or dropping the separate symbolic simplifier) would structurally prevent this class of symbolic-only divergence.

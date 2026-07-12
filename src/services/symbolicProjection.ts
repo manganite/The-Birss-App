@@ -16,6 +16,8 @@ import {
   getLabel,
   formatCoeff,
   cleanupExpressionSigns,
+  toFlatIndex,
+  FIELD_LABELS_CRYSTAL,
 } from './tensorProjection';
 import {
   rotX,
@@ -114,15 +116,13 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
         const fullIndices = [...outIndices, j, k];
-        let flatIdx = 0;
-        for (let r = 0; r < rank; r++) flatIdx += fullIndices[r] * Math.pow(3, rank - 1 - r);
+        const flatIdx = toFlatIndex(fullIndices, rank);
 
         const swappedIndices = [...fullIndices];
         const temp = swappedIndices[rank - 1];
         swappedIndices[rank - 1] = swappedIndices[rank - 2];
         swappedIndices[rank - 2] = temp;
-        let swappedIdx = 0;
-        for (let r = 0; r < rank; r++) swappedIdx += swappedIndices[r] * Math.pow(3, rank - 1 - r);
+        const swappedIdx = toFlatIndex(swappedIndices, rank);
 
         const basisVector = new Array(dim).fill(0);
         basisVector[flatIdx] = 1;
@@ -168,14 +168,7 @@ export function calculateSymbolicSHGExpressions(options: SHGOptions): SymbolicSH
 
     // Format crystal-frame induced expression (numeric)
     const inducedParts: string[] = [];
-    const fieldLabels: Record<string, string> = {
-      '00': 'E_x^2',
-      '11': 'E_y^2',
-      '22': 'E_z^2',
-      '01': 'E_x E_y',
-      '02': 'E_x E_z',
-      '12': 'E_y E_z',
-    };
+    const fieldLabels = FIELD_LABELS_CRYSTAL;
     for (const chi of Array.from(terms.keys()).sort()) {
       const pairMap = terms.get(chi)!;
       const fieldParts: { pair: string; coeff: number }[] = [];

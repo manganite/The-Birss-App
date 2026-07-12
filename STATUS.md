@@ -24,7 +24,11 @@ precomputed at build time (`npm run sharingdata` → `src/data/sharingPartitions
 the Tables sharing list opens via an O(1) lookup instead of a main-thread sweep, and the App prop
 bundles are memoized (audit **E11/M5**, closed). The prior ~20 s Tables freeze at rank 4 is gone;
 measured max long task for the rank-4 switch and sharing expand is 0 ms (a residual ~110 ms remains in
-the initial first-render/KaTeX paint, reported for a future UI-render pass). See `CHANGELOG.md`
+the initial first-render/KaTeX paint, reported for a future UI-render pass). Plus **tech-debt Wave 2**
+(E2–E7, closed): de-duplicated the reference-test markdown parsers into one `birssTableParsers` module,
+and gave the projections' rotation/matmul primitives, the independent-basis reducer, the χ-relation
+builder, the comparison tolerances, and the field-label maps each a single home — behaviour-preserving
+(2140 tests unchanged, no test edits outside the parser consolidation). See `CHANGELOG.md`
 `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)

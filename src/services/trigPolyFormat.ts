@@ -6,7 +6,7 @@
  */
 
 import { type TrigPoly, trigIsZero, trigIsConst, trigGetConst } from './trigPoly';
-import { formatCoeff, cleanupExpressionSigns } from './tensorProjection';
+import { formatCoeff, cleanupExpressionSigns, FIELD_LABELS_LAB } from './tensorProjection';
 import type { SymPoly } from './symbolicProjection';
 import { COEFF_EPSILON } from './tolerances';
 
@@ -124,15 +124,6 @@ export function formatTrigPoly(p: TrigPoly): string {
   return parts.join(' ');
 }
 
-const FIELD_LABELS: Record<string, string> = {
-  '00': 'E_X^2',
-  '11': 'E_Y^2',
-  '22': 'E_Z^2',
-  '01': 'E_X E_Y',
-  '02': 'E_X E_Z',
-  '12': 'E_Y E_Z',
-};
-
 export function formatSymbolicSourceTerm(poly: SymPoly): string {
   if (poly.size === 0) return '0';
 
@@ -147,7 +138,7 @@ export function formatSymbolicSourceTerm(poly: SymPoly): string {
       const tp = pairMap.get(pair)!;
       if (trigIsZero(tp)) continue;
 
-      const fieldStr = FIELD_LABELS[pair] || pair;
+      const fieldStr = FIELD_LABELS_LAB[pair] || pair;
       const coeffStr = formatTrigPoly(tp);
       if (coeffStr === '0') continue;
 
