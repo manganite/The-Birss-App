@@ -196,7 +196,7 @@ interface FlatOp {
 /** Per-group flattened operation matrices (with det and antiunitary flag), computed once and reused
  * across every seed and every spec. Keyed by the cached full-group array identity (stable per
  * group/setting via getCachedFullGroup), so the flattening cost is paid once per group, not per seed. */
-const flatOpCache = new WeakMap<Matrix3x3[], FlatOp[]>();
+let flatOpCache = new WeakMap<Matrix3x3[], FlatOp[]>();
 function flatOps(group: Matrix3x3[]): FlatOp[] {
   const cached = flatOpCache.get(group);
   if (cached) return cached;
@@ -378,11 +378,14 @@ export function getFormSignature(groupName: string, setting: number, spec: Tenso
  */
 const canonicalSignatureCache = new Map<string, string>();
 
-/** Bench/test-only: clear the memoization caches so a cold projection can be measured. Not used by
- * the app; results are unaffected. */
+/** Bench/test-only: clear every projection memoization cache (form/signature results plus the
+ * per-rank digit tables and per-group flattened ops of the hot path) so a genuinely cold projection
+ * can be measured. Not used by the app; results are unaffected. */
 export function _clearTensorFormCaches(): void {
   formCache.clear();
   canonicalSignatureCache.clear();
+  digitTableCache.clear();
+  flatOpCache = new WeakMap<Matrix3x3[], FlatOp[]>();
 }
 
 export function getCanonicalFormSignature(groupName: string, spec: TensorSpec): string {
