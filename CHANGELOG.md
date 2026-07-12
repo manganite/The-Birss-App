@@ -36,6 +36,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   duplicated rotation-axis and mirror-normal extraction collapsed into one selection helper. Both are
   behaviour byte-identical (the formatter output strings are unchanged; verified for `formatMatrixSymbol`
   by a base-vs-HEAD dump over all 122 groups).
+- Internal (CI, no user-visible change): the symbolic↔numeric agreement sweep's heaviest cells
+  (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
+  default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
+
+### Fixed
+
+- Internal (latent edge case, unreachable in production): `linalg.isIndependentOf` used a numeric
+  `ratio === 0` "unset" sentinel that could not distinguish an as-yet-unset ratio from a legitimately
+  zero one, so a vector like `[0,0,1]` could be misjudged parallel to `[1,0,1]`. The production
+  callers feed symmetric group-average projector columns whose zero-pattern blocks this case (all
+  ~150 golden fixtures are unaffected), but the helper is now a public utility; replaced the sentinel
+  with an explicit locked flag and added a linear-algebra-anchored unit test (E28).
 
 ## [0.21.0] - 2026-07-11
 

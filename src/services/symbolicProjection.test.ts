@@ -5,6 +5,11 @@ import { trigEval, trigIsConst } from './trigPoly';
 
 const EPSILON = 1e-6;
 
+// E29: the heaviest cells of the two full agreement sweeps (cubic EQ symbolic) run ~5 s against
+// vitest's 5 s default per-test timeout — an intermittent CI flake. A generous explicit timeout
+// removes the race without changing any assertion, input, or tolerance.
+const SWEEP_TIMEOUT_MS = 30000;
+
 /** Evaluate a SymPoly at given angles, producing the same Poly structure as numeric path */
 function evalSymPoly(sym: SymPoly, phiX: number, phiY: number, psi: number): Map<string, Map<string, number>> {
   const result = new Map<string, Map<string, number>>();
@@ -81,24 +86,28 @@ describe('symbolic vs numeric reproduction at (0,0,0)', () => {
   for (const group of GROUPS) {
     for (const tt of TENSOR_TYPES) {
       for (const tr of TR_TYPES) {
-        it(`${group} ${tt} ${tr}-type at (0,0,0)`, () => {
-          const opts: SHGOptions = { groupName: group, tensorType: tt, trType: tr, thetaX: 0, thetaY: 0 };
+        it(
+          `${group} ${tt} ${tr}-type at (0,0,0)`,
+          () => {
+            const opts: SHGOptions = { groupName: group, tensorType: tt, trType: tr, thetaX: 0, thetaY: 0 };
 
-          const numResult = calculateSHGExpressions(opts);
-          const symResult = calculateSymbolicSHGExpressions(opts);
+            const numResult = calculateSHGExpressions(opts);
+            const symResult = calculateSymbolicSHGExpressions(opts);
 
-          expect(symResult.source.length).toBe(numResult.source.length);
+            expect(symResult.source.length).toBe(numResult.source.length);
 
-          for (let s = 0; s < symResult.source.length; s++) {
-            const symSource = symResult.source[s];
-            const numSource = numResult.source[s];
-            expect(symSource.component).toBe(numSource.component);
+            for (let s = 0; s < symResult.source.length; s++) {
+              const symSource = symResult.source[s];
+              const numSource = numResult.source[s];
+              expect(symSource.component).toBe(numSource.component);
 
-            const evaluatedPoly = evalSymPoly(symSource.symbolicPoly, 0, 0, 0);
-            const numPoly = numSource.rawPoly!;
-            comparePolys(evaluatedPoly, numPoly, `${group} ${tt} ${tr} ${symSource.component}`);
-          }
-        });
+              const evaluatedPoly = evalSymPoly(symSource.symbolicPoly, 0, 0, 0);
+              const numPoly = numSource.rawPoly!;
+              comparePolys(evaluatedPoly, numPoly, `${group} ${tt} ${tr} ${symSource.component}`);
+            }
+          },
+          SWEEP_TIMEOUT_MS,
+        );
       }
     }
   }
@@ -122,32 +131,36 @@ describe('symbolic vs numeric reproduction at generic angles (full sweep)', () =
     for (const tt of TENSOR_TYPES) {
       for (const tr of TR_TYPES) {
         for (const a of TRIPLES) {
-          it(`${group} ${tt} ${tr}-type at (${a.phiX},${a.phiY},${a.psi})`, () => {
-            const opts: SHGOptions = {
-              groupName: group,
-              tensorType: tt,
-              trType: tr,
-              thetaX: 0,
-              thetaY: 0,
-              phiX: a.phiX,
-              phiY: a.phiY,
-              psi: a.psi,
-            };
+          it(
+            `${group} ${tt} ${tr}-type at (${a.phiX},${a.phiY},${a.psi})`,
+            () => {
+              const opts: SHGOptions = {
+                groupName: group,
+                tensorType: tt,
+                trType: tr,
+                thetaX: 0,
+                thetaY: 0,
+                phiX: a.phiX,
+                phiY: a.phiY,
+                psi: a.psi,
+              };
 
-            const numResult = calculateSHGExpressions(opts);
-            const symResult = calculateSymbolicSHGExpressions({ ...opts, phiX: 0, phiY: 0, psi: 0 });
+              const numResult = calculateSHGExpressions(opts);
+              const symResult = calculateSymbolicSHGExpressions({ ...opts, phiX: 0, phiY: 0, psi: 0 });
 
-            expect(symResult.source.length).toBe(numResult.source.length);
-            for (let s = 0; s < symResult.source.length; s++) {
-              expect(symResult.source[s].component).toBe(numResult.source[s].component);
-              const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, a.phiX, a.phiY, a.psi);
-              comparePolys(
-                evaluatedPoly,
-                numResult.source[s].rawPoly!,
-                `${group} ${tt} ${tr} ${symResult.source[s].component} at (${a.phiX},${a.phiY},${a.psi})`,
-              );
-            }
-          });
+              expect(symResult.source.length).toBe(numResult.source.length);
+              for (let s = 0; s < symResult.source.length; s++) {
+                expect(symResult.source[s].component).toBe(numResult.source[s].component);
+                const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, a.phiX, a.phiY, a.psi);
+                comparePolys(
+                  evaluatedPoly,
+                  numResult.source[s].rawPoly!,
+                  `${group} ${tt} ${tr} ${symResult.source[s].component} at (${a.phiX},${a.phiY},${a.psi})`,
+                );
+              }
+            },
+            SWEEP_TIMEOUT_MS,
+          );
         }
       }
     }
