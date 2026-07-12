@@ -121,38 +121,41 @@ export default function App() {
     setSelectedSetting(getDefaultSetting(group.name, convention));
   };
 
-  const tensorConfig = {
-    type: selectedTensorType,
-    setType: setSelectedTensorType,
-    timeReversal: selectedTimeReversal,
-    setTimeReversal: setSelectedTimeReversal,
-    setting: selectedSetting,
-    setSetting: setSelectedSetting,
-    convention,
-    setConvention,
-  };
+  // Grouped prop bundles, memoized so their identity is stable across renders (M5): fresh literals
+  // would defeat child memoization and cascade re-renders. The setState setters are stable, so each
+  // bundle changes identity only when one of its values does.
+  const tensorConfig = useMemo(
+    () => ({
+      type: selectedTensorType,
+      setType: setSelectedTensorType,
+      timeReversal: selectedTimeReversal,
+      setTimeReversal: setSelectedTimeReversal,
+      setting: selectedSetting,
+      setSetting: setSelectedSetting,
+      convention,
+      setConvention,
+    }),
+    [
+      selectedTensorType,
+      setSelectedTensorType,
+      selectedTimeReversal,
+      setSelectedTimeReversal,
+      selectedSetting,
+      setSelectedSetting,
+      convention,
+      setConvention,
+    ],
+  );
 
-  const orientation = {
-    thetaX,
-    setThetaX,
-    thetaY,
-    setThetaY,
-    psi0,
-    setPsi0,
-    phiX,
-    setPhiX,
-    phiY,
-    setPhiY,
-    psi,
-    setPsi,
-  };
+  const orientation = useMemo(
+    () => ({ thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0, phiX, setPhiX, phiY, setPhiY, psi, setPsi }),
+    [thetaX, setThetaX, thetaY, setThetaY, psi0, setPsi0, phiX, setPhiX, phiY, setPhiY, psi, setPsi],
+  );
 
-  const simulation = {
-    amplitudes,
-    setAmplitudes,
-    phases,
-    setPhases,
-  };
+  const simulation = useMemo(
+    () => ({ amplitudes, setAmplitudes, phases, setPhases }),
+    [amplitudes, setAmplitudes, phases, setPhases],
+  );
 
   return (
     <div className="min-h-screen bg-paper text-ink font-sans selection:bg-ink selection:text-paper">
