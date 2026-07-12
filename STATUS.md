@@ -17,6 +17,16 @@ Table-7 guards + lookup-chain breadcrumb/diagram, Tables help + tooltips, vendor
 count guards, Explorer polar directions + lattice info, Tables refinements, ESLint/CI guardrails, and
 the symbolic-EQ correctness fix (E1). See `CHANGELOG.md` `[0.21.0]`.
 
+**Unreleased on `main`:** **Tables performance** — the rank-4 tensor-form projector was rewritten with
+an allocation-free flat-array hot path (identical results): a cold rank-4 form drops ~256 ms → ~14 ms
+and the 122-group signature sweep ~19.5 s → ~0.7 s. The "groups sharing this form" partition is now
+precomputed at build time (`npm run sharingdata` → `src/data/sharingPartitions.ts`, drift-guarded) so
+the Tables sharing list opens via an O(1) lookup instead of a main-thread sweep, and the App prop
+bundles are memoized (audit **E11/M5**, closed). The prior ~20 s Tables freeze at rank 4 is gone;
+measured max long task for the rank-4 switch and sharing expand is 0 ms (a residual ~110 ms remains in
+the initial first-render/KaTeX paint, reported for a future UI-render pass). See `CHANGELOG.md`
+`[Unreleased]`.
+
 ### v0.20.0 (2026-07-10)
 
 Tables **"By effect" mode**: a seven-effect catalogue (pyroelectricity, spontaneous magnetization,
