@@ -299,6 +299,13 @@ export function getFormSignature(groupName: string, setting: number, spec: Tenso
  */
 const canonicalSignatureCache = new Map<string, string>();
 
+/** Bench/test-only: clear the memoization caches so a cold projection can be measured. Not used by
+ * the app; results are unaffected. */
+export function _clearTensorFormCaches(): void {
+  formCache.clear();
+  canonicalSignatureCache.clear();
+}
+
 export function getCanonicalFormSignature(groupName: string, spec: TensorSpec): string {
   const cacheKey = `${groupName}::${specKey(spec)}`;
   const cached = canonicalSignatureCache.get(cacheKey);

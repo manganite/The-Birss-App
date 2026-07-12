@@ -25,6 +25,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "bench": "vitest bench --run",
     "nomenclature": "python3 birss-tables/tools/generate_nomenclature.py",
     "table7data": "node birss-tables/tools/generate_table7_data.mjs"
   },
