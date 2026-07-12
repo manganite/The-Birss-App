@@ -20,16 +20,19 @@ import { EPSILON } from '../symmetryGroups';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tbl = (name: string) => readFileSync(path.resolve(__dirname, '../../../birss-tables', name), 'utf-8');
 
+/**
+ * Split one markdown table row into trimmed cells, INCLUDING the empty edge cells produced by the
+ * outer pipes (index 0 and the last element are the `''`s outside `| ... |`). Column-indexed
+ * parsers that count from the leading pipe (the Table-7 and ITC-3.2.2.1 guards) use this directly;
+ * `tableRows` below is the trimmed-edges variant most table guards want.
+ */
+export const splitRow = (line: string): string[] => line.split('|').map((c) => c.trim());
+
 export function tableRows(content: string): string[][] {
   return content
     .split('\n')
     .filter((l) => l.trim().startsWith('|'))
-    .map((l) =>
-      l
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
+    .map((l) => splitRow(l).slice(1, -1))
     .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 

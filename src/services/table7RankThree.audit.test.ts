@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { GENERATORS, getFullGroup, det, type Matrix3x3 } from './symmetryGroups';
+import { splitRow } from './testUtils/birssTableParsers';
 
 /**
  * Permanent guard: audits all 58 black-white rows of birss-tables/table-7.md at rank 3
@@ -66,7 +67,7 @@ function parseTable4e(): Record<string, Vec[]> {
   for (const line of t4e.split('\n')) {
     const m = line.match(/^\| ([A-U]3) \|(.*)\|\s*$/);
     if (!m) continue;
-    const cells = m[2].split('|').map((s) => s.trim());
+    const cells = splitRow(m[2]);
     if (cells.length !== 15) throw new Error(`table-4e.md row ${m[1]}: expected 15 cells, got ${cells.length}`);
     const bySym: Record<string, Vec> = {};
     cells.forEach((cell, ci) => {
@@ -102,7 +103,7 @@ function parseTable7(): Row[] {
   const rows: Row[] = [];
   t7.split('\n').forEach((line, li) => {
     if (!line.startsWith('|')) return;
-    const f = line.split('|').map((s) => s.trim());
+    const f = splitRow(line);
     if (f.length < 14 || f[2].startsWith('--') || /Magnetic/.test(f[2]) || f[3] === '-') return;
     const cell = (s: string): { letter: string | null; br: boolean } => {
       if (s === '-') return { letter: null, br: false };

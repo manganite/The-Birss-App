@@ -5,6 +5,7 @@ import path from 'path';
 import { GENERATORS } from './symmetryGroups';
 import { computeTensorForm, type TensorParity } from './tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
+import { tableRows } from './testUtils/birssTableParsers';
 
 /**
  * Part C guard, rank 3 -- the generalized engine reproduces Birss Table 4e (rank-3 tensor
@@ -30,18 +31,6 @@ import { POINT_GROUPS } from '../data/pointGroups';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tbl = (name: string) => readFileSync(path.resolve(__dirname, '../../birss-tables', name), 'utf-8');
-function tableRows(content: string): string[][] {
-  return content
-    .split('\n')
-    .filter((l) => l.trim().startsWith('|'))
-    .map((l) =>
-      l
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
 
 const RANK = 3;
 const DIM = 3 ** RANK; // 27

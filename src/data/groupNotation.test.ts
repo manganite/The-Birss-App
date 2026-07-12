@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
+import { tableRows } from '../services/testUtils/birssTableParsers';
 import {
   SHUBNIKOV,
   FULL_HM,
@@ -29,20 +30,6 @@ function stripBackticks(s: string): string {
   return s.replace(/^`|`$/g, '');
 }
 
-/** Split a markdown table into rows of trimmed cells, dropping the `|---|` separator rows. */
-function parseRows(section: string): string[][] {
-  return section
-    .split('\n')
-    .filter((line) => line.trim().startsWith('|'))
-    .map((line) =>
-      line
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
-
 function sliceBetween(content: string, startHeading: string, endHeading: string): string {
   const startIdx = content.indexOf(startHeading);
   if (startIdx === -1) throw new Error(`Heading not found: ${startHeading}`);
@@ -55,8 +42,8 @@ function sliceBetween(content: string, startHeading: string, endHeading: string)
 // Table A (90 non-grey) and Table C (32 grey) share the same leading columns:
 // index 2 = App key (backticked), 3 = HM full (plain), 4 = Shubnikov (backticked).
 const NOMENCLATURE = readFileSync(NOMENCLATURE_PATH, 'utf-8');
-const TABLE_A_ROWS = parseRows(sliceBetween(NOMENCLATURE, '## Table A', '## Table B')).slice(1);
-const TABLE_C_ROWS = parseRows(sliceBetween(NOMENCLATURE, '## Table C', '## Changelog')).slice(1);
+const TABLE_A_ROWS = tableRows(sliceBetween(NOMENCLATURE, '## Table A', '## Table B')).slice(1);
+const TABLE_C_ROWS = tableRows(sliceBetween(NOMENCLATURE, '## Table C', '## Changelog')).slice(1);
 const ALL_NOMENCLATURE_ROWS = [...TABLE_A_ROWS, ...TABLE_C_ROWS];
 
 function parseColumn(col: number): Record<string, string> {
@@ -100,7 +87,7 @@ describe('REFERENCE_AXES vs table-4a.md', () => {
   // The two cubic centrosymmetric rows print `m3`/`m3m`; keyed here under the app `m-3`/`m-3m`.
   const CUBIC_RENAME: Record<string, string> = { m3: 'm-3', m3m: 'm-3m' };
   const content = readFileSync(TABLE_4A_PATH, 'utf-8');
-  const rows = parseRows(content);
+  const rows = tableRows(content);
   const header = rows[0];
   const parsed: Record<string, string> = {};
   for (const cells of rows.slice(1)) {
@@ -125,7 +112,7 @@ describe('REFERENCE_AXES vs table-4a.md', () => {
 describe('TABLE_4A_CLASS_LETTERS vs table-4a.md (columns 3-6)', () => {
   // Columns: System | International symbol | Orientation | PolarEven | AxialEven | PolarOdd | AxialOdd
   const CUBIC_RENAME: Record<string, string> = { m3: 'm-3', m3m: 'm-3m' };
-  const rows = parseRows(readFileSync(TABLE_4A_PATH, 'utf-8'));
+  const rows = tableRows(readFileSync(TABLE_4A_PATH, 'utf-8'));
   const header = rows[0];
   const letter = (cell: string): string | null => {
     const m = cell.match(/^([A-U])_[mn]$/);

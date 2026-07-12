@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { GENERATORS, getCachedFullGroup } from '../services/symmetryGroups';
+import { tableRows } from '../services/testUtils/birssTableParsers';
 import {
   sigma,
   sigmaPrime,
@@ -49,19 +50,6 @@ function extractSection(startHeading: string, endHeading?: string): string {
   return afterStart.slice(0, endIdx);
 }
 
-function parseRows(section: string): string[][] {
-  return section
-    .split('\n')
-    .filter((line) => line.trim().startsWith('|'))
-    .map((line) =>
-      line
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
-
 function extractSigmaIndices(s: string): number[] {
   return [...s.matchAll(/\((\d)\)/g)].map((m) => Number(m[1]));
 }
@@ -84,7 +72,7 @@ function toReferenceGenerators(spec: GeneratorSpec): RefMatrix3x3[] {
 }
 
 // --- Table B: 90 non-grey groups, key -> generator spec ---
-const tableBRows = parseRows(extractSection('## Table B', '## Table C'));
+const tableBRows = tableRows(extractSection('## Table B', '## Table C'));
 const tableBHeader = tableBRows[0];
 const EXPECTED_TABLE_B_HEADER = ['Schoenflies', 'App key', 'Symmetry operators', "σ(N) / σ'(N)"];
 if (JSON.stringify(tableBHeader) !== JSON.stringify(EXPECTED_TABLE_B_HEADER)) {
@@ -98,7 +86,7 @@ for (const cells of tableBRows.slice(1)) {
 }
 
 // --- Table C: 32 grey groups, key -> parent key ---
-const tableCRows = parseRows(extractSection('## Table C'));
+const tableCRows = tableRows(extractSection('## Table C'));
 const tableCHeader = tableCRows[0];
 const EXPECTED_TABLE_C_HEADER = ['System', 'Schoenflies', 'App key', 'HM full', 'Shubnikov', 'Parent'];
 if (JSON.stringify(tableCHeader) !== JSON.stringify(EXPECTED_TABLE_C_HEADER)) {

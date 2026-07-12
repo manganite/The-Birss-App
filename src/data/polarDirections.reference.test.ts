@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { GENERATORS, getCachedFullGroup } from '../services/symmetryGroups';
+import { splitRow } from '../services/testUtils/birssTableParsers';
 import { POINT_GROUPS } from './pointGroups';
 import { POLAR_DIRECTIONS, type PolarDirectionRow } from './polarDirections';
 import { CRYSTAL_SYSTEMS } from './crystalSystems';
@@ -40,7 +41,7 @@ function parse3222(): Map<string, ItcRow> {
   let system = '';
   for (const line of ref('ITC-table-3.2.2.2-polar-axes.md').split('\n')) {
     if (!line.startsWith('|')) continue;
-    const f = line.split('|').map((c) => c.trim());
+    const f = splitRow(line);
     if (f.length < 5) continue;
     if (f[1] === 'System' || /^:?-+:?$/.test(f[1])) continue; // header / separator
     if (f[1]) system = f[1];
@@ -142,7 +143,7 @@ function parse2111(): Record<string, { freeParams: string[]; bravais: string[] }
   let system = '';
   for (const line of ref('ITC-table-2.1.1.1-crystal-systems.md').split('\n')) {
     if (!line.startsWith('|')) continue;
-    const f = line.split('|').map((c) => c.trim());
+    const f = splitRow(line);
     if (f.length < 9) continue;
     if (f[1] === 'Crystal family' || /^:?-+:?$/.test(f[1])) continue;
     if (f[3]) system = f[3];

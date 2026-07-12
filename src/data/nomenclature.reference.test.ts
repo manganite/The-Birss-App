@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { POINT_GROUPS } from './pointGroups';
+import { tableRows } from '../services/testUtils/birssTableParsers';
 
 /**
  * Step 1 of BIRSS-APP-CONVENTIONS-REFERENCE.md: the app's key set, per-group `type`,
@@ -34,19 +35,6 @@ function extractSection(startHeading: string, endHeading?: string): string {
   return afterStart.slice(0, endIdx);
 }
 
-function parseRows(section: string): string[][] {
-  return section
-    .split('\n')
-    .filter((line) => line.trim().startsWith('|'))
-    .map((line) =>
-      line
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
-
 function typeFromText(text: string): 'I' | 'II' | 'III' {
   if (text.includes('colourless')) return 'I';
   if (text.includes('black-white')) return 'III';
@@ -65,7 +53,7 @@ function parseTableWithType(
   endHeading: string | undefined,
   expectedHeader: string[],
 ): ReferenceGroup[] {
-  const rows = parseRows(extractSection(startHeading, endHeading));
+  const rows = tableRows(extractSection(startHeading, endHeading));
   const header = rows[0];
   if (JSON.stringify(header) !== JSON.stringify(expectedHeader)) {
     throw new Error(
@@ -80,7 +68,7 @@ function parseTableWithType(
 }
 
 function parseGreyTable(startHeading: string, expectedHeader: string[]): ReferenceGroup[] {
-  const rows = parseRows(extractSection(startHeading));
+  const rows = tableRows(extractSection(startHeading));
   const header = rows[0];
   if (JSON.stringify(header) !== JSON.stringify(expectedHeader)) {
     throw new Error(

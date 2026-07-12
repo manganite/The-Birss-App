@@ -7,6 +7,7 @@ import { computeTensorForm, type TensorSpec } from './tensorForms';
 import { calculateTensorComponents } from './tensorCalculator';
 import { isPolar, isFerromagnetic, isMagnetoelectric, isChiral } from './propertyFlags';
 import { POINT_GROUPS } from '../data/pointGroups';
+import { tableRows } from './testUtils/birssTableParsers';
 
 /**
  * Part B anchors for the generalized tensor-form engine (`computeTensorForm`).
@@ -27,18 +28,6 @@ const isZeroForm = (name: string, setting: number, spec: TensorSpec) => computeT
 
 // ---- shared markdown helpers (same shapes as propertyFlags.reference.test.ts) ----
 const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
-function tableRows(section: string): string[][] {
-  return section
-    .split('\n')
-    .filter((l) => l.trim().startsWith('|'))
-    .map((l) =>
-      l
-        .split('|')
-        .slice(1, -1)
-        .map((c) => c.trim()),
-    )
-    .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
-}
 function sliceBetween(content: string, start: string, end: string): string {
   const s = content.indexOf(start);
   if (s === -1) throw new Error(`sliceBetween: start heading not found: "${start}"`);
