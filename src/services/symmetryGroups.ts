@@ -1031,6 +1031,23 @@ function formatMatrixSymbol(m: Matrix3x3): string {
     return '';
   };
 
+  /**
+   * Pick the first of three candidate axis columns that has any component above AXIS_EPSILON,
+   * falling back to the last. Shared by the 2-fold-rotation (columns of M+I) and the mirror-normal
+   * (columns of I−M) extraction, which differ only in how the columns are built.
+   */
+  const firstSupported = (
+    col0: [number, number, number],
+    col1: [number, number, number],
+    col2: [number, number, number],
+  ): [number, number, number] => {
+    const hasSupport = (v: [number, number, number]) =>
+      Math.abs(v[0]) > AXIS_EPSILON || Math.abs(v[1]) > AXIS_EPSILON || Math.abs(v[2]) > AXIS_EPSILON;
+    if (hasSupport(col0)) return col0;
+    if (hasSupport(col1)) return col1;
+    return col2;
+  };
+
   if (d === 1) {
     if (tr === 3) return '1' + prime;
     if (tr === 2) base = '6';
@@ -1039,31 +1056,12 @@ function formatMatrixSymbol(m: Matrix3x3): string {
     if (tr === -1) base = '2';
 
     if (base === '2') {
-      const rx = mat[0][0] + 1,
-        ry = mat[1][0],
-        rz = mat[2][0];
-      const cx = mat[0][1],
-        cy = mat[1][1] + 1,
-        cz = mat[2][1];
-      const bx = mat[0][2],
-        by = mat[1][2],
-        bz = mat[2][2] + 1;
-      let ax = 0,
-        ay = 0,
-        az = 0;
-      if (Math.abs(rx) > AXIS_EPSILON || Math.abs(ry) > AXIS_EPSILON || Math.abs(rz) > AXIS_EPSILON) {
-        ax = rx;
-        ay = ry;
-        az = rz;
-      } else if (Math.abs(cx) > AXIS_EPSILON || Math.abs(cy) > AXIS_EPSILON || Math.abs(cz) > AXIS_EPSILON) {
-        ax = cx;
-        ay = cy;
-        az = cz;
-      } else {
-        ax = bx;
-        ay = by;
-        az = bz;
-      }
+      // 2-fold axis: the eigenvector for eigenvalue +1, read off a supported column of M+I.
+      const [ax, ay, az] = firstSupported(
+        [mat[0][0] + 1, mat[1][0], mat[2][0]],
+        [mat[0][1], mat[1][1] + 1, mat[2][1]],
+        [mat[0][2], mat[1][2], mat[2][2] + 1],
+      );
       axis = formatAxis(ax, ay, az).label;
     } else {
       const vx = mat[2][1] - mat[1][2];
@@ -1083,31 +1081,12 @@ function formatMatrixSymbol(m: Matrix3x3): string {
     if (tr === 1) base = 'm';
 
     if (base === 'm') {
-      const rx = 1 - mat[0][0],
-        ry = -mat[1][0],
-        rz = -mat[2][0];
-      const cx = -mat[0][1],
-        cy = 1 - mat[1][1],
-        cz = -mat[2][1];
-      const bx = -mat[0][2],
-        by = -mat[1][2],
-        bz = 1 - mat[2][2];
-      let ax = 0,
-        ay = 0,
-        az = 0;
-      if (Math.abs(rx) > AXIS_EPSILON || Math.abs(ry) > AXIS_EPSILON || Math.abs(rz) > AXIS_EPSILON) {
-        ax = rx;
-        ay = ry;
-        az = rz;
-      } else if (Math.abs(cx) > AXIS_EPSILON || Math.abs(cy) > AXIS_EPSILON || Math.abs(cz) > AXIS_EPSILON) {
-        ax = cx;
-        ay = cy;
-        az = cz;
-      } else {
-        ax = bx;
-        ay = by;
-        az = bz;
-      }
+      // Mirror normal: the eigenvector for eigenvalue −1, read off a supported column of I−M.
+      const [ax, ay, az] = firstSupported(
+        [1 - mat[0][0], -mat[1][0], -mat[2][0]],
+        [-mat[0][1], 1 - mat[1][1], -mat[2][1]],
+        [-mat[0][2], -mat[1][2], 1 - mat[2][2]],
+      );
       axis = formatAxis(ax, ay, az).label;
     } else {
       const vx = -(mat[2][1] - mat[1][2]);
