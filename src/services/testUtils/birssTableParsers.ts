@@ -21,10 +21,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tbl = (name: string) => readFileSync(path.resolve(__dirname, '../../../birss-tables', name), 'utf-8');
 
 /**
- * Split one markdown table row into trimmed cells, INCLUDING the empty edge cells produced by the
- * outer pipes (index 0 and the last element are the `''`s outside `| ... |`). Column-indexed
- * parsers that count from the leading pipe (the Table-7 and ITC-3.2.2.1 guards) use this directly;
- * `tableRows` below is the trimmed-edges variant most table guards want.
+ * Split a string on `|` into trimmed cells (a raw pipe-split, no edge trimming). For a full table row
+ * `| a | b |` the result keeps the empty edge cells (index 0 and the last are the `''`s outside the
+ * outer pipes), which is what the column-indexed parsers that count from the leading pipe (the
+ * Table-7 and ITC-3.2.2.1 guards) rely on; a caller passing a substring without outer pipes (e.g. a
+ * regex capture) simply gets no edge cells. `tableRows` below is the trimmed-edges variant most
+ * table guards want.
  */
 export const splitRow = (line: string): string[] => line.split('|').map((c) => c.trim());
 

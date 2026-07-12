@@ -148,6 +148,12 @@ export function multiplyLinear(A: number[], B: number[]): Record<string, number>
  * the other is zero. Callers pre-screen the all-zero candidate separately. No per-candidate
  * allocation. Shared verbatim by `calculateTensorBasisResults` (number[]) and `computeBasis`
  * (Float64Array) -- hence the `ArrayLike<number>` signature (Wave-2 E4).
+ *
+ * NB: this is a byte-for-byte extraction of the two original hand-written reducers, including the
+ * `ratio === 0` "unset" sentinel (which cannot distinguish an as-yet-unset ratio from a genuinely
+ * zero one). This predicate defines the independent-component identity that the ~150 golden fixtures
+ * pin, so it is intentionally preserved exactly; any change to it is a behaviour change and belongs
+ * in a fixtures-first correctness pass, not this de-duplication refactor.
  */
 export function isIndependentOf(
   candidate: ArrayLike<number>,
