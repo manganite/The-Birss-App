@@ -33,8 +33,14 @@ builder, the comparison tolerances, and the field-label maps each a single home 
 core (generic over a scalar; `number`/`TrigPoly` instances), with the symbolic-only `cos²+sin²`
 simplification pulled out as an explicit post-stage so the E1-class divergence cannot recur —
 behaviour-preserving (numeric byte-identical via app-surface pins, symbolic byte-identical via the
-agreement sweep + print-anchored goldens; numeric-path perf unchanged). See `CHANGELOG.md`
-`[Unreleased]`.
+agreement sweep + print-anchored goldens; numeric-path perf unchanged). Plus **tech-debt Wave 3 tail**
+(E9, E10, closed): de-duplicated two string formatters — `formatSubstitutedPolySum` (the Simulator's
+polarization-formula formatter; six inline harmonic tables lifted to named constants, plus first-time
+regression coverage of the previously-untested Simulator formulas) and `formatMatrixSymbol` (the
+operation-symbol formatter; duplicated rotation-axis/mirror-normal extraction collapsed into one
+helper) — behaviour byte-identical (verified for `formatMatrixSymbol` by a base-vs-HEAD dump over all
+122 groups). Wave 3 is now complete except the standalone hardening items **E28/E29**. See
+`CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 
