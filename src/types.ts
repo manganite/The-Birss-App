@@ -24,10 +24,10 @@ export type TimeParity = TensorTimeReversal;
 export type GroupType = 'I' | 'II' | 'III';
 
 export const TENSOR_META = {
-  ED: { label: 'Electric Dipole', rank: '3', type: 'POLAR' },
-  MD: { label: 'Magnetic Dipole', rank: '3', type: 'AXIAL' },
-  EQ: { label: 'Electric Quadrupole', rank: '4', type: 'POLAR' },
-} as const satisfies Record<TensorType, { label: string; rank: string; type: string }>;
+  ED: { label: 'Electric Dipole', rank: 3, type: 'POLAR' },
+  MD: { label: 'Magnetic Dipole', rank: 3, type: 'AXIAL' },
+  EQ: { label: 'Electric Quadrupole', rank: 4, type: 'POLAR' },
+} as const satisfies Record<TensorType, { label: string; rank: number; type: 'POLAR' | 'AXIAL' }>;
 
 export interface TensorConfig {
   type: TensorType;
@@ -37,6 +37,7 @@ export interface TensorConfig {
   setting: number;
   setSetting: (s: number) => void;
   convention: Convention;
+  setConvention: (c: Convention) => void;
 }
 
 export interface OrientationState {
