@@ -17,6 +17,84 @@ interface PolarimetrySectionProps {
   onNavigate?: (view: string, tab?: string) => void;
 }
 
+type SimData = ReturnType<typeof useSimulatorState>['simulationData'];
+
+interface DesktopPlotConfig {
+  title: ReactNode;
+  subtitle: string;
+  dataKey: string;
+  radarName: string;
+  displayMaxKey: keyof Omit<SimData, 'data' | 'maxIntensity'>;
+  labelPrefix: 'Polarizer' | 'Analyzer';
+}
+
+/** The two desktop plots per polarimetry tab. All share data + domainMax (=maxIntensity); only these
+ *  fields vary — table-driven to remove six near-identical <PolarimetryPlot> invocations. */
+const DESKTOP_PLOTS: Record<'anisotropy' | 'polarizer' | 'analyzer', DesktopPlotConfig[]> = {
+  anisotropy: [
+    {
+      title: (
+        <>
+          Parallel (<InlineMath math="I_{\parallel}" />)
+        </>
+      ),
+      subtitle: 'Polarizer ∥ Analyzer',
+      dataKey: 'parallel',
+      radarName: 'Parallel',
+      displayMaxKey: 'maxParallel',
+      labelPrefix: 'Polarizer',
+    },
+    {
+      title: (
+        <>
+          Crossed (<InlineMath math="I_{\perp}" />)
+        </>
+      ),
+      subtitle: 'Polarizer ⊥ Analyzer',
+      dataKey: 'crossed',
+      radarName: 'Crossed',
+      displayMaxKey: 'maxCrossed',
+      labelPrefix: 'Polarizer',
+    },
+  ],
+  polarizer: [
+    {
+      title: 'Analyzer at 0°',
+      subtitle: 'Fixed Analyzer',
+      dataKey: 'pol_a0',
+      radarName: 'Analyzer 0°',
+      displayMaxKey: 'maxPolA0',
+      labelPrefix: 'Polarizer',
+    },
+    {
+      title: 'Analyzer at 90°',
+      subtitle: 'Fixed Analyzer',
+      dataKey: 'pol_a90',
+      radarName: 'Analyzer 90°',
+      displayMaxKey: 'maxPolA90',
+      labelPrefix: 'Polarizer',
+    },
+  ],
+  analyzer: [
+    {
+      title: 'Polarizer at 0°',
+      subtitle: 'Fixed Polarizer',
+      dataKey: 'ana_p0',
+      radarName: 'Polarizer 0°',
+      displayMaxKey: 'maxAnaP0',
+      labelPrefix: 'Analyzer',
+    },
+    {
+      title: 'Polarizer at 90°',
+      subtitle: 'Fixed Polarizer',
+      dataKey: 'ana_p90',
+      radarName: 'Polarizer 90°',
+      displayMaxKey: 'maxAnaP90',
+      labelPrefix: 'Analyzer',
+    },
+  ],
+};
+
 export function PolarimetrySection({
   selectedGroup,
   tensorConfig,
@@ -168,88 +246,21 @@ export function PolarimetrySection({
               </div>
 
               {/* Desktop: two plots side by side */}
-              {activePolarimetryTab === 'anisotropy' && (
-                <div className="hidden md:grid md:grid-cols-2 gap-4 md:gap-6">
+              <div className="hidden md:grid md:grid-cols-2 gap-4 md:gap-6">
+                {DESKTOP_PLOTS[activePolarimetryTab].map((p) => (
                   <PolarimetryPlot
-                    title={
-                      <>
-                        Parallel (<InlineMath math="I_{\parallel}" />)
-                      </>
-                    }
-                    subtitle="Polarizer ∥ Analyzer"
+                    key={p.dataKey}
+                    title={p.title}
+                    subtitle={p.subtitle}
                     data={simulationData.data}
                     domainMax={simulationData.maxIntensity}
-                    dataKey="parallel"
-                    radarName="Parallel"
-                    displayMax={simulationData.maxParallel}
-                    labelPrefix="Polarizer"
+                    dataKey={p.dataKey}
+                    radarName={p.radarName}
+                    displayMax={simulationData[p.displayMaxKey]}
+                    labelPrefix={p.labelPrefix}
                   />
-                  <PolarimetryPlot
-                    title={
-                      <>
-                        Crossed (<InlineMath math="I_{\perp}" />)
-                      </>
-                    }
-                    subtitle="Polarizer ⊥ Analyzer"
-                    data={simulationData.data}
-                    domainMax={simulationData.maxIntensity}
-                    dataKey="crossed"
-                    radarName="Crossed"
-                    displayMax={simulationData.maxCrossed}
-                    labelPrefix="Polarizer"
-                  />
-                </div>
-              )}
-
-              {activePolarimetryTab === 'polarizer' && (
-                <div className="hidden md:grid md:grid-cols-2 gap-4 md:gap-6">
-                  <PolarimetryPlot
-                    title="Analyzer at 0°"
-                    subtitle="Fixed Analyzer"
-                    data={simulationData.data}
-                    domainMax={simulationData.maxIntensity}
-                    dataKey="pol_a0"
-                    radarName="Analyzer 0°"
-                    displayMax={simulationData.maxPolA0}
-                    labelPrefix="Polarizer"
-                  />
-                  <PolarimetryPlot
-                    title="Analyzer at 90°"
-                    subtitle="Fixed Analyzer"
-                    data={simulationData.data}
-                    domainMax={simulationData.maxIntensity}
-                    dataKey="pol_a90"
-                    radarName="Analyzer 90°"
-                    displayMax={simulationData.maxPolA90}
-                    labelPrefix="Polarizer"
-                  />
-                </div>
-              )}
-
-              {activePolarimetryTab === 'analyzer' && (
-                <div className="hidden md:grid md:grid-cols-2 gap-4 md:gap-6">
-                  <PolarimetryPlot
-                    title="Polarizer at 0°"
-                    subtitle="Fixed Polarizer"
-                    data={simulationData.data}
-                    domainMax={simulationData.maxIntensity}
-                    dataKey="ana_p0"
-                    radarName="Polarizer 0°"
-                    displayMax={simulationData.maxAnaP0}
-                    labelPrefix="Analyzer"
-                  />
-                  <PolarimetryPlot
-                    title="Polarizer at 90°"
-                    subtitle="Fixed Polarizer"
-                    data={simulationData.data}
-                    domainMax={simulationData.maxIntensity}
-                    dataKey="ana_p90"
-                    radarName="Polarizer 90°"
-                    displayMax={simulationData.maxAnaP90}
-                    labelPrefix="Analyzer"
-                  />
-                </div>
-              )}
+                ))}
+              </div>
 
               {independentComponents.length > 0 && (
                 <div className="mt-6 text-center text-xs text-ink/70">
