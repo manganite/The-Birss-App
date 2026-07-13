@@ -40,6 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
   default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
 
+- Internal (component structure, no user-visible change): split the two largest page components into
+  focused sub-components — `TablesPage` (806 → 312 lines) into a `components/tables/` folder and
+  `HelpPage` (1029 → 86 lines) into per-tab `components/help/` components — as pure JSX relocations,
+  and added an SSR smoke-render net over both pages (first render coverage for them). The rendered
+  output is byte-identical (verified by a base-vs-HEAD SSR dump over every tab and both Tables modes);
+  no behaviour change (E13, E14).
 - Internal (service-boundary refactor, no user-visible change): moved the Simulator's polarimetry
   intensity sweep out of the `useSimulatorState` hook into a pure `services/simulatorEngine` function
   (the hook keeps its React state and memoization), adding first-time regression coverage of the

@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { InlineMath, BlockMath } from 'react-katex';
-import { Table2, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
 import {
   computeTensorForm,
@@ -15,7 +13,6 @@ import { INTRINSIC_BY_RANK, specKeyOf } from '../data/uiTensorSpecs';
 import { SHARING_PARTITIONS } from '../data/sharingPartitions';
 import { formatCoeff } from '../services/tensorCalculator';
 import { GroupIdentityHeader } from './MathComponents';
-import { FormatPointGroup } from './notation';
 import {
   getFamilyClass,
   getClassLetter,
@@ -23,12 +20,15 @@ import {
   classicalChainApplies,
   getTable7Chain,
 } from '../data/groupNotation';
-import { LookupChainDiagram } from './LookupChainDiagram';
-import { TermInfo } from './TermInfo';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import { TENSOR_EFFECTS, getEffect, effectBaseSymbol } from '../data/tensorEffects';
-import { intrinsicLabel, INTRINSIC_TOOLTIP } from '../data/intrinsicLabels';
 import type { TensorConfig } from '../types';
+import { TablesEmptyState } from './tables/TablesEmptyState';
+import { LookupControls } from './tables/LookupControls';
+import { EffectInfo } from './tables/EffectInfo';
+import { LookupChain } from './tables/LookupChain';
+import { TensorFormResult } from './tables/TensorFormResult';
+import { GroupSharingList } from './tables/GroupSharingList';
 
 interface TablesPageProps {
   selectedGroup: PointGroupData | null;
@@ -42,17 +42,6 @@ interface TablesPageProps {
 
 const CHARS = ['x', 'y', 'z'];
 const EPS = 1e-9;
-const RANK_TABLE = ['4b', '4c', '4d', '4e', '4f'];
-const bar = (s: string) => s.replace(/-([1-6])/g, '\\bar{$1}');
-
-/** Render a string that may contain inline `$...$` LaTeX segments (used for effect blurbs). */
-function MathText({ text }: { text: string }) {
-  return (
-    <>
-      {text.split('$').map((seg, i) => (i % 2 === 1 ? <InlineMath key={i} math={seg} /> : <span key={i}>{seg}</span>))}
-    </>
-  );
-}
 
 function toIndices(idx: number, rank: number): number[] {
   const out: number[] = [];
@@ -154,25 +143,6 @@ function spanRank(basis: number[][]): number {
   return rank;
 }
 
-const RANK0_READING: Record<string, string> = {
-  'polar-i': 'ordinary scalar — always allowed',
-  'axial-i': 'pseudoscalar — allowed for chiral (enantiomorphic) groups',
-  'polar-c': 'time-odd scalar — allowed for Type I groups only (any primed operation forbids it)',
-  'axial-c': 'time-odd pseudoscalar — the magnetoelectric monopole (trace of α_ij)',
-};
-
-/** Sub-blocks for the "Groups sharing this form" list, in colour-name-primary nomenclature, ordered
- * I -> II -> III. Empty blocks are omitted at render. */
-const SHARING_TYPE_BLOCKS: [PointGroupData['type'], string][] = [
-  ['I', 'colourless (Type I)'],
-  ['II', 'grey (Type II)'],
-  ['III', 'black-white (Type III)'],
-];
-
-const chipBase = 'px-3 py-1.5 text-xs tracking-[0.05em] transition-all border border-ink';
-const chipOn = 'bg-ink text-paper';
-const chipOff = 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20';
-
 export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, onSelectGroup }: TablesPageProps) {
   const { setting, setSetting, convention } = tensorConfig;
   const [mode, setMode] = useState<'type' | 'effect'>(effectId ? 'effect' : 'type');
@@ -221,17 +191,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   }, [sharingOpen, groupName, specKey]);
 
   if (!selectedGroup) {
-    return (
-      <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-8">
-        <div className="w-24 h-24 border border-ink border-dashed rounded-full flex items-center justify-center animate-spin-slow">
-          <Table2 className="w-8 h-8 opacity-20" />
-        </div>
-        <div className="space-y-2">
-          <p className="text-xl font-serif italic text-ink/70">Select a point group to look up its tensor forms</p>
-          <p className="text-xs uppercase tracking-[0.3em] opacity-30">Use the Explorer or the header search</p>
-        </div>
-      </div>
-    );
+    return <TablesEmptyState />;
   }
 
   const displayName = getGroupDisplayName(selectedGroup.name, convention);
@@ -282,525 +242,71 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
         onNavigate={onNavigate}
       />
 
-      {/* Mode toggle + selectors */}
-      <div className="flex flex-col gap-5 border-b border-ink border-opacity-10 pb-8">
-        <div className="space-y-2">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Lookup</span>
-          <div className="flex gap-2">
-            {(['type', 'effect'] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                aria-pressed={mode === m}
-                onClick={() => setMode(m)}
-                className={`${chipBase} ${mode === m ? chipOn : chipOff}`}
-              >
-                {m === 'effect' ? 'By effect' : 'By tensor type'}
-              </button>
-            ))}
-          </div>
-        </div>
+      <LookupControls
+        mode={mode}
+        setMode={setMode}
+        selectedEffectId={selectedEffectId}
+        setSelectedEffectId={setSelectedEffectId}
+        rank={rank}
+        changeRank={changeRank}
+        parity={parity}
+        setParity={setParity}
+        timeParity={timeParity}
+        setTimeParity={setTimeParity}
+        validIntrinsics={validIntrinsics}
+        effIntrinsic={effIntrinsic}
+        setIntrinsic={setIntrinsic}
+        onNavigate={onNavigate}
+      />
 
-        {mode === 'effect' ? (
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 block">Effect</span>
-            <div className="flex flex-wrap gap-2">
-              {TENSOR_EFFECTS.map((e) => (
-                <span key={e.id} className="inline-flex items-center gap-1">
-                  <button
-                    type="button"
-                    aria-pressed={selectedEffectId === e.id}
-                    onClick={() => setSelectedEffectId(e.id)}
-                    className={`${chipBase} ${selectedEffectId === e.id ? chipOn : chipOff}`}
-                  >
-                    {e.label}
-                  </button>
-                  <TermInfo id={`tbl-eff-${e.id}`} onNavigate={onNavigate} />
-                </span>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
-            <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">
-                Rank <TermInfo id="tbl-rank" onNavigate={onNavigate} />
-              </span>
-              <div className="flex gap-2">
-                {([0, 1, 2, 3, 4] as TensorRank[]).map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    aria-pressed={rank === r}
-                    onClick={() => changeRank(r)}
-                    className={`${chipBase} w-9 ${rank === r ? chipOn : chipOff}`}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">
-                Spatial parity <TermInfo id="tbl-spatial-parity" onNavigate={onNavigate} />
-              </span>
-              <div className="flex gap-2">
-                {(['polar', 'axial'] as TensorParity[]).map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    aria-pressed={parity === p}
-                    onClick={() => setParity(p)}
-                    className={`${chipBase} ${parity === p ? chipOn : chipOff}`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">
-                Time parity <TermInfo id="tbl-time-parity" onNavigate={onNavigate} />
-              </span>
-              <div className="flex gap-2">
-                {(['i', 'c'] as TensorTimeParity[]).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    aria-pressed={timeParity === t}
-                    onClick={() => setTimeParity(t)}
-                    className={`${chipBase} ${timeParity === t ? chipOn : chipOff}`}
-                  >
-                    {t}-type
-                  </button>
-                ))}
-              </div>
-            </div>
-            {validIntrinsics.length > 1 && (
-              <div className="space-y-2">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-ink/50 flex items-center gap-1">
-                  Index symmetry <TermInfo id="tbl-index-symmetry" onNavigate={onNavigate} />
-                </span>
-                <div className="flex gap-2">
-                  {validIntrinsics.map((v) => (
-                    <button
-                      key={v}
-                      type="button"
-                      aria-pressed={effIntrinsic === v}
-                      title={INTRINSIC_TOOLTIP[v]}
-                      onClick={() => setIntrinsic(v)}
-                      className={`${chipBase} ${effIntrinsic === v ? chipOn : chipOff}`}
-                    >
-                      {intrinsicLabel(v, rank)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      {effect && <EffectInfo effect={effect} />}
 
-      {/* Effect info: label, blurb, defining equation */}
-      {effect && (
-        <div className="border border-ink/10 bg-white/30 p-5 space-y-2">
-          <h3 className="text-base font-medium flex items-baseline gap-2">
-            <InlineMath math={effect.symbol} /> · {effect.label}
-          </h3>
-          <p className="text-sm text-ink/70 leading-relaxed">
-            <MathText text={effect.blurb} />
-          </p>
-          {effect.equation && (
-            <div className="py-1">
-              <BlockMath math={effect.equation} />
-            </div>
-          )}
-          <p className="text-xs text-ink/40">{effect.reference}</p>
-        </div>
-      )}
+      <LookupChain
+        displayName={displayName}
+        chainValid={chainValid}
+        familyClass={familyClass}
+        refAxes={refAxes}
+        classLetter={classLetter}
+        aRank={aRank}
+        aParity={aParity}
+        aTime={aTime}
+        t7chain={t7chain}
+        t7Contradiction={t7Contradiction}
+        t7SourceRefAxes={t7SourceRefAxes}
+        diagramOpen={diagramOpen}
+        setDiagramOpen={setDiagramOpen}
+        selectedGroup={selectedGroup}
+        onNavigate={onNavigate}
+      />
 
-      {/* Lookup chain */}
-      <div className="space-y-1.5">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink/60 bg-ink/5 border border-ink/10 px-4 py-2.5 rounded-sm">
-          <span className="font-serif italic text-ink">
-            <InlineMath math={bar(displayName)} />
-          </span>
+      <TensorFormResult
+        form={form!}
+        forbiddenName={forbiddenName}
+        isEffect={!!effect}
+        displayName={displayName}
+        aRank={aRank}
+        aParity={aParity}
+        aTime={aTime}
+        aIntrinsic={aIntrinsic}
+        usesMatrix={usesMatrix}
+        labels={labels}
+        formLabel={formLabel}
+        independentCount={independentCount}
+        vanishing={vanishing}
+        dim={dim}
+        toSym={toSym}
+        onNavigate={onNavigate}
+      />
 
-          {chainValid ? (
-            <>
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              <span>
-                family class{' '}
-                <span className="font-serif italic text-ink/80">
-                  <InlineMath math={bar(familyClass)} />
-                </span>{' '}
-                <span className="opacity-50">(Table 4a)</span>
-              </span>
-              {refAxes && (
-                <>
-                  <ChevronRight className="w-3 h-3 opacity-40" />
-                  <span className="inline-flex items-center gap-1">
-                    ref. axes{' '}
-                    {refAxes === 'any' ? (
-                      <span className="italic">any</span>
-                    ) : (
-                      <InlineMath math={bar(refAxes.replace(/\/\//g, ' \\parallel '))} />
-                    )}{' '}
-                    <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />
-                  </span>
-                </>
-              )}
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              {classLetter ? (
-                <span>
-                  Table {RANK_TABLE[aRank]} row{' '}
-                  <span className="font-mono text-ink/80">
-                    {classLetter}
-                    {aRank}
-                  </span>
-                </span>
-              ) : (
-                <span className="italic inline-flex items-center gap-1">
-                  no allowed form (Table 4a: —) <TermInfo id="tbl-no-form" onNavigate={onNavigate} />
-                </span>
-              )}
-            </>
-          ) : t7chain && !t7Contradiction ? (
-            <>
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              <span>
-                Table 7 <span className="opacity-50">({t7chain.column})</span>
-              </span>
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              <span>
-                {t7chain.source} ={' '}
-                <span className="font-serif italic text-ink/80">
-                  <InlineMath math={bar(t7chain.sourceSymbol)} />
-                </span>
-                {t7chain.sourceBracketed && t7chain.transformLabel && (
-                  <span className="ml-1 px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-ink/10 text-ink/70 rounded-sm inline-flex items-center gap-1">
-                    rotated: {t7chain.transformLabel}
-                    <TermInfo id="tbl-rotated" onNavigate={onNavigate} />
-                  </span>
-                )}
-              </span>
-              {t7SourceRefAxes && (
-                <>
-                  <ChevronRight className="w-3 h-3 opacity-40" />
-                  <span className="inline-flex items-center gap-1">
-                    ref. axes{' '}
-                    {t7SourceRefAxes === 'any' ? (
-                      <span className="italic">any</span>
-                    ) : (
-                      <InlineMath math={bar(t7SourceRefAxes.replace(/\/\//g, ' \\parallel '))} />
-                    )}{' '}
-                    <TermInfo id="tbl-ref-axes" onNavigate={onNavigate} />
-                  </span>
-                </>
-              )}
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              <span className="inline-flex items-center">
-                Table 4a, {t7chain.fourAColumn} column
-                {t7chain.parityCrossover && (
-                  <span className="text-ink font-semibold ml-0.5">
-                    *<TermInfo id="tbl-crossover" onNavigate={onNavigate} />
-                  </span>
-                )}
-              </span>
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              {t7chain.letter ? (
-                <span>
-                  class {t7chain.letter} <ChevronRight className="inline w-3 h-3 opacity-40" /> Table{' '}
-                  {RANK_TABLE[aRank]} row{' '}
-                  <span className="font-mono text-ink/80">
-                    {t7chain.letter}
-                    {aRank}
-                  </span>
-                </span>
-              ) : (
-                <span className="italic inline-flex items-center gap-1">
-                  no allowed form (Table 4a: —) <TermInfo id="tbl-no-form" onNavigate={onNavigate} />
-                </span>
-              )}
-            </>
-          ) : t7chain ? (
-            <>
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              <span className="italic">c-tensor lookup runs via Birss Table 7 (magnetic classes)</span>
-            </>
-          ) : (
-            <>
-              <ChevronRight className="w-3 h-3 opacity-40" />
-              <span className="italic inline-flex items-center gap-1">
-                grey group <ChevronRight className="inline w-3 h-3 opacity-40" /> time reversal alone is a symmetry{' '}
-                <ChevronRight className="inline w-3 h-3 opacity-40" /> c-tensor vanishes identically (no Table-7 row){' '}
-                <TermInfo id="tbl-grey-tail" onNavigate={onNavigate} />
-              </span>
-            </>
-          )}
-        </div>
-        {t7chain?.bookErrorNote && (
-          <p className="text-[11px] text-ink/50 italic px-1">
-            ⚠ {t7chain.bookErrorNote}
-            {onNavigate && (
-              <>
-                {' '}
-                <button
-                  type="button"
-                  onClick={() => onNavigate('help', 'deeper')}
-                  className="not-italic uppercase tracking-wider text-ink/60 hover:text-ink"
-                >
-                  Learn more →
-                </button>
-              </>
-            )}
-          </p>
-        )}
-        <div>
-          <button
-            type="button"
-            aria-expanded={diagramOpen}
-            onClick={() => setDiagramOpen((v) => !v)}
-            className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-ink/50 hover:text-ink"
-          >
-            {diagramOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {diagramOpen ? 'Hide diagram' : 'Show diagram'}
-          </button>
-          {diagramOpen && (
-            <div className="mt-3">
-              <LookupChainDiagram
-                groupName={selectedGroup.name}
-                groupType={selectedGroup.type}
-                parity={aParity}
-                rank={aRank}
-                timeParity={aTime}
-                displayName={displayName}
-                onNavigate={onNavigate}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Result */}
-      <div className="space-y-4">
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-sm uppercase tracking-[0.2em] text-ink/70 flex items-center gap-1">
-            Tensor form
-            {!form!.isZero && !usesMatrix && aRank >= 3 && <TermInfo id="tbl-relations" onNavigate={onNavigate} />}
-          </h2>
-          {!form!.isZero && aRank > 0 && (
-            <span className="text-xs text-ink/50 flex items-center gap-1">
-              {independentCount} independent component{independentCount === 1 ? '' : 's'}{' '}
-              <TermInfo id="tbl-indep-count" onNavigate={onNavigate} />
-            </span>
-          )}
-        </div>
-
-        {form!.isZero ? (
-          <div className="border border-ink/20 bg-ink/5 p-6 text-center">
-            <p className="text-sm text-ink/70 inline-flex items-center gap-1">
-              {forbiddenName} {effect ? 'is forbidden' : 'vanishes identically'} for{' '}
-              <span className="font-serif italic">
-                <InlineMath math={bar(displayName)} />
-              </span>
-              . <TermInfo id="tbl-vanishes" onNavigate={onNavigate} />
-            </p>
-          </div>
-        ) : aRank === 0 ? (
-          <div className="border border-ink/10 p-6">
-            <p className="text-sm">Allowed — {RANK0_READING[`${aParity}-${aTime}`]}.</p>
-          </div>
-        ) : aRank === 1 ? (
-          <div className="p-2">
-            <BlockMath
-              math={`${formLabel} = \\begin{pmatrix} ${labels[0]} \\\\ ${labels[1]} \\\\ ${labels[2]} \\end{pmatrix}`}
-            />
-          </div>
-        ) : aRank === 2 ? (
-          <div className="p-2">
-            <BlockMath
-              math={`${formLabel} = \\begin{pmatrix} ${[0, 1, 2].map((i) => [0, 1, 2].map((j) => labels[i * 3 + j]).join(' & ')).join(' \\\\ ')} \\end{pmatrix}`}
-            />
-          </div>
-        ) : /* Rendering rule: where the chosen intrinsic symmetry compresses an index pair, render the
-             Voigt-compressed matrix (rows/cols are the compressed pairs); otherwise the relation
-             list; ranks <= 2 render natively above. */
-        aRank === 3 && aIntrinsic === 'jk' ? (
-          <CompressedMatrix
-            labels={labels}
-            rowSlots={SINGLE_SLOTS}
-            colSlots={PAIR_SLOTS}
-            cornerTip="tbl-nye"
-            onNavigate={onNavigate}
-          />
-        ) : aRank === 3 && aIntrinsic === 'ij' ? (
-          <CompressedMatrix
-            labels={labels}
-            rowSlots={PAIR_SLOTS}
-            colSlots={SINGLE_SLOTS}
-            cornerTip="tbl-voigt-matrix"
-            onNavigate={onNavigate}
-          />
-        ) : aRank === 4 && (aIntrinsic === 'ij_kl' || aIntrinsic === 'voigt') ? (
-          <CompressedMatrix
-            labels={labels}
-            rowSlots={PAIR_SLOTS}
-            colSlots={PAIR_SLOTS}
-            cornerTip="tbl-voigt-matrix"
-            onNavigate={onNavigate}
-          />
-        ) : (
-          <RelationList relations={form!.relations.map(toSym)} />
-        )}
-
-        {!form!.isZero && aRank >= 3 && (aIntrinsic !== 'jk' || aRank === 4) && (
-          <p className="text-xs text-ink/50">
-            {vanishing} of {dim} components vanish.
-          </p>
-        )}
-      </div>
-
-      {/* Groups sharing this form */}
-      <div className="border-t border-ink border-opacity-10 pt-4">
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-expanded={sharingOpen}
-            onClick={() => setSharingOpen((v) => !v)}
-            className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/70 hover:text-ink"
-          >
-            {sharingOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            Groups sharing this form{sharing ? ` (${sharing.length})` : ''}
-          </button>
-          <TermInfo id="tbl-sharing" onNavigate={onNavigate} />
-        </div>
-        {sharingOpen && sharing && (
-          <div className="mt-4 space-y-3 max-h-64 overflow-y-auto">
-            {SHARING_TYPE_BLOCKS.map(([type, label]) => {
-              const groups = sharing.filter((g) => g.type === type);
-              if (groups.length === 0) return null;
-              return (
-                <div key={type}>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-ink/40 mb-1.5">{label}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {groups.map((g) => {
-                      const isCurrent = g.name === selectedGroup.name;
-                      const interactive = !isCurrent && !!onSelectGroup;
-                      return (
-                        <button
-                          key={g.name}
-                          type="button"
-                          disabled={!interactive}
-                          onClick={() => interactive && onSelectGroup!(g)}
-                          className={`px-2.5 py-1 text-sm border transition-colors ${isCurrent ? 'bg-ink text-paper border-ink' : interactive ? 'border-ink/20 hover:bg-ink hover:text-paper' : 'border-ink/20 text-ink/50 cursor-default'}`}
-                        >
-                          <FormatPointGroup name={getGroupDisplayName(g.name, convention)} />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      <GroupSharingList
+        sharingOpen={sharingOpen}
+        setSharingOpen={setSharingOpen}
+        sharing={sharing}
+        selectedGroupName={selectedGroup.name}
+        onSelectGroup={onSelectGroup}
+        convention={convention}
+        onNavigate={onNavigate}
+      />
     </motion.div>
-  );
-}
-
-/** A "slot" is the crystallographic indices a row/column header stands for: a single index (x/y/z)
- * or a Voigt-compressed pair (xx,yy,zz,yz,zx,xy in the standard 1..6 order). */
-interface Slot {
-  label: string;
-  idx: number[];
-}
-const SINGLE_SLOTS: Slot[] = [
-  { label: 'x', idx: [0] },
-  { label: 'y', idx: [1] },
-  { label: 'z', idx: [2] },
-];
-const PAIR_SLOTS: Slot[] = [
-  { label: 'xx', idx: [0, 0] },
-  { label: 'yy', idx: [1, 1] },
-  { label: 'zz', idx: [2, 2] },
-  { label: 'yz', idx: [1, 2] },
-  { label: 'zx', idx: [2, 0] },
-  { label: 'xy', idx: [0, 1] },
-];
-const flatOf = (indices: number[]) => indices.reduce((a, x) => a * 3 + x, 0);
-
-/**
- * Voigt-compressed matrix rendering, shared by the Nye scheme and the new 6x3 / 6x6 forms: the row
- * and column headers are the chosen slots (singles or pairs), and each cell is the tensor component
- * whose indices are the row's slot followed by the column's slot. Header labels use the fixed Voigt
- * order (XX YY ZZ YZ ZX XY) via PAIR_SLOTS.
- */
-function CompressedMatrix({
-  labels,
-  rowSlots,
-  colSlots,
-  cornerTip,
-  onNavigate,
-}: {
-  labels: string[];
-  rowSlots: Slot[];
-  colSlots: Slot[];
-  /** glossary id for the top-left help icon (the Nye 3x6 vs the general Voigt-pair layouts differ). */
-  cornerTip: string;
-  onNavigate?: (view: string, tab?: string) => void;
-}) {
-  const isPair = (s: Slot) => s.idx.length === 2;
-  return (
-    <div className="overflow-x-auto">
-      <table className="border-collapse text-center">
-        <thead>
-          <tr>
-            <th className="p-2">
-              <TermInfo id={cornerTip} onNavigate={onNavigate} />
-            </th>
-            {colSlots.map((c) => (
-              <th key={c.label} className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider min-w-[3.5rem]">
-                {isPair(c) ? <InlineMath math={`(${c.label})`} /> : c.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rowSlots.map((r) => (
-            <tr key={r.label}>
-              <th className="p-2 text-xs font-normal text-ink/60 uppercase tracking-wider">
-                {isPair(r) ? <InlineMath math={`(${r.label})`} /> : r.label}
-              </th>
-              {colSlots.map((c) => {
-                const v = labels[flatOf([...r.idx, ...c.idx])];
-                return (
-                  <td key={c.label} className="p-2 border border-ink/10 font-mono text-sm">
-                    {v === '0' ? <span className="opacity-30">0</span> : <InlineMath math={v} />}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-/** Rank-3 `none` and rank-4: the list of independent components and their equality/sign relations. */
-function RelationList({ relations }: { relations: string[] }) {
-  return (
-    <ul className="space-y-2">
-      {relations.map((r, idx) => (
-        <li
-          key={idx}
-          className="font-mono text-sm bg-white/40 border border-ink/10 px-4 py-2 rounded-sm overflow-x-auto"
-        >
-          <InlineMath math={r} />
-        </li>
-      ))}
-    </ul>
   );
 }
