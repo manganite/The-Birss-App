@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Activity } from 'lucide-react';
 import { InlineMath } from 'react-katex';
-import { isCentrosymmetric } from '../services/tensorCalculator';
+import { zeroStateReason } from './NoComponentsFallback';
 import { SectionHeader } from './notation';
 import { PolarimetryPlot } from './PolarimetryPlot';
 import { TermInfo } from './TermInfo';
@@ -133,11 +133,8 @@ export function PolarimetrySection({
             <div className="h-[400px] flex flex-col items-center justify-center gap-4 text-sm text-ink/70">
               <span className="italic">Zero intensity</span>
               <span className="text-xs">
-                {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && selectedTimeReversal === 'i'
-                  ? 'ED SHG is symmetry-forbidden for centrosymmetric groups (i-type).'
-                  : selectedGroup.type === 'II' && selectedTimeReversal === 'c'
-                    ? "c-type tensors vanish for grey groups (G1')."
-                    : ''}
+                {zeroStateReason(selectedTensorType, selectedGroup.name, selectedGroup.type, selectedTimeReversal) ??
+                  ''}
               </span>
             </div>
           ) : (

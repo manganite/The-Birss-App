@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sliders, Info } from 'lucide-react';
-import { isCentrosymmetric } from '../services/tensorCalculator';
 import { TensorTerm, SectionHeader } from './notation';
+import { NoComponentsFallback } from './NoComponentsFallback';
 import { TermInfo } from './TermInfo';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig, SimulationState } from '../types';
@@ -173,52 +173,17 @@ export function TensorComponentControls({
       {/* Desktop: all components */}
       <div className="hidden md:block bg-white/50 border border-ink p-4 space-y-4">
         {independentComponents.length === 0 ? (
-          <div className="py-6 space-y-4">
-            <div className="flex items-start gap-3 p-4 border border-ink border-opacity-10 bg-ink/5">
-              <Info className="w-4 h-4 mt-0.5 shrink-0 opacity-60" />
-              <p className="text-sm leading-relaxed">
-                {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && selectedTimeReversal === 'i'
-                  ? 'ED SHG is symmetry-forbidden for centrosymmetric groups (i-type).'
-                  : selectedGroup.type === 'II' && selectedTimeReversal === 'c'
-                    ? "c-type tensors vanish for grey groups (G1')."
-                    : 'No non-zero components for this configuration.'}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedTimeReversal === 'i' && (
-                <button
-                  onClick={() => setSelectedTimeReversal('c')}
-                  className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                >
-                  Try c-type
-                </button>
-              )}
-              {selectedTimeReversal === 'c' && (
-                <button
-                  onClick={() => setSelectedTimeReversal('i')}
-                  className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                >
-                  Try i-type
-                </button>
-              )}
-              {selectedTensorType !== 'EQ' && (
-                <button
-                  onClick={() => setSelectedTensorType('EQ')}
-                  className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                >
-                  Try EQ
-                </button>
-              )}
-              {selectedTensorType !== 'MD' && (
-                <button
-                  onClick={() => setSelectedTensorType('MD')}
-                  className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                >
-                  Try MD
-                </button>
-              )}
-            </div>
-          </div>
+          <NoComponentsFallback
+            tensorType={selectedTensorType}
+            setTensorType={setSelectedTensorType}
+            timeReversal={selectedTimeReversal}
+            setTimeReversal={setSelectedTimeReversal}
+            groupName={selectedGroup.name}
+            groupType={selectedGroup.type}
+            outerClassName="py-6 space-y-4"
+            infoClassName="flex items-start gap-3 p-4 border border-ink border-opacity-10 bg-ink/5"
+            buttonsClassName="flex flex-wrap gap-2"
+          />
         ) : (
           <>
             {independentComponents.length === 1 && (
