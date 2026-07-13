@@ -6,9 +6,11 @@
  *      docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md for the naming/axis conventions
  *      (e.g. orthorhombic D₂ₕ(C₂ₕ) = `m'm'm`, not ITC `mm'm'`; grey = parent + `1'`).
  */
+import type { CrystalSystem } from '../types';
+
 export interface PointGroupData {
   name: string;
-  crystalSystem: string;
+  crystalSystem: CrystalSystem;
   type: 'I' | 'II' | 'III'; // I: Standard, II: Gray, III: Black-and-White
   schoenflies?: string;
 }
