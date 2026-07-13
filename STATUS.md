@@ -43,8 +43,13 @@ helper) — behaviour byte-identical (verified for `formatMatrixSymbol` by a bas
 `ratio === 0` "unset" sentinel — a latent edge case unreachable in production (symmetric projector
 columns block it; all ~150 goldens unaffected) — replaced with an explicit locked flag and covered
 by a linear-algebra-anchored unit test, and the symbolic agreement sweep's heaviest cells given an
-explicit 30 s timeout to kill an intermittent CI flake. Wave 3 is now fully complete. See
-`CHANGELOG.md` `[Unreleased]`.
+explicit 30 s timeout to kill an intermittent CI flake. Wave 3 is now fully complete. Plus
+**Wave 4 chunk 1 — type-layer consolidation** (E19–E21, closed): canonical `CrystalSystem`/`Parity`/
+`TimeParity`/`GroupType` unions in `types.ts` replacing the inline duplicates, the loose
+`PointGroupData.crystalSystem: string` narrowed, and `TENSOR_META` tightened (numeric `rank`,
+`'POLAR'|'AXIAL'` type, `setConvention` on `TensorConfig`) — all type-level, suite unchanged (2192).
+GroupKey's literal-union quarter was split to **E30** (`POINT_GROUPS as const` + ~39-site retype; no
+derivable source existed). See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 
