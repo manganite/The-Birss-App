@@ -14,6 +14,7 @@ import { TensorTerm } from './notation';
 import { KDirectionSelector } from './crystalCut';
 import { GroupIdentityHeader } from './MathComponents';
 import { TensorClassificationControl, TimeReversalControl } from './TensorSetupControls';
+import { NoComponentsFallback } from './NoComponentsFallback';
 import { TENSOR_META } from '../types';
 import type { TensorConfig, PresetAnglesState } from '../types';
 
@@ -368,54 +369,17 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                   </div>
 
                   {sourceTerms.length > 0 && sourceTerms.every((t) => t.expression === '0') && (
-                    <div className="p-6 border border-ink border-opacity-10 bg-ink/5 space-y-4 mt-2">
-                      <div className="flex items-start gap-3">
-                        <Info className="w-4 h-4 mt-0.5 shrink-0 opacity-60" />
-                        <p className="text-sm leading-relaxed">
-                          {selectedTensorType === 'ED' &&
-                          isCentrosymmetric(selectedGroup.name) &&
-                          selectedTimeReversal === 'i'
-                            ? 'ED SHG is symmetry-forbidden for centrosymmetric groups (i-type).'
-                            : selectedGroup.type === 'II' && selectedTimeReversal === 'c'
-                              ? "c-type tensors vanish for grey groups (G1')."
-                              : 'No non-zero components for this configuration.'}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2 ml-7">
-                        {selectedTimeReversal === 'i' && (
-                          <button
-                            onClick={() => setSelectedTimeReversal('c')}
-                            className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                          >
-                            Try c-type
-                          </button>
-                        )}
-                        {selectedTimeReversal === 'c' && (
-                          <button
-                            onClick={() => setSelectedTimeReversal('i')}
-                            className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                          >
-                            Try i-type
-                          </button>
-                        )}
-                        {selectedTensorType !== 'EQ' && (
-                          <button
-                            onClick={() => setSelectedTensorType('EQ')}
-                            className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                          >
-                            Try EQ
-                          </button>
-                        )}
-                        {selectedTensorType !== 'MD' && (
-                          <button
-                            onClick={() => setSelectedTensorType('MD')}
-                            className="px-3 py-1.5 text-xs border border-ink border-opacity-20 hover:bg-ink hover:text-paper transition-colors"
-                          >
-                            Try MD
-                          </button>
-                        )}
-                      </div>
-                    </div>
+                    <NoComponentsFallback
+                      tensorType={selectedTensorType}
+                      setTensorType={setSelectedTensorType}
+                      timeReversal={selectedTimeReversal}
+                      setTimeReversal={setSelectedTimeReversal}
+                      groupName={selectedGroup.name}
+                      groupType={selectedGroup.type}
+                      outerClassName="p-6 border border-ink border-opacity-10 bg-ink/5 space-y-4 mt-2"
+                      infoClassName="flex items-start gap-3"
+                      buttonsClassName="flex flex-wrap gap-2 ml-7"
+                    />
                   )}
 
                   <div className="p-4 border border-ink/60 border-dashed text-xs uppercase tracking-widest text-ink/70 leading-relaxed mt-8">

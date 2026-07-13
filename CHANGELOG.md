@@ -40,6 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
   default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
 
+- Internal (shared-component de-dup, no user-visible change): extracted a shared
+  `<NoComponentsFallback>` (the "no components — try another configuration" recovery block) used by
+  the Calculator's component views, hoisted the shared symmetry-reason strings into `zeroStateReason`
+  (also consumed by the Simulator's zero-intensity state), and table-drove the Simulator's six desktop
+  polarimetry plots from a config array. Rendered output byte-identical everywhere (E15, E18; E17
+  found no header byte-identical to the existing SectionHeader, so none were folded). This completes
+  the Wave-4 component/type cleanup (E12–E21).
 - Internal (component structure, no user-visible change): split the two largest page components into
   focused sub-components — `TablesPage` (806 → 312 lines) into a `components/tables/` folder and
   `HelpPage` (1029 → 86 lines) into per-tab `components/help/` components — as pure JSX relocations,
