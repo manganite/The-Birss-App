@@ -40,6 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
   default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
 
+- Internal (service-boundary refactor, no user-visible change): moved the Simulator's polarimetry
+  intensity sweep out of the `useSimulatorState` hook into a pure `services/simulatorEngine` function
+  (the hook keeps its React state and memoization), adding first-time regression coverage of the
+  previously-untested sweep; and gave the tensor-components service a structured null-state
+  (`calculateTensorComponentsView` → `{ isNull, display, relations }`) so the Calculator reads a flag
+  and pre-split relations instead of scanning display strings. Both behaviour-preserving — the
+  rendered output and every pinned string are unchanged (E12, E16).
 - Internal (type-layer consolidation, no user-visible change): gave the domain unions a single home
   in `types.ts` — `CrystalSystem` (narrowing the loose `PointGroupData.crystalSystem: string`),
   `Parity`/`TimeParity` (aliases of the engine's `TensorParity`/`TensorTimeReversal`, replacing inline
