@@ -19,6 +19,10 @@ export type Parity = TensorParity;
  *  `TensorTimeReversal`, re-exported here as the single app-facing home. */
 export type TimeParity = TensorTimeReversal;
 
+/** Magnetic point-group class: I = standard, II = grey, III = black-and-white. Canonical home
+ *  for the union re-inlined at pointGroups, groupNotation, and LookupChainDiagram. */
+export type GroupType = 'I' | 'II' | 'III';
+
 export const TENSOR_META = {
   ED: { label: 'Electric Dipole', rank: '3', type: 'POLAR' },
   MD: { label: 'Magnetic Dipole', rank: '3', type: 'AXIAL' },

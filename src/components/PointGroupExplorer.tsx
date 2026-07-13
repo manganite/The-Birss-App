@@ -6,8 +6,17 @@ import { OperationsModal } from './OperationsModal';
 import { AnimatePresence } from 'motion/react';
 import { getGroupDisplayName } from '../services/conventionMapping';
 import type { Convention } from '../services/conventionMapping';
+import type { CrystalSystem } from '../types';
 
-const CRYSTAL_SYSTEMS = ['Triclinic', 'Monoclinic', 'Orthorhombic', 'Tetragonal', 'Trigonal', 'Hexagonal', 'Cubic'];
+const CRYSTAL_SYSTEMS: readonly CrystalSystem[] = [
+  'Triclinic',
+  'Monoclinic',
+  'Orthorhombic',
+  'Tetragonal',
+  'Trigonal',
+  'Hexagonal',
+  'Cubic',
+];
 
 interface PointGroupExplorerProps {
   convention: Convention;

@@ -21,7 +21,7 @@
 
 import { TABLE7_BW_ROWS } from './table7Data';
 import { BOOK_ERROR_WARNING } from '../services/conventionMapping';
-import type { Parity, TimeParity } from '../types';
+import type { GroupType, Parity, TimeParity } from '../types';
 
 /**
  * Shubnikov (Birss dot/colon) symbol for every one of the 122 magnetic point groups — the 32
@@ -458,7 +458,7 @@ export function getClassLetter(name: string, parity: Parity, rank: number): stri
  * breadcrumb branch renders: the classical letter / "no allowed form" tail would contradict the
  * computed form for those cases.
  */
-export function classicalChainApplies(groupType: 'I' | 'II' | 'III', timeParity: TimeParity): boolean {
+export function classicalChainApplies(groupType: GroupType, timeParity: TimeParity): boolean {
   return timeParity === 'i' || groupType === 'I';
 }
 
