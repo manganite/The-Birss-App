@@ -59,8 +59,13 @@ suite 2196 = 2192 + 4 smoke pins). Plus **Wave 4 chunk 3a — page splits** (E13
 `TablesPage` (806 → 312 lines) into `components/tables/` sub-views and `HelpPage` (1029 → 86 lines)
 into per-tab `components/help/` components, as pure JSX relocations under a new SSR smoke-render net —
 rendered output byte-identical (base-vs-HEAD SSR dump over every tab and both Tables modes; suite
-2208). Remaining in chunk 3b: E15/E17/E18 (shared-component extractions). See `CHANGELOG.md`
-`[Unreleased]`.
+2208). Plus **Wave 4 chunk 3b — shared-component de-dup** (E15, E17, E18, closed): extracted
+`<NoComponentsFallback>` (used by the Calculator views) + hoisted the shared `zeroStateReason`
+strings (also used by the Simulator's zero-intensity block), and table-drove the Simulator's six
+desktop polarimetry plots — all SSR byte-identical. E17 found no inline header byte-identical to the
+existing `SectionHeader`, so none were folded (no code change). **Wave 4 is now complete (E12–E21).**
+Remaining: chunk 4 (E23–E27 polish) and the standalone E30 (GroupKey) / E22 (interaction tests). See
+`CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 
