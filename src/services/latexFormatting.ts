@@ -105,15 +105,54 @@ const THETA_NONE_HARMONIC: PairMapping = {
   '12': [],
 };
 
+/** One independent-component relation, pre-split into its LaTeX sides: `lhs = rhs[0] = rhs[1] …`. */
+export interface TensorRelation {
+  lhs: string;
+  rhs: string[];
+}
+
+/**
+ * Structured view of a group's independent tensor components. `isNull` is true for the null/zero and
+ * unsupported sentinels; `display` is the exact `string[]` `calculateTensorComponents` returns (the
+ * sentinel string, or the relation strings); `relations` is the parsed relations (empty when null).
+ * Lets consumers branch on a flag and read `{lhs, rhs}` instead of scanning display strings.
+ */
+export interface TensorComponentsView {
+  isNull: boolean;
+  display: string[];
+  relations: TensorRelation[];
+}
+
+function parseRelation(relation: string): TensorRelation {
+  const parts = relation.split('=').map((p) => p.trim());
+  return { lhs: parts[0], rhs: parts.slice(1) };
+}
+
+export function calculateTensorComponentsView(
+  groupName: string,
+  tensorType: TensorType,
+  trType: TensorTimeReversal,
+  setting: number = 1,
+): TensorComponentsView {
+  const result = calculateTensorBasisResults(groupName, tensorType, trType, setting);
+  if (!result) return { isNull: true, display: ['Point group not supported.'], relations: [] };
+
+  const relations: string[] = [];
+  for (const basis of result.basisResults) {
+    const relation = formatBasisRelation(basis, result.rank);
+    if (relation !== null) relations.push(relation);
+  }
+  if (relations.length === 0) return { isNull: true, display: ['All components are zero.'], relations: [] };
+  return { isNull: false, display: relations, relations: relations.map(parseRelation) };
+}
+
 export function calculateTensorComponents(
   groupName: string,
   tensorType: TensorType,
   trType: TensorTimeReversal,
   setting: number = 1,
 ): string[] {
-  const result = calculateTensorBasisResults(groupName, tensorType, trType, setting);
-  if (!result) return ['Point group not supported.'];
-  return formatResults(result.basisResults, result.rank);
+  return calculateTensorComponentsView(groupName, tensorType, trType, setting).display;
 }
 
 export function formatSubstitutedPolySum(
@@ -298,13 +337,4 @@ export function formatSubstitutedPolySum(
     }
   }
   return finalParts.length > 0 ? cleanupExpressionSigns(finalParts.join(' + ')) : '0';
-}
-
-function formatResults(basisResults: number[][], rank: number): string[] {
-  const output: string[] = [];
-  for (const basis of basisResults) {
-    const relation = formatBasisRelation(basis, rank);
-    if (relation !== null) output.push(relation);
-  }
-  return output.length > 0 ? output : ['All components are zero.'];
 }

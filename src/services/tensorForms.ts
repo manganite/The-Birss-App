@@ -130,7 +130,7 @@ function indexOrbit(idx: number, rank: number, gens: number[][]): number[] {
 
 /**
  * Formats independent basis vectors into equality/sign relation strings. The per-vector builder is
- * shared with `latexFormatting.formatResults` via `tensorProjection.formatBasisRelation` (Wave-2 E5),
+ * shared with `latexFormatting.calculateTensorComponentsView` via `tensorProjection.formatBasisRelation` (Wave-2 E5),
  * so `{...,jk}` output equals `calculateTensorComponents` by construction. Rank 0 has no index label,
  * so its single surviving scalar is reported as the sentinel `\chi` (a bare, allowed scalar) rather
  * than an empty `\chi_{}`.

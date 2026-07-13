@@ -4,11 +4,12 @@ import { Info, Layers, Zap, Compass, ChevronDown, ChevronUp } from 'lucide-react
 import { InlineMath } from 'react-katex';
 import { PointGroupData } from '../data/pointGroups';
 import {
-  calculateTensorComponents,
+  calculateTensorComponentsView,
   isCentrosymmetric,
   calculateSHGExpressions,
   getLabFrameVectors,
 } from '../services/tensorCalculator';
+import type { TensorComponentsView } from '../services/tensorCalculator';
 import { TensorTerm } from './notation';
 import { KDirectionSelector } from './crystalCut';
 import { GroupIdentityHeader } from './MathComponents';
@@ -39,9 +40,9 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
     convention,
   } = tensorConfig;
 
-  const currentComponents = useMemo(() => {
-    if (!selectedGroup) return [];
-    return calculateTensorComponents(selectedGroup.name, selectedTensorType, selectedTimeReversal, selectedSetting);
+  const componentsView = useMemo((): TensorComponentsView => {
+    if (!selectedGroup) return { isNull: false, display: [], relations: [] };
+    return calculateTensorComponentsView(selectedGroup.name, selectedTensorType, selectedTimeReversal, selectedSetting);
   }, [selectedGroup, selectedTensorType, selectedTimeReversal, selectedSetting]);
 
   const labFrameBase = useMemo(
@@ -200,13 +201,8 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                  {currentComponents.map((comp, i) => {
-                    const isNull =
-                      comp.toLowerCase().includes('zero') ||
-                      comp.toLowerCase().includes('none') ||
-                      comp.includes('not supported');
-                    if (isNull) {
-                      return (
+                  {componentsView.isNull
+                    ? componentsView.display.map((comp, i) => (
                         <div
                           key={i}
                           className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all"
@@ -216,19 +212,15 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                             Null State
                           </div>
                         </div>
-                      );
-                    }
-
-                    const parts = comp.split('=').map((p) => p.trim());
-                    return (
-                      <div
-                        key={i}
-                        className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all"
-                      >
-                        <div className="text-lg font-mono tracking-tighter flex flex-wrap items-baseline gap-2">
-                          <TensorTerm term={parts[0]} isNull={false} />
-                          {parts.length > 1 &&
-                            parts.slice(1).map((part, pi) => (
+                      ))
+                    : componentsView.relations.map((rel, i) => (
+                        <div
+                          key={i}
+                          className="group border-b border-ink border-opacity-10 pb-4 hover:border-opacity-100 transition-all"
+                        >
+                          <div className="text-lg font-mono tracking-tighter flex flex-wrap items-baseline gap-2">
+                            <TensorTerm term={rel.lhs} isNull={false} />
+                            {rel.rhs.map((part, pi) => (
                               <div key={pi} className="flex items-baseline gap-2">
                                 <span className="text-xs opacity-30">
                                   <InlineMath math="=" />
@@ -236,13 +228,12 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
                                 <TensorTerm term={part} isNull={false} />
                               </div>
                             ))}
+                          </div>
+                          <div className="text-xs uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
+                            Active Component
+                          </div>
                         </div>
-                        <div className="text-xs uppercase tracking-[0.2em] opacity-30 mt-1 group-hover:opacity-100">
-                          Active Component
-                        </div>
-                      </div>
-                    );
-                  })}
+                      ))}
                 </div>
 
                 {selectedTensorType === 'ED' && isCentrosymmetric(selectedGroup.name) && (

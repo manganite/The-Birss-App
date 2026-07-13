@@ -38,7 +38,8 @@ export {
   calculateSHGExpressions,
   getLabFrameVectors,
 } from './tensorProjection';
-export { calculateTensorComponents, formatSubstitutedPolySum } from './latexFormatting';
+export { calculateTensorComponents, calculateTensorComponentsView, formatSubstitutedPolySum } from './latexFormatting';
+export type { TensorComponentsView, TensorRelation } from './latexFormatting';
 export {
   type SymPoly,
   type SymbolicSHGExpression,
