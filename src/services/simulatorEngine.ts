@@ -11,9 +11,13 @@
 
 type Poly = Map<string, Map<string, number>>;
 
-// A type alias (not an interface) so TypeScript synthesizes an implicit `[key: string]: number`
-// index signature — PolarimetryPlot indexes points by a dynamic `dataKey`, so its data prop needs it
-// (the pre-extraction inline inferred type had this implicitly).
+// A `type` alias, NOT an interface, on purpose: TypeScript synthesizes an implicit numeric index
+// signature for an object *type literal* (all-number members) but not for an `interface`/`class`, so
+// this is assignable to PolarimetryPlot's `{ [key: string]: number; angle: number }` data prop, which
+// its charts index by a dynamic `dataKey`. An explicit `[key: string]: number` would also satisfy the
+// prop, but it would additionally make SimulationPoint indexable by ANY string — dropping the
+// member-access typo safety the implicit signature preserves. (The pre-extraction inferred type of the
+// inline object had this implicitly; switching from interface to type restores it.)
 export type SimulationPoint = {
   angle: number;
   parallel: number;

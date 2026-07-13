@@ -35,6 +35,30 @@ function project(out: SimulationData) {
   };
 }
 
+describe('buildSimulationData zero-shape (missing source polynomials)', () => {
+  const ZERO_SHAPE = {
+    data: [],
+    maxIntensity: 0,
+    maxParallel: 0,
+    maxCrossed: 0,
+    maxPolA0: 0,
+    maxPolA90: 0,
+    maxAnaP0: 0,
+    maxAnaP90: 0,
+  };
+  const nonEmpty = new Map([['\\chi_{zxx}', new Map([['00', 1]])]]);
+
+  it('returns the zero-shape when both polynomials are absent', () => {
+    expect(buildSimulationData(undefined, undefined, {}, {})).toEqual(ZERO_SHAPE);
+  });
+  it('returns the zero-shape when only S_X is absent', () => {
+    expect(buildSimulationData(undefined, nonEmpty, {}, {})).toEqual(ZERO_SHAPE);
+  });
+  it('returns the zero-shape when only S_Y is absent', () => {
+    expect(buildSimulationData(nonEmpty, undefined, {}, {})).toEqual(ZERO_SHAPE);
+  });
+});
+
 describe('buildSimulationData regression pins', () => {
   for (const c of SWEEP_CASES) {
     it(c.name, () => {
