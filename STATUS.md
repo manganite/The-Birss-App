@@ -49,7 +49,13 @@ explicit 30 s timeout to kill an intermittent CI flake. Wave 3 is now fully comp
 `PointGroupData.crystalSystem: string` narrowed, and `TENSOR_META` tightened (numeric `rank`,
 `'POLAR'|'AXIAL'` type, `setConvention` on `TensorConfig`) — all type-level, suite unchanged (2192).
 GroupKey's literal-union quarter was split to **E30** (`POINT_GROUPS as const` + ~39-site retype; no
-derivable source existed). See `CHANGELOG.md` `[Unreleased]`.
+derivable source existed). Plus **Wave 4 chunk 2 — service boundary** (E12, E16, closed): the
+Simulator's polarimetry sweep moved from the `useSimulatorState` hook into a pure
+`services/simulatorEngine` function (with first-time smoke coverage of the previously-untested
+sweep), and the tensor-components service gained a structured null-state
+(`calculateTensorComponentsView` → `{ isNull, display, relations }`) so the Calculator stops scanning
+display strings — both behaviour-preserving (goldens byte-identical, rendered output unchanged;
+suite 2196 = 2192 + 4 smoke pins). See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 

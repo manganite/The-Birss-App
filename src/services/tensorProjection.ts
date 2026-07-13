@@ -148,12 +148,12 @@ export function formatCoeff(c: number): string {
 /**
  * Equality/sign relation string for ONE symmetry-averaged basis vector, e.g.
  * `\chi_{xxx} = -\chi_{xyy}` -- each surviving component labelled and scaled relative to the lead
- * component. Returns `null` when no component survives. Shared by `latexFormatting.formatResults`
+ * component. Returns `null` when no component survives. Shared by `latexFormatting.calculateTensorComponentsView`
  * (ED/MD/EQ display) and `tensorForms.formatFormRelations` (the generalized Tables engine), which
  * were previously kept in lockstep by hand (Wave-2 E5). This builder does NOT special-case rank 0
  * (a bare scalar) -- at rank 0 it would emit `\chi_{}` -- so callers that allow a scalar (e.g.
  * formatFormRelations, which emits a bare `\chi`) must handle rank 0 before calling. The only other
- * caller, formatResults, is never invoked at rank 0.
+ * caller, calculateTensorComponentsView, is never invoked at rank 0.
  */
 export function formatBasisRelation(basis: ArrayLike<number>, rank: number): string | null {
   const dim = Math.pow(3, rank);
