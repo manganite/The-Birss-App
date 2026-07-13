@@ -55,7 +55,12 @@ Simulator's polarimetry sweep moved from the `useSimulatorState` hook into a pur
 sweep), and the tensor-components service gained a structured null-state
 (`calculateTensorComponentsView` → `{ isNull, display, relations }`) so the Calculator stops scanning
 display strings — both behaviour-preserving (goldens byte-identical, rendered output unchanged;
-suite 2196 = 2192 + 4 smoke pins). See `CHANGELOG.md` `[Unreleased]`.
+suite 2196 = 2192 + 4 smoke pins). Plus **Wave 4 chunk 3a — page splits** (E13, E14, closed): split
+`TablesPage` (806 → 312 lines) into `components/tables/` sub-views and `HelpPage` (1029 → 86 lines)
+into per-tab `components/help/` components, as pure JSX relocations under a new SSR smoke-render net —
+rendered output byte-identical (base-vs-HEAD SSR dump over every tab and both Tables modes; suite
+2208). Remaining in chunk 3b: E15/E17/E18 (shared-component extractions). See `CHANGELOG.md`
+`[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 
