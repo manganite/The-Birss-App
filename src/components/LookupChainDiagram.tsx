@@ -11,6 +11,7 @@ import {
   type ClassLetters,
 } from '../data/groupNotation';
 import type { TensorParity, TensorTimeParity, TensorRank } from '../services/tensorForms';
+import type { GroupType } from '../types';
 import { TermInfo } from './TermInfo';
 
 /**
@@ -46,7 +47,7 @@ const ownColKey = (parity: TensorParity, rank: number): ColKey => {
 
 interface LookupChainDiagramProps {
   groupName: string;
-  groupType: 'I' | 'II' | 'III';
+  groupType: GroupType;
   parity: TensorParity;
   rank: TensorRank;
   timeParity: TensorTimeParity;

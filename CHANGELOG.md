@@ -40,6 +40,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
   default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
 
+- Internal (type-layer consolidation, no user-visible change): gave the domain unions a single home
+  in `types.ts` — `CrystalSystem` (narrowing the loose `PointGroupData.crystalSystem: string`),
+  `Parity`/`TimeParity` (aliases of the engine's `TensorParity`/`TensorTimeReversal`, replacing inline
+  `'polar'|'axial'` / `'i'|'c'` copies), and `GroupType` (replacing three re-inlined `'I'|'II'|'III'`
+  copies). `TENSOR_META.rank` is now numeric (identical rendered output), its `type` narrowed to
+  `'POLAR'|'AXIAL'`, and `TensorConfig` declares the `setConvention` it already carried. Type-level
+  only; the full suite is unchanged (E19–E21).
+
 ### Fixed
 
 - Internal (latent edge case, unreachable in production): `linalg.isIndependentOf` used a numeric

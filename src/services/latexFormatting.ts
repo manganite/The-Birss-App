@@ -8,6 +8,7 @@
 
 import { EPSILON } from './symmetryGroups';
 import {
+  type TensorType,
   type TensorTimeReversal,
   calculateTensorBasisResults,
   formatCoeff,
@@ -106,7 +107,7 @@ const THETA_NONE_HARMONIC: PairMapping = {
 
 export function calculateTensorComponents(
   groupName: string,
-  tensorType: 'ED' | 'MD' | 'EQ',
+  tensorType: TensorType,
   trType: TensorTimeReversal,
   setting: number = 1,
 ): string[] {

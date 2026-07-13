@@ -1733,15 +1733,15 @@ fixtures-first + PR per the physics-output rule.
   (`tensorConfig`/`orientation`/`simulation`), landed alongside the rank-4 projector speedup and the
   precomputed sharing partitions. (M5)
 - **E12** — Move the SHG-intensity sweep out of `useSimulatorState` into `services/`; have the hook accept the prop objects. (M6)
-- **E13** — Split `TablesPage` (518 lines): extract linalg to `tensorForms`, sub-views to components. (H4)
+- **E13** — Split `TablesPage`: sub-views to components. (H4) _(The "extract linalg to `tensorForms`" half is already done — Waves 2/3 moved the shared linalg into `linalg.ts`/`tensorForms.ts`; 0 linalg remains inline in TablesPage — so E13 reduces to the sub-view split.)_
 - **E14** — Split `HelpPage` (684 lines): content → `data/`, one component per tab. (H5)
 - **E15** — Extract a shared `<NoComponentsFallback>` for the triplicated empty-state / recovery buttons. (M7)
 - **E16** — Return structured null-state `{ isNull, lhs, rhs }` from the service; kill the display-string scanning. (M8)
 - **E17** — Fold the ~9 inlined section headers into the shared `SectionHeader`. (L5)
 - **E18** — Table-drive the repeated markup (nav pills, `PolarimetryPlot` blocks, tab menus, footer rows). (L7)
-- **E19** — Introduce `GroupKey` / `CrystalSystem` unions and a shared `parity`/`timeParity` type. (H6)
-- **E20** — Give `types.ts` (or a new `domain/` module) the scattered domain types; stop re-inlining unions. (M12)
-- **E21** — Tighten `TENSOR_META` (numeric `rank`; narrow `type` union; add `setConvention` to `TensorConfig`). (L10)
+- **E19 — DONE** (`refactor/type-layer`) — Defined canonical `CrystalSystem` (capitalized 7-system union, used to narrow the data source `PointGroupData.crystalSystem`), `Parity` (alias of `TensorParity`), and `TimeParity` (alias of `TensorTimeReversal`) in `types.ts`; replaced the inline `'polar'|'axial'` / `'i'|'c'` duplicates in `groupNotation`/`helpTables`. `CRYSTAL_SYSTEMS` stays `Record<string>` (narrowing its key breaks a reference test's `Object.keys` index). GroupKey's quarter is split to **E30** (no derivable literal source; needs `POINT_GROUPS as const` + a ~39-site retype). (H6)
+- **E20 — DONE** (`refactor/type-layer`) — Added `GroupType` (`'I'|'II'|'III'`) to `types.ts` and dropped its three re-inlined copies (`PointGroupData.type`, `classicalChainApplies`, `LookupChainDiagram`); pointed `latexFormatting`'s re-inlined `'ED'|'MD'|'EQ'` at `TensorType`; typed `PointGroupExplorer`'s re-inlined 7-system list against `CrystalSystem`. Other domain shapes stay co-located with their own data/single consumer (moving them would separate an interface from its sole data, not consolidate a scattered type). (M12)
+- **E21 — DONE** (`refactor/type-layer`) — `TENSOR_META.rank` string→numeric (sole consumer renders it as identical JSX text), narrowed the satisfies `type` to `'POLAR'|'AXIAL'`, added `setConvention` to `TensorConfig` (the App bundle already passed it; the interface now declares it). Behaviour-preserving; suite unchanged. (L10)
 
 ### Wave 5 — longer-horizon / optional
 - **E22** — Add jsdom + testing-library; interaction tests for `App` routing/search, `useSimulatorState`, Calculator/Tables flows. (H8)
@@ -1755,3 +1755,6 @@ fixtures-first + PR per the physics-output rule.
 _(The E8 work order named these E22/E23, but those numbers were already taken by the audit port above, so they are filed here as E28/E29.)_
 - **E28 — DONE** (`fix/e28-e29`) — Replaced `linalg.isIndependentOf`'s `ratio === 0` "unset" sentinel with an explicit `locked` flag; added `linalg.test.ts` with linear-algebra-anchored assertions (the [0,0,1]-vs-[1,0,1] counterexample fails on the pre-fix code, passes after). Confirmed unreachable in production: the full suite is byte-unchanged (2192 = 2186 + 6 new; no golden/reference/pin differs). NB block in the doc comment updated. (Copilot review on #92; POST-REVIEW verdict 2026-07-12.)
 - **E29 — DONE** (`fix/e28-e29`) — Added an explicit `SWEEP_TIMEOUT_MS = 30000` per-test timeout to the two full agreement-sweep `it()` blocks in `symbolicProjection.test.ts` (cubic EQ symbolic cells); only the timeout argument changed. Kills the intermittent 5 s-default-timeout flake.
+
+### Discovered during Wave 4 chunk 1 (type layer) — 2026-07-13
+- **E30** — Make `POINT_GROUPS` `as const`, derive `GroupKey = typeof POINT_GROUPS[number]['name']`, and retype the ~39 `groupName: string` sites to `GroupKey` for compile-time group-key safety (turns silent undefined-key runtime failures into type errors). ~8-file readonly/narrowing ripple + the 39 retypes; its own tsc-verified pass. (Split from E19/H6 during the type-layer chunk PR — no derivable literal source existed, and hand-typing 122 keys was disallowed.)

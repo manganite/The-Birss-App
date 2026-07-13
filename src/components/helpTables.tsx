@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { TENSOR_EFFECTS } from '../data/tensorEffects';
 import { intrinsicLabel } from '../data/intrinsicLabels';
 import type { TensorRank } from '../services/tensorForms';
+import type { Parity, TimeParity } from '../types';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { LookupChainDiagram } from './LookupChainDiagram';
 
@@ -178,9 +179,9 @@ function HelpDiagram({
   timeParity,
 }: {
   name: string;
-  parity: 'polar' | 'axial';
+  parity: Parity;
   rank: TensorRank;
-  timeParity: 'i' | 'c';
+  timeParity: TimeParity;
 }) {
   const group = POINT_GROUPS.find((g) => g.name === name);
   if (!group) return null;
