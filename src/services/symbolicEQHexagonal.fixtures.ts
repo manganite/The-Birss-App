@@ -1,4 +1,5 @@
 import type { TensorTimeReversal } from './tensorCalculator';
+import type { GroupKey } from '../data/pointGroups';
 
 /**
  * Golden fixtures for the symbolic SHG source term of EQ (rank-4) tensors on the
@@ -27,7 +28,7 @@ import type { TensorTimeReversal } from './tensorCalculator';
  */
 export interface SymbolicEQHexFixture {
   id: string;
-  groupName: string;
+  groupName: GroupKey;
   trType: TensorTimeReversal;
   phiX: number;
   phiY: number;
@@ -47,15 +48,17 @@ const AT_15_m20_75 = 0.46858615787930735;
 
 // The 14 cells that diverged: {3m, 6mm, -6m2} x {i, c} x {two triples} plus -3'm i x {two triples}.
 // (-3'm c-type has no χ_xxxx S_X term, so it never diverged and is not pinned here.)
-export const SYMBOLIC_EQ_HEX_FIXTURES: SymbolicEQHexFixture[] = [
-  ['3m', 'i'],
-  ['3m', 'c'],
-  ['6mm', 'i'],
-  ['6mm', 'c'],
-  ['-6m2', 'i'],
-  ['-6m2', 'c'],
-  ["-3'm", 'i'],
-].flatMap(([groupName, trType]) => [
+export const SYMBOLIC_EQ_HEX_FIXTURES: SymbolicEQHexFixture[] = (
+  [
+    ['3m', 'i'],
+    ['3m', 'c'],
+    ['6mm', 'i'],
+    ['6mm', 'c'],
+    ['-6m2', 'i'],
+    ['-6m2', 'c'],
+    ["-3'm", 'i'],
+  ] as [GroupKey, TensorTimeReversal][]
+).flatMap(([groupName, trType]) => [
   {
     id: `${groupName}-EQ-${trType}-30_45_60`,
     groupName,

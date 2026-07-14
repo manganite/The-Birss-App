@@ -1,8 +1,9 @@
 import type { TensorType, TensorTimeReversal } from './tensorCalculator';
+import type { GroupKey } from '../data/pointGroups';
 
 export interface RotatedSHGFixture {
   id: string;
-  groupName: string;
+  groupName: GroupKey;
   tensorType: TensorType;
   trType: TensorTimeReversal;
   thetaX: number;

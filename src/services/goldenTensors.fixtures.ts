@@ -1,7 +1,8 @@
 import type { TensorType, TensorTimeReversal } from './tensorCalculator';
+import type { GroupKey } from '../data/pointGroups';
 
 export interface GoldenFixture {
-  group: string; // key into GENERATORS, e.g. "-3'm'"
+  group: GroupKey; // key into GENERATORS, e.g. "-3'm'"
   tensor: TensorType;
   tr: TensorTimeReversal;
   expected: string[];
