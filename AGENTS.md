@@ -28,7 +28,12 @@ Working rules for this cycle:
   setting are a shared group context.
 - **Safety net first.** For any data/math item, extend the relevant golden / rotated
   fixture (`goldenTensors.fixtures.ts`, `rotatedSHG.fixtures.ts`) **first** and require
-  it green, then change code. Fixtures come from literature, never from app output.
+  it green, then change code. Two fixture classes with distinct rules: **correctness
+  goldens** (e.g. `goldenTensors.fixtures.ts`) come from print-verified literature,
+  never from app output; **behavioral regression pins** (`rotatedSHG.fixtures.ts`,
+  `shgUnification.pins.test.ts`) are captured from a known-good app revision and are
+  regenerated only by re-capturing from a known-good base -- never edited to turn a
+  red pin green.
 - **Resolve before coding.** An item tagged *Open decision* or *Derivation /
   verification pending* must have that resolved (and its `Status:` updated) before its
   implementation branch opens.
