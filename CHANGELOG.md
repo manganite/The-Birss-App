@@ -16,75 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   precomputed at build time (`npm run sharingdata`) so opening the list is an O(1) lookup instead of
   a main-thread sweep. No change to any computed tensor form. Overall test-suite runtime is down as
   well (~66 s to ~60 s).
-- Internal (tech-debt Wave 2, no user-visible change): de-duplicated shared code across the services
-  and reference-test layers -- the markdown-table parsers now come from one `birssTableParsers` module,
-  and the rotation/matmul primitives, the independent-basis reducer, the χ-relation string builder,
-  the comparison tolerances, and the field-label maps each live in a single home. Behaviour and all
-  computed outputs are unchanged (the 2140-test suite is the guard).
-- Internal (tech-debt Wave 3 / E8, no user-visible change): the numeric and symbolic SHG contraction
-  pipelines, previously two ~200-line hand-duplicated copies, are unified behind one generic core
-  (`computeShg`, generic over a scalar with `number` and `TrigPoly` instances). The symbolic-only
-  `cos²+sin²` simplification is now an explicit post-stage outside the shared core, structurally
-  preventing the class of symbolic-only divergence behind the earlier off-normal EQ bug. No change to
-  any computed output (numeric byte-identical, symbolic guarded byte-identical by the agreement sweep
-  and the print-anchored goldens); numeric-path performance unchanged.
-- Internal (tech-debt Wave 3 tail / E9, E10, no user-visible change): de-duplicated two string
-  formatters. The Simulator's polarization-formula formatter (`formatSubstitutedPolySum`) had its six
-  inline harmonic-mapping tables lifted to named module-level constants, and it now also has
-  first-time regression test coverage (18 branch-coverage pins — previously the user-visible Simulator
-  formulas had no tests). The symmetry-operation symbol formatter (`formatMatrixSymbol`) had its
-  duplicated rotation-axis and mirror-normal extraction collapsed into one selection helper. Both are
-  behaviour byte-identical (the formatter output strings are unchanged; verified for `formatMatrixSymbol`
-  by a base-vs-HEAD dump over all 122 groups).
-- Internal (CI, no user-visible change): the symbolic↔numeric agreement sweep's heaviest cells
-  (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
-  default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
-
 - Accessibility: the tab widgets (Help sections, Simulator polarimetry configuration) now expose
   `role="tablist"/"tab"/"tabpanel"` with `aria-selected` and
   `aria-controls`/`aria-labelledby`; the main navigation marks the active view with
   `aria-current="page"`; and the Simulator's amplitude/phase/angle sliders and number inputs carry
   `aria-label`s. Declarative only (no keyboard-navigation change); purely additive ARIA attributes,
   rendered output otherwise unchanged (E24).
-- Internal (types + build, no user-visible change): narrowed `RADAR_TICKS` off `any` and tightened
-  the `PolarimetryPlot` `data` prop to the `SimulationPoint[]` type; code-split `recharts` into its own
-  `vendor-recharts` bundle chunk and pointed the `@` path alias at `src/` (E25, E26).
-- Internal (shared-component de-dup, no user-visible change): extracted a shared
-  `<NoComponentsFallback>` (the "no components — try another configuration" recovery block) used by
-  the Calculator's component views, hoisted the shared symmetry-reason strings into `zeroStateReason`
-  (also consumed by the Simulator's zero-intensity state), and table-drove the Simulator's six desktop
-  polarimetry plots from a config array. Rendered output byte-identical everywhere (E15, E18; E17
-  found no header byte-identical to the existing SectionHeader, so none were folded). This completes
-  the Wave-4 component/type cleanup (E12–E21).
-- Internal (component structure, no user-visible change): split the two largest page components into
-  focused sub-components — `TablesPage` (806 → 312 lines) into a `components/tables/` folder and
-  `HelpPage` (1029 → 86 lines) into per-tab `components/help/` components — as pure JSX relocations,
-  and added an SSR smoke-render net over both pages (first render coverage for them). The rendered
-  output is byte-identical (verified by a base-vs-HEAD SSR dump over every tab and both Tables modes);
-  no behaviour change (E13, E14).
-- Internal (service-boundary refactor, no user-visible change): moved the Simulator's polarimetry
-  intensity sweep out of the `useSimulatorState` hook into a pure `services/simulatorEngine` function
-  (the hook keeps its React state and memoization), adding first-time regression coverage of the
-  previously-untested sweep; and gave the tensor-components service a structured null-state
-  (`calculateTensorComponentsView` → `{ isNull, display, relations }`) so the Calculator reads a flag
-  and pre-split relations instead of scanning display strings. Both behaviour-preserving — the
-  rendered output and every pinned string are unchanged (E12, E16).
-- Internal (type-layer consolidation, no user-visible change): gave the domain unions a single home
-  in `types.ts` — `CrystalSystem` (narrowing the loose `PointGroupData.crystalSystem: string`),
-  `Parity`/`TimeParity` (aliases of the engine's `TensorParity`/`TensorTimeReversal`, replacing inline
-  `'polar'|'axial'` / `'i'|'c'` copies), and `GroupType` (replacing three re-inlined `'I'|'II'|'III'`
-  copies). `TENSOR_META.rank` is now numeric (identical rendered output), its `type` narrowed to
-  `'POLAR'|'AXIAL'`, and `TensorConfig` declares the `setConvention` it already carried. Type-level
-  only; the full suite is unchanged (E19–E21).
-
-### Fixed
-
-- Internal (latent edge case, unreachable in production): `linalg.isIndependentOf` used a numeric
-  `ratio === 0` "unset" sentinel that could not distinguish an as-yet-unset ratio from a legitimately
-  zero one, so a vector like `[0,0,1]` could be misjudged parallel to `[1,0,1]`. The production
-  callers feed symmetric group-average projector columns whose zero-pattern blocks this case (all
-  ~150 golden fixtures are unaffected), but the helper is now a public utility; replaced the sentinel
-  with an explicit locked flag and added a linear-algebra-anchored unit test (E28).
 
 ## [0.21.0] - 2026-07-11
 
