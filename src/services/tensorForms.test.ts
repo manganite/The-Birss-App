@@ -59,6 +59,20 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
       );
     }
   }, 30000);
+  it('{3,polar,c,jk} == ED c-type for all 122 groups', () => {
+    for (const g of ALL) {
+      expect(relsOf(g, { rank: 3, parity: 'polar', timeParity: 'c', intrinsic: 'jk' }), g).toEqual(
+        calculateTensorComponents(g, 'ED', 'c', 1),
+      );
+    }
+  }, 30000);
+  it('{3,axial,i,jk} == MD i-type for all 122 groups', () => {
+    for (const g of ALL) {
+      expect(relsOf(g, { rank: 3, parity: 'axial', timeParity: 'i', intrinsic: 'jk' }), g).toEqual(
+        calculateTensorComponents(g, 'MD', 'i', 1),
+      );
+    }
+  }, 30000);
   it('{4,polar,i,jk} == EQ i-type (representative groups spanning all systems/types)', () => {
     // Rank-4 projection (dim 81) is heavy; rank-3 all-122 above already proves the algorithm
     // equivalence, so rank-4 is a representative spread rather than all 122.
