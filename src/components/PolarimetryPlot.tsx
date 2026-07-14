@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip } from 'recharts';
+import type { SimulationPoint } from '../services/simulatorEngine';
 
-// Recharts' PolarAngleAxis types expect TickItem objects, but it accepts raw numbers at runtime.
-const RADAR_TICKS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330] as any;
+const RADAR_TICKS: number[] = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
 
 const formatPolarAngle = (val: number) => {
   if (val === 0) return '0° (X)';
@@ -13,7 +13,7 @@ const formatPolarAngle = (val: number) => {
 interface PolarimetryPlotProps {
   title: React.ReactNode;
   subtitle: string;
-  data: { angle: number; [key: string]: number }[];
+  data: SimulationPoint[];
   domainMax: number;
   dataKey: string;
   radarName: string;
@@ -43,7 +43,9 @@ export function PolarimetryPlot({
               dataKey="angle"
               type="number"
               domain={[0, 360]}
-              ticks={RADAR_TICKS}
+              // recharts types `ticks` as TickItem[] but accepts raw numbers at runtime; cast at
+              // this one interop point rather than weakening RADAR_TICKS (honestly a number[]) to any.
+              ticks={RADAR_TICKS as unknown as ComponentProps<typeof PolarAngleAxis>['ticks']}
               tickFormatter={formatPolarAngle}
               stroke="var(--color-ink)"
               strokeOpacity={0.5}

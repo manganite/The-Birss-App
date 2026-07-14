@@ -64,8 +64,12 @@ rendered output byte-identical (base-vs-HEAD SSR dump over every tab and both Ta
 strings (also used by the Simulator's zero-intensity block), and table-drove the Simulator's six
 desktop polarimetry plots — all SSR byte-identical. E17 found no inline header byte-identical to the
 existing `SectionHeader`, so none were folded (no code change). **Wave 4 is now complete (E12–E21).**
-Remaining: chunk 4 (E23–E27 polish) and the standalone E30 (GroupKey) / E22 (interaction tests). See
-`CHANGELOG.md` `[Unreleased]`.
+Plus **chunk 4 — polish** (E24–E27, closed): declarative ARIA on the tab widgets + `aria-current`
+nav + input labels (E24, purely additive attributes, verified ARIA-only base-vs-HEAD); narrowed
+`RADAR_TICKS`/`PolarimetryPlot` types (E25) and code-split `recharts` + fixed the `@` alias (E26);
+trimmed the TODO-next E-series to a completed-ledger (E27). **E23 deferred** (group-registry data
+policy — own WO). The tech-debt backlog is now down to three standalone items: E22 (interaction
+tests), E23 (registry policy), E30 (GroupKey). See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 

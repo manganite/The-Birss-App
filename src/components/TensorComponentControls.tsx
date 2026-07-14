@@ -105,6 +105,7 @@ export function TensorComponentControls({
                       <TensorTerm term={comp} isNull={false} />
                     </div>
                     <input
+                      aria-label={`Amplitude for ${comp}`}
                       type="range"
                       min="0"
                       max="1"
@@ -120,6 +121,7 @@ export function TensorComponentControls({
                       disabled={singleComponent}
                     />
                     <input
+                      aria-label={`Amplitude for ${comp}`}
                       type="number"
                       min="0"
                       max="1"
@@ -136,6 +138,7 @@ export function TensorComponentControls({
                   <div className="flex items-center gap-2">
                     <div className="w-16 shrink-0 text-right text-xs text-ink/70">Phase</div>
                     <input
+                      aria-label={`Phase for ${comp}`}
                       type="range"
                       min="0"
                       max="360"
@@ -149,6 +152,7 @@ export function TensorComponentControls({
                     />
                     <div className="flex items-center gap-0.5 shrink-0">
                       <input
+                        aria-label={`Phase for ${comp}`}
                         type="number"
                         min="0"
                         max="360"
@@ -205,6 +209,7 @@ export function TensorComponentControls({
                       <TensorTerm term={comp} isNull={false} />
                     </div>
                     <input
+                      aria-label={`Amplitude for ${comp}`}
                       type="range"
                       min="0"
                       max="1"
@@ -230,6 +235,7 @@ export function TensorComponentControls({
                       disabled={singleComponent}
                     />
                     <input
+                      aria-label={`Amplitude for ${comp}`}
                       type="number"
                       min="0"
                       max="1"
@@ -263,6 +269,7 @@ export function TensorComponentControls({
                   <div className="flex items-center gap-2">
                     <div className="w-20 shrink-0 text-right text-xs text-ink/70">Phase</div>
                     <input
+                      aria-label={`Phase for ${comp}`}
                       type="range"
                       min="0"
                       max="360"
@@ -283,6 +290,7 @@ export function TensorComponentControls({
                     />
                     <div className="flex items-center gap-0.5 shrink-0">
                       <input
+                        aria-label={`Phase for ${comp}`}
                         type="number"
                         min="0"
                         max="360"

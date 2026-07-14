@@ -40,7 +40,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '.'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   build: {
@@ -50,6 +50,7 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom'],
           'vendor-katex': ['katex', 'react-katex'],
           'vendor-motion': ['motion'],
+          'vendor-recharts': ['recharts'],
         },
       },
     },

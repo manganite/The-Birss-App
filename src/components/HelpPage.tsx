@@ -43,10 +43,18 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
 
       <div className="bg-white/50 border border-ink overflow-hidden">
         {/* Tab Menu — desktop only */}
-        <div className="hidden md:flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar">
+        <div
+          role="tablist"
+          aria-label="Help sections"
+          className="hidden md:flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar"
+        >
           {TABS.map((tab, i) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              id={`help-tab-${tab.id}`}
+              aria-controls="help-panel"
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${i > 0 ? 'border-l border-ink border-opacity-10' : ''} ${
                 activeTab === tab.id ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'
@@ -57,11 +65,19 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
           ))}
         </div>
 
-        {/* Mobile tab selector */}
-        <div className="md:hidden flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar">
+        {/* Mobile tab selector (duplicate menu; ids live on the desktop tablist to avoid id clashes) */}
+        <div
+          role="tablist"
+          aria-label="Help sections"
+          className="md:hidden flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar"
+        >
           {TABS.map((tab, i) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              id={`help-tab-m-${tab.id}`}
+              aria-controls="help-panel"
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-3 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${i > 0 ? 'border-l border-ink border-opacity-10' : ''} ${
                 activeTab === tab.id ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'
@@ -72,7 +88,14 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
           ))}
         </div>
 
-        <div className="p-6 md:p-8">
+        {/* labelled by BOTH the desktop and mobile tab for the active section, so the visible one
+            (the other is display:none at this breakpoint) always provides the accessible name */}
+        <div
+          role="tabpanel"
+          id="help-panel"
+          aria-labelledby={`help-tab-${activeTab} help-tab-m-${activeTab}`}
+          className="p-6 md:p-8"
+        >
           {activeTab === 'overview' && <OverviewHelp />}
           {activeTab === 'conventions' && <ConventionsHelp />}
           {activeTab === 'physics' && <PhysicsHelp />}
