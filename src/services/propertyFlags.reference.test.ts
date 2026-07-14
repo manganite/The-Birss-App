@@ -30,6 +30,14 @@ const NOMENCLATURE = readFileSync(path.resolve(__dirname, '../../birss-tables/ta
 const ALL = POINT_GROUPS.map((g) => g.name);
 const computedSet = (pred: (g: string) => boolean) => new Set(ALL.filter(pred));
 
+// Under full-suite contention the flag computations in this file can exceed vitest's 5 s default
+// per-test timeout (observed as an intermittent full-run flake that passes in ~1 s in isolation)
+// -- the same flake class fixed for the agreement sweep (E29). The flag predicates build the
+// process-wide closed-operator-set caches (propertyFlags.ts -> getCachedFullGroup), so whichever
+// test in this file runs first pays that cost; the explicit timeout therefore applies uniformly
+// to every test here. It changes no assertion, input, or tolerance.
+const REF_TIMEOUT_MS = 30000;
+
 // ---- shared markdown helpers ----
 const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
 function sliceBetween(content: string, start: string, end: string): string {
@@ -49,13 +57,21 @@ describe('Ferromagnetic == ITC Table 1.5.2.4 (31 groups)', () => {
       .map((cells) => cells[cells.length - 1].replace(/\s*\[frame\]\s*/, '').trim()),
   );
 
-  it('lists exactly 31 groups', () => {
-    expect(expected.size).toBe(31);
-    for (const k of expected) expect(GENERATORS[k], `unknown app key ${k}`).toBeDefined();
-  });
-  it('matches the computed ferromagnetic set entry-for-entry', () => {
-    expect(computedSet(isFerromagnetic)).toEqual(expected);
-  });
+  it(
+    'lists exactly 31 groups',
+    () => {
+      expect(expected.size).toBe(31);
+      for (const k of expected) expect(GENERATORS[k], `unknown app key ${k}`).toBeDefined();
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'matches the computed ferromagnetic set entry-for-entry',
+    () => {
+      expect(computedSet(isFerromagnetic)).toEqual(expected);
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('Magnetoelectric == ITC Table 1.5.8.1 (58 groups)', () => {
@@ -83,12 +99,20 @@ describe('Magnetoelectric == ITC Table 1.5.8.1 (58 groups)', () => {
     expected.add(key);
   }
 
-  it('lists exactly 58 groups', () => {
-    expect(expected.size).toBe(58);
-  });
-  it('matches the computed magnetoelectric set entry-for-entry', () => {
-    expect(computedSet(isMagnetoelectric)).toEqual(expected);
-  });
+  it(
+    'lists exactly 58 groups',
+    () => {
+      expect(expected.size).toBe(58);
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'matches the computed magnetoelectric set entry-for-entry',
+    () => {
+      expect(computedSet(isMagnetoelectric)).toEqual(expected);
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('Piezomagnetic == ITC Table 1.5.7.1 (nonzero forms, non-grey groups)', () => {
@@ -126,15 +150,23 @@ describe('Piezomagnetic == ITC Table 1.5.7.1 (nonzero forms, non-grey groups)', 
   }
 
   const nonGrey = new Set(ALL.filter((g) => POINT_GROUPS.find((p) => p.name === g)!.type !== 'II'));
-  it('matches the computed piezomagnetic set over the non-grey groups', () => {
-    const computedNonGrey = new Set([...nonGrey].filter(isPiezomagnetic));
-    expect(computedNonGrey).toEqual(expected);
-  });
-  it('vanishes for every grey (Type II) group', () => {
-    for (const g of POINT_GROUPS.filter((p) => p.type === 'II')) {
-      expect(isPiezomagnetic(g.name), g.name).toBe(false);
-    }
-  });
+  it(
+    'matches the computed piezomagnetic set over the non-grey groups',
+    () => {
+      const computedNonGrey = new Set([...nonGrey].filter(isPiezomagnetic));
+      expect(computedNonGrey).toEqual(expected);
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'vanishes for every grey (Type II) group',
+    () => {
+      for (const g of POINT_GROUPS.filter((p) => p.type === 'II')) {
+        expect(isPiezomagnetic(g.name), g.name).toBe(false);
+      }
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 // ---- classical property-class anchors ----
@@ -143,63 +175,103 @@ const NONCENTRO_CLASSICAL = POINT_GROUPS.filter((g) => g.type === 'I' && !isCent
 
 describe('Polar == family in the 10 polar classes (Schmid, Ferroelectrics 162, 317 (1994))', () => {
   const POLAR_CLASSES = new Set(['1', '2', 'm', 'mm2', '4', '4mm', '3', '3m', '6', '6mm']);
-  it('matches family membership in the polar classes', () => {
-    expect(computedSet(isPolar)).toEqual(computedSet((g) => POLAR_CLASSES.has(getFamilyClass(g))));
-  });
-  it('has exactly 31 members (Schmid 1994)', () => {
-    expect(computedSet(isPolar).size).toBe(31);
-  });
+  it(
+    'matches family membership in the polar classes',
+    () => {
+      expect(computedSet(isPolar)).toEqual(computedSet((g) => POLAR_CLASSES.has(getFamilyClass(g))));
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'has exactly 31 members (Schmid 1994)',
+    () => {
+      expect(computedSet(isPolar).size).toBe(31);
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('Piezoelectric == family in the 20 piezoelectric classes (21 non-centro minus 432)', () => {
   const PIEZO_CLASSES = new Set<string>(NONCENTRO_CLASSICAL.filter((k) => k !== '432'));
-  it('excludes 432 among the non-centrosymmetric classes', () => {
-    expect(NONCENTRO_CLASSICAL).toHaveLength(21);
-    expect(PIEZO_CLASSES.size).toBe(20);
-  });
-  it('matches family membership in the piezoelectric classes', () => {
-    expect(computedSet(isPiezoelectric)).toEqual(computedSet((g) => PIEZO_CLASSES.has(getFamilyClass(g))));
-  });
+  it(
+    'excludes 432 among the non-centrosymmetric classes',
+    () => {
+      expect(NONCENTRO_CLASSICAL).toHaveLength(21);
+      expect(PIEZO_CLASSES.size).toBe(20);
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'matches family membership in the piezoelectric classes',
+    () => {
+      expect(computedSet(isPiezoelectric)).toEqual(computedSet((g) => PIEZO_CLASSES.has(getFamilyClass(g))));
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('Chiral == family in the 11 enantiomorphic classes', () => {
   const ENANTIOMORPHIC = new Set(['1', '2', '222', '4', '422', '3', '32', '6', '622', '23', '432']);
-  it('matches family membership in the enantiomorphic classes', () => {
-    expect(computedSet(isChiral)).toEqual(computedSet((g) => ENANTIOMORPHIC.has(getFamilyClass(g))));
-  });
+  it(
+    'matches family membership in the enantiomorphic classes',
+    () => {
+      expect(computedSet(isChiral)).toEqual(computedSet((g) => ENANTIOMORPHIC.has(getFamilyClass(g))));
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('Laue class', () => {
-  it('yields exactly 11 distinct centrosymmetric classical keys over the 122 groups', () => {
-    const values = new Set(ALL.map(getLaueClass));
-    expect(values.size).toBe(11);
-    for (const v of values) {
-      const rec = POINT_GROUPS.find((p) => p.name === v);
-      expect(rec?.type, `${v} should be a classical key`).toBe('I');
-      expect(isCentrosymmetric(v), `${v} should be centrosymmetric`).toBe(true);
-    }
-  });
+  it(
+    'yields exactly 11 distinct centrosymmetric classical keys over the 122 groups',
+    () => {
+      const values = new Set(ALL.map(getLaueClass));
+      expect(values.size).toBe(11);
+      for (const v of values) {
+        const rec = POINT_GROUPS.find((p) => p.name === v);
+        expect(rec?.type, `${v} should be a classical key`).toBe('I');
+        expect(isCentrosymmetric(v), `${v} should be centrosymmetric`).toBe(true);
+      }
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('Multiferroic cross-check (Schmid, Ferroelectrics 162, 317 (1994))', () => {
-  it('has exactly 13 polar-and-ferromagnetic groups', () => {
-    const both = ALL.filter((g) => isPolar(g) && isFerromagnetic(g));
-    expect(both).toHaveLength(13);
-  });
+  it(
+    'has exactly 13 polar-and-ferromagnetic groups',
+    () => {
+      const both = ALL.filter((g) => isPolar(g) && isFerromagnetic(g));
+      expect(both).toHaveLength(13);
+    },
+    REF_TIMEOUT_MS,
+  );
 });
 
 describe('getSHGConsequenceShort (432-family correction)', () => {
-  it('centrosymmetric groups forbid ED SHG', () => {
-    expect(getSHGConsequenceShort('-1')).toBe('ED SHG forbidden (bulk); EQ/MD can contribute');
-  });
-  it('a generic non-centrosymmetric group allows ED SHG', () => {
-    expect(getSHGConsequenceShort('1')).toBe('ED SHG allowed');
-    expect(getSHGConsequenceShort('4mm')).toBe('ED SHG allowed');
-  });
-  it('the 432 family vanishes despite non-centrosymmetry', () => {
-    for (const g of ['432', "4321'", "4'32'"]) {
-      expect(isCentrosymmetric(g), `${g} is non-centrosymmetric`).toBe(false);
-      expect(getSHGConsequenceShort(g)).toBe('ED SHG vanishes despite non-centrosymmetry (432 family)');
-    }
-  });
+  it(
+    'centrosymmetric groups forbid ED SHG',
+    () => {
+      expect(getSHGConsequenceShort('-1')).toBe('ED SHG forbidden (bulk); EQ/MD can contribute');
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'a generic non-centrosymmetric group allows ED SHG',
+    () => {
+      expect(getSHGConsequenceShort('1')).toBe('ED SHG allowed');
+      expect(getSHGConsequenceShort('4mm')).toBe('ED SHG allowed');
+    },
+    REF_TIMEOUT_MS,
+  );
+  it(
+    'the 432 family vanishes despite non-centrosymmetry',
+    () => {
+      for (const g of ['432', "4321'", "4'32'"]) {
+        expect(isCentrosymmetric(g), `${g} is non-centrosymmetric`).toBe(false);
+        expect(getSHGConsequenceShort(g)).toBe('ED SHG vanishes despite non-centrosymmetry (432 family)');
+      }
+    },
+    REF_TIMEOUT_MS,
+  );
 });
