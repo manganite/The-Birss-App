@@ -3,6 +3,10 @@ import type { TensorType, TensorTimeReversal } from './services/tensorCalculator
 import type { Convention } from './services/conventionMapping';
 import type { TensorParity } from './services/tensorForms';
 
+/** Canonical app group-key union. Defined next to its source list (`GROUP_KEYS`/`POINT_GROUPS`) and
+ *  re-exported here as the domain-type home, alongside CrystalSystem/Parity/TimeParity/GroupType. */
+export type { GroupKey } from './data/pointGroups';
+
 /**
  * The seven crystal systems, capitalized exactly as stored in `PointGroupData.crystalSystem`
  * and keyed in `CRYSTAL_SYSTEMS`. Canonical union — replaces the loose `string` typing at the
