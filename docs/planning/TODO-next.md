@@ -1704,7 +1704,6 @@ fixtures-first + PR per the physics-output rule.
 ### Open
 
 - **E22** — Interaction tests for `App` routing/search, `useSimulatorState`, and the Calculator/Tables flows. The SSR-smoke pattern from Waves 3–4 (`renderToStaticMarkup`, no jsdom) is the lightweight precedent; keep deliberately minimal per the testing philosophy. (H8)
-- **E23** — Group-registry policy: generate `groupNotation.ts` from the vendored markdown tables (like `table7Data.ts`), or centralize a single source-of-truth registry object. ~8 files; a data-architecture decision — own WO. (M13)
 
 ### Completed
 
@@ -1725,3 +1724,4 @@ One-line ledger; the full rationale for each item is in this file's git history 
 - **E27** (`chore/polish-chunk4`) — trimmed the E-series completed entries to this ledger (this section). The file's larger bulk is the separate A#/B# product roadmap, left untouched. (L13)
 - **E28, E29** (`fix/e28-e29`) — `isIndependentOf` locked-flag hardening (production-unreachable edge case, unit-tested) + an explicit agreement-sweep `testTimeout` killing the intermittent CI flake.
 - **E30** (`refactor/group-key`) — `GroupKey` literal union, Policy B (authoring layer only). Mechanism (ii): a separate `GROUP_KEYS … as const` tuple sources the union (measured (i): `POINT_GROUPS as const` makes it a rigid 122-tuple cascading across App/TablesPage/tests), with a drift-guard test asserting `GROUP_KEYS` equals `POINT_GROUPS.map(g=>g.name)`. Applied to `PointGroupData.name`, the data/UI key props (groupNotation getClassLetter/getTable7Chain, LookupChainDiagram/NoComponentsFallback/helpTables key props), and the fixture `group`/`groupName` fields. Engine signatures + `getFamilyClass` (Layer-1 caller) + `FormatPointGroup` (display) stay `string`; no fixture typo surfaced. Type-only.
+- **E23 — CLOSED by decision** (2026-07-12; see [`docs/references/DECISION-group-registry-policy.md`](../references/DECISION-group-registry-policy.md)) — group-registry policy. Keep `groupNotation.ts` hand-transcribed under its existing re-parse-at-test-time drift guards rather than build a generator: `GROUP_KEYS` (E30) is the single key enumeration, the per-facet data files are legitimate separation, and `groupNotation.test.ts` already asserts the maps equal the vendored source entry-for-entry — a generator would add tooling for zero correctness gain on frozen literature. This closes the tech-debt E-series except **E22** (interaction tests), which is Wave-5 test work, not audit debt. (M13)
