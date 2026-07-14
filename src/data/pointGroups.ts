@@ -9,7 +9,7 @@
 import type { CrystalSystem, GroupType } from '../types';
 
 export interface PointGroupData {
-  name: string;
+  name: GroupKey;
   crystalSystem: CrystalSystem;
   type: GroupType; // I: Standard, II: Gray, III: Black-and-White
   schoenflies?: string;

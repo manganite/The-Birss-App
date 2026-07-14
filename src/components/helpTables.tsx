@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { TENSOR_EFFECTS } from '../data/tensorEffects';
 import { intrinsicLabel } from '../data/intrinsicLabels';
 import type { TensorRank } from '../services/tensorForms';
-import type { Parity, TimeParity } from '../types';
+import type { Parity, TimeParity, GroupKey } from '../types';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { LookupChainDiagram } from './LookupChainDiagram';
 
@@ -178,7 +178,7 @@ function HelpDiagram({
   rank,
   timeParity,
 }: {
-  name: string;
+  name: GroupKey;
   parity: Parity;
   rank: TensorRank;
   timeParity: TimeParity;

@@ -186,7 +186,7 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
     const partition = SHARING_PARTITIONS[specKey];
     const cls = partition?.find((c) => c.includes(groupName));
     if (!cls) return null;
-    const byName = new Map(POINT_GROUPS.map((g) => [g.name, g]));
+    const byName = new Map<string, PointGroupData>(POINT_GROUPS.map((g) => [g.name, g]));
     return cls.map((n) => byName.get(n)).filter((g): g is PointGroupData => g !== undefined);
   }, [sharingOpen, groupName, specKey]);
 

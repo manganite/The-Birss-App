@@ -152,7 +152,7 @@ describe('Polar == family in the 10 polar classes (Schmid, Ferroelectrics 162, 3
 });
 
 describe('Piezoelectric == family in the 20 piezoelectric classes (21 non-centro minus 432)', () => {
-  const PIEZO_CLASSES = new Set(NONCENTRO_CLASSICAL.filter((k) => k !== '432'));
+  const PIEZO_CLASSES = new Set<string>(NONCENTRO_CLASSICAL.filter((k) => k !== '432'));
   it('excludes 432 among the non-centrosymmetric classes', () => {
     expect(NONCENTRO_CLASSICAL).toHaveLength(21);
     expect(PIEZO_CLASSES.size).toBe(20);

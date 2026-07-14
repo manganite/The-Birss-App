@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LookupChainDiagram } from './LookupChainDiagram';
 import type { TensorRank } from '../services/tensorForms';
-import { POINT_GROUPS } from '../data/pointGroups';
+import { POINT_GROUPS, type GroupKey } from '../data/pointGroups';
 
 /**
  * The diagram is driven live by getTable7Chain / getFamilyClass, so these expectations are pinned to
@@ -16,7 +16,7 @@ import { POINT_GROUPS } from '../data/pointGroups';
 
 const typeOf = (name: string) => POINT_GROUPS.find((p) => p.name === name)!.type;
 
-const render = (name: string, parity: 'polar' | 'axial', rank: TensorRank, timeParity: 'i' | 'c') =>
+const render = (name: GroupKey, parity: 'polar' | 'axial', rank: TensorRank, timeParity: 'i' | 'c') =>
   renderToStaticMarkup(
     <LookupChainDiagram
       groupName={name}

@@ -101,7 +101,7 @@ describe('nomenclature.reference — POINT_GROUPS matches birss-tables/table-nom
   });
 
   it('key set matches the 122 reference keys exactly', () => {
-    const appKeys = new Set(POINT_GROUPS.map((g) => g.name));
+    const appKeys = new Set<string>(POINT_GROUPS.map((g) => g.name));
     const refKeys = new Set(REFERENCE_GROUPS.map((g) => g.key));
     const missingFromApp = [...refKeys].filter((k) => !appKeys.has(k)).sort();
     const extraInApp = [...appKeys].filter((k) => !refKeys.has(k)).sort();
@@ -109,7 +109,7 @@ describe('nomenclature.reference — POINT_GROUPS matches birss-tables/table-nom
   });
 
   it("includes Birss's m'm'm and excludes ITC's mm'm' (Step 1 HM divergence)", () => {
-    const appKeys = new Set(POINT_GROUPS.map((g) => g.name));
+    const appKeys = new Set<string>(POINT_GROUPS.map((g) => g.name));
     expect(appKeys.has("m'm'm")).toBe(true);
     expect(appKeys.has("mm'm'")).toBe(false);
   });

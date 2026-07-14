@@ -21,7 +21,7 @@
 
 import { TABLE7_BW_ROWS } from './table7Data';
 import { BOOK_ERROR_WARNING } from '../services/conventionMapping';
-import type { GroupType, Parity, TimeParity } from '../types';
+import type { GroupType, Parity, TimeParity, GroupKey } from '../types';
 
 /**
  * Shubnikov (Birss dot/colon) symbol for every one of the 122 magnetic point groups — the 32
@@ -440,7 +440,7 @@ export const TABLE_4A_CLASS_LETTERS: Record<string, ClassLetters> = {
  * split. Returns `null` when the class prints `-` (no allowed form of that type). This is the
  * classical-family lookup (Table 4a); the magnetic i/c reassignment (Table 7) is not applied.
  */
-export function getClassLetter(name: string, parity: Parity, rank: number): string | null {
+export function getClassLetter(name: GroupKey, parity: Parity, rank: number): string | null {
   const row = TABLE_4A_CLASS_LETTERS[getFamilyClass(name)];
   if (!row) return null;
   const even = rank % 2 === 0;
@@ -524,7 +524,7 @@ export interface Table7Chain {
  * branches separately). Cross-formula: polar-even → B/Axial-even, axial-even → A/Axial-even,
  * polar-odd → A/Polar-odd, axial-odd → B/Polar-odd (even rank → even columns, odd → odd).
  */
-export function getTable7Chain(groupName: string, parity: Parity, rank: number): Table7Chain | null {
+export function getTable7Chain(groupName: GroupKey, parity: Parity, rank: number): Table7Chain | null {
   const row = TABLE7_BW_ROWS[groupName];
   if (!row) return null;
 
