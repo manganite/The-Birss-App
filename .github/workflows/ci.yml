@@ -32,6 +32,3 @@ jobs:
           git diff --exit-code birss-tables/table-nomenclature.md
       - name: Test
         run: npm run test
-      - name: Coverage report (non-blocking)
-        continue-on-error: true
-        run: npm run test:coverage
