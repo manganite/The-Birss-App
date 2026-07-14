@@ -72,7 +72,12 @@ policy — own WO). Plus **E30** (`refactor/group-key`, closed): a `GroupKey` li
 the authoring layer (Policy B) — data/UI key sites + fixture key fields typed `GroupKey`, engine
 signatures left `string`; single-sourced from a `GROUP_KEYS` tuple with a drift-guard test (measured
 `POINT_GROUPS as const` cascades, so mechanism ii). No fixture typo surfaced. The tech-debt backlog is
-now down to two standalone items: **E22** (interaction tests) and **E23** (group-registry policy).
+now fully resolved: **E23** closed by decision (group-registry policy — keep `groupNotation.ts`
+hand-transcribed under its drift guards; see `docs/references/DECISION-group-registry-policy.md`), and
+**E22** done (`refactor/group-search`) — the Explorer filter/search extracted into a pure
+`services/groupSearch.ts` and unit-tested (9 structural cases, no jsdom). The entire tech-debt audit
+E-series (E1–E30) plus its Wave-5 tail is now closed; the remaining backlog is the separate A#/B#
+product roadmap.
 See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)

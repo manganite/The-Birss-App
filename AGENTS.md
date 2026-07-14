@@ -71,6 +71,7 @@ src/
     trigPolyFormat.ts            # LaTeX formatting for TrigPoly and SymPoly expressions
     latexFormatting.ts           # LaTeX rendering: calculateTensorComponents, formatSubstitutedPolySum
     simulatorEngine.ts           # Pure polarimetry intensity sweep (extracted from useSimulatorState)
+    groupSearch.ts               # Pure Explorer filter/search (filterGroups, getGroupCategory, normalizeString)
   components/
     MathComponents.tsx           # Shared KaTeX render helpers (TensorTerm, FormatPointGroup, SymmetryOperation)
     CalculatorPage.tsx           # Calculator page — tensor components, induced response, source terms
