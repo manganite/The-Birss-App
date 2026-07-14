@@ -1726,3 +1726,52 @@ One-line ledger; the full rationale for each item is in this file's git history 
 - **E30** (`refactor/group-key`) — `GroupKey` literal union, Policy B (authoring layer only). Mechanism (ii): a separate `GROUP_KEYS … as const` tuple sources the union (measured (i): `POINT_GROUPS as const` makes it a rigid 122-tuple cascading across App/TablesPage/tests), with a drift-guard test asserting `GROUP_KEYS` equals `POINT_GROUPS.map(g=>g.name)`. Applied to `PointGroupData.name`, the data/UI key props (groupNotation getClassLetter/getTable7Chain, LookupChainDiagram/NoComponentsFallback/helpTables key props), and the fixture `group`/`groupName` fields. Engine signatures + `getFamilyClass` (Layer-1 caller) + `FormatPointGroup` (display) stay `string`; no fixture typo surfaced. Type-only.
 - **E23 — CLOSED by decision** (2026-07-12; see [`docs/references/DECISION-group-registry-policy.md`](../references/DECISION-group-registry-policy.md)) — group-registry policy. Keep `groupNotation.ts` hand-transcribed under its existing re-parse-at-test-time drift guards rather than build a generator: `GROUP_KEYS` (E30) is the single key enumeration, the per-facet data files are legitimate separation, and `groupNotation.test.ts` already asserts the maps equal the vendored source entry-for-entry — a generator would add tooling for zero correctness gain on frozen literature. At the time it left only the Wave-5 **E22** (interaction tests — test-depth work, not audit debt), since also done (below). (M13)
 - **E22 — DONE** (`refactor/group-search`) — Extracted the Explorer filter/search out of App.tsx into a pure `services/groupSearch.ts` (`filterGroups`/`getGroupCategory`/`normalizeString`) and unit-tested it with 9 structural, registry-anchored cases (category slices, crystal-system + display-name queries, normalization, convention-dependence, no-match) — real coverage of the one untested logic-heavy interaction. Deliberately did NOT add jsdom/testing-library: the rest of the interaction surface is thin glue, and the search logic is testable as a pure function. App SSR byte-identical. Click-level wiring coverage, if ever wanted, is a later thin-jsdom item — flagged, not done here. (H8)
+
+## Test-regime backlog -- T-series
+
+Test-execution and test-code items, distinct from the A#/B# product roadmap and the closed
+E-series. Sourced from the external test-regime evaluation of 2026-07-14; every finding was
+independently re-verified against `main` @ 5fe1914 before scoping.
+
+### Open
+
+- **T3 -- test-code efficiency (no safety-net reduction).** (a) Share the symbolic build in
+  `symbolicProjection.test.ts`: build once per group x tensor-type x time-parity combination and
+  evaluate at (0,0,0) plus the two generic triples -- saves roughly two thirds of the symbolic
+  builds; assertions, groups, and tolerances unchanged. (b) Finish the E2 parser consolidation:
+  `tensorForms.test.ts` still duplicates `stripBackticks`/`sliceBetween` and the family
+  canonicalization; `propertyFlags.reference.test.ts` repeats the markdown helpers. Consolidate
+  into `src/services/testUtils/` without hiding the source-table semantics.
+- **T4 -- redundancy trims (safety-net reduction; each trim decided individually).** Candidates:
+  the `handBirss.e2e.test.ts` wrappers (self-described "not new coverage"); the watch-list
+  duplicates in `operatorSet.reference.test.ts` (identical comparison already run for all 122
+  groups); reducing the exhaustive 122-group pairwise closure in `symmetryGroups.test.ts` to the
+  numerically hard cases (3/6-fold, cubic, alternate settings) -- NOTE: the exhaustive version
+  also exercises snapMatrix/isSameMatrix tolerance behavior under product formation, which
+  set-equality with the closed reference does not, so this trim needs its own argument; the
+  `tensorCalculator.test.ts` output-shape sweep (largely subsumed by the Table-4x/Table-7 guards
+  and goldens). Rule: every removed assertion needs an explicit implication rationale in its WO,
+  and the reviewer scope check inverts -- production code must be untouched.
+- **T5 -- interaction/browser layer (maintainer scope decision pending).** Re-raised by the
+  evaluation; E22 deliberately deferred click-level wiring as "a later thin-jsdom item".
+  Candidates: thin jsdom hook tests (`useDialogA11y` focus trap/restore, `useSimulatorState`),
+  navigation/lazy-route smoke, a small number of Playwright journeys, PWA registration. Adds new
+  dev dependencies -- requires an explicit scope decision before any WO.
+- **T-obs -- CI lane-splitting (observation point, not scheduled).** The evaluation proposed
+  separate CI lanes (fast / exhaustive-scientific / generated-drift / browser) with deliberate
+  worker counts and timeouts. Deferred measure-first: the flake evidence came from the
+  evaluator's environment; T1's explicit timeout addresses the one observed failure class.
+  Revisit only if CI-side flakes or unacceptable wall-times persist after T1.
+
+### Completed
+
+- **T1 -- suite stabilization, minimal** (`chore/test-regime-t1-t2`). Dropped the duplicate
+  non-blocking CI coverage run; explicit 30 s timeout on `propertyFlags.reference.test.ts`
+  (E29 contention-flake class -- the flag predicates build the process-wide closed-group caches,
+  so whichever test in the file runs first pays the cost, hence the uniform per-file timeout).
+- **T2 -- goldens-vs-pins terminology** (`chore/test-regime-t1-t2`). AGENTS.md "Safety net
+  first" now distinguishes correctness goldens (print-verified literature, never app output)
+  from behavioral regression pins (captured from a known-good revision, regenerated only by
+  re-capture); `rotatedSHG.fixtures.ts` relabeled accordingly. Both pin sets kept deliberately:
+  the rotated path has no literature anchor, and post-E8 the numeric/symbolic pipelines share
+  one `computeShg` core, so the agreement sweep alone is not an independent guard of that path.

@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-11. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-14. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -78,6 +78,14 @@ hand-transcribed under its drift guards; see `docs/references/DECISION-group-reg
 `services/groupSearch.ts` and unit-tested (9 structural cases, no jsdom). The entire tech-debt audit
 E-series (E1–E30) plus its Wave-5 tail is now closed; the remaining backlog is the separate A#/B#
 product roadmap.
+Plus **test-regime T1/T2** (closed, from the 2026-07-14 external test-regime evaluation): dropped
+the duplicate non-blocking CI coverage run (threshold-free, artifact-free, doubled CI test time);
+explicit 30 s timeout on `propertyFlags.reference.test.ts` (E29 contention-flake class); AGENTS.md
+now distinguishes correctness goldens (print-verified literature) from behavioral regression pins
+(`rotatedSHG.fixtures.ts`, `shgUnification.pins.test.ts` -- both kept: the rotated path has no
+literature anchor, and post-E8 the agreement sweep is not an independent guard). CI lane-splitting
+deferred as an observation point (revisit only if CI-side flakes persist). Open follow-ups tracked
+as T3-T5 in `docs/planning/TODO-next.md`.
 See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
