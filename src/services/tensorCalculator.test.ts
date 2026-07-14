@@ -74,7 +74,14 @@ describe('calculateTensorComponents - parity invariants (Tier 2)', () => {
   // One `it` per group keeps each test well under the default timeout (rank-4 EQ tensors
   // are expensive) and pinpoints exactly which group regresses.
   for (const pg of POINT_GROUPS) {
-    it(`${pg.name} (type ${pg.type}): ED i-type centrosymmetric parity, EQ non-vanishing, output shape`, () => {
+    // The former all-122 x {ED,MD,EQ} x {i,c} output-shape regex sweep was removed here (T4):
+    // the exact B.3 engine bridge in tensorForms.test.ts now covers the
+    // calculateTensorComponents entry point for ED i/c and MD i/c across all 122 groups against
+    // the print-guarded computeTensorForm, which strictly subsumes the shape regex for those
+    // combinations; EQ i remains exercised by the non-vanishing invariant below (and the
+    // representative B.3 rank-4 bridge); all-122 EQ c entry-point coverage is deferred to the
+    // open magnetic EQ rank-4 goldens item (see TODO ledger).
+    it(`${pg.name} (type ${pg.type}): ED i-type centrosymmetric parity, EQ non-vanishing`, () => {
       if (isCentrosymmetric(pg.name)) {
         // ED (polar, odd rank) must vanish for every centrosymmetric group, i-type.
         expect(calculateTensorComponents(pg.name, 'ED', 'i')).toEqual(['All components are zero.']);
@@ -83,16 +90,6 @@ describe('calculateTensorComponents - parity invariants (Tier 2)', () => {
       // EQ (polar, even rank) never fully vanishes, i-type: an isotropic-tensor-like
       // invariant always survives, regardless of point group.
       expect(calculateTensorComponents(pg.name, 'EQ', 'i')).not.toEqual(['All components are zero.']);
-
-      for (const t of ['ED', 'MD', 'EQ'] as const) {
-        for (const tr of ['i', 'c'] as const) {
-          const res = calculateTensorComponents(pg.name, t, tr);
-          expect(res.length).toBeGreaterThan(0);
-          for (const entry of res) {
-            expect(entry === 'All components are zero.' || /^\\chi_\{[a-z]+\}/.test(entry)).toBe(true);
-          }
-        }
-      }
     });
   }
 
