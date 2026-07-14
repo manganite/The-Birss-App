@@ -44,6 +44,24 @@ function comparePolys(
   }
 }
 
+// Shared symbolic builds for the agreement sweeps below. For a given
+// (group, tensorType, trType) at the (0,0,0) preset the symbolic expression is
+// independent of the evaluation triple: calculateSymbolicSHGExpressions never
+// reads phiX/phiY/psi (they remain symbolic; verified against its option
+// destructuring), so the sweeps reuse one build per combination instead of
+// rebuilding at every evaluation point (~2/3 fewer symbolic builds). Tests in
+// this file run sequentially and only read the result, never mutate it.
+const symbolicZeroPresetCache = new Map<string, ReturnType<typeof calculateSymbolicSHGExpressions>>();
+function symbolicAtZeroPreset(groupName: string, tensorType: 'ED' | 'MD' | 'EQ', trType: 'i' | 'c') {
+  const key = `${groupName}|${tensorType}|${trType}`;
+  let r = symbolicZeroPresetCache.get(key);
+  if (!r) {
+    r = calculateSymbolicSHGExpressions({ groupName, tensorType, trType, thetaX: 0, thetaY: 0 });
+    symbolicZeroPresetCache.set(key, r);
+  }
+  return r;
+}
+
 describe('buildSymbolicR', () => {
   it('evaluates to numeric R at (0,0,0) for k||z preset', () => {
     const R_sym = buildSymbolicR(0, 0);
@@ -92,7 +110,7 @@ describe('symbolic vs numeric reproduction at (0,0,0)', () => {
             const opts: SHGOptions = { groupName: group, tensorType: tt, trType: tr, thetaX: 0, thetaY: 0 };
 
             const numResult = calculateSHGExpressions(opts);
-            const symResult = calculateSymbolicSHGExpressions(opts);
+            const symResult = symbolicAtZeroPreset(group, tt, tr);
 
             expect(symResult.source.length).toBe(numResult.source.length);
 
@@ -146,7 +164,7 @@ describe('symbolic vs numeric reproduction at generic angles (full sweep)', () =
               };
 
               const numResult = calculateSHGExpressions(opts);
-              const symResult = calculateSymbolicSHGExpressions({ ...opts, phiX: 0, phiY: 0, psi: 0 });
+              const symResult = symbolicAtZeroPreset(group, tt, tr);
 
               expect(symResult.source.length).toBe(numResult.source.length);
               for (let s = 0; s < symResult.source.length; s++) {
@@ -193,7 +211,7 @@ describe('symbolic vs numeric reproduction at rotated angles', () => {
         };
 
         const numResult = calculateSHGExpressions(opts);
-        const symResult = calculateSymbolicSHGExpressions({ ...opts, phiX: 0, phiY: 0, psi: 0 });
+        const symResult = symbolicAtZeroPreset(group, 'ED', 'i');
 
         for (let s = 0; s < symResult.source.length; s++) {
           const evaluatedPoly = evalSymPoly(symResult.source[s].symbolicPoly, angles.phiX, angles.phiY, angles.psi);
