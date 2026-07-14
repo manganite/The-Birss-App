@@ -1735,16 +1735,6 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Open
 
-- **T4 -- redundancy trims (safety-net reduction; each trim decided individually).** Candidates:
-  the `handBirss.e2e.test.ts` wrappers (self-described "not new coverage"); the watch-list
-  duplicates in `operatorSet.reference.test.ts` (identical comparison already run for all 122
-  groups); reducing the exhaustive 122-group pairwise closure in `symmetryGroups.test.ts` to the
-  numerically hard cases (3/6-fold, cubic, alternate settings) -- NOTE: the exhaustive version
-  also exercises snapMatrix/isSameMatrix tolerance behavior under product formation, which
-  set-equality with the closed reference does not, so this trim needs its own argument; the
-  `tensorCalculator.test.ts` output-shape sweep (largely subsumed by the Table-4x/Table-7 guards
-  and goldens). Rule: every removed assertion needs an explicit implication rationale in its WO,
-  and the reviewer scope check inverts -- production code must be untouched.
 - **T5 -- interaction/browser layer (maintainer scope decision pending).** Re-raised by the
   evaluation; E22 deliberately deferred click-level wiring as "a later thin-jsdom item".
   Candidates: thin jsdom hook tests (`useDialogA11y` focus trap/restore, `useSimulatorState`),
@@ -1758,6 +1748,22 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Completed
 
+- **T4 -- redundancy decisions** (`test/t4-redundancy`). Four maintainer decisions
+  (2026-07-14): (1) `handBirss.e2e.test.ts` KEPT unchanged -- near-zero cost, deliberately
+  named audit-Phase-4 acceptance checkpoints incl. the Fiebig-anchored Cr2O3 case.
+  (2) Operator-set watch list KEPT but the reference closures are now memoized per key --
+  the named orientation-sensitive checkpoints remain at zero recompute cost. (3) The
+  exhaustive 122-group pairwise closure KEPT unchanged: it exercises snapMatrix/isSameMatrix
+  tolerance behaviour under product formation, which reference set-equality at tolerance
+  does not imply, and the file is not a suite cost driver. (4) The tensorCalculator
+  all-122 x 6-combination output-shape regex sweep REMOVED, replaced first (same PR, earlier
+  commit) by two exact B.3 engine-bridge tests: {3,polar,c,jk} == ED c and
+  {3,axial,i,jk} == MD i for all 122 groups -- with the pre-existing ED i / MD c bridges,
+  the print-guarded Tables engine now pins the calculateTensorComponents entry point
+  exhaustively for all four rank-3 combinations, strictly subsuming the regex. Scientific
+  invariants (centrosymmetric ED parity, EQ non-vanishing, grey-reproduces-parent) kept.
+  Remaining known gap, deliberately deferred: all-122 EQ c entry-point coverage, coupled to
+  the open magnetic EQ rank-4 goldens item (AUDIT:319). Suite 2225 -> 2227.
 - **T3 -- test-code efficiency** (`test/t3-efficiency`). (a) The three agreement sweeps in
   `symbolicProjection.test.ts` share one memoized symbolic build per (group, tensor-type,
   time-parity) combination -- valid because `calculateSymbolicSHGExpressions` never reads
