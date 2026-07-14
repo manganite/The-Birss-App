@@ -2,12 +2,20 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { GENERATORS, ALTERNATE_SETTINGS, EPSILON } from './symmetryGroups';
+import { GENERATORS, ALTERNATE_SETTINGS } from './symmetryGroups';
 import { computeTensorForm, type TensorSpec } from './tensorForms';
 import { calculateTensorComponents } from './tensorCalculator';
 import { isPolar, isFerromagnetic, isMagnetoelectric, isChiral } from './propertyFlags';
 import { POINT_GROUPS } from '../data/pointGroups';
-import { tableRows, stripBackticks, sliceBetween } from './testUtils/birssTableParsers';
+import {
+  tableRows,
+  stripBackticks,
+  sliceBetween,
+  canon,
+  engineFamilies,
+  familySetsMatch,
+  type FCell,
+} from './testUtils/birssTableParsers';
 
 /**
  * Part B anchors for the generalized tensor-form engine (`computeTensorForm`).
@@ -201,48 +209,22 @@ const monopoleAllowedSet = new Set<string>();
   }
 }
 
-// ---- family canonicalization (same shape as itcPiezomagnetic.reference.test.ts, 3x3) ----
-interface Cell {
-  row: number;
-  col: number;
-  val: number;
-}
-function canon(cells: Cell[]): Cell[] {
-  const sorted = [...cells].sort((a, b) => a.row - b.row || a.col - b.col);
-  const refVal = sorted[0].val;
-  return sorted.map((c) => ({ row: c.row, col: c.col, val: c.val / refVal }));
-}
-function itcFamilies(tokens: string[]): Cell[][] {
-  const bySym = new Map<string, Cell[]>();
+// ---- family canonicalization: shared FCell helpers from birssTableParsers. For these 3x3
+// magnetoelectric cells, index = 3*row + col preserves the (row, col) lexicographic order the
+// previous local Cell version sorted by; the reference-value normalization, the familiesEqual
+// 1e-4 tolerance, and the EPSILON extraction threshold (same import from symmetryGroups) are
+// identical, so the comparison semantics are unchanged. ----
+function itcFamilies(tokens: string[]): FCell[][] {
+  const bySym = new Map<string, FCell[]>();
   for (let k = 0; k < 9; k++) {
     const t = tokens[k];
     if (t === '0') continue;
     const sign = t.startsWith('-') ? -1 : 1;
     const sym = t.replace('-', '');
     if (!bySym.has(sym)) bySym.set(sym, []);
-    bySym.get(sym)!.push({ row: Math.floor(k / 3), col: k % 3, val: sign });
+    bySym.get(sym)!.push({ index: k, val: sign });
   }
   return [...bySym.values()].map(canon);
-}
-function engineFamilies(basis: number[][]): Cell[][] {
-  return basis.map((vec) => {
-    const cells: Cell[] = [];
-    for (let idx = 0; idx < 9; idx++) {
-      if (Math.abs(vec[idx]) > EPSILON) cells.push({ row: Math.floor(idx / 3), col: idx % 3, val: vec[idx] });
-    }
-    return canon(cells);
-  });
-}
-function familiesEqual(a: Cell[], b: Cell[]): boolean {
-  if (a.length !== b.length) return false;
-  return a.every((c, i) => c.row === b[i].row && c.col === b[i].col && Math.abs(c.val - b[i].val) < 1e-4);
-}
-function familySetsMatch(a: Cell[][], b: Cell[][]): boolean {
-  return (
-    a.length === b.length &&
-    a.every((x) => b.some((y) => familiesEqual(x, y))) &&
-    b.every((y) => a.some((x) => familiesEqual(x, y)))
-  );
 }
 
 const ME_SPEC: TensorSpec = { rank: 2, parity: 'axial', timeParity: 'c', intrinsic: 'none' };
