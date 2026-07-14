@@ -38,6 +38,23 @@ export function tableRows(content: string): string[][] {
     .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c)));
 }
 
+/** Strips one leading/trailing backtick (markdown code cell). */
+export const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
+
+/**
+ * Content strictly between two headings: throws if `start` is missing,
+ * tolerates a missing `end` (returns the remainder). NOTE: the data/-side
+ * reference tests use their own, semantically different extractSection
+ * (inclusive of the start heading, optional end) -- do not merge them here.
+ */
+export function sliceBetween(content: string, start: string, end: string): string {
+  const s = content.indexOf(start);
+  if (s === -1) throw new Error(`sliceBetween: start heading not found: "${start}"`);
+  const rest = content.slice(s + start.length);
+  const e = rest.indexOf(end);
+  return e === -1 ? rest : rest.slice(0, e);
+}
+
 // ---- Table 4a: point group -> symbol-class letter, per tensor type ----
 // International symbol -> app key (only cubic m3/m3m differ from the app's bar notation).
 export const toAppKey = (intl: string) => (intl === 'm3' ? 'm-3' : intl === 'm3m' ? 'm-3m' : intl);

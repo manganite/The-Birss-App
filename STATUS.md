@@ -84,8 +84,9 @@ explicit 30 s timeout on `propertyFlags.reference.test.ts` (E29 contention-flake
 now distinguishes correctness goldens (print-verified literature) from behavioral regression pins
 (`rotatedSHG.fixtures.ts`, `shgUnification.pins.test.ts` -- both kept: the rotated path has no
 literature anchor, and post-E8 the agreement sweep is not an independent guard). CI lane-splitting
-deferred as an observation point (revisit only if CI-side flakes persist). Open follow-ups tracked
-as T3-T5 in `docs/planning/TODO-next.md`.
+deferred as an observation point (revisit only if CI-side flakes persist). T3 (test-code
+efficiency: shared symbolic builds in the agreement sweeps, parser-helper consolidation)
+is closed; open follow-ups tracked as T4-T5 in `docs/planning/TODO-next.md`.
 See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
