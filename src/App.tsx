@@ -174,18 +174,21 @@ export default function App() {
           <div className="flex items-center bg-white/40 border border-ink border-opacity-10 rounded-full p-1 self-start lg:self-auto">
             <button
               onClick={() => setCurrentView('explorer')}
+              aria-current={currentView === 'explorer' ? 'page' : undefined}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'explorer' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Explorer
             </button>
             <button
               onClick={() => setCurrentView('calculator')}
+              aria-current={currentView === 'calculator' ? 'page' : undefined}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'calculator' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Calculator
             </button>
             <button
               onClick={() => setCurrentView('simulator')}
+              aria-current={currentView === 'simulator' ? 'page' : undefined}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'simulator' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Simulator
@@ -195,12 +198,14 @@ export default function App() {
                 setTablesEffectId(null);
                 setCurrentView('tables');
               }}
+              aria-current={currentView === 'tables' ? 'page' : undefined}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'tables' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Tables
             </button>
             <button
               onClick={() => setCurrentView('help')}
+              aria-current={currentView === 'help' ? 'page' : undefined}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${currentView === 'help' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Help

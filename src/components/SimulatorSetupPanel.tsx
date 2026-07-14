@@ -134,6 +134,7 @@ export function SimulatorSetupPanel({
                   <InlineMath math={label} />
                 </div>
                 <input
+                  aria-label={desc}
                   type="range"
                   min={min}
                   max={max}
@@ -145,6 +146,7 @@ export function SimulatorSetupPanel({
                 />
                 <div className="flex items-center gap-1 shrink-0">
                   <input
+                    aria-label={desc}
                     type="number"
                     min={min}
                     max={max}

@@ -167,20 +167,36 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
 
         <div className="bg-white/50 border border-ink overflow-hidden">
           {/* Tab Menu — desktop only */}
-          <div className="hidden md:flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar">
+          <div
+            role="tablist"
+            aria-label="Result view"
+            className="hidden md:flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar"
+          >
             <button
+              role="tab"
+              aria-selected={activeResultTab === 'components'}
+              id="calc-tab-components"
+              aria-controls="calc-panel-components"
               onClick={() => setActiveResultTab('components')}
               className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activeResultTab === 'components' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Tensor Components
             </button>
             <button
+              role="tab"
+              aria-selected={activeResultTab === 'induced'}
+              id="calc-tab-induced"
+              aria-controls="calc-panel-induced"
               onClick={() => setActiveResultTab('induced')}
               className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors border-l border-ink border-opacity-10 ${activeResultTab === 'induced' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
               Induced Response
             </button>
             <button
+              role="tab"
+              aria-selected={activeResultTab === 'source'}
+              id="calc-tab-source"
+              aria-controls="calc-panel-source"
               onClick={() => setActiveResultTab('source')}
               className={`px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors border-l border-ink border-opacity-10 ${activeResultTab === 'source' ? 'bg-ink text-paper' : 'hover:bg-ink/5 text-ink/70'}`}
             >
@@ -191,7 +207,12 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
           {/* Content — mobile: stacked scroll, desktop: tab-controlled */}
           <div className="p-6 md:p-8 space-y-8 md:space-y-0">
             {/* Components */}
-            <div className={activeResultTab !== 'components' ? 'md:hidden' : ''}>
+            <div
+              role="tabpanel"
+              id="calc-panel-components"
+              aria-labelledby="calc-tab-components"
+              className={activeResultTab !== 'components' ? 'md:hidden' : ''}
+            >
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-ink border-opacity-10 pb-4">
                   <div className="text-xs uppercase tracking-[0.2em] text-ink/70 font-semibold flex items-center gap-2">
@@ -250,7 +271,12 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
             </div>
 
             {/* Induced */}
-            <div className={activeResultTab !== 'induced' ? 'md:hidden' : ''}>
+            <div
+              role="tabpanel"
+              id="calc-panel-induced"
+              aria-labelledby="calc-tab-induced"
+              className={activeResultTab !== 'induced' ? 'md:hidden' : ''}
+            >
               <div className="space-y-6">
                 <div className="flex justify-between items-center border-b border-ink border-opacity-10 pb-4 pt-4 md:pt-0 border-t md:border-t-0 border-ink/10">
                   <div className="text-xs uppercase tracking-[0.2em] text-ink/70 font-semibold flex items-center gap-2">
@@ -295,7 +321,12 @@ export function CalculatorPage({ selectedGroup, tensorConfig, presetAngles, onNa
             </div>
 
             {/* Source Terms */}
-            <div className={activeResultTab !== 'source' ? 'md:hidden' : ''}>
+            <div
+              role="tabpanel"
+              id="calc-panel-source"
+              aria-labelledby="calc-tab-source"
+              className={activeResultTab !== 'source' ? 'md:hidden' : ''}
+            >
               <button
                 type="button"
                 aria-expanded={mobileSourceExpanded}

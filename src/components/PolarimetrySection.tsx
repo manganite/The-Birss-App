@@ -162,9 +162,17 @@ export function PolarimetrySection({
 
       <div className="bg-white/50 border border-ink">
         {/* Tab Menu */}
-        <div className="flex flex-wrap border-b border-ink border-opacity-20 bg-white/30">
+        <div
+          role="tablist"
+          aria-label="Polarimetry configuration"
+          className="flex flex-wrap border-b border-ink border-opacity-20 bg-white/30"
+        >
           <div className={`flex items-center ${activePolarimetryTab === 'anisotropy' ? 'bg-ink text-paper' : ''}`}>
             <button
+              role="tab"
+              aria-selected={activePolarimetryTab === 'anisotropy'}
+              id="polari-tab-anisotropy"
+              aria-controls="polari-panel"
               onClick={() => setActivePolarimetryTab('anisotropy')}
               className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'anisotropy' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
             >
@@ -179,6 +187,10 @@ export function PolarimetrySection({
             className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'polarizer' ? 'bg-ink text-paper' : ''}`}
           >
             <button
+              role="tab"
+              aria-selected={activePolarimetryTab === 'polarizer'}
+              id="polari-tab-polarizer"
+              aria-controls="polari-panel"
               onClick={() => setActivePolarimetryTab('polarizer')}
               className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'polarizer' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
             >
@@ -193,6 +205,10 @@ export function PolarimetrySection({
             className={`flex items-center border-l border-ink border-opacity-10 ${activePolarimetryTab === 'analyzer' ? 'bg-ink text-paper' : ''}`}
           >
             <button
+              role="tab"
+              aria-selected={activePolarimetryTab === 'analyzer'}
+              id="polari-tab-analyzer"
+              aria-controls="polari-panel"
               onClick={() => setActivePolarimetryTab('analyzer')}
               className={`px-4 md:px-6 py-4 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${activePolarimetryTab === 'analyzer' ? '' : 'hover:bg-ink/5 text-ink/70'}`}
             >
@@ -206,7 +222,12 @@ export function PolarimetrySection({
         </div>
 
         {/* Tab Content */}
-        <div className="p-4 md:p-6">
+        <div
+          role="tabpanel"
+          id="polari-panel"
+          aria-labelledby={`polari-tab-${activePolarimetryTab}`}
+          className="p-4 md:p-6"
+        >
           {independentComponents.length === 0 ? (
             <div className="h-[400px] flex flex-col items-center justify-center gap-4 text-sm text-ink/70">
               <span className="italic">Zero intensity</span>
