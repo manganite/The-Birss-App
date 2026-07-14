@@ -22,7 +22,7 @@ import { GOLDEN_FIXTURES } from './goldenTensors.fixtures';
 const NO_ANCHOR = new Set(["2/m1'", "-3m1'"]);
 
 describe('every alternate setting has a table-anchored setting-2 test', () => {
-  const covered = new Set(GOLDEN_FIXTURES.filter((f) => f.setting === 2).map((f) => f.group));
+  const covered = new Set<string>(GOLDEN_FIXTURES.filter((f) => f.setting === 2).map((f) => f.group));
   for (const group of Object.keys(ALTERNATE_SETTINGS)) {
     it(`${group}`, () => {
       if (NO_ANCHOR.has(group)) return;

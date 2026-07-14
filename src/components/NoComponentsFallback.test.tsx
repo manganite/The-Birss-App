@@ -6,11 +6,12 @@ import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { NoComponentsFallback } from './NoComponentsFallback';
 import type { TensorType, TensorTimeReversal } from '../services/tensorCalculator';
+import type { GroupKey } from '../data/pointGroups';
 
 const noop = () => {};
 const render = (
   tensorType: TensorType,
-  groupName: string,
+  groupName: GroupKey,
   groupType: 'I' | 'II' | 'III',
   timeReversal: TensorTimeReversal,
 ) =>

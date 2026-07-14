@@ -59,7 +59,7 @@ npm run deploy       # build + publish to GitHub Pages via gh-pages
 
 ```
 src/
-  types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType) and TENSOR_META
+  types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType, GroupKey) and TENSOR_META
   data/pointGroups.ts            # Static registry of all 122 magnetic point groups
   services/
     tensorCalculator.ts          # Thin barrel re-exporting the public API below

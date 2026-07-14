@@ -11,7 +11,7 @@ import {
   type ClassLetters,
 } from '../data/groupNotation';
 import type { TensorParity, TensorTimeParity, TensorRank } from '../services/tensorForms';
-import type { GroupType } from '../types';
+import type { GroupType, GroupKey } from '../types';
 import { TermInfo } from './TermInfo';
 
 /**
@@ -46,7 +46,7 @@ const ownColKey = (parity: TensorParity, rank: number): ColKey => {
 };
 
 interface LookupChainDiagramProps {
-  groupName: string;
+  groupName: GroupKey;
   groupType: GroupType;
   parity: TensorParity;
   rank: TensorRank;
@@ -290,7 +290,7 @@ export function LookupChainDiagram({
 
 /** The other (unchosen) associated classical group's printed symbol, for the dimmed fork branch.
  * Read straight from the Table-7 row via a throwaway getTable7Chain call that selects it. */
-function altSymbol(groupName: string, want: 'A' | 'B'): string {
+function altSymbol(groupName: GroupKey, want: 'A' | 'B'): string {
   // A is the source for axial-even / polar-odd; B for polar-even / axial-odd. Pick a spec that makes
   // `want` the source, so getTable7Chain hands back that symbol.
   const probe =

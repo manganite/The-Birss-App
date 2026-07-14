@@ -1,7 +1,7 @@
 import { Info } from 'lucide-react';
 import { isCentrosymmetric } from '../services/tensorCalculator';
 import type { TensorType, TensorTimeReversal } from '../services/tensorCalculator';
-import type { PointGroupData } from '../data/pointGroups';
+import type { PointGroupData, GroupKey } from '../data/pointGroups';
 
 /**
  * The shared reason a tensor configuration produces no components: the two symmetry-forbidden cases
@@ -12,7 +12,7 @@ import type { PointGroupData } from '../data/pointGroups';
  */
 export function zeroStateReason(
   tensorType: TensorType,
-  groupName: string,
+  groupName: GroupKey,
   groupType: PointGroupData['type'],
   timeReversal: TensorTimeReversal,
 ): string | null {
@@ -27,7 +27,7 @@ interface NoComponentsFallbackProps {
   setTensorType: (t: TensorType) => void;
   timeReversal: TensorTimeReversal;
   setTimeReversal: (t: TensorTimeReversal) => void;
-  groupName: string;
+  groupName: GroupKey;
   groupType: PointGroupData['type'];
   /** Wrapper classes — CalculatorPage and TensorComponentControls place the border/bg and the
    *  button-row indent differently, so the chrome is parameterized while the message + recovery

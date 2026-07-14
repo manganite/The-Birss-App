@@ -23,6 +23,8 @@
  * amplitude/phase (mm2 ED with A≠1, δ≠0 — exercises the chiReal/chiImag path).
  */
 
+import type { GroupKey } from '../data/pointGroups';
+
 export const SWEEP_ANGLES = { thetaX: 20, thetaY: -30, psi0: 40, phiX: 30, phiY: 45, psi: 60 };
 
 export interface SimSweepExpected {
@@ -44,7 +46,7 @@ export interface SimSweepExpected {
 
 export interface SimSweepCase {
   name: string;
-  group: string;
+  group: GroupKey;
   tensorType: 'ED' | 'EQ';
   trType: 'i' | 'c';
   amplitudes: Record<string, number>;
