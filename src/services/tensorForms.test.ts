@@ -7,7 +7,7 @@ import { computeTensorForm, type TensorSpec } from './tensorForms';
 import { calculateTensorComponents } from './tensorCalculator';
 import { isPolar, isFerromagnetic, isMagnetoelectric, isChiral } from './propertyFlags';
 import { POINT_GROUPS } from '../data/pointGroups';
-import { tableRows } from './testUtils/birssTableParsers';
+import { tableRows, stripBackticks, sliceBetween } from './testUtils/birssTableParsers';
 
 /**
  * Part B anchors for the generalized tensor-form engine (`computeTensorForm`).
@@ -25,16 +25,6 @@ const NOMENCLATURE = readFileSync(path.resolve(__dirname, '../../birss-tables/ta
 const ALL = POINT_GROUPS.map((g) => g.name);
 const typeOf = (name: string) => POINT_GROUPS.find((p) => p.name === name)!.type;
 const isZeroForm = (name: string, setting: number, spec: TensorSpec) => computeTensorForm(name, setting, spec)!.isZero;
-
-// ---- shared markdown helpers (same shapes as propertyFlags.reference.test.ts) ----
-const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
-function sliceBetween(content: string, start: string, end: string): string {
-  const s = content.indexOf(start);
-  if (s === -1) throw new Error(`sliceBetween: start heading not found: "${start}"`);
-  const rest = content.slice(s + start.length);
-  const e = rest.indexOf(end);
-  return e === -1 ? rest : rest.slice(0, e);
-}
 
 // =====================================================================================
 // Part B.3 -- internal consistency: the engine reproduces the app's own ED/MD/EQ paths.

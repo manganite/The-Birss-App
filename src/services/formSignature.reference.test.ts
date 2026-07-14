@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { getCanonicalFormSignature, type TensorSpec } from './tensorForms';
 import { POINT_GROUPS } from '../data/pointGroups';
-import { tableRows } from './testUtils/birssTableParsers';
+import { tableRows, stripBackticks, sliceBetween } from './testUtils/birssTableParsers';
 
 /**
  * Anchor / correctness proof for the Tables "Groups sharing this form" feature: two groups share a
@@ -20,15 +20,6 @@ import { tableRows } from './testUtils/birssTableParsers';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ref = (name: string) => readFileSync(path.resolve(__dirname, '../../docs/references', name), 'utf-8');
 const NOMENCLATURE = readFileSync(path.resolve(__dirname, '../../birss-tables/table-nomenclature.md'), 'utf-8');
-
-const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
-function sliceBetween(content: string, start: string, end: string): string {
-  const s = content.indexOf(start);
-  if (s === -1) throw new Error(`sliceBetween: start marker not found: ${JSON.stringify(start)}`);
-  const rest = content.slice(s + start.length);
-  const e = rest.indexOf(end);
-  return e === -1 ? rest : rest.slice(0, e);
-}
 
 // Schoenflies -> app key (via table-nomenclature; ITC S6 == app/Birss C3i).
 const schToKey: Record<string, string> = {};

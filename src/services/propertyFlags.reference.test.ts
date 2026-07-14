@@ -5,7 +5,7 @@ import path from 'path';
 import { POINT_GROUPS } from '../data/pointGroups';
 import { getFamilyClass } from '../data/groupNotation';
 import { GENERATORS, isCentrosymmetric } from './symmetryGroups';
-import { tableRows } from './testUtils/birssTableParsers';
+import { tableRows, stripBackticks, sliceBetween } from './testUtils/birssTableParsers';
 import {
   isPolar,
   isFerromagnetic,
@@ -37,16 +37,6 @@ const computedSet = (pred: (g: string) => boolean) => new Set(ALL.filter(pred));
 // test in this file runs first pays that cost; the explicit timeout therefore applies uniformly
 // to every test here. It changes no assertion, input, or tolerance.
 const REF_TIMEOUT_MS = 30000;
-
-// ---- shared markdown helpers ----
-const stripBackticks = (s: string) => s.replace(/^`|`$/g, '');
-function sliceBetween(content: string, start: string, end: string): string {
-  const s = content.indexOf(start);
-  if (s === -1) throw new Error(`sliceBetween: start heading not found: "${start}"`);
-  const rest = content.slice(s + start.length);
-  const e = rest.indexOf(end);
-  return e === -1 ? rest : rest.slice(0, e);
-}
 
 describe('Ferromagnetic == ITC Table 1.5.2.4 (31 groups)', () => {
   // App key is the LAST column (the Ms-direction column contains escaped `\|\|` pipes that inflate
