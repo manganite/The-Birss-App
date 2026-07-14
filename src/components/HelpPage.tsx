@@ -76,6 +76,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               key={tab.id}
               role="tab"
               aria-selected={activeTab === tab.id}
+              id={`help-tab-m-${tab.id}`}
               aria-controls="help-panel"
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-3 text-xs font-medium uppercase tracking-wider whitespace-nowrap transition-colors ${i > 0 ? 'border-l border-ink border-opacity-10' : ''} ${
@@ -87,7 +88,14 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
           ))}
         </div>
 
-        <div role="tabpanel" id="help-panel" aria-labelledby={`help-tab-${activeTab}`} className="p-6 md:p-8">
+        {/* labelled by BOTH the desktop and mobile tab for the active section, so the visible one
+            (the other is display:none at this breakpoint) always provides the accessible name */}
+        <div
+          role="tabpanel"
+          id="help-panel"
+          aria-labelledby={`help-tab-${activeTab} help-tab-m-${activeTab}`}
+          className="p-6 md:p-8"
+        >
           {activeTab === 'overview' && <OverviewHelp />}
           {activeTab === 'conventions' && <ConventionsHelp />}
           {activeTab === 'physics' && <PhysicsHelp />}

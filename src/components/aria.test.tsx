@@ -7,10 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import App from '../App';
 import { HelpPage } from './HelpPage';
-import { CalculatorPage } from './CalculatorPage';
 import { PolarimetrySection } from './PolarimetrySection';
 import { POINT_GROUPS } from '../data/pointGroups';
-import type { TensorConfig, PresetAnglesState } from '../types';
+import type { TensorConfig } from '../types';
 
 const noop = () => {};
 const cfg: TensorConfig = {
@@ -23,7 +22,6 @@ const cfg: TensorConfig = {
   convention: 'birss',
   setConvention: noop,
 };
-const preset: PresetAnglesState = { thetaX: 0, setThetaX: noop, thetaY: 0, setThetaY: noop, psi0: 0, setPsi0: noop };
 const simData = {
   data: [],
   maxIntensity: 0,
@@ -45,14 +43,9 @@ describe('E24 declarative ARIA', () => {
     expect(html).toContain('aria-selected="true"'); // the active tab
   });
 
-  it('CalculatorPage result tabs: tablist / tab / tabpanel', () => {
-    const html = renderToStaticMarkup(
-      <CalculatorPage selectedGroup={g('mm2')} tensorConfig={cfg} presetAngles={preset} onNavigate={noop} />,
-    );
-    expect(html).toContain('role="tablist"');
-    expect(html).toContain('id="calc-tab-components"');
-    expect(html).toContain('role="tabpanel"');
-  });
+  // NB: CalculatorPage's result "tabs" are intentionally NOT marked up as an ARIA tablist — on
+  // mobile the tab menu is display:none while all three panels render stacked, which cannot be
+  // expressed as a correct tabs pattern in static responsive markup (a larger a11y pass, out of scope).
 
   it('PolarimetrySection tabs: tablist / tab', () => {
     const html = renderToStaticMarkup(

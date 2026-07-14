@@ -40,8 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
   default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
 
-- Accessibility: the tab widgets (Calculator result tabs, Help sections, Simulator polarimetry
-  configuration) now expose `role="tablist"/"tab"/"tabpanel"` with `aria-selected` and
+- Accessibility: the tab widgets (Help sections, Simulator polarimetry configuration) now expose
+  `role="tablist"/"tab"/"tabpanel"` with `aria-selected` and
   `aria-controls`/`aria-labelledby`; the main navigation marks the active view with
   `aria-current="page"`; and the Simulator's amplitude/phase/angle sliders and number inputs carry
   `aria-label`s. Declarative only (no keyboard-navigation change); purely additive ARIA attributes,
