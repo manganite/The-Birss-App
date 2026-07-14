@@ -6,7 +6,8 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Search, Github } from 'lucide-react';
-import { POINT_GROUPS, PointGroupData } from './data/pointGroups';
+import { PointGroupData } from './data/pointGroups';
+import { filterGroups, type GroupCategory } from './services/groupSearch';
 import { TensorTimeReversal, TensorType } from './services/tensorCalculator';
 import { getDefaultSetting, getGroupDisplayName } from './services/conventionMapping';
 import type { Convention } from './services/conventionMapping';
@@ -28,21 +29,6 @@ const HelpPage = lazy(() => import('./components/HelpPage').then((m) => ({ defau
 const SimulatorPage = lazy(() => import('./components/SimulatorPage').then((m) => ({ default: m.SimulatorPage })));
 const CalculatorPage = lazy(() => import('./components/CalculatorPage').then((m) => ({ default: m.CalculatorPage })));
 const TablesPage = lazy(() => import('./components/TablesPage').then((m) => ({ default: m.TablesPage })));
-
-const normalizeString = (str: string) => {
-  return str
-    .toLowerCase()
-    .replace(/[‘’''`´,]/g, "'")
-    .replace(/\s+/g, '');
-};
-
-type GroupCategory = 'All' | 'Ordinary' | 'Gray' | 'Black & White';
-
-const getGroupCategory = (name: string): GroupCategory => {
-  if (name.endsWith("1'")) return 'Gray';
-  if (name.includes("'")) return 'Black & White';
-  return 'Ordinary';
-};
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'calculator' | 'simulator' | 'explorer' | 'tables' | 'help'>(
@@ -77,21 +63,10 @@ export default function App() {
   const [phiY, setPhiY] = useState<number>(0);
   const [psi, setPsi] = useState<number>(0);
 
-  const filteredGroups = useMemo(() => {
-    let groups = POINT_GROUPS;
-    if (activeCategory !== 'All') {
-      groups = groups.filter((pg) => getGroupCategory(pg.name) === activeCategory);
-    }
-    if (searchQuery) {
-      const normalizedQuery = normalizeString(searchQuery);
-      groups = groups.filter(
-        (pg) =>
-          normalizeString(getGroupDisplayName(pg.name, convention)).includes(normalizedQuery) ||
-          normalizeString(pg.crystalSystem).includes(normalizedQuery),
-      );
-    }
-    return groups;
-  }, [searchQuery, activeCategory, convention]);
+  const filteredGroups = useMemo(
+    () => filterGroups(searchQuery, activeCategory, convention),
+    [searchQuery, activeCategory, convention],
+  );
 
   const handleSelect = (group: PointGroupData) => {
     setSelectedGroup(group);
