@@ -1735,13 +1735,6 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Open
 
-- **T3 -- test-code efficiency (no safety-net reduction).** (a) Share the symbolic build in
-  `symbolicProjection.test.ts`: build once per group x tensor-type x time-parity combination and
-  evaluate at (0,0,0) plus the two generic triples -- saves roughly two thirds of the symbolic
-  builds; assertions, groups, and tolerances unchanged. (b) Finish the E2 parser consolidation:
-  `tensorForms.test.ts` still duplicates `stripBackticks`/`sliceBetween` and the family
-  canonicalization; `propertyFlags.reference.test.ts` repeats the markdown helpers. Consolidate
-  into `src/services/testUtils/` without hiding the source-table semantics.
 - **T4 -- redundancy trims (safety-net reduction; each trim decided individually).** Candidates:
   the `handBirss.e2e.test.ts` wrappers (self-described "not new coverage"); the watch-list
   duplicates in `operatorSet.reference.test.ts` (identical comparison already run for all 122
@@ -1765,6 +1758,20 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Completed
 
+- **T3 -- test-code efficiency** (`test/t3-efficiency`). (a) The three agreement sweeps in
+  `symbolicProjection.test.ts` share one memoized symbolic build per (group, tensor-type,
+  time-parity) combination -- valid because `calculateSymbolicSHGExpressions` never reads
+  phiX/phiY/psi (they remain symbolic), so the build is evaluation-point independent; ~2/3
+  fewer symbolic builds, zero assertion changes. (b) `stripBackticks`/`sliceBetween`
+  consolidated into `testUtils/birssTableParsers` for the three services-side copies
+  (`tensorForms`, `propertyFlags.reference`, `formSignature.reference`; the last previously
+  differed only in error-message text). The data/-side variants
+  (`nomenclature.reference`, `operatorSet.reference`, `groupNotation`) were deliberately
+  left alone: their `extractSection`/`sliceBetween` contracts differ semantically
+  (heading-inclusive slice, optional vs mandatory end), and normalizing them would be a
+  behaviour change, which T3 forbids. (c) `tensorForms.test.ts` now uses the shared FCell
+  family canonicalization (index = 3*row + col preserves the previous sort order; same
+  normalization, tolerance, and EPSILON).
 - **T1 -- suite stabilization, minimal** (`chore/test-regime-t1-t2`). Dropped the duplicate
   non-blocking CI coverage run; explicit 30 s timeout on `propertyFlags.reference.test.ts`
   (E29 contention-flake class -- the flag predicates build the process-wide closed-group caches,
