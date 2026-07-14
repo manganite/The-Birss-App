@@ -68,8 +68,12 @@ Plus **chunk 4 — polish** (E24–E27, closed): declarative ARIA on the tab wid
 nav + input labels (E24, purely additive attributes, verified ARIA-only base-vs-HEAD); narrowed
 `RADAR_TICKS`/`PolarimetryPlot` types (E25) and code-split `recharts` + fixed the `@` alias (E26);
 trimmed the TODO-next E-series to a completed-ledger (E27). **E23 deferred** (group-registry data
-policy — own WO). The tech-debt backlog is now down to three standalone items: E22 (interaction
-tests), E23 (registry policy), E30 (GroupKey). See `CHANGELOG.md` `[Unreleased]`.
+policy — own WO). Plus **E30** (`refactor/group-key`, closed): a `GroupKey` literal union applied at
+the authoring layer (Policy B) — data/UI key sites + fixture key fields typed `GroupKey`, engine
+signatures left `string`; single-sourced from a `GROUP_KEYS` tuple with a drift-guard test (measured
+`POINT_GROUPS as const` cascades, so mechanism ii). No fixture typo surfaced. The tech-debt backlog is
+now down to two standalone items: **E22** (interaction tests) and **E23** (group-registry policy).
+See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 

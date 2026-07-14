@@ -1705,7 +1705,6 @@ fixtures-first + PR per the physics-output rule.
 
 - **E22** — Interaction tests for `App` routing/search, `useSimulatorState`, and the Calculator/Tables flows. The SSR-smoke pattern from Waves 3–4 (`renderToStaticMarkup`, no jsdom) is the lightweight precedent; keep deliberately minimal per the testing philosophy. (H8)
 - **E23** — Group-registry policy: generate `groupNotation.ts` from the vendored markdown tables (like `table7Data.ts`), or centralize a single source-of-truth registry object. ~8 files; a data-architecture decision — own WO. (M13)
-- **E30** — Make `POINT_GROUPS` `as const`, derive `GroupKey = typeof POINT_GROUPS[number]['name']`, and retype the ~45 `groupName: string` sites (14 files, incl. fixtures + the table parser) to `GroupKey` for compile-time group-key safety. Needs an engine-boundary policy decision (engine accepts `GroupKey`, or string-validated-at-entry). Own WO. (Split from E19/H6 — no derivable literal source existed, and hand-typing the keys was disallowed.)
 
 ### Completed
 
@@ -1725,3 +1724,4 @@ One-line ledger; the full rationale for each item is in this file's git history 
 - **E26** (`chore/polish-chunk4`) — code-split `recharts` into a `vendor-recharts` chunk; pointed the `@` alias at `src/` in vite + tsconfig. (L11)
 - **E27** (`chore/polish-chunk4`) — trimmed the E-series completed entries to this ledger (this section). The file's larger bulk is the separate A#/B# product roadmap, left untouched. (L13)
 - **E28, E29** (`fix/e28-e29`) — `isIndependentOf` locked-flag hardening (production-unreachable edge case, unit-tested) + an explicit agreement-sweep `testTimeout` killing the intermittent CI flake.
+- **E30** (`refactor/group-key`) — `GroupKey` literal union, Policy B (authoring layer only). Mechanism (ii): a separate `GROUP_KEYS … as const` tuple sources the union (measured (i): `POINT_GROUPS as const` makes it a rigid 122-tuple cascading across App/TablesPage/tests), with a drift-guard test asserting `GROUP_KEYS` equals `POINT_GROUPS.map(g=>g.name)`. Applied to `PointGroupData.name`, the data/UI key props (groupNotation getClassLetter/getTable7Chain, LookupChainDiagram/NoComponentsFallback/helpTables key props), and the fixture `group`/`groupName` fields. Engine signatures + `getFamilyClass` (Layer-1 caller) + `FormatPointGroup` (display) stay `string`; no fixture typo surfaced. Type-only.
