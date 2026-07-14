@@ -118,6 +118,20 @@ function appClosedGroup(key: string) {
   return getCachedFullGroup(key, generators);
 }
 
+// Memoized reference closures (T4): the watch-list below re-asserts groups already covered by
+// the all-keys loop above it; memoizing refClose per key keeps those named, documenting
+// checkpoints at zero recompute cost. The app side (appClosedGroup) is already process-cached
+// via getCachedFullGroup.
+const refClosedCache = new Map<string, ReturnType<typeof refClose>>();
+function refClosedFor(key: string): ReturnType<typeof refClose> {
+  let g = refClosedCache.get(key);
+  if (!g) {
+    g = refClose(referenceGeneratorsFor(key));
+    refClosedCache.set(key, g);
+  }
+  return g;
+}
+
 const ALL_KEYS = [...TABLE_B.keys(), ...TABLE_C.keys()];
 
 describe('operatorSet.reference — app operator set matches Birss Table 6 (via table-nomenclature.md Table B/C)', () => {
@@ -128,7 +142,7 @@ describe('operatorSet.reference — app operator set matches Birss Table 6 (via 
 
   for (const key of ALL_KEYS) {
     it(`${key}: closed operator set matches Table 6`, () => {
-      const refGroup = refClose(referenceGeneratorsFor(key));
+      const refGroup = refClosedFor(key);
       const appGroup = appClosedGroup(key);
       expect(refSetsEqual(refGroup, appGroup)).toBe(true);
     });
@@ -136,25 +150,25 @@ describe('operatorSet.reference — app operator set matches Birss Table 6 (via 
 
   describe('watch list — orientation-sensitive groups called out in BIRSS-APP-CONVENTIONS-REFERENCE.md', () => {
     it("m'm'm: operator set matches Birss (2_z unprimed), not ITC's mm'm' (2_x)", () => {
-      const refGroup = refClose(referenceGeneratorsFor("m'm'm"));
+      const refGroup = refClosedFor("m'm'm");
       const appGroup = appClosedGroup("m'm'm");
       expect(refSetsEqual(refGroup, appGroup)).toBe(true);
     });
 
     it("2'm'm: operator set matches Birss Table 6's rotated orientation (2-fold ∥ a)", () => {
-      const refGroup = refClose(referenceGeneratorsFor("2'm'm"));
+      const refGroup = refClosedFor("2'm'm");
       const appGroup = appClosedGroup("2'm'm");
       expect(refSetsEqual(refGroup, appGroup)).toBe(true);
     });
 
     it("-4'm2': operator set matches Birss Table 6's rotated orientation", () => {
-      const refGroup = refClose(referenceGeneratorsFor("-4'm2'"));
+      const refGroup = refClosedFor("-4'm2'");
       const appGroup = appClosedGroup("-4'm2'");
       expect(refSetsEqual(refGroup, appGroup)).toBe(true);
     });
 
     it("-6'2m': operator set matches Birss Table 6's rotated orientation", () => {
-      const refGroup = refClose(referenceGeneratorsFor("-6'2m'"));
+      const refGroup = refClosedFor("-6'2m'");
       const appGroup = appClosedGroup("-6'2m'");
       expect(refSetsEqual(refGroup, appGroup)).toBe(true);
     });
@@ -162,7 +176,7 @@ describe('operatorSet.reference — app operator set matches Birss Table 6 (via 
     it.each(['m-3', "m'-3'", 'm-3m', "m-3m'", "m'-3'm'", "m'-3'm"])(
       '%s: cubic bar family operator set matches Table 6 (name-only symbol divergence)',
       (key) => {
-        const refGroup = refClose(referenceGeneratorsFor(key));
+        const refGroup = refClosedFor(key);
         const appGroup = appClosedGroup(key);
         expect(refSetsEqual(refGroup, appGroup)).toBe(true);
       },
