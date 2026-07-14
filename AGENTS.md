@@ -59,7 +59,7 @@ npm run deploy       # build + publish to GitHub Pages via gh-pages
 
 ```
 src/
-  types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState)
+  types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType) and TENSOR_META
   data/pointGroups.ts            # Static registry of all 122 magnetic point groups
   services/
     tensorCalculator.ts          # Thin barrel re-exporting the public API below
@@ -70,13 +70,17 @@ src/
     symbolicProjection.ts        # Symbolic SHG source terms — parallel path producing TrigPoly coefficients
     trigPolyFormat.ts            # LaTeX formatting for TrigPoly and SymPoly expressions
     latexFormatting.ts           # LaTeX rendering: calculateTensorComponents, formatSubstitutedPolySum
+    simulatorEngine.ts           # Pure polarimetry intensity sweep (extracted from useSimulatorState)
   components/
     MathComponents.tsx           # Shared KaTeX render helpers (TensorTerm, FormatPointGroup, SymmetryOperation)
     CalculatorPage.tsx           # Calculator page — tensor components, induced response, source terms
     PointGroupExplorer.tsx       # Explorer page — browse & filter the 122 groups
     OperationsModal.tsx          # Modal showing symmetry operations for a selected group
     SimulatorPage.tsx            # Simulator page — radar chart polarimetry, Fourier series formulas
-    HelpPage.tsx                 # Physics background & usage docs
+    TablesPage.tsx               # Tables page — interactive Birss-table lookup
+    tables/                      # Tables-page sub-views (LookupControls, LookupChain, TensorFormResult, GroupSharingList, …)
+    help/                        # Help-page per-tab sub-views (Overview, Conventions, Physics, Simulation, Deeper)
+    HelpPage.tsx                 # Help page shell — composes the per-tab views under help/
   App.tsx                        # Root: global state, tab routing, header, footer
 ```
 
@@ -169,7 +173,7 @@ in-repo) or ITC 1.5.2.3 — **never** derived from the app's own output (anti-ci
 - Icons come exclusively from `lucide-react`.
 
 ### Path aliases
-- `@/*` maps to the project root (defined in both `tsconfig.json` and `vite.config.ts`).
+- `@/*` maps to `src/` (defined in both `tsconfig.json` and `vite.config.ts`).
 
 ## Git Workflow & Releases
 
