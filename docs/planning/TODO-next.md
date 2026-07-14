@@ -1701,60 +1701,27 @@ audit finding IDs in parens. **Wave 1** (H1, M9, M10, M11, L1, L2, L6, L12) ship
 snapshot; these `E#` entries are the living tracker. Anything touching tensor math is
 fixtures-first + PR per the physics-output rule.
 
-### Correctness
-- **E1 — FIXED** (`fix/symbolic-eq-divergence`). The symbolic SHG path diverged from the
-  numeric engine for **EQ (rank-4) tensors on groups with a 3-/6-fold axis** (`3m`, `6mm`,
-  `-6m2`, `-3'm`) at generic azimuth (χ_xxxx off by exactly 3/64 at (30,45,60)), while
-  ED/MD everywhere and EQ on non-3/6-fold groups agreed and everything agreed at (0,0,0).
-  **Root cause:** `applyPythagorean` in `trigPoly.ts` used a stale entries snapshot when
-  mutating the term map in place, so a monomial taking part in more than one cos²+sin²
-  reduction per pass got corrupted — right at special angles, wrong off-normal. The fix
-  reads coefficients live; `trigMul`/`trigEval` and the numeric pipeline were already
-  correct and untouched. Independently confirmed the numeric engine is right via a
-  from-first-principles rank-4 contraction (agreement to ~1e-16). Guarded by
-  `symbolicEQHexagonal.reference.test.ts` (14 golden cells), the extended generic-angle
-  agreement sweep in `symbolicProjection.test.ts`, and unit regressions in `trigPoly.test.ts`.
+### Open
 
-### Wave 2 — de-duplicate safety-net & primitives (behaviour-preserving) — DONE (`chore/tech-debt-wave2`)
-- **E2 — DONE** — Consolidated the hand-rolled markdown-table parsers across 11 reference-test files into the shared `src/services/testUtils/birssTableParsers.ts` (`tableRows` for the 7 identical local copies; a new `splitRow` for the 4 column-indexed/bespoke parsers). (H7)
-- **E3 — DONE** — Extracted `src/services/linalg.ts` with the numeric + symbolic rotation/matmul primitives and the two `multiplyLinear` variants (kept as two functions; generic-scalar unification is E8). (H3)
-- **E4 — DONE** — Extracted the independent-basis ratio-matcher into `linalg.isIndependentOf` (shared by `calculateTensorBasisResults` and `computeBasis`); `propertyFlags.hasNonzeroInvariant` is a distinct existence check and was left alone. (M1)
-- **E5 — DONE** — Unified the χ-relation string builder as `tensorProjection.formatBasisRelation`, consumed by `formatResults` and `formatFormRelations`. (M4)
-- **E6 — DONE** — Re-homed the comparison tolerances into `src/services/tolerances.ts` (values preserved; only the duplicate `COEFF_EPSILON` merged). (L3)
-- **E7 — DONE** — Shared field-label maps (`FIELD_LABELS_CRYSTAL` / `FIELD_LABELS_LAB` in `tensorProjection`) + a `toFlatIndex` inverse to `getIndices`. (L4)
+- **E22** — Interaction tests for `App` routing/search, `useSimulatorState`, and the Calculator/Tables flows. The SSR-smoke pattern from Waves 3–4 (`renderToStaticMarkup`, no jsdom) is the lightweight precedent; keep deliberately minimal per the testing philosophy. (H8)
+- **E23** — Group-registry policy: generate `groupNotation.ts` from the vendored markdown tables (like `table7Data.ts`), or centralize a single source-of-truth registry object. ~8 files; a data-architecture decision — own WO. (M13)
+- **E30** — Make `POINT_GROUPS` `as const`, derive `GroupKey = typeof POINT_GROUPS[number]['name']`, and retype the ~45 `groupName: string` sites (14 files, incl. fixtures + the table parser) to `GroupKey` for compile-time group-key safety. Needs an engine-boundary policy decision (engine accepts `GroupKey`, or string-validated-at-entry). Own WO. (Split from E19/H6 — no derivable literal source existed, and hand-typing the keys was disallowed.)
 
-### Wave 3 — tame the numeric/symbolic split (highest liability; PR + fixtures-first)
-- **E8 — DONE** (`refactor/shg-unification`) — Unified `calculateSHGExpressions` / `calculateSymbolicSHGExpressions` behind a generic `Scalar<S>` interface (`number` & `TrigPoly` instances) via the single `computeShg` core in `tensorProjection.ts`; the contraction logic now exists once. `trigSimplify` is an explicit symbolic-only post-stage OUTSIDE the core, so the E1-class symbolic-only divergence cannot recur invisibly. Homed in tensorProjection (not a separate shgCore.ts) to avoid an import cycle; numeric-path perf unchanged; symbolic guarded byte-identical by the agreement sweep + the 14 symbolicEQHexagonal goldens. (H2)
-- **E9 — DONE** (`refactor/formatter-dedup`) — Lifted `formatSubstitutedPolySum`'s six inline harmonic-mapping tables to named module-level constants; added first-time regression coverage (18 branch-coverage pins over small hand-built inputs, closing the Simulator-formula coverage gap). Behaviour byte-identical. The parametric ZERO/NINETY builder stays inline (it depends on `multiplyTrig`). (M2)
-- **E10 — DONE** (`refactor/formatter-dedup`) — Collapsed `formatMatrixSymbol`'s duplicated rotation-axis (columns of M+I) and mirror-normal (columns of I−M) extraction into one `firstSupported` selection helper. No new fixture (guarded by `operatorSet.reference` + a one-time base-vs-HEAD dump over all 122 groups, both byte-identical). (M3)
+### Completed
 
-### Wave 4 — component structure & types
-- **E11 — DONE** (`perf/rank4-engine-and-sharing`): `useMemo`'d the grouped prop objects in `App.tsx`
-  (`tensorConfig`/`orientation`/`simulation`), landed alongside the rank-4 projector speedup and the
-  precomputed sharing partitions. (M5)
-- **E12 — DONE** (`refactor/service-boundary`) — Extracted the polarimetry sweep into `services/simulatorEngine.buildSimulationData(sXPoly, sYPoly, amplitudes, phases)`; the hook keeps its memoization + amplitude/phase state and delegates. Poly-level signature (not the WO's group-level suggestion) to preserve the existing useMemo deps and avoid re-running `calculateSHGExpressions` on every slider drag. Added a smoke fixture (`simulatorEngine.fixtures.ts`, 4 distinct structural cases, reduced projection per the ~37 KB volume) — first-time coverage of the previously-untested sweep. Behaviour-preserving. (M6)
-- **E13 — DONE** (`refactor/page-splits`) — Split `TablesPage` (806 → 312 lines) into `components/tables/` sub-views (empty state, lookup controls, effect info, lookup chain, reduced-form result with its Voigt matrix / relation list, groups-sharing list); the container keeps the derived-value computation and wires them. Pure JSX relocation, SSR HTML byte-identical (base-vs-HEAD dump over both modes × representative groups), guarded by the new smoke net. The linalg-extraction half was already done in Waves 2/3. (H4)
-- **E14 — DONE** (`refactor/page-splits`) — Split `HelpPage` (1029 → 86 lines) into `components/help/` per-tab components (Overview/Conventions/Physics/Simulation/Deeper; TablesHelp already existed); HelpPage is the tab shell. Bodies sliced verbatim, SSR byte-identical for all six tabs. (H5)
-- **E15 — DONE** (`refactor/shared-components`) — Extracted `<NoComponentsFallback>` (message + recovery buttons; wrapper chrome parameterized via className props) used by CalculatorPage + TensorComponentControls, with a direct SSR smoke assertion. The audit's M7 "three copies" was really a **2-site UI duplication + a shared message triplication**: the two branch strings also appear in PolarimetrySection's structurally-different button-less zero-intensity block, so those strings were hoisted into `zeroStateReason` consumed by all three sites (PolarimetrySection keeps its own UI). SSR byte-identical at every site. (M7)
-- **E16 — DONE** (`refactor/service-boundary`) — Added `calculateTensorComponentsView` returning `{ isNull, display, relations: {lhs, rhs}[] }` (native branch classification, no re-scanning); `calculateTensorComponents` delegates to it and returns `.display` byte-identically (goldens unchanged). CalculatorPage (the scanning was at ~:205 — `.includes('zero')` / `.split('=')`, not the audit's stale :171/:185) now reads `.isNull` / `.relations`; rendered DOM unchanged. (M8)
-- **E17 — DONE (no code change)** (`refactor/shared-components`) — Investigated; **0 of the inline headers are byte-identical to the existing `SectionHeader`** (`notation.tsx`, already used). SectionHeader renders `<h4 class="text-xs uppercase tracking-[0.2em] text-ink/70 flex items-center gap-2">`; the candidates all differ — `<div …font-semibold>` (CalculatorPage), `<h3 …font-bold>` (PointGroupExplorer), `<h3 …mb-4>` (OperationsModal), `<h4 …text-ink/70>` **without** `flex items-center gap-2` (SimulatorEquationPanel), `<span …gap-1>` (crystalCut). SectionHeader also has icon-less callers that render `flex`, so flex can't be made conditional. Folding any would change rendered bytes → left all inline per the byte-identity rule. (L5)
-- **E18 — DONE** (`refactor/shared-components`) — Table-drove PolarimetrySection's six desktop `<PolarimetryPlot>` invocations (3 tabs × 2) from a `DESKTOP_PLOTS` config; SSR byte-identical for all three tabs (verified base-vs-HEAD per tab). Left inline: the already-map-driven mobile plot, and the tab-menu buttons (structural divergence — dual label spans, per-button TermInfo, index-based border). (L7)
-- **E19 — DONE** (`refactor/type-layer`) — Defined canonical `CrystalSystem` (capitalized 7-system union, used to narrow the data source `PointGroupData.crystalSystem`), `Parity` (alias of `TensorParity`), and `TimeParity` (alias of `TensorTimeReversal`) in `types.ts`; replaced the inline `'polar'|'axial'` / `'i'|'c'` duplicates in `groupNotation`/`helpTables`. `CRYSTAL_SYSTEMS` stays `Record<string>` (narrowing its key breaks a reference test's `Object.keys` index). GroupKey's quarter is split to **E30** (no derivable literal source; needs `POINT_GROUPS as const` + a ~39-site retype). (H6)
-- **E20 — DONE** (`refactor/type-layer`) — Added `GroupType` (`'I'|'II'|'III'`) to `types.ts` and dropped its three re-inlined copies (`PointGroupData.type`, `classicalChainApplies`, `LookupChainDiagram`); pointed `latexFormatting`'s re-inlined `'ED'|'MD'|'EQ'` at `TensorType`; typed `PointGroupExplorer`'s re-inlined 7-system list against `CrystalSystem`. Other domain shapes stay co-located with their own data/single consumer (moving them would separate an interface from its sole data, not consolidate a scattered type). (M12)
-- **E21 — DONE** (`refactor/type-layer`) — `TENSOR_META.rank` string→numeric (sole consumer renders it as identical JSX text), narrowed the satisfies `type` to `'POLAR'|'AXIAL'`, added `setConvention` to `TensorConfig` (the App bundle already passed it; the interface now declares it). Behaviour-preserving; suite unchanged. (L10)
+One-line ledger; the full rationale for each item is in this file's git history and the linked PRs.
 
-### Wave 5 — longer-horizon / optional
-- **E22** — Add jsdom + testing-library; interaction tests for `App` routing/search, `useSimulatorState`, Calculator/Tables flows. (H8)
-- **E23** — One policy for the group registry: generate `groupNotation.ts` from the vendored tables, or centralize a single source-of-truth registry object. (M13)
-- **E24** — A11y: tab semantics (`role=tablist/tab/tabpanel`, `aria-selected`), `aria-current` on nav, slider/number labels. (L8)
-- **E25** — Narrow the `as any` on `RADAR_TICKS`; tighten the loose `PolarimetryPlot` data prop. (L9)
-- **E26** — Code-split `recharts` in `manualChunks`; point the `@` alias at `src/`, not the repo root. (L11)
-- **E27** — Add a lightweight doc-sync check (or trim the 1690-line `TODO-next.md`). (L13)
-
-### Discovered during E8 (2026-07-12)
-_(The E8 work order named these E22/E23, but those numbers were already taken by the audit port above, so they are filed here as E28/E29.)_
-- **E28 — DONE** (`fix/e28-e29`) — Replaced `linalg.isIndependentOf`'s `ratio === 0` "unset" sentinel with an explicit `locked` flag; added `linalg.test.ts` with linear-algebra-anchored assertions (the [0,0,1]-vs-[1,0,1] counterexample fails on the pre-fix code, passes after). Confirmed unreachable in production: the full suite is byte-unchanged (2192 = 2186 + 6 new; no golden/reference/pin differs). NB block in the doc comment updated. (Copilot review on #92; POST-REVIEW verdict 2026-07-12.)
-- **E29 — DONE** (`fix/e28-e29`) — Added an explicit `SWEEP_TIMEOUT_MS = 30000` per-test timeout to the two full agreement-sweep `it()` blocks in `symbolicProjection.test.ts` (cubic EQ symbolic cells); only the timeout argument changed. Kills the intermittent 5 s-default-timeout flake.
-
-### Discovered during Wave 4 chunk 1 (type layer) — 2026-07-13
-- **E30** — Make `POINT_GROUPS` `as const`, derive `GroupKey = typeof POINT_GROUPS[number]['name']`, and retype the ~39 `groupName: string` sites to `GroupKey` for compile-time group-key safety (turns silent undefined-key runtime failures into type errors). ~8-file readonly/narrowing ripple + the 39 retypes; its own tsc-verified pass. (Split from E19/H6 during the type-layer chunk PR — no derivable literal source existed, and hand-typing 122 keys was disallowed.)
+- **E1** (`fix/symbolic-eq-divergence`) — symbolic-EQ off-normal divergence (rank-4 on 3/6-fold groups): `applyPythagorean` stale-snapshot bug, now reads coefficients live; the numeric engine was confirmed correct from first principles. (H1)
+- **E2–E7** (Wave 2, `chore/tech-debt-wave2`) — de-duplicated the markdown-table parsers, the linalg rotation/matmul primitives, the independent-basis reducer, the χ-relation builder, the comparison tolerances, and the field-label maps. (H7/H3/M1/M4/L3/L4)
+- **E8** (Wave 3, `refactor/shg-unification`) — unified the numeric/symbolic SHG pipelines behind one generic `computeShg` core; `trigSimplify` kept as an explicit symbolic-only post-stage. (H2)
+- **E9, E10** (`refactor/formatter-dedup`) — lifted `formatSubstitutedPolySum`'s harmonic tables to named constants (+ first-time coverage); collapsed `formatMatrixSymbol`'s axis extraction into one helper. (M2/M3)
+- **E11** (`perf/rank4-engine-and-sharing`) — memoized the grouped App prop bundles. (M5)
+- **E12, E16** (`refactor/service-boundary`) — moved the polarimetry sweep to `services/simulatorEngine` (+ smoke fixture); added the structured null-state `calculateTensorComponentsView` so CalculatorPage stops scanning display strings. (M6/M8)
+- **E13, E14** (`refactor/page-splits`) — split `TablesPage` → `components/tables/` and `HelpPage` → `components/help/` under an SSR smoke net; byte-identical. (H4/H5)
+- **E15, E17, E18** (`refactor/shared-components`) — extracted `<NoComponentsFallback>` + `zeroStateReason`; found no inline header byte-foldable into `SectionHeader` (no-op, reported); table-drove the six desktop `PolarimetryPlot`s. (M7/L5/L7)
+- **E19, E20, E21** (`refactor/type-layer`) — canonical `CrystalSystem`/`Parity`/`TimeParity`/`GroupType` unions; tightened `TENSOR_META` + `TensorConfig`. GroupKey split to E30. (H6/M12/L10)
+- **E24** (`chore/polish-chunk4`) — declarative ARIA: tablist/tab/tabpanel + aria-selected/controls/labelledby, `aria-current` on the nav, and slider/number input labels. (L8)
+- **E25** (`chore/polish-chunk4`) — narrowed `RADAR_TICKS` off `any` (localized recharts-interop cast) and tightened the `PolarimetryPlot` data prop to `SimulationPoint[]`. (L9)
+- **E26** (`chore/polish-chunk4`) — code-split `recharts` into a `vendor-recharts` chunk; pointed the `@` alias at `src/` in vite + tsconfig. (L11)
+- **E27** (`chore/polish-chunk4`) — trimmed the E-series completed entries to this ledger (this section). The file's larger bulk is the separate A#/B# product roadmap, left untouched. (L13)
+- **E28, E29** (`fix/e28-e29`) — `isIndependentOf` locked-flag hardening (production-unreachable edge case, unit-tested) + an explicit agreement-sweep `testTimeout` killing the intermittent CI flake.

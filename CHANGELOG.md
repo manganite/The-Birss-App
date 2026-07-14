@@ -40,6 +40,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (cubic EQ symbolic) now carry an explicit 30 s per-test timeout instead of relying on vitest's 5 s
   default, removing an intermittent CI flake. No assertion, input, or tolerance changed (E29).
 
+- Accessibility: the tab widgets (Calculator result tabs, Help sections, Simulator polarimetry
+  configuration) now expose `role="tablist"/"tab"/"tabpanel"` with `aria-selected` and
+  `aria-controls`/`aria-labelledby`; the main navigation marks the active view with
+  `aria-current="page"`; and the Simulator's amplitude/phase/angle sliders and number inputs carry
+  `aria-label`s. Declarative only (no keyboard-navigation change); purely additive ARIA attributes,
+  rendered output otherwise unchanged (E24).
+- Internal (types + build, no user-visible change): narrowed `RADAR_TICKS` off `any` and tightened
+  the `PolarimetryPlot` `data` prop to the `SimulationPoint[]` type; code-split `recharts` into its own
+  `vendor-recharts` bundle chunk and pointed the `@` path alias at `src/` (E25, E26).
 - Internal (shared-component de-dup, no user-visible change): extracted a shared
   `<NoComponentsFallback>` (the "no components — try another configuration" recovery block) used by
   the Calculator's component views, hoisted the shared symmetry-reason strings into `zeroStateReason`
