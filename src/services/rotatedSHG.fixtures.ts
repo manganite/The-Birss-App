@@ -20,10 +20,16 @@ export interface LabFrameFixture {
 }
 
 /**
- * Golden reference SHG outputs at non-zero rotation angles, captured from the
- * verified engine at v0.2.0 (commit 20c1990, after 1B.0 signature migration).
- * These pin down the rotated code path before the engine is refactored to use
- * composable matrix primitives (1B.1–1B.2).
+ * Behavioral regression pins (engine-derived, NOT literature goldens): SHG
+ * outputs at non-zero rotation angles, captured from the verified engine at
+ * v0.2.0 (commit 20c1990, after 1B.0 signature migration; originally ahead of
+ * the 1B.1-1B.2 matrix-primitives refactor). Kept deliberately as the
+ * permanent anchor of the rotated code path: no literature source prints
+ * rotated-frame SHG expressions, and since E8 the numeric and symbolic
+ * pipelines share one computeShg core, so the agreement sweep alone is not an
+ * independent guard of this path. Regenerate only by re-capturing from a
+ * known-good base; never edit to turn a red pin green (AGENTS.md, "Safety net
+ * first"). Same labeling class as shgUnification.pins.test.ts.
  */
 export const ROTATED_SHG_FIXTURES: RotatedSHGFixture[] = [
   // R1: mm2 ED i-type at k||x (0, -90)
