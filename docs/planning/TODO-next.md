@@ -1735,11 +1735,6 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Open
 
-- **T5 -- interaction/browser layer (maintainer scope decision pending).** Re-raised by the
-  evaluation; E22 deliberately deferred click-level wiring as "a later thin-jsdom item".
-  Candidates: thin jsdom hook tests (`useDialogA11y` focus trap/restore, `useSimulatorState`),
-  navigation/lazy-route smoke, a small number of Playwright journeys, PWA registration. Adds new
-  dev dependencies -- requires an explicit scope decision before any WO.
 - **T-obs -- CI lane-splitting (observation point, not scheduled).** The evaluation proposed
   separate CI lanes (fast / exhaustive-scientific / generated-drift / browser) with deliberate
   worker counts and timeouts. Deferred measure-first: the flake evidence came from the
@@ -1748,6 +1743,25 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Completed
 
+- **T5 (as T5a) -- thin jsdom interaction layer** (`test/t5a-interaction`). Maintainer scope
+  decision 2026-07-15: jsdom only; Playwright journeys, PWA-registration and mobile/responsive
+  testing deliberately declined (risk sits in hook logic, not browser rendering; browser-binary
+  dependency plus a dedicated CI lane has poor cost/benefit for a single-maintainer project;
+  revisit if a rendering- or focus-order-level bug escapes that jsdom provably could not catch).
+  Landed via per-file `@vitest-environment jsdom` opt-in -- the pre-existing suite keeps the
+  node environment untouched. New coverage: `useDialogA11y` (initial focus, edge-wrapping tab
+  trap, Escape, focus restore -- WAI-ARIA dialog contract, adjacent to the E24 ARIA work),
+  `useSimulatorState` via renderHook (empty state, sorted component extraction, amplitude/phase
+  initialization and preservation, dual display modes, memo stability -- structural contract
+  only, no physics values), and an App-level smoke (convention default/restore/persist via
+  localStorage; search combobox filtering, keyboard navigation, synchronous Escape). Suite
+  2227 -> 2243. Deliberately untested and recorded: the dialog no-focusables fallback and
+  mid-container tab traversal. Known environment limitation for future authors: accessible-name
+  queries (`getByRole(role, { name })`) are unusable against `<App/>` under jsdom, because
+  react-katex emits MathML and jsdom cannot `getComputedStyle` a `MathMLElement`, which crashes
+  dom-accessibility-api's `isHidden()` (reproduced on jsdom 26 and 29 alike; not an app
+  accessibility defect, and such queries would work under a real-browser runner -- relevant if
+  T5b is ever revisited); the convention buttons are therefore located by scoped text.
 - **T4 -- redundancy decisions** (`test/t4-redundancy`). Four maintainer decisions
   (2026-07-14): (1) `handBirss.e2e.test.ts` KEPT unchanged -- near-zero cost, deliberately
   named audit-Phase-4 acceptance checkpoints incl. the Fiebig-anchored Cr2O3 case.
