@@ -94,6 +94,9 @@ Playwright deliberately declined); only the T-obs observation point remains open
 split landed as filename-suffix convenience scripts and an AGENTS.md taxonomy section; CI
 lanes stay deferred). The repo now declares its Node floor (`engines.node`, binding constraint
 jsdom since T5a).
+A 2026-07-15 follow-up evaluation confirmed the T-series outcome (CI green, ~2x faster, no
+weakened guardrail) and yielded the F-series: F1 (operational fixes incl. removing the broken
+coverage tooling) is closed; F2 (EQ-c public-entry-point bridge + doc decoupling) is open.
 See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)

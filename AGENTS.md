@@ -69,8 +69,11 @@ through a filter gap.
 
 - `*.reference.test.ts` -- re-parse frozen literature / vendored tables at test time and assert
   the app equals them entry-for-entry. Red means the app's data or engine drifted from print
-  (or the vendored table changed). Run after touching group data, tensor logic, or anything
-  under `birss-tables/`.
+  (or the vendored table changed). Useful as a fast FIRST check after touching group data,
+  tensor logic, or anything under `birss-tables/` -- but note it is only the reference-table
+  SUBSET: goldens (`goldenTensors.test.ts`), the notation drift guards
+  (`groupNotation.test.ts`, `pointGroups.test.ts`), the audits, and the convention/setting
+  tests live outside this filter. Full assurance is `npm run test`, as always.
 - `*.audit.test.ts` -- audit-era exhaustive coverage contracts. Red means a coverage guarantee
   broke.
 - `*.pins.test.ts` -- engine-derived behavioral regression pins (see "Safety net first" above):

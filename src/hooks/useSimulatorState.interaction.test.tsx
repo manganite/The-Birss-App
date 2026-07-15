@@ -56,7 +56,7 @@ function useHarness(props: HarnessProps) {
     phases,
     setPhases,
   );
-  return { sim, amplitudes, phases, setAmplitudes };
+  return { sim, amplitudes, phases, setAmplitudes, setPhases };
 }
 
 describe('useSimulatorState — state contract (jsdom)', () => {
@@ -102,7 +102,7 @@ describe('useSimulatorState — state contract (jsdom)', () => {
   );
 
   it(
-    'existing amplitude values are preserved across recomputation, and new components initialize',
+    'existing amplitude and phase values are preserved across recomputation, and new components initialize',
     () => {
       const { result, rerender } = renderHook(useHarness, { initialProps: { group: g('3m') } as HarnessProps });
 
@@ -115,6 +115,11 @@ describe('useSimulatorState — state contract (jsdom)', () => {
       });
       expect(result.current.amplitudes[target]).toBe(7);
 
+      act(() => {
+        result.current.setPhases((prev) => ({ ...prev, [target]: 0.5 }));
+      });
+      expect(result.current.phases[target]).toBe(0.5);
+
       // Tilting recomputes the memo chain and re-runs the init effect. For 3m this also makes
       // additional components appear, so one rerender exercises both halves of the contract.
       rerender({ group: g('3m'), thetaX: 0.3 });
@@ -124,6 +129,7 @@ describe('useSimulatorState — state contract (jsdom)', () => {
 
       // (a) the user-set value survives the recomputation
       expect(result.current.amplitudes[target], 'user-set amplitude survives recomputation').toBe(7);
+      expect(result.current.phases[target], 'user-set phase survives recomputation').toBe(0.5);
 
       // (b) every newly appearing component is freshly initialized
       const fresh = after.filter((name) => !before.includes(name));
