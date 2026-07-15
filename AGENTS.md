@@ -53,8 +53,39 @@ npm run build        # production build → dist/
 npm run lint         # TypeScript type-check only (tsc --noEmit)
 npm run test         # run the Vitest suite once
 npm run test:watch   # run Vitest in watch mode
+npm run test:reference    # literature / vendored-table reference guards only
+npm run test:audit        # audit-era exhaustive coverage checks only
+npm run test:pins         # engine-derived behavioral regression pins only
+npm run test:interaction  # jsdom interaction layer only
 npm run deploy       # build + publish to GitHub Pages via gh-pages
 ```
+
+### Test taxonomy (by filename suffix)
+
+The suite encodes its test classes in the filename, selectable via the convenience scripts
+above (substring filters on the vitest CLI). `npm run test` always runs everything and remains
+the only gate -- the scripts are local tools, never CI lanes, so no file can silently escape CI
+through a filter gap.
+
+- `*.reference.test.ts` -- re-parse frozen literature / vendored tables at test time and assert
+  the app equals them entry-for-entry. Red means the app's data or engine drifted from print
+  (or the vendored table changed). Run after touching group data, tensor logic, or anything
+  under `birss-tables/`.
+- `*.audit.test.ts` -- audit-era exhaustive coverage contracts. Red means a coverage guarantee
+  broke.
+- `*.pins.test.ts` -- engine-derived behavioral regression pins (see "Safety net first" above):
+  captured from a known-good revision; regenerate only by re-capture, never edit to green.
+- `*.interaction.test.tsx` -- the jsdom interaction layer (per-file `@vitest-environment jsdom`
+  docblocks; the rest of the suite runs in the node environment). Run when touching hooks or UI
+  wiring. NOTE: accessible-name queries are unusable against `<App/>` under jsdom (KaTeX MathML
+  vs getComputedStyle -- see the App.interaction docblock).
+- Unsuffixed `*.test.ts(x)` -- unit, service, golden-fixture and SSR-smoke tests; mixed weight
+  (this class contains the heaviest sweeps).
+
+Known naming impurities, documented rather than renamed: `groupNotation.test.ts` and
+`pointGroups.test.ts` are drift guards by content (they parse `table-nomenclature.md`) despite
+plain names; `sharingPartitions.reference.test.ts` guards GENERATED data rather than literature;
+`handBirss.e2e.test.ts` is a named acceptance checkpoint, not a browser E2E test.
 
 `npm run lint` and `npm run test` are the automated quality gates (run in CI via `.github/workflows/ci.yml`, which also regenerates `birss-tables/table-nomenclature.md` from `birss-tables/tools/generate_nomenclature.py` and fails the build on drift; CI additionally runs `npm run build`). Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: ~150 table-anchored golden fixtures (`goldenTensors.fixtures.ts`, detailed below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
 

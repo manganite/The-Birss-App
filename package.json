@@ -25,6 +25,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:reference": "vitest run reference.test",
+    "test:audit": "vitest run audit.test",
+    "test:pins": "vitest run pins.test",
+    "test:interaction": "vitest run interaction.test",
     "bench": "vitest bench --run",
     "nomenclature": "python3 birss-tables/tools/generate_nomenclature.py",
     "table7data": "node birss-tables/tools/generate_table7_data.mjs",
@@ -63,5 +67,8 @@
     "typescript-eslint": "^8.63.0",
     "vite": "6.4.3",
     "vitest": "4.1.9"
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
   }
 }

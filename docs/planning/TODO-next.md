@@ -1737,9 +1737,14 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 - **T-obs -- CI lane-splitting (observation point, not scheduled).** The evaluation proposed
   separate CI lanes (fast / exhaustive-scientific / generated-drift / browser) with deliberate
-  worker counts and timeouts. Deferred measure-first: the flake evidence came from the
-  evaluator's environment; T1's explicit timeout addresses the one observed failure class.
-  Revisit only if CI-side flakes or unacceptable wall-times persist after T1.
+  worker counts and timeouts. Deferred measure-first in T1; the conceptual value landed
+  separately as the filename-suffix taxonomy (`chore/test-taxonomy`: convenience scripts
+  test:reference/audit/pins/interaction plus the AGENTS.md taxonomy section) -- local tools
+  only, CI still runs the whole suite as one gate. The strongest structural argument for real
+  CI lanes (a class with different execution requirements, i.e. browser binaries) lapsed with
+  the T5a decision to decline Playwright, and T3/T4 removed the wall-time pressure (~155 s ->
+  ~96 s full suite in the reviewer's container class). Revisit only if CI-side flakes or
+  unacceptable wall-times reappear, or if a browser-runner class is ever introduced (T5b).
 
 ### Completed
 
