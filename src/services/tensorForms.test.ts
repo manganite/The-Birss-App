@@ -73,33 +73,26 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
       );
     }
   }, 30000);
-  it('{4,polar,i,jk} == EQ i-type (representative groups spanning all systems/types)', () => {
-    // Rank-4 projection (dim 81) is heavy; rank-3 all-122 above already proves the algorithm
-    // equivalence, so rank-4 is a representative spread rather than all 122.
-    // Higher-symmetry groups (few independent rank-4 components -> fast and timeout-stable under
-    // full-suite parallel load); the low-symmetry general case is covered by the rank-3 all-122
-    // check above, which shares the exact basis-reduction code path.
-    const sample = [
-      'mm2',
-      '222',
-      '-42m',
-      '422',
-      '32',
-      '3m',
-      '-6m2',
-      '622',
-      '23',
-      '432',
-      'm-3m',
-      "-3'm'",
-      "m'-3'm'",
-    ].filter((g) => GENERATORS[g]);
-    for (const g of sample) {
+  it('{4,polar,i,jk} == EQ i-type for all 122 groups', () => {
+    // Rank-4 (dim 81) all-122 was long assumed prohibitive and covered by a 13-group
+    // representative sample; measured 2026-07-15: ~10 s per time-parity sweep even in a
+    // contended container, so the exhaustive form is affordable with a generous timeout.
+    // This generalizes (and subsumes) the former representative sample.
+    for (const g of ALL) {
       expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g).toEqual(
         calculateTensorComponents(g, 'EQ', 'i', 1),
       );
     }
-  }, 60000);
+  }, 120000);
+  it('{4,polar,c,jk} == EQ c-type for all 122 groups', () => {
+    // Closes the last entry-point gap (F2): with this test, the print-guarded engine pins
+    // calculateTensorComponents for ALL six tensor-type/time combinations across all 122 groups.
+    for (const g of ALL) {
+      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'c', intrinsic: 'jk' }), g).toEqual(
+        calculateTensorComponents(g, 'EQ', 'c', 1),
+      );
+    }
+  }, 120000);
   it('reproduces ED/MD/EQ in alternate settings too (spot-check dual-setting groups)', () => {
     const dual = Object.keys(ALTERNATE_SETTINGS).filter((k) => GENERATORS[k]);
     for (const g of dual) {

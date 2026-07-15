@@ -96,7 +96,9 @@ lanes stay deferred). The repo now declares its Node floor (`engines.node`, bind
 jsdom since T5a).
 A 2026-07-15 follow-up evaluation confirmed the T-series outcome (CI green, ~2x faster, no
 weakened guardrail) and yielded the F-series: F1 (operational fixes incl. removing the broken
-coverage tooling) is closed; F2 (EQ-c public-entry-point bridge + doc decoupling) is open.
+coverage tooling) and F2 (exhaustive all-122 rank-4 entry-point bridges for both time
+parities, replacing the representative EQ-i sample; T4 wording decoupled from the subsumed
+goldens item) are both closed -- the 2026-07-15 re-evaluation is fully addressed.
 See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)

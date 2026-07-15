@@ -1781,8 +1781,10 @@ independently re-verified against `main` @ 5fe1914 before scoping.
   the print-guarded Tables engine now pins the calculateTensorComponents entry point
   exhaustively for all four rank-3 combinations, strictly subsuming the regex. Scientific
   invariants (centrosymmetric ED parity, EQ non-vanishing, grey-reproduces-parent) kept.
-  Remaining known gap, deliberately deferred: all-122 EQ c entry-point coverage, coupled to
-  the open magnetic EQ rank-4 goldens item (AUDIT:319). Suite 2225 -> 2227.
+  Remaining known gap at the time, closed by F2: all-122 EQ c entry-point coverage. (T4's
+  wording coupled it to the "magnetic EQ rank-4 goldens" item -- that item was already
+  subsumed at the ENGINE level by the Table-7 rank-4 guard, as the CHANGELOG states; the
+  entry-point bridge is a different layer.) Suite 2225 -> 2227.
 - **T3 -- test-code efficiency** (`test/t3-efficiency`). (a) The three agreement sweeps in
   `symbolicProjection.test.ts` share one memoized symbolic build per (group, tensor-type,
   time-parity) combination -- valid because `calculateSymbolicSHGExpressions` never reads
@@ -1815,18 +1817,20 @@ original 2026-07-14 findings). Premises independently re-verified before scoping
 
 ### Open
 
-- **F2 -- EQ-c public-entry-point bridge + documentation decoupling.** The B.3 bridge pins
-  `calculateTensorComponents` against the print-guarded engine for all four rank-3 ED/MD
-  combinations, but the EQ-c branch of the PUBLIC entry point has no exact bridge (only the
-  representative EQ-i one). Separately, the T4 comment/ledger wording conflated this
-  entry-point gap with the old "magnetic EQ rank-4 goldens" backlog item, which the Table-7
-  rank-4 guard already subsumed at the ENGINE level (CHANGELOG is correct; the layers differ).
-  Plan: a representative EQ-c bridge with one cheap group per reachable Table-4f class /
-  magnetic type (derived from the generated `table7Data`, cost-measured before dispatch), then
-  reword the tensorCalculator comment and the T4 ledger entry to name the gap precisely.
+(none)
 
 ### Completed
 
+- **F2 -- exhaustive rank-4 entry-point bridges + documentation decoupling**
+  (`test/f2-eqc-bridge`). Plan upgraded from the scoped representative bridge after the
+  cost measurement (all-122 rank-4 sweep ~10 s per time parity, zero mismatches on the
+  probe): the EQ-i representative sample was generalized to all 122 (subsumed) and an
+  all-122 EQ-c bridge added -- the print-guarded engine now pins `calculateTensorComponents`
+  for ALL six tensor-type/time combinations across all 122 groups. The tensorCalculator T4
+  comment and the T4 ledger sentence were decoupled from the "magnetic EQ rank-4 goldens"
+  item (subsumed at the ENGINE level by the Table-7 rank-4 guard; the CHANGELOG was correct
+  -- the layers differ). Suite 2244 -> 2245. This closes the last finding of the 2026-07-15
+  re-evaluation.
 - **F1 -- operational follow-ups** (`test/f1-followups`). (1) Removed the broken
   `test:coverage` script and `@vitest/coverage-v8` (six timeouts, no summary; CI pass already
   dropped in T1; the reference/golden matrix is the repo's assurance -- decision: remove, not

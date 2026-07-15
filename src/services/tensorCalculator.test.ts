@@ -75,12 +75,11 @@ describe('calculateTensorComponents - parity invariants (Tier 2)', () => {
   // are expensive) and pinpoints exactly which group regresses.
   for (const pg of POINT_GROUPS) {
     // The former all-122 x {ED,MD,EQ} x {i,c} output-shape regex sweep was removed here (T4):
-    // the exact B.3 engine bridge in tensorForms.test.ts now covers the
-    // calculateTensorComponents entry point for ED i/c and MD i/c across all 122 groups against
-    // the print-guarded computeTensorForm, which strictly subsumes the shape regex for those
-    // combinations; EQ i remains exercised by the non-vanishing invariant below (and the
-    // representative B.3 rank-4 bridge); all-122 EQ c entry-point coverage is deferred to the
-    // open magnetic EQ rank-4 goldens item (see TODO ledger).
+    // the exact B.3 engine bridge in tensorForms.test.ts covers the calculateTensorComponents
+    // entry point for ALL six tensor-type/time combinations across all 122 groups against the
+    // print-guarded computeTensorForm (rank 3 since T4, rank 4 since F2), strictly subsuming
+    // the shape regex. The EQ non-vanishing check below is kept as a scientific parity
+    // invariant in its own right, not as coverage.
     it(`${pg.name} (type ${pg.type}): ED i-type centrosymmetric parity, EQ non-vanishing`, () => {
       if (isCentrosymmetric(pg.name)) {
         // ED (polar, odd rank) must vanish for every centrosymmetric group, i-type.
