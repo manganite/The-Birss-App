@@ -90,7 +90,10 @@ is closed; T4 is closed (watch-list memoized; shape sweep replaced by an exhaust
 rank-3 B.3 bridge; handBirss and the closure sweep deliberately kept); T5 is closed as T5a (thin
 jsdom layer: dialog-a11y and simulator-state hooks plus an App search/convention smoke;
 Playwright deliberately declined); only the T-obs observation point remains open in
-`docs/planning/TODO-next.md`.
+`docs/planning/TODO-next.md` (reformulated by the test-taxonomy chore: the conceptual lane
+split landed as filename-suffix convenience scripts and an AGENTS.md taxonomy section; CI
+lanes stay deferred). The repo now declares its Node floor (`engines.node`, binding constraint
+jsdom since T5a).
 See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
