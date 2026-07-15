@@ -75,9 +75,10 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
   }, 30000);
   it('{4,polar,i,jk} == EQ i-type for all 122 groups', () => {
     // Rank-4 (dim 81) all-122 was long assumed prohibitive and covered by a 13-group
-    // representative sample; measured 2026-07-15: ~10 s per time-parity sweep even in a
-    // contended container, so the exhaustive form is affordable with a generous timeout.
-    // This generalizes (and subsumes) the former representative sample.
+    // representative sample; F2 measurements retired that assumption (tens of seconds per
+    // time-parity sweep, container-dependent). The timeout below is deliberately generous:
+    // this is a correctness bridge that fails on DIVERGENCE, not on duration -- performance
+    // is the bench's job. Generalizes (and subsumes) the former representative sample.
     for (const g of ALL) {
       expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g).toEqual(
         calculateTensorComponents(g, 'EQ', 'i', 1),
