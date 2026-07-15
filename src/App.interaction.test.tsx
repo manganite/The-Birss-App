@@ -128,4 +128,28 @@ describe('App — group search combobox (jsdom)', () => {
     },
     TIMEOUT_MS,
   );
+
+  it(
+    'selecting a result with Enter propagates the selection',
+    async () => {
+      const user = userEvent.setup();
+      render(<App />);
+      const combobox = screen.getByRole('combobox');
+      await user.click(combobox);
+      await user.keyboard('4mm');
+      await user.keyboard('{ArrowDown}{Enter}');
+
+      // handleSelect clears the query and closes the list synchronously (no timer involved).
+      expect((combobox as HTMLInputElement).value).toBe('');
+      expect(combobox.getAttribute('aria-expanded')).toBe('false');
+
+      // ... navigates explorer -> calculator (semantic, name-free landmark) ...
+      const calculatorNav = screen.getAllByRole('button').find((b) => b.textContent === 'Calculator');
+      expect(calculatorNav?.getAttribute('aria-current')).toBe('page');
+
+      // ... and the selected group is reflected in the UI (plain-text query -- MathML-safe).
+      expect((await screen.findAllByText(/4mm/)).length).toBeGreaterThan(0);
+    },
+    TIMEOUT_MS,
+  );
 });
