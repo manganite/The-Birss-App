@@ -87,7 +87,9 @@ literature anchor, and post-E8 the agreement sweep is not an independent guard).
 deferred as an observation point (revisit only if CI-side flakes persist). T3 (test-code
 efficiency: shared symbolic builds in the agreement sweeps, parser-helper consolidation)
 is closed; T4 is closed (watch-list memoized; shape sweep replaced by an exhaustive
-rank-3 B.3 bridge; handBirss and the closure sweep deliberately kept); T5 remains open in
+rank-3 B.3 bridge; handBirss and the closure sweep deliberately kept); T5 is closed as T5a (thin
+jsdom layer: dialog-a11y and simulator-state hooks plus an App search/convention smoke;
+Playwright deliberately declined); only the T-obs observation point remains open in
 `docs/planning/TODO-next.md`.
 See `CHANGELOG.md` `[Unreleased]`.
 
