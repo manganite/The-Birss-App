@@ -1807,3 +1807,35 @@ independently re-verified against `main` @ 5fe1914 before scoping.
   re-capture); `rotatedSHG.fixtures.ts` relabeled accordingly. Both pin sets kept deliberately:
   the rotated path has no literature anchor, and post-E8 the numeric/symbolic pipelines share
   one `computeShg` core, so the agreement sweep alone is not an independent guard of that path.
+
+## Re-evaluation follow-ups -- F-series
+
+Source: follow-up evaluation of 2026-07-15 (re-check of the closed T-series against the
+original 2026-07-14 findings). Premises independently re-verified before scoping.
+
+### Open
+
+- **F2 -- EQ-c public-entry-point bridge + documentation decoupling.** The B.3 bridge pins
+  `calculateTensorComponents` against the print-guarded engine for all four rank-3 ED/MD
+  combinations, but the EQ-c branch of the PUBLIC entry point has no exact bridge (only the
+  representative EQ-i one). Separately, the T4 comment/ledger wording conflated this
+  entry-point gap with the old "magnetic EQ rank-4 goldens" backlog item, which the Table-7
+  rank-4 guard already subsumed at the ENGINE level (CHANGELOG is correct; the layers differ).
+  Plan: a representative EQ-c bridge with one cheap group per reachable Table-4f class /
+  magnetic type (derived from the generated `table7Data`, cost-measured before dispatch), then
+  reword the tensorCalculator comment and the T4 ledger entry to name the gap precisely.
+
+### Completed
+
+- **F1 -- operational follow-ups** (`test/f1-followups`). (1) Removed the broken
+  `test:coverage` script and `@vitest/coverage-v8` (six timeouts, no summary; CI pass already
+  dropped in T1; the reference/golden matrix is the repo's assurance -- decision: remove, not
+  reconfigure). (2) `sharingPartitions.reference.test.ts`: drift-guard timeout raised to 120 s
+  and both stale duration comments corrected (~20 s measured under contention; it fails on
+  drift, not duration -- performance is the bench's job). (3) AGENTS.md now states that
+  `test:reference` is the reference-table SUBSET (goldens, notation drift guards, audits and
+  convention tests live outside the filter; `npm run test` is full assurance -- decision:
+  reword, no maintained `test:science` name list). (4) Simulator-state test now asserts phase
+  preservation alongside amplitude. (5) New App test: Enter-selection clears the query, closes
+  the list, navigates to the Calculator (`aria-current="page"` landmark) and reflects the
+  selected group. Suite 2243 -> 2244.
