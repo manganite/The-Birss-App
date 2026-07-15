@@ -1823,7 +1823,8 @@ original 2026-07-14 findings). Premises independently re-verified before scoping
 
 - **F2 -- exhaustive rank-4 entry-point bridges + documentation decoupling**
   (`test/f2-eqc-bridge`). Plan upgraded from the scoped representative bridge after the
-  cost measurement (all-122 rank-4 sweep ~10 s per time parity, zero mismatches on the
+  cost measurement (all-122 rank-4 sweeps cost tens of seconds per time parity depending on
+  container -- affordable under generous timeouts; zero mismatches on the
   probe): the EQ-i representative sample was generalized to all 122 (subsumed) and an
   all-122 EQ-c bridge added -- the print-guarded engine now pins `calculateTensorComponents`
   for ALL six tensor-type/time combinations across all 122 groups. The tensorCalculator T4
