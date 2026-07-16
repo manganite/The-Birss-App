@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-14. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-16. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -179,61 +179,37 @@ B15 and B29.
 
 ---
 
-## 1. Open items — ROADMAP-next
+## 1. Open items
 
 ### B15 — Explorer as interactive Birss table
-**Status:** Design locked 2026-07-09; Phase 1 (engine + anchors, no UI) in progress. See
-[`docs/planning/DESIGN-tables-feature.md`](docs/planning/DESIGN-tables-feature.md) for the
-approved design (the "Tables" page) and phasing.
+**Status:** Shipped through Phase 3 (v0.20.0). The Tables page provides the full
+rank 0-4 x polar/axial x i/c lookup with the Birss symbol classes (A-U) exposed,
+the Tables 4a-4f / Table 7 chain, and Explorer cross-links. Backing: the
+print-verified tables (Table 4f print-verified 2026-07-09, see
+`birss-tables/table-4f.md`), the ~150 literature-anchored golden fixtures, and the
+reference tests that re-parse the vendored tables at test time. The engine
+(`computeTensorForm`) is rank-parametrized 0-4 and bridged to the public
+`calculateTensorComponents` entry point for all six tensor-type/time combinations
+across all 122 groups (T4/F2).
 
-**What it is.** Beyond SHG, make the Explorer a full property-tensor reference: look
-up any property tensor up to rank 4 for any magnetic point group, using the Birss
-symbol-class systematics (Tables 4a–4f / Table 7). The elegance of the Birss approach
-is that 122 groups factor into ~21 classes (A–U), so forms are tabulated once per
-class rather than per group.
+**Open residue (near-term, maintainer decision 2026-07-15):**
+- Nye dot diagrams for tensor forms (Tables Phase 4).
+- Complete the Table-7 lookup-chain breadcrumb for magnetic c-tensors (currently a
+  neutral "runs via Table 7" placeholder).
+- Further Tables refinements pending maintainer scoping.
 
-**Entry points (proposal — two UIs, one engine).**
-- Explorer per-group: a "Tensor forms" tab — pick rank + type → symbol class + form.
-- New "Tables" section: mirrors the book (A–U classes, Tables 4b–4f) for class-by-
-  class navigation, cross-linked to the Explorer.
+(LaTeX copy of tensor forms moved to the parking lot, section 4.)
 
-**Open decisions before coding.**
-- Full rank 0–4 × polar/axial × i/c, or curated subset first?
-- Expose the symbol class A–U to users?
-- Intrinsic index symmetry (Jahn symbol) — selectable, or fixed for now?
-- New top-level nav tab vs. Explorer sub-tab vs. both?
-
-**Dependencies.**
-- `birss-tables/` (in-repo): the transcribed tables serve as golden fixtures
-  (anti-circular: engine-generated output validated against tables, not the reverse).
-- The engine already projects onto the symmetry-invariant subspace; verify how
-  rank-parametrized the current generator is vs. hardcoded to rank-3 SHG.
-
-**Action items (once scope is decided).**
-- Generalize form generator to arbitrary rank ≤4 and type (polar/axial, i/c).
-- Reproduce Birss notation (symbol classes A–U, permutation shorthand).
-- ~~Wire `birss-tables/` transcriptions as golden-fixture validation.~~ **Done** —
-  the convention audit (`docs/findings/AUDIT-convention-references.md`) wired this in
-  generally: ~150 table-anchored golden fixtures (`goldenTensors.fixtures.ts`), plus
-  the nomenclature and operator-set reference tests, which parse
-  `birss-tables/table-nomenclature.md` / `table-6.md` directly at test time. B15
-  itself still needs the rank ≤4 / symbol-class generalization above — Table 4f (EQ)
-  is not yet print-verified, so this only closes the anti-circular-validation
-  *infrastructure*, not the full B15 feature.
-- Cross-link group ↔ symbol class ↔ form.
-
----
-
-### B29 — Context-sensitive coefficient formatter
-**Status:** Idea. Revisit now that B16 (harmonic policy, PR #41) has landed.
-
-**What it is.** Generalise `formatCoeff`/`formatSubstitutedPolySum` to choose
-the most readable form per coefficient context: e.g. prefer `2cos²θ − 1` over
-`cos(2θ)` in one setting but not another, handle cross-terms, suppress trivial
-`1·` prefixes. B28 (recognise 1/√6) covers one concrete case; B29 generalises it.
-
-**Open questions before scoping.** Grouping unit, call sites, tie-breaking rule,
-interaction with B16's harmonic-preferred default.
+### Accessibility completion (promoted from the parking lot, 2026-07-15)
+**Status:** Baseline shipped; completion scheduled near-term (maintainer decision).
+Shipped baseline: additive ARIA (tab widgets, `aria-current` navigation,
+slider/number-input `aria-label`s — E24, v0.21+), tested dialog focus management
+(focus trap/restore, jsdom interaction tests — T5a), labelled icon buttons.
+Remaining:
+- Keyboard operation of the Simulator sliders.
+- Systematic focus-visible states for preset/toggle buttons (currently only
+  `TensorComponentControls` and `SimulatorSetupPanel` carry focus styling).
+- A full keyboard-navigation audit.
 
 ---
 
@@ -250,8 +226,10 @@ genuinely deferred, not done-but-unchecked (marked accordingly where uncertain).
 - ~~Add principal-axis rotation transforms (45° about z for `−42m↔−4m2`;
   30° for hexagonal pairs).~~ **Done** — these transforms exist in `ALTERNATE_SETTINGS`
   (the `−42m` family settings ship in the app).
-- Transcribe golden fixtures for at least one colorless and one grey alternate-setting
-  group to pin the tensor form.
+- ~~Transcribe golden fixtures for at least one colorless and one grey alternate-setting
+  group to pin the tensor form.~~ **Done** — `goldenTensors.fixtures.ts` carries 63
+  `setting: 2` entries across 25 groups, including 16 colorless (e.g. `-42m`, `2/m`,
+  `mm2`) and multiple grey groups.
 
 ### k-direction presets (B7)
 - Orthorhombic → cubic preset cleanup: replace symmetry-equivalent `[001]/[100]/[010]`
@@ -267,8 +245,10 @@ genuinely deferred, not done-but-unchecked (marked accordingly where uncertain).
 ### Group-identity header (B27 — lower-priority candidates)
 The high-value fields shipped in v0.12.0 (Schoenflies, parent group, halving
 subgroup H, SHG consequence, "Open in Explorer"). Remaining lower-priority items:
-- Property flags (polar / chiral / centrosymmetric) — requires computing correctly
-  for magnetic (i/c) groups, not just the classical parent; add only once verified.
+- Property flags (polar / chiral / centrosymmetric) in the header — the computation
+  is done and print-reference-guarded since the T-series (`propertyFlags.ts` +
+  `propertyFlags.reference.test.ts`, incl. magnetic i/c groups); the UI surfacing
+  remains open (no component consumes the service yet).
 - Independent-component count per multipole (ED/MD/EQ) at a glance.
 - Generators as compact alternative to listing all operations.
 
@@ -305,11 +285,10 @@ do not appear in ROADMAP-next. Listed by old feature number.
 ### Feature 5 — Explorer enrichment (Phase 1 and 2 mostly = B15)
 The big open items from Feature 5 Phase 1/2 collapse into B15. Additional smaller
 items independent of B15:
-- **Generators in group popup**: display a compact generator set (from the existing
-  `GENERATORS` table) alongside the full operations list in the Explorer popup
-  (`OperationsModal`). Cross-check against Birss Table 3 / Table 6.
-- **Shubnikov notation**: add the two-colour Shubnikov symbol alongside HM in the
-  Explorer group popup (Table 6 for magnetic groups; Table 3 for classical).
+- ~~**Generators in group popup**~~ **Done** — `OperationsModal` renders a
+  "Generators (n)" section via `getGeneratorSymbols`.
+- ~~**Shubnikov notation**~~ **Done** — `OperationsModal` renders the Shubnikov
+  symbol (via the `SHUBNIKOV` map) alongside HM.
 - **Mobile group-detail popup**: confirm the `OperationsModal` renders correctly as
   a full-screen sheet on mobile (progressive-disclosure expandables must not break
   at 375px).
@@ -355,9 +334,10 @@ Carried from `ROADMAP.md § Ideas / Parking Lot`. No commitment or priority orde
 | **Circular polarization basis** | Express source terms in E± = (E_X ± iE_Y)/√2. Unitary transformation of existing symbolic polynomials — straightforward once Feature 2 is complete. |
 | **Transmission vs. reflection geometry** | Adds Fresnel coefficients and refractive indices at ω and 2ω. More complex; possible "advanced mode." Current model gives the source polarization, which is geometry-agnostic. |
 | **Voigt notation (d-tensor)** | Display χ⁽²⁾_ijk in contracted 3×6 d_iα notation. Pure display change — engine already computes the full tensor. Open decisions: include the factor ½ (Boyd convention)? 3×6 matrix grid or component list? Extend to rank-4 EQ? |
-| **Accessibility pass** | Focus states for preset/toggle buttons; `aria-label`s for lucide icons; keyboard operation of sliders. Currently absent. |
 | **PWA enhancement** | App is already installable via `vite-plugin-pwa`. A discreet install prompt and explicit offline support would benefit lab use without network. |
-| **Major dependency upgrades** | `npm outdated` (2026-07-04) shows several packages capped below `Latest` by `package.json` ranges: `vite` 6→8, `react`/`react-dom` 19.0→19.2, `typescript` 5.8→6, `tailwindcss`/`@tailwindcss/vite` 4.1→4.3, `lucide-react` 0.546→1.23, `@vitejs/plugin-react` 5→6, `@types/node` 22→26, `katex` 0.16→0.17, `motion` 12.23→12.42, `recharts` 3.8→3.9, `autoprefixer` 10.4→10.5. `npm audit` is clean (no known vulnerabilities), so this is a planned modernization chore, not a security fix — batch and test major-version bumps (esp. `vite` 8, `typescript` 6, `lucide-react` 1.x) separately from routine patch bumps. |
+| **LaTeX copy of tensor forms** | Tables Phase-4 item, deprioritized 2026-07-15: copy a displayed tensor form as a LaTeX snippet. |
+| **B29 — context-sensitive coefficient formatter** | Moved from open items 2026-07-15; needs a relevance/approach decision first. Generalise `formatCoeff`/`formatSubstitutedPolySum` per-context (e.g. `2cos²θ − 1` vs `cos(2θ)`); B28 covered the 1/√6 case. Open: grouping unit, call sites, tie-breaking, interaction with B16's harmonic default. |
+| **Major dependency upgrades** | Run `npm outdated` for the current picture; `npm audit --omit=dev` clean (last checked 2026-07-15). Majors are deliberately deferred: batch and test major-version bumps separately from routine patch bumps. The repo declares its Node floor in `engines.node` (binding constraint: jsdom, since T5a). |
 
 ---
 
@@ -369,22 +349,27 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
   data corrections; PATCH for display-only fixes. Data-affecting changes take a
   CHANGELOG data flag.
 - **`birss-tables/` integration:** ✅ done — merged in-repo via `git subtree` (full
-  history preserved), superseding the submodule/pinned-commit-hash plan. Build step
-  to typed JSON and a CI row-count assertion remain open; B15 depends on those.
+  history preserved). The typed-data and drift-protection intent is fulfilled by the
+  generated `table7Data.ts`/`sharingPartitions` modules, the CI-regenerated
+  `table-nomenclature.md` gate, and the reference tests that re-parse the vendored
+  tables at test time.
 - **Setting counts:** geometric vs. user-facing; monoclinic = 2 (b/c; a-unique not
   standard); orthorhombic = 3. Max 3, never 4.
 - **Mobile / desktop split:** mobile = read-and-lookup; desktop = manipulate-and-
   explore. Pure Tailwind responsive breakpoints; no UA sniffing.
-- **Tab order:** Explorer → Calculator → Simulator → Help.
+- **Tab order:** Explorer → Calculator → Simulator → Tables → Help.
 - **Oblique-axis Cartesian convention:** Z ∥ c, Y ∥ (c×a), X = Y×Z (Hausühl 1983 /
   IRE 1949). App uses Birss setting (monoclinic z-unique). Must be documented in
   every triclinic/monoclinic fixture note before the fixture is transcribed.
 - **Orientation-(in)dependence split:** Calculator owns crystal-frame, angle-free
   results; Simulator owns lab-frame, orientation-dependent results. Source Terms tab
   is the frozen-vs-swept handoff.
-- **Anti-circular fixtures:** golden fixtures come from literature; never from app
-  output. For any data/math item, extend the relevant fixture first and require it
-  green, then change the code.
+- **Anti-circular fixtures:** two classes with distinct rules (T2). Correctness
+  goldens come from print-verified literature, never from app output; behavioral
+  regression pins (`rotatedSHG.fixtures.ts`, `shgUnification.pins.test.ts`) are
+  captured from a known-good revision and regenerated only by re-capture — never
+  edited to turn a red pin green. For any data/math item, extend the relevant
+  fixture first and require it green, then change the code.
 - **Authoritative convention references:** `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`
   (convention contract & verification ladder) and `birss-tables/table-nomenclature.md`
   (122-group nomenclature + operators/generators) are the two central, cross-linked
