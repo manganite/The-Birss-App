@@ -1847,3 +1847,27 @@ original 2026-07-14 findings). Premises independently re-verified before scoping
   preservation alongside amplitude. (5) New App test: Enter-selection clears the query, closes
   the list, navigates to the Calculator (`aria-current="page"` landmark) and reflects the
   selected group. Suite 2243 -> 2244.
+
+## Refactor backlog -- R-series
+
+Source: broad project audit 2026-07-15 (architecture findings; docs findings became the
+D-series). R2 needs a maintainer go before scoping.
+
+### Open
+
+- **R2 -- domain-type layer (optional).** types.ts re-exports GroupKey from
+  data/pointGroups.ts while pointGroups.ts imports CrystalSystem/GroupType back from
+  types.ts -- a type-only circularity (no runtime effect; erased by tsc). A small
+  dependency-free domainTypes.ts owning the primitive unions would restore a strict
+  dependency direction. Type-level only; tsc + suite as the guard.
+
+### Completed
+
+- **R1 -- Tables linalg extraction** (`refactor/r1-tables-linalg`). rref/spanRank and
+  the RANK_PIVOT_EPS/RANK_ELIM_EPS tolerances moved verbatim from TablesPage.tsx into
+  services/linalg.ts (the established linear-algebra home) and unit-tested with nine
+  hand-derived textbook cases; the page keeps only display logic (buildLabels and the
+  display EPS). Behavior-preserving: SSR dump base-vs-HEAD byte-identical; suite
+  2245 -> 2254. Deliberately NOT deduplicated: the test-infrastructure rank helper in
+  testUtils/birssTableParsers.ts keeps its own implementation so the reference guards'
+  independent-count cross-check never shares a bug with the production path.
