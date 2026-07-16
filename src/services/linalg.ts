@@ -159,3 +159,55 @@ export function isIndependentOf(
   }
   return true;
 }
+
+// Gaussian-elimination tolerances (distinct from the display EPS): looser pivot cutoff so float
+// noise is never counted as an independent direction, tighter elimination cutoff. Same values as
+// the validated Table-4f guard's rank helper. Engine bases are exact group averages (~1e-16 noise).
+export const RANK_PIVOT_EPS = 1e-7;
+export const RANK_ELIM_EPS = 1e-12;
+
+/** Reduced row echelon form: makes each free parameter the lowest-index independent component, so
+ * labels come out in the natural form (pivots monomial, dependents as clean combinations of them --
+ * e.g. the Voigt c_66 = (c_11 - c_12)/2 rather than an arbitrary basis combination). */
+export function rref(basis: number[][], dim: number): number[][] {
+  const M = basis.map((v) => [...v]);
+  let pr = 0;
+  for (let c = 0; c < dim && pr < M.length; c++) {
+    let piv = pr;
+    for (let r = pr + 1; r < M.length; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+    if (Math.abs(M[piv][c]) < RANK_PIVOT_EPS) continue;
+    [M[pr], M[piv]] = [M[piv], M[pr]];
+    const pv = M[pr][c];
+    for (let j = 0; j < dim; j++) M[pr][j] /= pv;
+    for (let r = 0; r < M.length; r++)
+      if (r !== pr && Math.abs(M[r][c]) > RANK_ELIM_EPS) {
+        const f = M[r][c];
+        for (let j = 0; j < dim; j++) M[r][j] -= f * M[pr][j];
+      }
+    pr++;
+  }
+  return M.slice(0, pr);
+}
+
+/** Rank of a set of vectors (Gaussian elimination) = true independent-component count. */
+export function spanRank(basis: number[][]): number {
+  if (!basis.length) return 0;
+  const dim = basis[0].length;
+  const M = basis.map((v) => [...v]);
+  let rank = 0;
+  for (let c = 0; c < dim && rank < M.length; c++) {
+    let piv = rank;
+    for (let r = rank + 1; r < M.length; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+    if (Math.abs(M[piv][c]) < RANK_PIVOT_EPS) continue;
+    [M[rank], M[piv]] = [M[piv], M[rank]];
+    const pv = M[rank][c];
+    for (let j = 0; j < dim; j++) M[rank][j] /= pv;
+    for (let r = 0; r < M.length; r++)
+      if (r !== rank && Math.abs(M[r][c]) > RANK_ELIM_EPS) {
+        const f = M[r][c];
+        for (let j = 0; j < dim; j++) M[r][j] -= f * M[rank][j];
+      }
+    rank++;
+  }
+  return rank;
+}
