@@ -54,7 +54,7 @@ feature this continues. `Wave` is the execution slot defined below.
 | B12 | Explorer popups: link to Simulator | **Done** (v0.8.0) | 5 | **C** |
 | B13 | Help Feature-Overview box order | **Done** (v0.8.0) | 6 | **C** |
 | B14 | Help reorg into tabs + expand | **Done** (PR #40) | 6 | **E** |
-| B15 | Explorer as interactive Birss table | Open (scope) | 5 | **E** |
+| B15 | Explorer as interactive Birss table | Shipped through Phase 3 (v0.20.0) — see STATUS.md | 5 | **E** |
 | B16 | Simplify symbolic source-term trig | **Done** (PR #41) | 2 | **E** |
 | B17 | Disable sliders for single component | **Done** (v0.9.0) | 1C/2 | C/D |
 | B18 | Enlarge plots / trim whitespace | **Done** (v0.9.0) | 1C/8 | C/D |
