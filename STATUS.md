@@ -11,95 +11,23 @@ on drift)._
 
 ---
 
-## Current release: v0.21.0 (2026-07-11)
+## Current release: v0.22.0 (2026-07-16)
+
+**Tables rank-4 performance** — allocation-free flat-array projector (cold rank-4 form
+~256 ms → ~14 ms, identical results) and build-time precomputed "groups sharing this
+form" partitions (O(1) open) — and the **accessibility baseline** (E24 declarative
+ARIA: tab widgets, `aria-current` navigation, slider/input labels). Internally this
+release closes the entire tech-debt E-series (E1–E30 + Wave-5 tail), the T-series
+test-regime program (T1–T5 + taxonomy) with its F-series follow-ups (F1–F4), the
+D-series documentation reconciliation, and the H-Mini hygiene pass (zero eslint
+warnings; empty vendor chunk dropped). Suite at 2,200+ green across a six-combination
+engine/entry-point bridge matrix. See `CHANGELOG.md` `[0.22.0]`.
+
+### v0.21.0 (2026-07-11)
 
 Table-7 guards + lookup-chain breadcrumb/diagram, Tables help + tooltips, vendored ITC references +
 count guards, Explorer polar directions + lattice info, Tables refinements, ESLint/CI guardrails, and
 the symbolic-EQ correctness fix (E1). See `CHANGELOG.md` `[0.21.0]`.
-
-**Unreleased on `main`:** **Tables performance** — the rank-4 tensor-form projector was rewritten with
-an allocation-free flat-array hot path (identical results): a cold rank-4 form drops ~256 ms → ~14 ms
-and the 122-group signature sweep ~19.5 s → ~0.7 s. The "groups sharing this form" partition is now
-precomputed at build time (`npm run sharingdata` → `src/data/sharingPartitions.ts`, drift-guarded) so
-the Tables sharing list opens via an O(1) lookup instead of a main-thread sweep, and the App prop
-bundles are memoized (audit **E11/M5**, closed). The prior ~20 s Tables freeze at rank 4 is gone;
-measured max long task for the rank-4 switch and sharing expand is 0 ms (a residual ~110 ms remains in
-the initial first-render/KaTeX paint, reported for a future UI-render pass). Plus **tech-debt Wave 2**
-(E2–E7, closed): de-duplicated the reference-test markdown parsers into one `birssTableParsers` module,
-and gave the projections' rotation/matmul primitives, the independent-basis reducer, the χ-relation
-builder, the comparison tolerances, and the field-label maps each a single home — behaviour-preserving
-(2140 tests unchanged, no test edits outside the parser consolidation). Plus **tech-debt Wave 3 / E8**
-(closed): unified the numeric and symbolic SHG contraction pipelines behind one generic `computeShg`
-core (generic over a scalar; `number`/`TrigPoly` instances), with the symbolic-only `cos²+sin²`
-simplification pulled out as an explicit post-stage so the E1-class divergence cannot recur —
-behaviour-preserving (numeric byte-identical via app-surface pins, symbolic byte-identical via the
-agreement sweep + print-anchored goldens; numeric-path perf unchanged). Plus **tech-debt Wave 3 tail**
-(E9, E10, closed): de-duplicated two string formatters — `formatSubstitutedPolySum` (the Simulator's
-polarization-formula formatter; six inline harmonic tables lifted to named constants, plus first-time
-regression coverage of the previously-untested Simulator formulas) and `formatMatrixSymbol` (the
-operation-symbol formatter; duplicated rotation-axis/mirror-normal extraction collapsed into one
-helper) — behaviour byte-identical (verified for `formatMatrixSymbol` by a base-vs-HEAD dump over all
-122 groups). Plus the standalone hardening items **E28/E29** (closed): `isIndependentOf`'s
-`ratio === 0` "unset" sentinel — a latent edge case unreachable in production (symmetric projector
-columns block it; all ~150 goldens unaffected) — replaced with an explicit locked flag and covered
-by a linear-algebra-anchored unit test, and the symbolic agreement sweep's heaviest cells given an
-explicit 30 s timeout to kill an intermittent CI flake. Wave 3 is now fully complete. Plus
-**Wave 4 chunk 1 — type-layer consolidation** (E19–E21, closed): canonical `CrystalSystem`/`Parity`/
-`TimeParity`/`GroupType` unions in `types.ts` replacing the inline duplicates, the loose
-`PointGroupData.crystalSystem: string` narrowed, and `TENSOR_META` tightened (numeric `rank`,
-`'POLAR'|'AXIAL'` type, `setConvention` on `TensorConfig`) — all type-level, suite unchanged (2192).
-GroupKey's literal-union quarter was split to **E30** (`POINT_GROUPS as const` + ~39-site retype; no
-derivable source existed). Plus **Wave 4 chunk 2 — service boundary** (E12, E16, closed): the
-Simulator's polarimetry sweep moved from the `useSimulatorState` hook into a pure
-`services/simulatorEngine` function (with first-time smoke coverage of the previously-untested
-sweep), and the tensor-components service gained a structured null-state
-(`calculateTensorComponentsView` → `{ isNull, display, relations }`) so the Calculator stops scanning
-display strings — both behaviour-preserving (goldens byte-identical, rendered output unchanged;
-suite 2196 = 2192 + 4 smoke pins). Plus **Wave 4 chunk 3a — page splits** (E13, E14, closed): split
-`TablesPage` (806 → 312 lines) into `components/tables/` sub-views and `HelpPage` (1029 → 86 lines)
-into per-tab `components/help/` components, as pure JSX relocations under a new SSR smoke-render net —
-rendered output byte-identical (base-vs-HEAD SSR dump over every tab and both Tables modes; suite
-2208). Plus **Wave 4 chunk 3b — shared-component de-dup** (E15, E17, E18, closed): extracted
-`<NoComponentsFallback>` (used by the Calculator views) + hoisted the shared `zeroStateReason`
-strings (also used by the Simulator's zero-intensity block), and table-drove the Simulator's six
-desktop polarimetry plots — all SSR byte-identical. E17 found no inline header byte-identical to the
-existing `SectionHeader`, so none were folded (no code change). **Wave 4 is now complete (E12–E21).**
-Plus **chunk 4 — polish** (E24–E27, closed): declarative ARIA on the tab widgets + `aria-current`
-nav + input labels (E24, purely additive attributes, verified ARIA-only base-vs-HEAD); narrowed
-`RADAR_TICKS`/`PolarimetryPlot` types (E25) and code-split `recharts` + fixed the `@` alias (E26);
-trimmed the TODO-next E-series to a completed-ledger (E27). **E23 deferred** (group-registry data
-policy — own WO). Plus **E30** (`refactor/group-key`, closed): a `GroupKey` literal union applied at
-the authoring layer (Policy B) — data/UI key sites + fixture key fields typed `GroupKey`, engine
-signatures left `string`; single-sourced from a `GROUP_KEYS` tuple with a drift-guard test (measured
-`POINT_GROUPS as const` cascades, so mechanism ii). No fixture typo surfaced. The tech-debt backlog is
-now fully resolved: **E23** closed by decision (group-registry policy — keep `groupNotation.ts`
-hand-transcribed under its drift guards; see `docs/references/DECISION-group-registry-policy.md`), and
-**E22** done (`refactor/group-search`) — the Explorer filter/search extracted into a pure
-`services/groupSearch.ts` and unit-tested (9 structural cases, no jsdom). The entire tech-debt audit
-E-series (E1–E30) plus its Wave-5 tail is now closed; the remaining backlog is the separate A#/B#
-product roadmap.
-Plus **test-regime T1/T2** (closed, from the 2026-07-14 external test-regime evaluation): dropped
-the duplicate non-blocking CI coverage run (threshold-free, artifact-free, doubled CI test time);
-explicit 30 s timeout on `propertyFlags.reference.test.ts` (E29 contention-flake class); AGENTS.md
-now distinguishes correctness goldens (print-verified literature) from behavioral regression pins
-(`rotatedSHG.fixtures.ts`, `shgUnification.pins.test.ts` -- both kept: the rotated path has no
-literature anchor, and post-E8 the agreement sweep is not an independent guard). CI lane-splitting
-deferred as an observation point (revisit only if CI-side flakes persist). T3 (test-code
-efficiency: shared symbolic builds in the agreement sweeps, parser-helper consolidation)
-is closed; T4 is closed (watch-list memoized; shape sweep replaced by an exhaustive
-rank-3 B.3 bridge; handBirss and the closure sweep deliberately kept); T5 is closed as T5a (thin
-jsdom layer: dialog-a11y and simulator-state hooks plus an App search/convention smoke;
-Playwright deliberately declined); only the T-obs observation point remains open in
-`docs/planning/TODO-next.md` (reformulated by the test-taxonomy chore: the conceptual lane
-split landed as filename-suffix convenience scripts and an AGENTS.md taxonomy section; CI
-lanes stay deferred). The repo now declares its Node floor (`engines.node`, binding constraint
-jsdom since T5a).
-A 2026-07-15 follow-up evaluation confirmed the T-series outcome (CI green, ~2x faster, no
-weakened guardrail) and yielded the F-series: F1 (operational fixes incl. removing the broken
-coverage tooling) and F2 (exhaustive all-122 rank-4 entry-point bridges for both time
-parities, replacing the representative EQ-i sample; T4 wording decoupled from the subsumed
-goldens item) are both closed -- the 2026-07-15 re-evaluation is fully addressed.
-See `CHANGELOG.md` `[Unreleased]`.
 
 ### v0.20.0 (2026-07-10)
 
