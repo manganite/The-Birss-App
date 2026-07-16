@@ -598,29 +598,39 @@ const PINS: Pin[] = [
   },
 ];
 
+// Under full-suite contention the heavy pin cells (cubic EQ c) can exceed vitest's 5 s default
+// per-test timeout (observed as an intermittent full-run flake that passes in isolation) -- the
+// same contention class fixed in E29/T1/T5a. Generous by design: pins fail on a CHANGED VALUE,
+// not on duration.
+const PIN_TIMEOUT_MS = 30000;
+
 describe('E8 SHG unification -- numeric app-surface regression pins (base fd48e68)', () => {
   for (const p of PINS) {
     const [thetaX, thetaY, psi0, phiX, phiY, psi] = p.angles;
-    it(`${p.g} ${p.tt} ${p.tr} setting${p.setting} ${p.display} angles[${p.angles}]`, () => {
-      const res = calculateSHGExpressions({
-        groupName: p.g,
-        tensorType: p.tt,
-        trType: p.tr,
-        thetaX,
-        thetaY,
-        psi0,
-        phiX,
-        phiY,
-        psi,
-        setting: p.setting,
-        labFrameDisplayMode: p.display,
-      });
-      expect(res.induced.map((e) => `${e.component}=${e.expression}`)).toEqual(p.induced);
-      expect(res.source.map((s) => `${s.component}|${s.expression}|${s.relation}`)).toEqual(p.source);
-      const raw = flattenRaw(res.source);
-      const expected: [string, number][] = JSON.parse(p.raw);
-      expect(raw.map((r) => r[0])).toEqual(expected.map((r) => r[0]));
-      raw.forEach((r, i) => expect(r[1]).toBeCloseTo(expected[i][1], 9));
-    });
+    it(
+      `${p.g} ${p.tt} ${p.tr} setting${p.setting} ${p.display} angles[${p.angles}]`,
+      () => {
+        const res = calculateSHGExpressions({
+          groupName: p.g,
+          tensorType: p.tt,
+          trType: p.tr,
+          thetaX,
+          thetaY,
+          psi0,
+          phiX,
+          phiY,
+          psi,
+          setting: p.setting,
+          labFrameDisplayMode: p.display,
+        });
+        expect(res.induced.map((e) => `${e.component}=${e.expression}`)).toEqual(p.induced);
+        expect(res.source.map((s) => `${s.component}|${s.expression}|${s.relation}`)).toEqual(p.source);
+        const raw = flattenRaw(res.source);
+        const expected: [string, number][] = JSON.parse(p.raw);
+        expect(raw.map((r) => r[0])).toEqual(expected.map((r) => r[0]));
+        raw.forEach((r, i) => expect(r[1]).toBeCloseTo(expected[i][1], 9));
+      },
+      PIN_TIMEOUT_MS,
+    );
   }
 });
