@@ -66,8 +66,11 @@ Items keep **stable IDs** (**A#** = bug, **B#** = change proposal); ordering bel
 
 ## Open points at a glance
 
-Most items are **Decided** (problem + concrete fix + action items). As of v0.12.0
-and the decisions recorded this cycle, the only item still genuinely open is **B15**:
+Most items are **Decided** (problem + concrete fix + action items). This block is the
+v0.12.0-era summary; entries below reflect that cycle. For the CURRENT open state see
+`STATUS.md` section 1 (as of v0.21+: B15 shipped through Phase 3 in v0.20.0 with a
+Phase-4 residue, plus the promoted accessibility-completion item; T-obs and the
+F-series ledger live at the end of this file).
 
 **Resolved since the first draft** (shipped, or decided this cycle):
 - **A2** — lab-fixed rotation composition: shipped (v0.10.0).
@@ -82,8 +85,8 @@ and the decisions recorded this cycle, the only item still genuinely open is **B
   preferred, power form only when strictly shorter (D4).
 
 **Still open:**
-- **B15** — scope & placement of the interactive Birss-table feature (deferred to
-  its own session — D5).
+- **B15** — shipped through Phase 3 (v0.20.0); Phase-4 residue tracked in
+  `STATUS.md` section 1 (Nye diagrams, Table-7 breadcrumb; LaTeX copy parked).
 
 Everything else is **Decided**; a few Help-audit sub-points in **B22** still need a
 quick physics/source check (flagged inline).
@@ -932,10 +935,10 @@ reader naturally takes them as the counts for the *displayed* system → mislead
 
 ### B15 — Explorer as an interactive Birss table (tensor lookup up to rank 4)
 
-**Status:** Design locked 2026-07-09, Phase 1 in progress. Scope & placement resolved — see
-[`DESIGN-tables-feature.md`](DESIGN-tables-feature.md) (the standalone "Tables" page). Phase 1
-is the engine + anchors (no UI): `TensorSpec` / `computeTensorForm`, the internal + reference
-anchors, and the 4b–4d semantics analysis + guards.
+**Status:** Shipped through Phase 3 (v0.20.0) — the Tables page with the full rank 0-4
+lookup, symbol classes, and Explorer cross-links. Current residue and decisions:
+`STATUS.md` section 1. The detail below is the original vision/decision record and is
+kept unchanged.
 
 **Area:** Explorer (and/or a new "Tables" section) — general tensor lookup
 **Severity:** Feature / vision — larger (roadmap-scale) scope *(exploratory)*

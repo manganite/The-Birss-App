@@ -15,9 +15,8 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
   - Automatic determination of non-zero and independent components for Electric Dipole (ED, $\chi^{(2)}$), Magnetic Dipole (MD), and Electric Quadrupole (EQ) tensors.
   - Supports Time-Reversal symmetry toggles (i-type, c-type).
   - Real-time calculation of induced nonlinear response in the Lab Frame ($S_X, S_Y, S_Z$) with incoming light propagating along the Z-axis ($E_Z = 0$). 
-  - Includes crystal rotation controls ($\varphi_X$, $\varphi_Y$, azimuth $\psi$) to simulate experimental setups.
 - **Explorer**: 
-  - Browse all 122 crystallographic magnetic point groups.
+  - Browse all 122 magnetic point groups.
   - Filter by crystal system and group type (Ordinary, Gray, Black & White).
   - View symmetry operations and properties for each group.
 - **Simulator**: 
@@ -27,16 +26,16 @@ Calculates non-zero susceptibility tensor components (Electric Dipole, Magnetic 
   - Mathematically simplified and summarized expanded formulas using harmonic Fourier series representation (power reduction and multiple-angle formulas).
   - Smart grouping algorithm to automatically pick the most elegant representation (power vs harmonic) and minimize unnecessary minus signs.
 - **Tables**: interactive Birss-table lookup — any rank 0–4 tensor by spatial/time parity and intrinsic symmetry, rendered rank-specifically (matrix, Nye scheme, relation list) with the Birss lookup chain; print-anchored against the vendored tables 4a–4f.
-- **Global Birss | ITC symbol-convention toggle**: relabels group symbols and standard settings app-wide (Explorer, search, Calculator, Simulator) — display only, computed output always follows the Birss engine conventions below.
+- **Global Birss | ITC symbol-convention toggle**: relabels group symbols and standard settings app-wide (Explorer, search, Calculator, Simulator, Tables) — display only, computed output always follows the Birss engine conventions below.
 - **Help & Documentation**: 
   - Comprehensive physics background, mathematics behind the intensity calculations, and usage instructions.
 - **Birss Reference Tables**:
   - The complete, transcribed reference tables from Birss, *Symmetry and Magnetism* (1966) ship in this repo under [`birss-tables/`](./birss-tables/) — usable standalone, independent of the app.
-  - Most tables are verified against the printed book (documented per-file changelogs and errata; Table 4f is a documented exception, not yet print-verified); the app's tensor output is pinned to them by ~150 golden-fixture tests and a CI drift guard.
+  - Most tables are verified against the printed book (documented per-file changelogs and errata; Table 4f print-verified 2026-07-09); the app's tensor output is pinned to them by ~150 golden-fixture tests and a CI drift guard.
 
 ## Conventions & References
 
-The tensor component output follows the conventions of **Birss, *Symmetry and Magnetism* (1966)**: the y-axis secondary convention for trigonal and hexagonal groups (σ(2)=[2_y], σ(4)=[-2_y]), and the z-unique monoclinic setting. The app's rank-3 polar tensor output has been verified against all 21 rows of Birss Table 4e. Point group names use Hermann–Mauguin notation with ITC-style rendering (overbars for roto-inversions, primes for time-reversed operations).
+The tensor component output follows the conventions of **Birss, *Symmetry and Magnetism* (1966)**: the y-axis secondary convention for trigonal and hexagonal groups (σ(2)=[2_y], σ(4)=[-2_y]), and the z-unique monoclinic setting. The app's rank-3 polar tensor output has been verified against all 21 rows of Birss Table 4e; rank 0-4 forms are print-anchored against Tables 4b-4f and Table 7. Point group names use Hermann–Mauguin notation with ITC-style rendering (overbars for roto-inversions, primes for time-reversed operations).
 
 - **App convention references** (this repo): the **[convention contract & verification ladder](docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md)** and the **[122-group nomenclature table](birss-tables/table-nomenclature.md)** — how each group's key maps to its Schoenflies / full-HM / Shubnikov notation and to its Birss operators, generators, and tensor form (App↔Birss↔ITC divergences flagged; see *Reference & Original Birss Sources* below for the full table set).
 - **[Birss, R. R. (1966). Symmetry and Magnetism](https://ethz.ch/content/dam/ethz/special-interest/matl/multi-ferroic-materials-dam/documents/education/Nonlinear%20Optics%20on%20Ferroic%20Materials/Birss%20Symmetry%20&%20Magnetism%20komplett.pdf)**: Authoritative source for magnetic point groups and tensor component calculation. Reference tables included in this repo under [`birss-tables/`](./birss-tables/).
@@ -62,7 +61,7 @@ These are the same tables the app is built on — see [`birss-tables/README.md`]
 for the full index and how to use them.
 
 ## Validation & Testing
-The tensor-calculation engine (`src/services/`) is covered by a Vitest suite of 1500+ tests, organized in tiers of increasing specificity:
+The tensor-calculation engine (`src/services/`) is covered by a Vitest suite of 2,200+ tests. Filename suffixes encode the test classes (`*.reference` — re-parse the vendored tables at test time; `*.audit` — exhaustive coverage contracts; `*.pins` — engine-derived regression pins; `*.interaction` — jsdom UI layer), on top of the tiered scientific checks:
 - **Tier 1 — group order**: for all 122 magnetic point groups, `getSymmetryOperations` returns a group of the expected order.
 - **Tier 1b — true closure**: for all 122 groups, every pairwise product of elements in the closed group is itself a member, independently verifying the floating-point-hardened closure algorithm in `symmetryGroups.ts`.
 - **Tier 2 — parity invariants**: for all 122 groups, structural invariants such as "ED vanishes for centrosymmetric groups", "EQ never vanishes", and "grey groups `G1'` reproduce `G` for i-type tensors".

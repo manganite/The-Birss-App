@@ -1,10 +1,11 @@
 # DESIGN -- "Tables": the interactive Birss-tables feature (B15)
 
-Status: maintainer-approved design decisions locked 2026-07-09. Phase 1 engine + anchors landed
-(PR #76): `TensorSpec` / `computeTensorForm`, the intrinsic-symmetry (permutation-generator) model,
-and the 4b-4d semantics analysis + guards. Remaining Phase-1 items are the deferred anchors -- 4f
-print-verification (roadmap gap F4) and the Table-7 magnetic i/c class map -- both on the
-maintainer/scan loop, not code work. See the resolved "Open items" below.
+Status: CLOSED OUT 2026-07-16. The design was executed through Phase 3 (v0.20.0):
+Tables page, by-type and by-class modes, lookup chain, Explorer cross-links. Table 4f
+was print-verified 2026-07-09 and the Table-7 class map landed (reference-guarded).
+Phase-4 residue (Nye dot diagrams, Table-7 breadcrumb completion; LaTeX copy parked)
+is tracked in STATUS.md section 1. The body below is the approved design record as of
+2026-07-09 and is kept unchanged, including its then-open items.
 Place in repo: `docs/planning/DESIGN-tables-feature.md` (committed with the Phase-1 work order).
 
 ## Goal

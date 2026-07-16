@@ -33,14 +33,14 @@ All 32 groups assigned to the correct crystal system. ✅
 | 3 | Cubic | `m3m` | `m-3m` | Notation variant |
 
 **Finding 1 — `-6m2` labeled as `-62m`**
-The app consistently uses `-62m` for the D₃h group ([pointGroups.ts:34](src/data/pointGroups.ts#L34), [symmetryGroups.ts:136](src/services/symmetryGroups.ts#L136)). The standard International Tables symbol is `-6m2`; the order of `m` and `2` within the symbol is significant. `-62m` is not a recognized standard symbol.
+The app consistently uses `-62m` for the D₃h group ([pointGroups.ts:34](../../src/data/pointGroups.ts#L34), [symmetryGroups.ts:136](../../src/services/symmetryGroups.ts#L136)). The standard International Tables symbol is `-6m2`; the order of `m` and `2` within the symbol is significant. `-62m` is not a recognized standard symbol.
 
 **Finding 2 — `m3` / `m3m` written as `m-3` / `m-3m`**
 The Birss book's abbreviated column omits the explicit bar on the 3-fold roto-inversion axis. The app writes it as `-3` (consistent with its overall convention where `-N` = roto-inversion of order N). Both refer to the same groups (T_h and O_h). Not a physics error.
 
 ### Symmetry operations
 
-The app computes operations dynamically via generator closure (`getSymmetryOperations()` in [symmetryGroups.ts:301](src/services/symmetryGroups.ts#L301)). Group content and element counts are correct (verified by the Tier 1 test suite). Notation differs systematically from the book:
+The app computes operations dynamically via generator closure (`getSymmetryOperations()` in [symmetryGroups.ts:301](../../src/services/symmetryGroups.ts#L301)). Group content and element counts are correct (verified by the Tier 1 test suite). Notation differs systematically from the book:
 
 | Aspect | Book | App | Classification |
 |---|---|---|---|
