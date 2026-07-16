@@ -143,7 +143,7 @@ export function trigEval(p: TrigPoly, phiXDeg: number, phiYDeg: number, psiDeg: 
 }
 
 export function trigSimplify(p: TrigPoly): TrigPoly {
-  let terms = new Map(p.terms);
+  const terms = new Map(p.terms);
   pruneZeros(terms);
 
   let changed = true;

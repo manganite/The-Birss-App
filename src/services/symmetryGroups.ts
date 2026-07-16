@@ -1121,7 +1121,7 @@ export function getSymmetryOperations(groupName: string, setting?: number): stri
     if (idxA !== idxB) return idxA - idxB;
 
     const getAxis = (s: string) => {
-      const match = s.match(/_([a-z\[\]0-9-°]+)/);
+      const match = s.match(/_([a-z[\]0-9-°]+)/);
       return match ? match[1] : '';
     };
     const axisA = getAxis(a);

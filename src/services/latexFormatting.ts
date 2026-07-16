@@ -215,7 +215,7 @@ export function formatSubstitutedPolySum(
 
       const sortedPairs = Array.from(pairMap.keys()).sort();
       for (const pair of sortedPairs) {
-        let baseCoeff = pairMap.get(pair)! * scale;
+        const baseCoeff = pairMap.get(pair)! * scale;
         if (Math.abs(baseCoeff) > EPSILON) {
           if (mode === 'ZERO' && pair !== '00') continue;
           if (mode === 'NINETY' && pair !== '11') continue;

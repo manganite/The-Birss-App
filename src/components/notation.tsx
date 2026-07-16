@@ -66,7 +66,7 @@ export const FormatSchoenflies = ({ symbol }: { symbol: string }) => {
 };
 
 export const SymmetryOperation = ({ symbol }: { symbol: string }) => {
-  const match = symbol.match(/^(-?\d|m)(?:_([a-z\[\]0-9-°]+))?([⁺⁻])?(')?$/);
+  const match = symbol.match(/^(-?\d|m)(?:_([a-z[\]0-9-°]+))?([⁺⁻])?(')?$/);
   if (!match)
     return (
       <span className="inline-flex items-center text-xs bg-white/50 px-2 py-1 border border-ink border-opacity-10 rounded-sm">
@@ -85,7 +85,7 @@ export const SymmetryOperation = ({ symbol }: { symbol: string }) => {
   }
 
   if (axis) {
-    let cleanAxis = axis.replace('°', '^\\circ');
+    const cleanAxis = axis.replace('°', '^\\circ');
     latex += `_{${cleanAxis}}`;
   }
 
