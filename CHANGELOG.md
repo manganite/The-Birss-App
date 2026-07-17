@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Accessibility: the ARIA tab widgets (Help sections, Simulator polarimetry
+  configuration) now implement the full keyboard pattern -- roving tabindex plus
+  ArrowLeft/ArrowRight (wrapping) and Home/End moving and activating tabs; the five
+  numeric text inputs next to the sliders regain a visible focus outline (the
+  `focus:outline-none` suppression is removed); the sliders' existing keyboard
+  contract (native fine steps, Shift+Arrow coarse steps) is now pinned by
+  interaction tests.
+
 ## [0.22.0] - 2026-07-16
 
 ### Changed

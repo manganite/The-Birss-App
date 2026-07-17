@@ -134,10 +134,14 @@ Shipped baseline: additive ARIA (tab widgets, `aria-current` navigation,
 slider/number-input `aria-label`s — E24, v0.21+), tested dialog focus management
 (focus trap/restore, jsdom interaction tests — T5a), labelled icon buttons.
 Remaining:
-- Keyboard operation of the Simulator sliders.
-- Systematic focus-visible states for preset/toggle buttons (currently only
-  `TensorComponentControls` and `SimulatorSetupPanel` carry focus styling).
-- A full keyboard-navigation audit.
+- ~~Keyboard operation of the Simulator sliders.~~ Found already implemented (native
+  range keyboard + deliberate Shift+Arrow coarse steps); now pinned by interaction
+  tests (A1). The parking-lot-era "absent" claim was a misdiagnosis.
+- ~~Focus-visible states.~~ Decision 2026-07-16 (option a): UA focus-visible defaults
+  are the accepted baseline; the five focus:outline-none suppressions on the slider
+  number inputs were removed (A1). No branded ring program.
+- Final systematic keyboard-navigation walkthrough (A2) -- the remaining open piece;
+  first pattern gap (ARIA tabs without keyboard behavior) found and fixed in A1.
 
 ---
 
