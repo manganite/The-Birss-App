@@ -1851,7 +1851,7 @@ original 2026-07-14 findings). Premises independently re-verified before scoping
 ## Refactor backlog -- R-series
 
 Source: broad project audit 2026-07-15 (architecture findings; docs findings became the
-D-series). R2 needs a maintainer go before scoping.
+D-series). Both R1 and R2 are now closed (see below).
 
 ### Open
 
