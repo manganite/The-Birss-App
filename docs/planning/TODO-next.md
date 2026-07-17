@@ -1883,6 +1883,15 @@ Source: the promoted "accessibility completion" item (STATUS section 1). Maintai
 
 ### Completed
 
+- **A3 -- coarse-step detent snapping** (`fix/a3-coarse-step-snap`). From Copilot's finding on
+  PR #112 (raw float arithmetic in the Shift+Arrow coarse-step handlers), extended by the
+  accumulation analysis: repeated presses drifted off the detent grid (0.95 - 0.05 =
+  0.8999999999999999). Fix: wrap each coarse-step result in the existing `snapValue`
+  (MAGNITUDE_DETENTS / PHASE_DETENTS) -- one wrapper per handler, applied identically to the
+  desktop and mobile occurrences (the A2 byte-identity parity is preserved). Every 0.05 /
+  15-degree target is a detent far above the float noise, so each step lands exactly. Red-proofed:
+  two new tests (desktop + mobile) failed on the base handlers at step 2 ('0.8999999999999999'),
+  pass after the fix. Suite 2265 -> 2267.
 - **A2 -- systematic keyboard-navigation walkthrough** (`feat/a2-walkthrough-fixes`). Scripted
   pass over the app: tab order across the five views, the group-search combobox full cycle, and the
   dialog (OperationsModal) open/trap/restore/close flow all returned a CLEAN bill (no fix needed --

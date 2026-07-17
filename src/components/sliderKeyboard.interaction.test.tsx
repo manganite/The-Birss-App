@@ -4,7 +4,9 @@
  * Interaction coverage for the Simulator sliders' coarse-step keyboard contract (A1 desktop, A2 mobile).
  *
  * The Shift+Arrow coarse steps are React onKeyDown handlers (jsdom-observable): amplitude steps
- * +/-0.05 clamped to [0,1]; phase steps +/-15 clamped to [0,360]. The native fine-step path
+ * +/-0.05 clamped to [0,1]; phase steps +/-15 clamped to [0,360]. As of A3 each step's result is
+ * snapped through the same detent logic (`snapValue`) as dragging, so repeated presses stay exactly
+ * on the 0.05 / 15-degree grid instead of accumulating float noise. The native fine-step path
  * (unshifted arrows on a range input) is browser behavior that jsdom does not implement, so it is
  * deliberately NOT tested here (T5a boundary).
  *
@@ -131,6 +133,46 @@ describe('Simulator slider coarse-step contract', () => {
       await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
       expect(phase.value).toBe('15');
+    },
+    TIMEOUT_MS,
+  );
+
+  it(
+    'repeated coarse steps snap to the detent grid (desktop instance) without float drift',
+    async () => {
+      const user = userEvent.setup();
+      await openSimulatorWithSliders(user);
+
+      const amp = ampSliders().at(-1)!; // desktop instance
+      expect(amp.value).toBe('1');
+      amp.focus();
+      // Each Shift+ArrowLeft snaps its result; without snapping, step 2 would read
+      // '0.8999999999999999' and step 3 '0.8499999999999999' (A3 red proof).
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(amp.value).toBe('0.95');
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(amp.value).toBe('0.9');
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(amp.value).toBe('0.85');
+    },
+    TIMEOUT_MS,
+  );
+
+  it(
+    'repeated coarse steps snap to the detent grid (mobile instance) without float drift',
+    async () => {
+      const user = userEvent.setup();
+      await openSimulatorWithSliders(user);
+
+      const amp = ampSliders()[0]; // mobile instance
+      expect(amp.value).toBe('1');
+      amp.focus();
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(amp.value).toBe('0.95');
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(amp.value).toBe('0.9');
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+      expect(amp.value).toBe('0.85');
     },
     TIMEOUT_MS,
   );
