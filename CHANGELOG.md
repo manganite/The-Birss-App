@@ -22,6 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   handlers as the desktop layout, and the view switcher becomes a `<nav
   aria-label="Main">` landmark.
 
+### Fixed
+
+- Simulator sliders: repeated Shift+Arrow coarse steps no longer accumulate
+  floating-point noise -- the keyboard path now snaps its result through the same
+  detent logic (`snapValue`) as dragging, so every coarse step lands exactly on the
+  0.05 / 15-degree grid.
+
 ## [0.22.0] - 2026-07-16
 
 ### Changed
