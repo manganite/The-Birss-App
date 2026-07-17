@@ -21,7 +21,7 @@ release closes the entire tech-debt E-series (E1–E30 + Wave-5 tail), the T-ser
 test-regime program (T1–T5 + taxonomy) with its F-series follow-ups (F1–F4), the
 D-series documentation reconciliation, and the H-Mini hygiene pass (zero eslint
 warnings; empty vendor chunk dropped). Suite at 2,200+ green across a six-combination
-engine/entry-point bridge matrix. Post-release: R1 (Tables linalg extraction, behavior-preserving) landed on main. See `CHANGELOG.md` `[0.22.0]`.
+engine/entry-point bridge matrix. Post-release: R1 (Tables linalg extraction, behavior-preserving) landed on main, followed by R2 (dependency-free domainTypes module breaking the types/pointGroups type-only cycle; dist byte-identical). See `CHANGELOG.md` `[0.22.0]`.
 
 ### v0.21.0 (2026-07-11)
 

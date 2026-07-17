@@ -7,13 +7,9 @@ import type { TensorParity } from './services/tensorForms';
  *  re-exported here as the domain-type home, alongside CrystalSystem/Parity/TimeParity/GroupType. */
 export type { GroupKey } from './data/pointGroups';
 
-/**
- * The seven crystal systems, capitalized exactly as stored in `PointGroupData.crystalSystem`
- * and keyed in `CRYSTAL_SYSTEMS`. Canonical union — replaces the loose `string` typing at the
- * crystal-system data and prop sites.
- */
-export type CrystalSystem =
-  'Triclinic' | 'Monoclinic' | 'Orthorhombic' | 'Tetragonal' | 'Trigonal' | 'Hexagonal' | 'Cubic';
+// Dependency-free primitive unions live in domainTypes (cycle-free by construction);
+// re-exported here so src/types.ts remains the app-facing domain-type home.
+export type { CrystalSystem, GroupType } from './domainTypes';
 
 /** Spatial parity of a tensor property ('polar' | 'axial'). Canonical alias of the engine's
  *  `TensorParity`, re-exported here as the single app-facing home. */
@@ -22,10 +18,6 @@ export type Parity = TensorParity;
 /** Time-reversal parity ('i' = time-even, 'c' = time-odd). Canonical alias of the engine's
  *  `TensorTimeReversal`, re-exported here as the single app-facing home. */
 export type TimeParity = TensorTimeReversal;
-
-/** Magnetic point-group class: I = standard, II = grey, III = black-and-white. Canonical home
- *  for the union re-inlined at pointGroups, groupNotation, and LookupChainDiagram. */
-export type GroupType = 'I' | 'II' | 'III';
 
 export const TENSOR_META = {
   ED: { label: 'Electric Dipole', rank: 3, type: 'POLAR' },
