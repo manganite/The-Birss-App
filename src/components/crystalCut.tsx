@@ -113,6 +113,8 @@ export function LabFrameOrientation({
             onClick={() => setShowLegend((v) => !v)}
             className="opacity-40 hover:opacity-80 transition-opacity p-0.5"
             title="Symbol legend"
+            aria-label="Toggle symbol legend"
+            aria-pressed={showLegend}
           >
             <Info className="w-3 h-3" />
           </button>

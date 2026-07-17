@@ -146,7 +146,10 @@ export default function App() {
           </div>
 
           {/* Center: Navigation Pills */}
-          <div className="flex items-center bg-white/40 border border-ink border-opacity-10 rounded-full p-1 self-start lg:self-auto">
+          <nav
+            aria-label="Main"
+            className="flex items-center bg-white/40 border border-ink border-opacity-10 rounded-full p-1 self-start lg:self-auto"
+          >
             <button
               onClick={() => setCurrentView('explorer')}
               aria-current={currentView === 'explorer' ? 'page' : undefined}
@@ -185,7 +188,7 @@ export default function App() {
             >
               Help
             </button>
-          </div>
+          </nav>
 
           {/* Right: Convention, Search & GitHub */}
           <div className="flex items-center gap-4 self-start lg:self-auto w-full lg:w-auto">
