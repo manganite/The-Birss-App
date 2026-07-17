@@ -153,3 +153,20 @@ describe('App — group search combobox (jsdom)', () => {
     TIMEOUT_MS,
   );
 });
+
+describe('App — navigation landmark (jsdom)', () => {
+  it(
+    'the view switcher is a labelled navigation landmark',
+    () => {
+      render(<App />);
+      // The nav's accessible name is its aria-label (no subtree walk), and it contains only the five
+      // plain-text view buttons -- no MathML -- so the name-matching role query is safe here.
+      const nav = screen.getByRole('navigation', { name: 'Main' });
+      const calculatorNav = within(nav)
+        .getAllByRole('button')
+        .find((b) => b.textContent === 'Calculator');
+      expect(calculatorNav).toBeDefined();
+    },
+    TIMEOUT_MS,
+  );
+});
