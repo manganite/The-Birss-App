@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTablistKeyboard } from '../hooks/useTablistKeyboard';
 import { TablesHelp } from './helpTables';
 import { OverviewHelp } from './help/OverviewHelp';
 import { ConventionsHelp } from './help/ConventionsHelp';
@@ -30,6 +31,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
     setInternalTab(tab);
     onTabChange?.(tab);
   };
+  const onTablistKeyDown = useTablistKeyboard();
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-24">
@@ -46,6 +48,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
         <div
           role="tablist"
           aria-label="Help sections"
+          onKeyDown={onTablistKeyDown}
           className="hidden md:flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar"
         >
           {TABS.map((tab, i) => (
@@ -53,6 +56,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               key={tab.id}
               role="tab"
               aria-selected={activeTab === tab.id}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               id={`help-tab-${tab.id}`}
               aria-controls="help-panel"
               onClick={() => setActiveTab(tab.id)}
@@ -69,6 +73,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
         <div
           role="tablist"
           aria-label="Help sections"
+          onKeyDown={onTablistKeyDown}
           className="md:hidden flex overflow-x-auto border-b border-ink border-opacity-20 bg-white/30 hide-scrollbar"
         >
           {TABS.map((tab, i) => (
@@ -76,6 +81,7 @@ export function HelpPage({ activeTab: externalTab, onTabChange }: HelpPageProps 
               key={tab.id}
               role="tab"
               aria-selected={activeTab === tab.id}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               id={`help-tab-m-${tab.id}`}
               aria-controls="help-panel"
               onClick={() => setActiveTab(tab.id)}

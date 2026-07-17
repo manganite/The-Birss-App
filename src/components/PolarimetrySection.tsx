@@ -5,6 +5,7 @@ import { zeroStateReason } from './NoComponentsFallback';
 import { SectionHeader } from './notation';
 import { PolarimetryPlot } from './PolarimetryPlot';
 import { TermInfo } from './TermInfo';
+import { useTablistKeyboard } from '../hooks/useTablistKeyboard';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig } from '../types';
 import type { useSimulatorState } from '../hooks/useSimulatorState';
@@ -106,6 +107,7 @@ export function PolarimetrySection({
   const [activePolarimetryTab, setActivePolarimetryTab] = useState<'anisotropy' | 'polarizer' | 'analyzer'>(
     'anisotropy',
   );
+  const onTablistKeyDown = useTablistKeyboard();
   const [mobilePlotVariant, setMobilePlotVariant] = useState<'primary' | 'secondary'>('primary');
 
   const mobileDataKeyMap: Record<
@@ -165,12 +167,14 @@ export function PolarimetrySection({
         <div
           role="tablist"
           aria-label="Polarimetry configuration"
+          onKeyDown={onTablistKeyDown}
           className="flex flex-wrap border-b border-ink border-opacity-20 bg-white/30"
         >
           <div className={`flex items-center ${activePolarimetryTab === 'anisotropy' ? 'bg-ink text-paper' : ''}`}>
             <button
               role="tab"
               aria-selected={activePolarimetryTab === 'anisotropy'}
+              tabIndex={activePolarimetryTab === 'anisotropy' ? 0 : -1}
               id="polari-tab-anisotropy"
               aria-controls="polari-panel"
               onClick={() => setActivePolarimetryTab('anisotropy')}
@@ -189,6 +193,7 @@ export function PolarimetrySection({
             <button
               role="tab"
               aria-selected={activePolarimetryTab === 'polarizer'}
+              tabIndex={activePolarimetryTab === 'polarizer' ? 0 : -1}
               id="polari-tab-polarizer"
               aria-controls="polari-panel"
               onClick={() => setActivePolarimetryTab('polarizer')}
@@ -207,6 +212,7 @@ export function PolarimetrySection({
             <button
               role="tab"
               aria-selected={activePolarimetryTab === 'analyzer'}
+              tabIndex={activePolarimetryTab === 'analyzer' ? 0 : -1}
               id="polari-tab-analyzer"
               aria-controls="polari-panel"
               onClick={() => setActivePolarimetryTab('analyzer')}
