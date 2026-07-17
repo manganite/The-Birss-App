@@ -1871,3 +1871,31 @@ D-series). R2 needs a maintainer go before scoping.
   2245 -> 2254. Deliberately NOT deduplicated: the test-infrastructure rank helper in
   testUtils/birssTableParsers.ts keeps its own implementation so the reference guards'
   independent-count cross-check never shares a bug with the production path.
+
+## Accessibility completion -- A-series
+
+Source: the promoted "accessibility completion" item (STATUS section 1). Maintainer decisions
+2026-07-16 recorded per item.
+
+### Open
+
+- **A2 -- systematic keyboard-navigation walkthrough.** The remaining piece after A1: a
+  deliberate pass over the whole app -- tab order across views, the group-search combobox full
+  cycle, the dialog (OperationsModal) open/trap/restore/close flow, and any remaining ARIA
+  pattern promises that lack keyboard behavior (A1 fixed the first such gap, the tabs). Land any
+  fixes with interaction tests in the established jsdom layer.
+
+### Completed
+
+- **A1 -- accessibility completion (option a)** (`feat/a1-accessibility`). (1) Removed the five
+  `focus:outline-none` suppressions on the slider number inputs so the UA `:focus-visible` outline
+  returns -- decision 2026-07-16 option (a): accept UA defaults as the baseline, no branded ring
+  program. (2) Implemented the ARIA tabs keyboard pattern (new `useTablistKeyboard` hook: roving
+  tabindex, ArrowLeft/ArrowRight wrapping, Home/End; automatic activation) across the three
+  tablists (HelpPage desktop + mobile, PolarimetrySection). (3) Pinned both with interaction tests
+  (4 tablist + 2 slider). Corrected a docs misdiagnosis: the Simulator slider keyboard was already
+  implemented (native fine steps + deliberate Shift+Arrow coarse steps), not "absent". Test-route
+  findings recorded for A2's benefit: the sliders render only for a selected group with >=2
+  independent components (single-component groups disable them; group `1` is the fixture), and the
+  Shift handlers live only on the desktop layout (the `md:hidden` mobile layout omits them).
+  Suite 2254 -> 2260.

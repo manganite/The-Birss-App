@@ -156,7 +156,7 @@ export function SimulatorSetupPanel({
                       const v = parseFloat(e.target.value);
                       if (!isNaN(v)) setValue(Math.max(min, Math.min(max, v)));
                     }}
-                    className="w-16 text-right text-xs font-mono bg-white/50 border border-ink/20 px-2 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
+                    className="w-16 text-right text-xs font-mono bg-white/50 border border-ink/20 px-2 py-1 rounded-sm focus:border-ink/60"
                   />
                   <span className="text-xs text-ink/70">°</span>
                 </div>
