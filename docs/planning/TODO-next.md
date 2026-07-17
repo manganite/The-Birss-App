@@ -1855,14 +1855,20 @@ D-series). R2 needs a maintainer go before scoping.
 
 ### Open
 
-- **R2 -- domain-type layer (optional).** types.ts re-exports GroupKey from
-  data/pointGroups.ts while pointGroups.ts imports CrystalSystem/GroupType back from
-  types.ts -- a type-only circularity (no runtime effect; erased by tsc). A small
-  dependency-free domainTypes.ts owning the primitive unions would restore a strict
-  dependency direction. Type-level only; tsc + suite as the guard.
+(none)
 
 ### Completed
 
+- **R2 -- dependency-free domain-type layer** (`refactor/r2-domain-types`). Broke the type-only
+  cycle: `types.ts` re-exported `GroupKey` from `data/pointGroups.ts` while `pointGroups.ts`
+  imported `CrystalSystem`/`GroupType` back from `types.ts`. Fix: the two dependency-free unions
+  moved into a new import-free `src/domainTypes.ts`; `types.ts` re-exports them (staying the
+  app-facing home) and `pointGroups.ts` imports them from `domainTypes` instead. Deliberately
+  scoped: `GroupKey` stays with its `GROUP_KEYS` tuple source (the union belongs with its data),
+  `Parity`/`TimeParity` stay engine-type aliases (moving them would duplicate the literal unions),
+  and the long ACYCLIC `groupNotation -> types` edge is left alone. Proven type-only by a dist
+  byte-identity gate: base-vs-HEAD builds produced byte-identical JS assets (same content hashes),
+  so tsc erased the entire change. Suite unchanged (2267).
 - **R1 -- Tables linalg extraction** (`refactor/r1-tables-linalg`). rref/spanRank and
   the RANK_PIVOT_EPS/RANK_ELIM_EPS tolerances moved verbatim from TablesPage.tsx into
   services/linalg.ts (the established linear-algebra home) and unit-tested with nine
