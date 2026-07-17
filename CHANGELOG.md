@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `focus:outline-none` suppression is removed); the sliders' existing keyboard
   contract (native fine steps, Shift+Arrow coarse steps) is now pinned by
   interaction tests.
+- Accessibility (A2 walkthrough): the crystal-cut legend toggle gets a robust
+  accessible name and toggle state (`aria-label` + `aria-pressed`; previously
+  title-only), the mobile slider layout gains the same Shift+Arrow coarse-step
+  handlers as the desktop layout, and the view switcher becomes a `<nav
+  aria-label="Main">` landmark.
 
 ## [0.22.0] - 2026-07-16
 
