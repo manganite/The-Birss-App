@@ -15,9 +15,11 @@
  * Explicit 30 s timeouts throughout (T1/E29 lesson).
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, cleanup } from '@testing-library/react';
+import { useState } from 'react';
+import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HelpPage } from './HelpPage';
+import { useTablistKeyboard } from '../hooks/useTablistKeyboard';
 
 afterEach(cleanup);
 const TIMEOUT_MS = 30000;
@@ -105,6 +107,46 @@ describe('ARIA tabs keyboard pattern (HelpPage tablists)', () => {
         expect(selected(inSequence[0])).toBe(true);
         for (const t of tabs) expect(t.tabIndex).toBe(selected(t) ? 0 : -1);
       }
+    },
+    TIMEOUT_MS,
+  );
+});
+
+/** Harness with a NON-tab focusable control interleaved inside the tablist (mirrors the TermInfo
+ * button in PolarimetrySection), so arrow keys pressed while it holds focus must NOT move the tabs. */
+function InterleavedTablist() {
+  const onKeyDown = useTablistKeyboard();
+  const [sel, setSel] = useState(0);
+  return (
+    <div role="tablist" aria-label="harness" onKeyDown={onKeyDown}>
+      <button role="tab" aria-selected={sel === 0} tabIndex={sel === 0 ? 0 : -1} onClick={() => setSel(0)}>
+        A
+      </button>
+      <button data-testid="noninteractive-info">info</button>
+      <button role="tab" aria-selected={sel === 1} tabIndex={sel === 1 ? 0 : -1} onClick={() => setSel(1)}>
+        B
+      </button>
+    </div>
+  );
+}
+
+describe('ARIA tabs keyboard pattern (event origin guard)', () => {
+  it(
+    'arrow keys on a non-tab control inside the tablist do not move the selection',
+    async () => {
+      const user = userEvent.setup();
+      render(<InterleavedTablist />);
+      const info = screen.getByTestId('noninteractive-info');
+      const tabs = tabsOf(tablists()[0]);
+      expect(selected(tabs[0])).toBe(true); // A selected initially
+
+      info.focus();
+      await user.keyboard('{ArrowRight}');
+
+      // Selection unchanged, and focus stayed on the non-tab control.
+      expect(selected(tabs[0])).toBe(true);
+      expect(selected(tabs[1])).toBe(false);
+      expect(document.activeElement).toBe(info);
     },
     TIMEOUT_MS,
   );
