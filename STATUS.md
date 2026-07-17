@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-16. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-17. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -11,17 +11,23 @@ on drift)._
 
 ---
 
-## Current release: v0.22.0 (2026-07-16)
+## Current release: v0.23.0 (2026-07-17)
 
-**Tables rank-4 performance** — allocation-free flat-array projector (cold rank-4 form
-~256 ms → ~14 ms, identical results) and build-time precomputed "groups sharing this
-form" partitions (O(1) open) — and the **accessibility baseline** (E24 declarative
-ARIA: tab widgets, `aria-current` navigation, slider/input labels). Internally this
-release closes the entire tech-debt E-series (E1–E30 + Wave-5 tail), the T-series
-test-regime program (T1–T5 + taxonomy) with its F-series follow-ups (F1–F4), the
-D-series documentation reconciliation, and the H-Mini hygiene pass (zero eslint
-warnings; empty vendor chunk dropped). Suite at 2,200+ green across a six-combination
-engine/entry-point bridge matrix. Post-release: R1 (Tables linalg extraction, behavior-preserving) landed on main, followed by R2 (dependency-free domainTypes module breaking the types/pointGroups type-only cycle; dist byte-identical). See `CHANGELOG.md` `[0.22.0]`.
+**Accessibility completion** — the ARIA tab widgets gained the full keyboard pattern
+(roving tabindex, arrow-wrapping, Home/End; A1), the slider number inputs regained their
+focus outlines, and an A2 walkthrough added the crystal-cut legend label + state, mobile
+slider coarse-step parity, and a `<nav aria-label="Main">` landmark; A3 snapped the
+coarse-step keyboard path onto the detent grid. Internally: R1 (Tables linalg extraction
+into `services/linalg`) and R2 (dependency-free `domainTypes` module breaking the
+types/pointGroups type-only cycle; dist byte-identical). Suite 2267 green. See
+`CHANGELOG.md` `[0.23.0]`.
+
+### v0.22.0 (2026-07-16)
+
+Tables rank-4 performance (allocation-free flat-array projector; build-time sharing partitions) and
+the accessibility baseline (E24 declarative ARIA). Internally closed the tech-debt E-series, the
+T-series test regime + F-series follow-ups, the D-series doc reconciliation, and the H-Mini hygiene
+pass. See `CHANGELOG.md` `[0.22.0]`.
 
 ### v0.21.0 (2026-07-11)
 
