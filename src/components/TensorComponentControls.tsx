@@ -131,7 +131,7 @@ export function TensorComponentControls({
                         const v = parseFloat(e.target.value);
                         if (!isNaN(v)) setAmplitudes((p) => ({ ...p, [comp]: Math.max(0, Math.min(1, v)) }));
                       }}
-                      className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
+                      className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60"
                       disabled={singleComponent}
                     />
                   </div>
@@ -162,7 +162,7 @@ export function TensorComponentControls({
                           const v = parseInt(e.target.value, 10);
                           if (!isNaN(v)) setPhases((p) => ({ ...p, [comp]: Math.max(0, Math.min(360, v)) }));
                         }}
-                        className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
+                        className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60"
                         disabled={singleComponent}
                       />
                       <span className="text-xs text-ink/70">°</span>
@@ -245,7 +245,7 @@ export function TensorComponentControls({
                         const v = parseFloat(e.target.value);
                         if (!isNaN(v)) setAmplitudes((p) => ({ ...p, [comp]: Math.max(0, Math.min(1, v)) }));
                       }}
-                      className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
+                      className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60"
                       disabled={singleComponent}
                     />
                   </div>
@@ -300,7 +300,7 @@ export function TensorComponentControls({
                           const v = parseInt(e.target.value, 10);
                           if (!isNaN(v)) setPhases((p) => ({ ...p, [comp]: Math.max(0, Math.min(360, v)) }));
                         }}
-                        className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60 focus:outline-none"
+                        className="w-14 text-right text-xs font-mono bg-white/50 border border-ink/20 px-1.5 py-1 rounded-sm focus:border-ink/60"
                         disabled={singleComponent}
                       />
                       <span className="text-xs text-ink/70">°</span>
