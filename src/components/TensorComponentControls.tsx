@@ -123,7 +123,7 @@ export function TensorComponentControls({
                           const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : -1;
                           setAmplitudes((p) => ({
                             ...p,
-                            [comp]: Math.max(0, Math.min(1, (p[comp] ?? 1) + dir * 0.05)),
+                            [comp]: snapValue(Math.max(0, Math.min(1, (p[comp] ?? 1) + dir * 0.05)), MAGNITUDE_DETENTS),
                           }));
                         }
                       }}
@@ -161,7 +161,10 @@ export function TensorComponentControls({
                         if (e.shiftKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
                           e.preventDefault();
                           const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : -1;
-                          setPhases((p) => ({ ...p, [comp]: Math.max(0, Math.min(360, (p[comp] ?? 0) + dir * 15)) }));
+                          setPhases((p) => ({
+                            ...p,
+                            [comp]: snapValue(Math.max(0, Math.min(360, (p[comp] ?? 0) + dir * 15)), PHASE_DETENTS),
+                          }));
                         }
                       }}
                       className="flex-1 accent-ink"
@@ -244,7 +247,7 @@ export function TensorComponentControls({
                           const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : -1;
                           setAmplitudes((p) => ({
                             ...p,
-                            [comp]: Math.max(0, Math.min(1, (p[comp] ?? 1) + dir * 0.05)),
+                            [comp]: snapValue(Math.max(0, Math.min(1, (p[comp] ?? 1) + dir * 0.05)), MAGNITUDE_DETENTS),
                           }));
                         }
                       }}
@@ -299,7 +302,10 @@ export function TensorComponentControls({
                         if (e.shiftKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
                           e.preventDefault();
                           const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : -1;
-                          setPhases((p) => ({ ...p, [comp]: Math.max(0, Math.min(360, (p[comp] ?? 0) + dir * 15)) }));
+                          setPhases((p) => ({
+                            ...p,
+                            [comp]: snapValue(Math.max(0, Math.min(360, (p[comp] ?? 0) + dir * 15)), PHASE_DETENTS),
+                          }));
                         }
                       }}
                       className="flex-1 accent-ink"
