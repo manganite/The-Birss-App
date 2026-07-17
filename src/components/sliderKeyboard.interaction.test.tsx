@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  *
- * Interaction coverage for the Simulator sliders' coarse-step keyboard contract (A1).
+ * Interaction coverage for the Simulator sliders' coarse-step keyboard contract (A1 desktop, A2 mobile).
  *
  * The Shift+Arrow coarse steps are React onKeyDown handlers (jsdom-observable): amplitude steps
  * +/-0.05 clamped to [0,1]; phase steps +/-15 clamped to [0,360]. The native fine-step path
@@ -19,11 +19,12 @@
  * lazy-loaded SimulatorPage before touching the sliders. Sliders are found via raw DOM queries on
  * their E24 aria-labels (MathML-safe; see the App.interaction docblock).
  *
- * Layout note: TensorComponentControls renders two layouts that are both present in the jsdom DOM
- * (Tailwind display classes are inert without a stylesheet) -- a mobile block (`md:hidden`, first
- * in DOM) WITHOUT the Shift+Arrow handlers, and a desktop block (`hidden md:block`, last in DOM)
- * WITH them. We therefore target the LAST slider for a component (the desktop instance); both
- * layouts share the same per-component state, so the assertion holds on any instance.
+ * Layout note: TensorComponentControls renders two layouts, both present in the jsdom DOM (Tailwind
+ * display classes are inert without a stylesheet) -- a mobile block (`md:hidden`, first in DOM) and
+ * a desktop block (`hidden md:block`, last in DOM). As of A2 BOTH carry the Shift+Arrow handlers
+ * (the earlier asymmetry is gone). The two original tests target the LAST slider (desktop instance),
+ * the three A2 tests below target the FIRST (mobile instance); both layouts share the same
+ * per-component state, so the assertion holds on either.
  *
  * Explicit 30 s timeouts throughout (T1/E29 lesson).
  */
@@ -82,6 +83,53 @@ describe('Simulator slider coarse-step contract', () => {
       await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
 
       // 0 + 1*15 = 15 (up is the observable direction; down would clamp at 0).
+      expect(phase.value).toBe('15');
+    },
+    TIMEOUT_MS,
+  );
+
+  it(
+    'the legend toggle exposes a name and its pressed state',
+    async () => {
+      const user = userEvent.setup();
+      await openSimulatorWithSliders(user);
+
+      const toggle = document.querySelector<HTMLButtonElement>('[aria-label="Toggle symbol legend"]');
+      expect(toggle).not.toBeNull();
+      const before = toggle!.getAttribute('aria-pressed');
+      await user.click(toggle!);
+      expect(toggle!.getAttribute('aria-pressed')).not.toBe(before); // flips on click
+    },
+    TIMEOUT_MS,
+  );
+
+  it(
+    'Shift+ArrowLeft steps the MOBILE amplitude slider down by the coarse step',
+    async () => {
+      const user = userEvent.setup();
+      await openSimulatorWithSliders(user);
+
+      const amp = ampSliders()[0]; // first in DOM = mobile instance (A2 parity)
+      expect(amp.value).toBe('1');
+      amp.focus();
+      await user.keyboard('{Shift>}{ArrowLeft}{/Shift}');
+
+      expect(amp.value).toBe('0.95');
+    },
+    TIMEOUT_MS,
+  );
+
+  it(
+    'Shift+ArrowRight steps the MOBILE phase slider up by the coarse step',
+    async () => {
+      const user = userEvent.setup();
+      await openSimulatorWithSliders(user);
+
+      const phase = phaseSliders()[0]; // first in DOM = mobile instance (A2 parity)
+      expect(phase.value).toBe('0');
+      phase.focus();
+      await user.keyboard('{Shift>}{ArrowRight}{/Shift}');
+
       expect(phase.value).toBe('15');
     },
     TIMEOUT_MS,

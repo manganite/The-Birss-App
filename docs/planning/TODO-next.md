@@ -1879,14 +1879,21 @@ Source: the promoted "accessibility completion" item (STATUS section 1). Maintai
 
 ### Open
 
-- **A2 -- systematic keyboard-navigation walkthrough.** The remaining piece after A1: a
-  deliberate pass over the whole app -- tab order across views, the group-search combobox full
-  cycle, the dialog (OperationsModal) open/trap/restore/close flow, and any remaining ARIA
-  pattern promises that lack keyboard behavior (A1 fixed the first such gap, the tabs). Land any
-  fixes with interaction tests in the established jsdom layer.
+(none)
 
 ### Completed
 
+- **A2 -- systematic keyboard-navigation walkthrough** (`feat/a2-walkthrough-fixes`). Scripted
+  pass over the app: tab order across the five views, the group-search combobox full cycle, and the
+  dialog (OperationsModal) open/trap/restore/close flow all returned a CLEAN bill (no fix needed --
+  A1 had closed the one pattern gap, the tabs). Three low findings fixed and pinned: (1) the
+  crystal-cut legend toggle's name -- upgraded from title-only to `aria-label` + `aria-pressed`
+  (the audit's "no accessible name" overstated it; the button already carried
+  `title="Symbol legend"`, so the fix is a title-only upgrade, not a missing-name add); (2) mobile
+  slider coarse-step parity -- the `md:hidden` layout's amplitude/phase range inputs gained the
+  desktop Shift+Arrow handlers verbatim, closing the A1-noted asymmetry; (3) the view switcher is
+  now a `<nav aria-label="Main">` landmark. Suite 2261 -> 2265. This closes the accessibility
+  completion item.
 - **A1 -- accessibility completion (option a)** (`feat/a1-accessibility`). (1) Removed the five
   `focus:outline-none` suppressions on the slider number inputs so the UA `:focus-visible` outline
   returns -- decision 2026-07-16 option (a): accept UA defaults as the baseline, no branded ring
