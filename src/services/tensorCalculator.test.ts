@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateTensorComponents, isCentrosymmetric, getSymmetryOperations, formatCoeff } from './tensorCalculator';
+import { intrinsicOrbit } from './tensorProjection';
 import { POINT_GROUPS } from '../data/pointGroups';
 
 /**
@@ -118,6 +119,30 @@ describe('formatCoeff', () => {
     [0.123456, '0.123'],
   ])('formatCoeff(%p) === %p', (input, expected) => {
     expect(formatCoeff(input)).toBe(expected);
+  });
+});
+
+/**
+ * The intrinsic-symmetry orbit that both projection sites symmetrize over (Q1, 2026-07-29).
+ * Rank 3 (ED/MD) is the field pair alone; rank 4 (EQ) adds the quadrupole's own leading pair,
+ * so its orbit is the 4-element `ij_kl` group. A regression here silently changes every
+ * component count, hence the explicit permutation-level pin.
+ */
+describe('intrinsicOrbit', () => {
+  it('rank 3 (ED/MD): 2 permutations -- identity + the trailing field-pair swap', () => {
+    expect(intrinsicOrbit(3)).toEqual([
+      [0, 1, 2],
+      [0, 2, 1],
+    ]);
+  });
+
+  it('rank 4 (EQ): 4 permutations -- identity, ij swap, kl swap, and their product', () => {
+    expect(intrinsicOrbit(4)).toEqual([
+      [0, 1, 2, 3],
+      [1, 0, 2, 3],
+      [0, 1, 3, 2],
+      [1, 0, 3, 2],
+    ]);
   });
 });
 

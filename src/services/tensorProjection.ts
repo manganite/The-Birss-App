@@ -12,8 +12,9 @@
  * relation display and the rawPoly parameter attribution) sees an identifiable parametrization (Q0).
  *
  * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md, Step 5 (tensor forms &
- *      particularization: intrinsic symmetry = last two indices only) and its canonical-presentation
- *      section (minimal bases, constraint-view display).
+ *      particularization: ED/MD symmetric in the last two (field) indices; EQ additionally
+ *      symmetric in the leading (quadrupole) pair -- the `ij_kl` class, see `intrinsicOrbit`) and
+ *      its canonical-presentation section (minimal bases, constraint-view display).
  */
 
 import {
@@ -345,41 +346,49 @@ export function averageTensor(
 }
 
 /**
- * The symmetry-averaged basis of the invariant subspace, as a MINIMAL (RREF) basis.
+/**
+ * The intrinsic index symmetry of the SHG channels, as position-permutation orbits (`p[k]` names
+ * the source position feeding output position `k`, the same convention as `tensorForms`).
  *
- * The seed projection alone returns a spanning set deduped only by proportionality
- * (`isIndependentOf`), which for the coupled rank-4 blocks of the 3-/6-fold groups is non-minimal:
- * several seeds land on distinct-but-dependent directions (census: 478 of 12200 cells, all rank 4,
- * excess +1 or +2). The span was always right, but a non-minimal family list makes the relation
- * display self-contradictory and the parameter attribution ill-defined, so the reduction happens
- * HERE -- before any consumer -- and every consumer sees pivot-named free parameters. RREF is unique
- * for a given span, so the pivots (and hence the parameter names) are well-defined; for the
- * disjoint-support cells that are already minimal it is a no-op up to normalization, verified across
- * all 5935 non-redundant non-zero cells. See docs/findings (Q0, 2026-07-30).
+ * - **rank 3** (ED/MD, `chi_ijk E_j E_k`): identity + swap(1,2) -- the two identical driving fields.
+ * - **rank 4** (EQ, `Q_ij = chi_ijkl E_k E_l`): identity, swap(0,1), swap(2,3) and their product --
+ *   the `ij_kl` class. The trailing pair is the field pair as at rank 3; the LEADING pair carries
+ *   the quadrupole's own symmetry `Q_ij = Q_ji` (Pershan 1963; Hoshi 1995 eq. 10), which is
+ *   frequency-independent and is what separates the EQ channel from the MD one. Q1, 2026-07-29.
+ *
+ * Ranks other than 3/4 do not occur on these paths; they degrade to the identity orbit.
  */
-/** The intrinsic-symmetric unit seed for component `idx`: e_idx plus its field-pair partner. */
-function seedVector(idx: number, rank: number): number[] {
-  const dim = Math.pow(3, rank);
-  const indices = getIndices(idx, rank);
-  const swappedIndices = [...indices];
-  const temp = swappedIndices[rank - 1];
-  swappedIndices[rank - 1] = swappedIndices[rank - 2];
-  swappedIndices[rank - 2] = temp;
-
-  const seed = new Array(dim).fill(0);
-  seed[idx] = 1;
-  seed[toFlatIndex(swappedIndices, rank)] = 1; // Symmetrize (a no-op when the pair is already equal)
-  return seed;
+export function intrinsicOrbit(rank: number): number[][] {
+  const id = Array.from({ length: rank }, (_, k) => k);
+  const swap = (a: number, b: number): number[] => {
+    const p = [...id];
+    p[a] = b;
+    p[b] = a;
+    return p;
+  };
+  if (rank === 3) return [id, swap(1, 2)];
+  if (rank === 4) return [id, swap(0, 1), swap(2, 3), [1, 0, 3, 2]];
+  return [id];
 }
 
-/** Flat index of `idx`'s field-pair partner (the trailing-pair swap). */
-function pairPartner(idx: number, rank: number): number {
+/** The distinct flat indices reachable from `idx` under `perms` (which is already a closed orbit). */
+function intrinsicOrbitOf(idx: number, rank: number, perms: number[][]): number[] {
   const indices = getIndices(idx, rank);
-  const swapped = [...indices];
-  const temp = swapped[rank - 1];
-  swapped[rank - 1] = swapped[rank - 2];
-  swapped[rank - 2] = temp;
-  return toFlatIndex(swapped, rank);
+  const seen = new Set<number>();
+  for (const p of perms) {
+    let out = 0;
+    for (let k = 0; k < rank; k++) out += indices[p[k]] * Math.pow(3, rank - 1 - k);
+    seen.add(out);
+  }
+  return [...seen];
+}
+
+/** The intrinsic-symmetric unit seed for component `idx`: 1 at every member of its intrinsic orbit
+ * (the field pair at rank 3; the field pair and the quadrupole pair at rank 4). */
+function seedVector(idx: number, rank: number, perms: number[][]): number[] {
+  const seed = new Array(Math.pow(3, rank)).fill(0);
+  for (const s of intrinsicOrbitOf(idx, rank, perms)) seed[s] = 1;
+  return seed;
 }
 
 /** Memoized `tensorBasisFor` results, keyed by the cached full-group array identity (stable per
@@ -410,6 +419,19 @@ function tensorBasisFor(
   return computed;
 }
 
+/**
+ * The symmetry-averaged basis of the invariant subspace, as a MINIMAL (RREF) basis.
+ *
+ * The seed projection alone returns a spanning set deduped only by proportionality
+ * (`isIndependentOf`), which for the coupled rank-4 blocks of the 3-/6-fold groups is non-minimal:
+ * several seeds land on distinct-but-dependent directions (census: 478 of 12200 cells, all rank 4,
+ * excess +1 or +2). The span was always right, but a non-minimal family list makes the relation
+ * display self-contradictory and the parameter attribution ill-defined, so the reduction happens
+ * HERE -- before any consumer -- and every consumer sees pivot-named free parameters. RREF is unique
+ * for a given span, so the pivots (and hence the parameter names) are well-defined; for the
+ * disjoint-support cells that are already minimal it is a no-op up to normalization, verified across
+ * all 5935 non-redundant non-zero cells. See docs/findings (Q0, 2026-07-30).
+ */
 function computeTensorBasis(
   group: Matrix3x3[],
   rank: number,
@@ -417,11 +439,13 @@ function computeTensorBasis(
   isTimeOdd: boolean,
 ): { basis: number[][]; reduced: boolean } {
   const dim = Math.pow(3, rank);
+  const perms = intrinsicOrbit(rank);
   const spanning: number[][] = [];
   for (let i = 0; i < dim; i++) {
-    if (i > pairPartner(i, rank)) continue; // Only process unique pairs
+    const orbit = intrinsicOrbitOf(i, rank, perms);
+    if (i !== Math.min(...orbit)) continue; // process each intrinsic orbit once, from its minimum
 
-    const averaged = averageTensor(seedVector(i, rank), group, rank, isAxial, isTimeOdd);
+    const averaged = averageTensor(seedVector(i, rank, perms), group, rank, isAxial, isTimeOdd);
 
     const nonZero = averaged.some((v) => Math.abs(v) >= EPSILON);
     if (nonZero && isIndependentOf(averaged, spanning, dim, EPSILON)) {
@@ -670,6 +694,7 @@ export function computeShg<S>(
   ];
 
   const outputCount = tensorType === 'EQ' ? 9 : 3;
+  const perms = intrinsicOrbit(rank);
   const inducedLab: SPoly<S>[] = [];
   const inducedCrystal: SHGExpression[] = [];
 
@@ -700,7 +725,7 @@ export function computeShg<S>(
     const outIndices = tensorType === 'EQ' ? [Math.floor(outIdx / 3), outIdx % 3] : [outIdx];
     const outLabel =
       tensorType === 'EQ'
-        ? `Q_${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}`
+        ? `Q_{${tLabels[outIndices[0]]}${tLabels[outIndices[1]]}}`
         : `${tensorType === 'ED' ? 'P' : 'M'}_${tLabels[outIndices[0]]}`;
 
     const crystalTerms: SPoly<number> = new Map();
@@ -722,7 +747,7 @@ export function computeShg<S>(
         } else {
           // Historical single-parameter attribution, verbatim: label and scale read off this
           // component's own projected seed. Equivalent here, and bit-for-bit reproducible.
-          const averaged = averageTensor(seedVector(flatIdx, rank), group, rank, isAxial, isTimeOdd);
+          const averaged = averageTensor(seedVector(flatIdx, rank, perms), group, rank, isAxial, isTimeOdd);
           for (let i = 0; i < dim; i++) {
             if (Math.abs(averaged[i]) > EPSILON) {
               terms.push({ label: getLabel(getIndices(i, rank)), weight: averaged[flatIdx] / averaged[i] });

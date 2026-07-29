@@ -5,14 +5,16 @@
  * property tensor (rank 0-4, polar/axial, i/c, with an optional intrinsic index symmetry) for a
  * magnetic point group, in the SAME symbolic relation format the golden fixtures use
  * (`\chi_{xxx} = -\chi_{xyy}`, ...). It is a strict generalization of
- * `tensorProjection.calculateTensorBasisResults` (which is hardwired to rank-3/4, jk-symmetric,
- * ED/MD/EQ): it reuses the exact same rank-general projection primitives (`averageTensor` -- the
- * `det(R)` axial factor and the antiunitary time-odd sign already live there) and the same
- * independent-basis reduction, only parametrized by a `TensorSpec` instead of a `TensorType`.
+ * `tensorProjection.calculateTensorBasisResults` (which is hardwired to the two SHG channels:
+ * rank-3 jk-symmetric ED/MD and rank-4 ij_kl-symmetric EQ): it reuses the exact same rank-general
+ * projection primitives (`averageTensor` -- the `det(R)` axial factor and the antiunitary time-odd
+ * sign already live there) and the same independent-basis reduction, only parametrized by a
+ * `TensorSpec` instead of a `TensorType`.
  *
- * For `spec = {rank, parity, timeParity, intrinsic: 'jk'}` at rank 3/4 this reproduces
- * `calculateTensorBasisResults` component-for-component (asserted in `tensorForms.test.ts`); the
- * ED/MD/EQ paths are NOT modified, only reused. No new symbolic pipeline is introduced.
+ * For `spec = {rank: 3, ..., intrinsic: 'jk'}` (ED/MD) and `{rank: 4, ..., intrinsic: 'ij_kl'}` (EQ,
+ * since Q1) this reproduces `calculateTensorBasisResults` component-for-component (asserted in
+ * `tensorForms.test.ts`); the ED/MD/EQ paths are NOT modified, only reused. No new symbolic
+ * pipeline is introduced.
  *
  * @see docs/planning/DESIGN-tables-feature.md (locked design, engine section)
  * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md (projection & particularization)

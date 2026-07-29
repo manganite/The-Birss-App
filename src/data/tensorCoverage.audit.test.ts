@@ -37,13 +37,17 @@ describe('audit Phase 3b — grey groups: c-tensor ≡ 0 (Step 5e)', () => {
   }
 });
 
-describe('audit Phase 3c — particularization (Step 5d): symmetric in the last two indices only', () => {
+describe('audit Phase 3c — particularization (Step 5d): the per-channel intrinsic symmetry', () => {
   it('ED (rank 3) of group 1 has 18 independent components (jk-symmetrized from 27, no crystal constraint)', () => {
     expect(calculateTensorComponents('1', 'ED', 'i')).toHaveLength(18);
   });
 
-  it('EQ (rank 4) of group 1 has 54 independent components (9 free (i,j) pairs x 6 kl-symmetrized pairs)', () => {
-    expect(calculateTensorComponents('1', 'EQ', 'i')).toHaveLength(54);
+  it('EQ (rank 4) of group 1 has 36 independent components (6 ij-symmetrized x 6 kl-symmetrized pairs)', () => {
+    // Q1 (2026-07-29): was 54 = 9 free (i,j) x 6 kl-pairs, before the quadrupole's own index
+    // symmetry Q_ij = Q_ji was enforced. Both pairs are now symmetric and independent of each
+    // other (the `ij_kl` class, no pair exchange, no trace condition), so the count is 6 x 6.
+    // See BIRSS-APP-CONVENTIONS-REFERENCE.md Step 5(d).
+    expect(calculateTensorComponents('1', 'EQ', 'i')).toHaveLength(36);
   });
 
   it('ED: chi_ijk = chi_ikj IS imposed (last two indices symmetric)', () => {
@@ -61,15 +65,26 @@ describe('audit Phase 3c — particularization (Step 5d): symmetric in the last 
     expect(result).toContain('\\chi_{yxx}');
   });
 
-  it('EQ: chi_ijkl = chi_ijlk IS imposed on the last two (field) indices only', () => {
+  it('EQ: chi_ijkl = chi_ijlk IS imposed on the last two (field) indices', () => {
     const result = calculateTensorComponents('1', 'EQ', 'i');
     expect(result).toContain('\\chi_{xxxy} = \\chi_{xxyx}');
   });
 
-  it('EQ: the (i,j) output pair stays general -- xxxy and xyxx are independent, not merged', () => {
+  it('EQ: chi_ijkl = chi_jikl IS imposed on the leading (quadrupole) pair -- xyxx merges with yxxx', () => {
+    // Q1 (2026-07-29), the inverse of the pre-Q1 guardrail: the (i,j) output pair used to stay
+    // general (xyxx appeared alone). The physical quadrupole is symmetric in its own indices
+    // (Pershan 1963; Hoshi 1995 eq. 10), so xyxx and yxxx are one component now. See
+    // BIRSS-APP-CONVENTIONS-REFERENCE.md Step 5(d).
     const result = calculateTensorComponents('1', 'EQ', 'i');
-    expect(result).toContain('\\chi_{xxxy} = \\chi_{xxyx}');
-    expect(result).toContain('\\chi_{xyxx}');
+    expect(result).toContain('\\chi_{xyxx} = \\chi_{yxxx}');
+    expect(result).not.toContain('\\chi_{xyxx}');
+  });
+
+  it('EQ: the two pairs stay INDEPENDENT of each other -- no pair exchange, xxxy and xyxx unmerged', () => {
+    // The class is `ij_kl`, not Voigt: each pair is symmetric internally, but (ij) <-> (kl)
+    // exchange is NOT imposed. Nor is Hoshi's trace condition chi_iikl = 0 (maintainer decision
+    // 2026-07-29 -- the 36-component SHG baseline).
+    const result = calculateTensorComponents('1', 'EQ', 'i');
     const merged = result.some((r) => r.includes('\\chi_{xxxy}') && r.includes('\\chi_{xyxx}'));
     expect(merged).toBe(false);
   });
