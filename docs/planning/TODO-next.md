@@ -1934,26 +1934,6 @@ contract lives in `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f)
 
 ### Open
 
-- **Q1 -- enforce the quadrupole ij-symmetry on the EQ channel.** *Status: Decided;
-  implemented on a HELD local branch (`fix/q1-eq-ij-symmetry`, unpushed), awaiting rebase
-  onto Q0.* The app's EQ convention is `Q_ij = chi_ijkl E_k E_l` and the physical quadrupole
-  is symmetric in its own indices, so the channel must carry BOTH minor symmetries -- the
-  trailing field pair (already enforced) and the leading pair (was not). Sources verified
-  against the project PDFs: Hoshi 1995 eq. 10, in the app's own convention ("Since Q_ij is a
-  symmetric and traceless tensor" -> Lambda_ijkl = Lambda_jikl); Pershan 1963 sec. IV, where
-  the antisymmetric complement IS the magnetic-dipole channel. The correct intrinsic class is
-  `ij_kl` -- both pairs symmetric, no pair exchange, and NO trace condition: tracelessness
-  appears in Hoshi and the general multipole literature but Hoshi is alone in the SHG context,
-  and modern EQ-SHG-RA practice works with the 36-component baseline (maintainer decision
-  2026-07-29). Implementation is complete on the held branch (one shared `intrinsicOrbit(rank)`
-  helper replacing both hard-coded trailing-swap sites; ED/MD bit-identical; the `Q_xy` ->
-  `Q_{xy}` label fix). **On rebase:** re-run the red report against the post-Q0 engine, restate
-  the counts as true ranks measured on that engine (the branch text currently quotes
-  redundant-list lengths -- 36 for triclinic, 20 for `2/m`, 12 for `mm2` are rank-true and
-  stand; the trigonal/hexagonal figures do not: `3m` becomes 10 -> 8), and re-capture the
-  affected EQ pins. Expected per Q0's D3: the `symbolicEQHexagonal` constants SURVIVE Q1
-  unchanged, because the RREF `chi_xxxx` family is identical under `jk` and `ij_kl` for those
-  groups -- Q1's red report verifies that expectation.
 - **Q2 -- literature-anchored EQ goldens for the corrected class.** *Status: Decided (scope),
   derivation pending.* EQ correctness is thin: one print-anchored golden (`m-3m`, EQ i) plus
   the 14 `symbolicEQHexagonal` fixtures, against 122 groups x {i, c}. Primary anchor:
@@ -1971,6 +1951,30 @@ contract lives in `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f)
 
 ### Completed
 
+- **Q1 -- enforce the quadrupole ij-symmetry on the EQ channel** (`fix/q1-eq-ij-symmetry`,
+  rebased onto Q0). The app's EQ convention is `Q_ij = chi_ijkl E_k E_l` and the physical
+  quadrupole is symmetric in its own indices, so the channel must carry BOTH minor symmetries --
+  the trailing field pair (already enforced) and the leading pair (was not). Sources verified
+  against the project PDFs: Hoshi 1995 eq. 10, in the app's own convention ("Since Q_ij is a
+  symmetric and traceless tensor" -> Lambda_ijkl = Lambda_jikl); Pershan 1963 sec. IV, where the
+  antisymmetric complement IS the magnetic-dipole channel. The intrinsic class is `ij_kl` -- both
+  pairs symmetric, no pair exchange, and NO trace condition: tracelessness appears in Hoshi and the
+  general multipole literature, but Hoshi is alone in the SHG context and modern EQ-SHG-RA practice
+  works with the 36-component baseline (maintainer decision 2026-07-29). Implementation: one shared
+  `intrinsicOrbit(rank)` drives the projection's symmetrization (rank 3 = the 2-element field-pair
+  orbit, rank 4 = the 4-element ij_kl orbit), expressed once in Q0's seed helper and orbit-minimum
+  skip, after which Q0's minimal-basis reduction and pivot attribution apply to the corrected class
+  unchanged. Also braces the induced-quadrupole labels (`Q_xy` -> `Q_{xy}`). Counts, as TRUE RANKS
+  over the corrected engine: 54 -> 36 triclinic, 28 -> 20 `2/m`, 15 -> 12 `mm2`, 8 -> 7 `4mm`,
+  7 -> 6 `6/mmm`, 10 -> 8 `3m`/`-3m`, 6 -> 3 for `4/mm'm'` c-type; cubic unchanged. (The pre-rebase
+  branch quoted 11 -> 9 and 8 -> 7 for the trigonal/hexagonal cells -- those were the redundant list
+  lengths Q0 removed.) Invariants verified against the Q0 base: ED/MD byte-identical (0 of 704
+  component-list and 0 of 2112 expression records; 16/16 ED/MD pin cells), all 12200 tensorForms
+  cells untouched, `m-3m` EQ golden and grey EQ-c audit unchanged, F2 bridges green at `ij_kl` for
+  all 122 groups x {i,c}. Red report: 12 EQ pin cells, re-captured. **The two-source expectation
+  recorded in Q0's D3 held**: the 14 `symbolicEQHexagonal` goldens stayed green through the switch,
+  confirming the `-15/64` family is identical under `jk` and `ij_kl` for the 3-/6-fold groups (a
+  deviation would have been a stop-and-report finding). Suite 2271 -> 2274.
 - **Q0 -- minimal-basis correction for the rank-4 coupled blocks** (`fix/q0-minimal-basis`).
   Gates Q1. For 3-/6-fold groups the in-plane block of a rank-4 tensor couples several free
   parameters through one relation Birss prints as a sum cell (Table 4f row L4,

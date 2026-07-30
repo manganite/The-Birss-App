@@ -33,8 +33,12 @@ constraints. Component _counts_ were always correct; ED/MD output is bit-identic
 relation display is now a consistent constraint view with composite relations in Birss's
 printed style; `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f) carries the new presentation
 contract, and a minimality census now guards all 122 groups. Opens the **Q-series** in
-`docs/planning/TODO-next.md`: **Q1** (EQ ij-symmetry) is implemented on a held local branch
-awaiting rebase onto Q0; **Q2** (Hoshi-anchored EQ goldens) is open.
+`docs/planning/TODO-next.md`. **Q1** landed on top of it: the electric-quadrupole channel now
+also enforces the quadrupole's own index symmetry `Q_ij = Q_ji` (the `ij_kl` intrinsic class),
+so EQ component counts drop to their physical values (54 -> 36 triclinic, 28 -> 20 for `2/m`,
+15 -> 12 for `mm2`, 10 -> 8 for `3m`; cubic unchanged) -- true ranks over the corrected Q0
+engine. Tracelessness is deliberately not enforced. ED/MD output is bit-identical through both.
+**Q2** (Hoshi-anchored EQ goldens) is open.
 
 ### v0.22.0 (2026-07-16)
 

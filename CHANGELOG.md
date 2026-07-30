@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Scientific correction (EQ):** the electric-quadrupole channel now enforces the
+  quadrupole's own index symmetry `Q_ij = Q_ji` (Pershan 1963; Hoshi 1995) in addition
+  to the SHG field-pair symmetry `E_k E_l = E_l E_k`. All versions up to and including
+  **v0.23.0 overcounted EQ tensor components** -- 54 instead of 36 for triclinic groups,
+  28 instead of 20 for `2/m`, 15 instead of 12 for `mm2`, 8 instead of 7 for `4mm`, 7
+  instead of 6 for `6/mmm`, 10 instead of 8 for `3m` and `-3m`, and 6 instead of 3 for
+  the `4/mm'm'` c-type tensor (cubic groups such as `m-3m` are unaffected: their axis
+  permutations already imply the relations). The spurious components were antisymmetric
+  in `(ij)` -- physically magnetic-dipole-type admixture, which the app's separate MD
+  channel already represents. EQ component lists (Calculator), induced-quadrupole panels
+  and EQ source terms (Simulator) computed with an earlier version include those
+  spurious terms and should be recomputed. Tracelessness (`Q_ii = 0`) is deliberately
+  **not** enforced -- the app keeps the 36-component SHG baseline (maintainer decision,
+  2026-07-29). ED and MD output is unchanged, bit for bit.
+- Simulator: the induced-quadrupole panel labels render both indices as subscripts
+  (`Q_{xy}` rather than a subscripted first index only).
 - **Scientific correction (rank-4 forms of the trigonal and hexagonal groups).** For
   point groups with a 3- or 6-fold axis, the in-plane block of a fourth-rank tensor
   couples several independent components through one relation that Birss prints as a
