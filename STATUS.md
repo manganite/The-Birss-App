@@ -1,6 +1,6 @@
 # Roadmap Status
 
-_Last updated: 2026-07-17. Synthesises open points from `docs/planning/ROADMAP-next.md`,
+_Last updated: 2026-07-30. Synthesises open points from `docs/planning/ROADMAP-next.md`,
 `docs/planning/TODO-next.md`, and the original `docs/planning/ROADMAP.md`. See those
 files for derivation details, file:line anchors, and acceptance criteria. Since 2026-07-01,
 two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
@@ -11,34 +11,32 @@ on drift)._
 
 ---
 
-## Current release: v0.23.0 (2026-07-17)
+## Current release: v0.23.1 (2026-07-30)
 
-**Accessibility completion** — the ARIA tab widgets gained the full keyboard pattern
-(roving tabindex, arrow-wrapping, Home/End; A1), the slider number inputs regained their
-focus outlines, and an A2 walkthrough added the crystal-cut legend label + state, mobile
-slider coarse-step parity, and a `<nav aria-label="Main">` landmark; A3 snapped the
-coarse-step keyboard path onto the detent grid. Internally: R1 (Tables linalg extraction
-into `services/linalg`) and R2 (dependency-free `domainTypes` module breaking the
-types/pointGroups type-only cycle; dist byte-identical). Suite 2267 green. See
-`CHANGELOG.md` `[0.23.0]`.
+**The EQ correction pair** — a PATCH carrying two corrections to calculated output for
+fourth-rank tensors. **Q0:** rank-4 tensor bases are now minimal (RREF-reduced,
+pivot-named parameters). For the twelve trigonal/hexagonal classes and their magnetic
+derivatives the Simulator's rank-4 EQ polarimetry had been built from a **non-invariant**
+tensor, and the Calculator/Tables relation lists showed overlapping chains that
+contradicted each other as constraints; the display is now a consistent constraint view
+with composite relations in Birss's printed sum-cell style, and a minimality census guards
+all 122 groups. **Q1:** the electric-quadrupole channel now also enforces the quadrupole's
+own index symmetry `Q_ij = Q_ji` (the `ij_kl` intrinsic class, Pershan 1963 / Hoshi 1995;
+tracelessness deliberately not enforced), so EQ component counts drop to their physical
+values. Independent-component counts were always correct under Q0, and ED/MD output is
+bit-identical through both. `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(d) and 5(f) carry
+the amended contract. Suite 2274 green. See `CHANGELOG.md` `[0.23.1]` for the corrected
+count table and the affected surfaces, and
+`docs/findings/FINDING-2026-07-29-rank4-trigonal-hexagonal-overcount.md` for the evidence
+record. **Q2** (Hoshi-anchored EQ goldens) remains open.
 
-**Unreleased, queued for the next patch (merged to `main` after v0.23.0):** the **Q0 scientific
-correction** — rank-4 tensor bases are
-now minimal (RREF-reduced, pivot-named parameters), which fixes two defects for the twelve
-trigonal/hexagonal classes and their magnetic derivatives: the Simulator's rank-4 EQ
-polarimetry was built from a **non-invariant** tensor (each component attributed to one
-parameter times a fixed ratio, invalid where Birss Table 4f prints a sum cell), and the
-Calculator/Tables relation lists showed overlapping chains that contradicted each other as
-constraints. Component _counts_ were always correct; ED/MD output is bit-identical. The
-relation display is now a consistent constraint view with composite relations in Birss's
-printed style; `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f) carries the new presentation
-contract, and a minimality census now guards all 122 groups. Opens the **Q-series** in
-`docs/planning/TODO-next.md`. **Q1** landed on top of it: the electric-quadrupole channel now
-also enforces the quadrupole's own index symmetry `Q_ij = Q_ji` (the `ij_kl` intrinsic class),
-so EQ component counts drop to their physical values (54 -> 36 triclinic, 28 -> 20 for `2/m`,
-15 -> 12 for `mm2`, 10 -> 8 for `3m`; cubic unchanged) -- true ranks over the corrected Q0
-engine. Tracelessness is deliberately not enforced. ED/MD output is bit-identical through both.
-**Q2** (Hoshi-anchored EQ goldens) is open.
+### v0.23.0 (2026-07-17)
+
+Accessibility completion: the full ARIA tabs keyboard pattern (A1), restored slider
+number-input focus outlines, an A2 walkthrough (crystal-cut legend label + state, mobile
+slider coarse-step parity, `<nav aria-label="Main">`), and A3's detent-grid snapping for
+coarse steps. Internally R1 (Tables linalg extraction) and R2 (dependency-free
+`domainTypes` module; dist byte-identical). See `CHANGELOG.md` `[0.23.0]`.
 
 ### v0.22.0 (2026-07-16)
 

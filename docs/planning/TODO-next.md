@@ -1926,6 +1926,8 @@ Source: the promoted "accessibility completion" item (STATUS section 1). Maintai
 
 ## EQ physics and rank-4 presentation -- Q-series
 
+**Shipped in v0.23.1 (2026-07-30)** carrying Q0 + Q1; Q2 remains open.
+
 Source: the Q1 review of the electric-quadrupole channel (2026-07-29) and the rank-4
 minimal-basis finding it surfaced (2026-07-29/30). Maintainer decisions are recorded per
 item. Authoritative background:
