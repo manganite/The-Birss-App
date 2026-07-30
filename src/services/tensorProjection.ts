@@ -11,10 +11,10 @@
  * wherever it is not already minimal, so free parameters are pivot-named and every consumer (the
  * relation display and the rawPoly parameter attribution) sees an identifiable parametrization (Q0).
  *
- * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md, Step 5 (tensor forms &
- *      particularization: ED/MD symmetric in the last two (field) indices; EQ additionally
- *      symmetric in the leading (quadrupole) pair -- the `ij_kl` class, see `intrinsicOrbit`) and
- *      its canonical-presentation section (minimal bases, constraint-view display).
+ * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md, Step 5 -- tensor forms and
+ *      particularization. ED/MD are symmetric in the last two, field, indices; EQ is additionally
+ *      symmetric in the leading, quadrupole, pair -- the `ij_kl` class, see `intrinsicOrbit`.
+ *      Step 5(f) covers the canonical presentation: minimal bases, constraint-view display.
  */
 
 import {
@@ -345,7 +345,6 @@ export function averageTensor(
   return sum.map((v) => v / group.length);
 }
 
-/**
 /**
  * The intrinsic index symmetry of the SHG channels, as position-permutation orbits (`p[k]` names
  * the source position feeding output position `k`, the same convention as `tensorForms`).
