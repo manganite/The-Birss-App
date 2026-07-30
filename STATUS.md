@@ -22,6 +22,20 @@ into `services/linalg`) and R2 (dependency-free `domainTypes` module breaking th
 types/pointGroups type-only cycle; dist byte-identical). Suite 2267 green. See
 `CHANGELOG.md` `[0.23.0]`.
 
+**Unreleased, queued for the next patch (merged to `main` after v0.23.0):** the **Q0 scientific
+correction** — rank-4 tensor bases are
+now minimal (RREF-reduced, pivot-named parameters), which fixes two defects for the twelve
+trigonal/hexagonal classes and their magnetic derivatives: the Simulator's rank-4 EQ
+polarimetry was built from a **non-invariant** tensor (each component attributed to one
+parameter times a fixed ratio, invalid where Birss Table 4f prints a sum cell), and the
+Calculator/Tables relation lists showed overlapping chains that contradicted each other as
+constraints. Component _counts_ were always correct; ED/MD output is bit-identical. The
+relation display is now a consistent constraint view with composite relations in Birss's
+printed style; `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f) carries the new presentation
+contract, and a minimality census now guards all 122 groups. Opens the **Q-series** in
+`docs/planning/TODO-next.md`: **Q1** (EQ ij-symmetry) is implemented on a held local branch
+awaiting rebase onto Q0; **Q2** (Hoshi-anchored EQ goldens) is open.
+
 ### v0.22.0 (2026-07-16)
 
 Tables rank-4 performance (allocation-free flat-array projector; build-time sharing partitions) and

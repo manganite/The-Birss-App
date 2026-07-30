@@ -7,8 +7,13 @@
  * dependency-free label/formatting helpers (getIndices, getLabel, formatCoeff,
  * cleanupExpressionSigns) shared by both this module and latexFormatting.ts.
  *
+ * Bases are MINIMAL: the seed projection's proportionality dedup is followed by an RREF reduction
+ * wherever it is not already minimal, so free parameters are pivot-named and every consumer (the
+ * relation display and the rawPoly parameter attribution) sees an identifiable parametrization (Q0).
+ *
  * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md, Step 5 (tensor forms &
- *      particularization: intrinsic symmetry = last two indices only).
+ *      particularization: intrinsic symmetry = last two indices only) and its canonical-presentation
+ *      section (minimal bases, constraint-view display).
  */
 
 import {
@@ -23,7 +28,7 @@ import {
 // Shared linear-algebra primitives (Wave-2 E3). rotX/rotY/rotZ/mat3mul are re-exported below so
 // existing importers (orientation.ts, the projection/azimuth tests, symbolicProjection) keep their
 // `from './tensorProjection'` import site unchanged.
-import { rotX, rotY, rotZ, mat3mul, isIndependentOf } from './linalg';
+import { rotX, rotY, rotZ, mat3mul, isIndependentOf, rref, spanRank, RANK_PIVOT_EPS } from './linalg';
 import { COEFF_EPSILON, ROOT_MATCH_EPSILON } from './tolerances';
 
 export { rotX, rotY, rotZ, mat3mul };
@@ -178,6 +183,114 @@ export function formatBasisRelation(basis: ArrayLike<number>, rank: number): str
   return members.length > 0 ? members.join('') : null;
 }
 
+/**
+ * The relation set of a MINIMAL (RREF-reduced) basis, as display strings (Q0, 2026-07-30).
+ *
+ * A relation list built one-string-per-basis-vector is only honest when each basis vector's support
+ * is a proportionality class, i.e. when no component is touched by two basis vectors. That holds for
+ * every cell except the coupled rank-4 blocks of the 3-/6-fold groups, where several free parameters
+ * genuinely meet in the same components (Birss Table 4f rows K4-L4, N4, P4 print exactly this as a
+ * SUM cell). There, per-vector chains overlap at `T_xxxx` and, read as simultaneous constraints,
+ * contradict each other. So the output semantics is:
+ *
+ *   1. one chain per PROPORTIONALITY CLASS -- components whose columns across the reduced basis are
+ *      proportional. For a disjoint-support cell this reproduces the per-vector chains exactly
+ *      (the only row touching a class is the row spanning it), which is why every unaffected cell
+ *      is byte-identical;
+ *   2. the residual COMPOSITE relations among the class representatives -- the nullspace of the
+ *      representative-column matrix, rendered in Birss's printed style
+ *      (`T_xxxx = T_xxyy + T_xyxy + T_xyyx`), one relation per line, never mixed into a chain.
+ *
+ * Vanishing components are not listed (callers report them separately). Rank 0 must be handled by
+ * the caller, as for `formatBasisRelation`.
+ */
+export function formatReducedRelations(basis: number[][], rank: number): string[] {
+  const dim = Math.pow(3, rank);
+  if (basis.length === 0) return [];
+
+  // Column c of the reduced basis: the coordinate vector of component c in the pivot parameters.
+  const col = (c: number): number[] => basis.map((row) => row[c]);
+  const isZeroVec = (v: number[]) => v.every((x) => Math.abs(x) <= EPSILON);
+  /** Ratio v/u if the two are proportional (u nonzero), else null. */
+  const ratioOf = (v: number[], u: number[]): number | null => {
+    let ratio: number | null = null;
+    for (let k = 0; k < u.length; k++) {
+      if (Math.abs(u[k]) > EPSILON) {
+        const q = v[k] / u[k];
+        if (ratio === null) ratio = q;
+        else if (Math.abs(q - ratio) > EPSILON) return null;
+      } else if (Math.abs(v[k]) > EPSILON) return null;
+    }
+    return ratio;
+  };
+
+  // (1) proportionality classes, discovered in ascending component order so the representative of
+  // each class is its lowest index and the class order matches the old per-vector order.
+  const reps: number[] = [];
+  const memberRatio = new Map<number, { rep: number; ratio: number }>();
+  for (let c = 0; c < dim; c++) {
+    const vc = col(c);
+    if (isZeroVec(vc)) continue;
+    let placed = false;
+    for (const r of reps) {
+      const ratio = ratioOf(vc, col(r));
+      if (ratio !== null) {
+        memberRatio.set(c, { rep: r, ratio });
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      reps.push(c);
+      memberRatio.set(c, { rep: c, ratio: 1 });
+    }
+  }
+
+  // Each class becomes a synthetic vector fed to the SAME builder the per-vector path used, so the
+  // chain strings (ratios, signs, coefficient formatting) are produced by identical code.
+  const relations: string[] = [];
+  for (const r of reps) {
+    const v = new Array(dim).fill(0);
+    for (const [c, m] of memberRatio) if (m.rep === r) v[c] = m.ratio;
+    const chain = formatBasisRelation(v, rank);
+    if (chain !== null) relations.push(chain);
+  }
+
+  // (2) residual composite relations: reduce the representative-column matrix; every non-pivot
+  // representative is a combination of the pivot ones, which is a relation the point group forces.
+  const repCols = reps.map(col);
+  const M = basis.map((_, k) => repCols.map((v) => v[k]));
+  const R = rref(M, reps.length);
+  const pivotOf = R.map((row) => row.findIndex((x) => Math.abs(x) > RANK_PIVOT_EPS));
+  const isPivot = new Set(pivotOf.filter((p) => p >= 0));
+
+  for (let j = 0; j < reps.length; j++) {
+    if (isPivot.has(j)) continue;
+    // Nullspace vector for free column j: a_j = 1, a_{pivot_k} = -R[k][j]. It states sum_i a_i T_i = 0.
+    const a = new Map<number, number>([[j, 1]]);
+    R.forEach((row, k) => {
+      if (pivotOf[k] < 0 || Math.abs(row[j]) <= RANK_PIVOT_EPS) return;
+      a.set(pivotOf[k], -row[j]);
+    });
+    const involved = [...a.keys()].sort((p, q) => reps[p] - reps[q]);
+    if (involved.length < 2) continue;
+
+    // Birss prints these with the SUM CELL's own component on the left and a plain sum on the right
+    // (Table 4f row L4: `xxxx = yyxx+xyyx+yxyx`). Normalizing on the lowest-index involved
+    // representative reproduces that shape, with each partner the canonical member of its class.
+    const [lhs, ...rhs] = involved;
+    const scale = -a.get(lhs)!;
+    const terms = rhs.map((p, n) => {
+      const coeff = a.get(p)! / scale;
+      const piece = `${formatCoeff(Math.abs(coeff))}${getLabel(getIndices(reps[p], rank))}`;
+      return n === 0 ? (coeff < 0 ? `-${piece}` : piece) : coeff < 0 ? `- ${piece}` : `+ ${piece}`;
+    });
+    relations.push(`${getLabel(getIndices(reps[lhs], rank))} = ${terms.join(' ')}`);
+  }
+
+  return relations;
+}
+
 export function transformTensor(
   tensor: number[],
   g: Matrix3x3,
@@ -232,6 +345,102 @@ export function averageTensor(
 }
 
 /**
+ * The symmetry-averaged basis of the invariant subspace, as a MINIMAL (RREF) basis.
+ *
+ * The seed projection alone returns a spanning set deduped only by proportionality
+ * (`isIndependentOf`), which for the coupled rank-4 blocks of the 3-/6-fold groups is non-minimal:
+ * several seeds land on distinct-but-dependent directions (census: 478 of 12200 cells, all rank 4,
+ * excess +1 or +2). The span was always right, but a non-minimal family list makes the relation
+ * display self-contradictory and the parameter attribution ill-defined, so the reduction happens
+ * HERE -- before any consumer -- and every consumer sees pivot-named free parameters. RREF is unique
+ * for a given span, so the pivots (and hence the parameter names) are well-defined; for the
+ * disjoint-support cells that are already minimal it is a no-op up to normalization, verified across
+ * all 5935 non-redundant non-zero cells. See docs/findings (Q0, 2026-07-30).
+ */
+/** The intrinsic-symmetric unit seed for component `idx`: e_idx plus its field-pair partner. */
+function seedVector(idx: number, rank: number): number[] {
+  const dim = Math.pow(3, rank);
+  const indices = getIndices(idx, rank);
+  const swappedIndices = [...indices];
+  const temp = swappedIndices[rank - 1];
+  swappedIndices[rank - 1] = swappedIndices[rank - 2];
+  swappedIndices[rank - 2] = temp;
+
+  const seed = new Array(dim).fill(0);
+  seed[idx] = 1;
+  seed[toFlatIndex(swappedIndices, rank)] = 1; // Symmetrize (a no-op when the pair is already equal)
+  return seed;
+}
+
+/** Flat index of `idx`'s field-pair partner (the trailing-pair swap). */
+function pairPartner(idx: number, rank: number): number {
+  const indices = getIndices(idx, rank);
+  const swapped = [...indices];
+  const temp = swapped[rank - 1];
+  swapped[rank - 1] = swapped[rank - 2];
+  swapped[rank - 2] = temp;
+  return toFlatIndex(swapped, rank);
+}
+
+/** Memoized `tensorBasisFor` results, keyed by the cached full-group array identity (stable per
+ * group/setting via `getCachedFullGroup`) and then by the spec. Same pattern as `tensorForms`'
+ * `flatOpCache`. The basis depends only on (group, rank, isAxial, isTimeOdd) and is never mutated by
+ * callers, so this is a pure memo. It matters because Q0 made `computeShg` need the basis IN ADDITION
+ * to its per-seed projections on the uncoupled path: without the memo a repeated rank-4 SHG
+ * evaluation (every Simulator angle change re-derives the same group's basis) cost ~1.5-2x its
+ * pre-Q0 time. */
+const basisCache = new WeakMap<Matrix3x3[], Map<string, { basis: number[][]; reduced: boolean }>>();
+
+function tensorBasisFor(
+  group: Matrix3x3[],
+  rank: number,
+  isAxial: boolean,
+  isTimeOdd: boolean,
+): { basis: number[][]; reduced: boolean } {
+  let perGroup = basisCache.get(group);
+  if (!perGroup) {
+    perGroup = new Map();
+    basisCache.set(group, perGroup);
+  }
+  const cacheKey = `${rank}:${isAxial}:${isTimeOdd}`;
+  const cached = perGroup.get(cacheKey);
+  if (cached) return cached;
+  const computed = computeTensorBasis(group, rank, isAxial, isTimeOdd);
+  perGroup.set(cacheKey, computed);
+  return computed;
+}
+
+function computeTensorBasis(
+  group: Matrix3x3[],
+  rank: number,
+  isAxial: boolean,
+  isTimeOdd: boolean,
+): { basis: number[][]; reduced: boolean } {
+  const dim = Math.pow(3, rank);
+  const spanning: number[][] = [];
+  for (let i = 0; i < dim; i++) {
+    if (i > pairPartner(i, rank)) continue; // Only process unique pairs
+
+    const averaged = averageTensor(seedVector(i, rank), group, rank, isAxial, isTimeOdd);
+
+    const nonZero = averaged.some((v) => Math.abs(v) >= EPSILON);
+    if (nonZero && isIndependentOf(averaged, spanning, dim, EPSILON)) {
+      spanning.push(averaged);
+    }
+  }
+  // Reduce ONLY when the spanning set is actually non-minimal, and report which happened. The guard
+  // is a MINIMALITY test (`spanning.length === spanRank(spanning)`) -- there is deliberately no
+  // `rank === 4` check; the tensor rank is merely where non-minimality happens to occur. Reason:
+  // RREF's extra eliminations perturb the last bits, and on the irrational trigonal/hexagonal
+  // entries that is enough to tip a display rounding boundary (5/16 printing as 0.313 vs 0.312).
+  // Skipping the reduction where it is not needed keeps every already-minimal cell -- all of
+  // rank <= 3, and the whole census complement at rank 4 -- BIT-identical, while the coupled blocks
+  // still get a canonical, uniquely-pivoted basis.
+  if (spanning.length === spanRank(spanning)) return { basis: spanning, reduced: false };
+  return { basis: rref(spanning, dim), reduced: true };
+}
+
+/**
  * Computes the independent, symmetrized tensor-component basis vectors for a group.
  * Returns null if the group is not in GENERATORS (caller decides how to report that).
  */
@@ -247,39 +456,8 @@ export function calculateTensorBasisResults(
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
   const group = getCachedFullGroup(cacheKey, generators);
   const rank = tensorType === 'EQ' ? 4 : 3;
-  const isAxial = tensorType === 'MD';
-  const isTimeOdd = trType === 'c';
-  const dim = Math.pow(3, rank);
 
-  const basisResults: number[][] = [];
-  for (let i = 0; i < dim; i++) {
-    const indices = getIndices(i, rank);
-    const swappedIndices = [...indices];
-    const temp = swappedIndices[rank - 1];
-    swappedIndices[rank - 1] = swappedIndices[rank - 2];
-    swappedIndices[rank - 2] = temp;
-
-    let swappedIdx = 0;
-    for (let r = 0; r < rank; r++) {
-      swappedIdx += swappedIndices[r] * Math.pow(3, rank - 1 - r);
-    }
-
-    if (i > swappedIdx) continue; // Only process unique pairs
-
-    const basisVector = new Array(dim).fill(0);
-    basisVector[i] = 1;
-    if (i !== swappedIdx) {
-      basisVector[swappedIdx] = 1; // Symmetrize
-    }
-    const averaged = averageTensor(basisVector, group, rank, isAxial, isTimeOdd);
-
-    const nonZero = averaged.some((v) => Math.abs(v) >= EPSILON);
-    if (nonZero && isIndependentOf(averaged, basisResults, dim, EPSILON)) {
-      basisResults.push(averaged);
-    }
-  }
-
-  return { basisResults, rank };
+  return { basisResults: tensorBasisFor(group, rank, tensorType === 'MD', trType === 'c').basis, rank };
 }
 
 export interface SHGExpression {
@@ -495,6 +673,29 @@ export function computeShg<S>(
   const inducedLab: SPoly<S>[] = [];
   const inducedCrystal: SHGExpression[] = [];
 
+  // Parameter attribution over the MINIMAL basis (Q0, 2026-07-30). In RREF each row's pivot column
+  // is a unit vector, so the coordinate of a general invariant tensor T along row m is literally
+  // T[pivot_m]: hence, exactly,
+  //     T_ijkl = sum_m basis[m][ijkl] * chi_{pivot_m}
+  // and every component is a SUM over the free parameters it actually depends on. The previous code
+  // instead labelled each component by the lowest-index nonzero of its own projected seed and scaled
+  // by a ratio, which silently asserts T_ijkl / T_label to be constant over the whole invariant
+  // subspace. That holds only inside a proportionality class; in the coupled rank-4 blocks of the
+  // 3-/6-fold groups it is false, and the implied tensor is not even group-invariant (it violates
+  // the in-plane isotropy condition chi_xxxx = chi_xxyy + chi_xyxy + chi_xyyx). Since the Simulator
+  // evaluates these polynomials directly -- one amplitude/phase slider per chi key -- the fix also
+  // makes its parametrization identifiable and its tensor invariant.
+  // `reduced` is exactly the census split: true for the coupled rank-4 cells whose seed projection
+  // was non-minimal, false everywhere else. Where it is false the historical per-seed attribution is
+  // provably equivalent (each component's projection is parallel to the single row spanning its
+  // proportionality class), so that path is kept verbatim and those cells stay BIT-identical; where
+  // it is true only the coordinate form is correct.
+  const { basis, reduced } = tensorBasisFor(group, rank, isAxial, isTimeOdd);
+  const pivots = basis.map((row) => {
+    const p = row.findIndex((x) => Math.abs(x) > RANK_PIVOT_EPS);
+    return p < 0 ? null : { label: getLabel(getIndices(p, rank)), value: row[p] };
+  });
+
   for (let outIdx = 0; outIdx < outputCount; outIdx++) {
     const outIndices = tensorType === 'EQ' ? [Math.floor(outIdx / 3), outIdx % 3] : [outIdx];
     const outLabel =
@@ -507,36 +708,37 @@ export function computeShg<S>(
 
     for (let j = 0; j < 3; j++) {
       for (let k = 0; k < 3; k++) {
-        const fullIndices = [...outIndices, j, k];
-        const flatIdx = toFlatIndex(fullIndices, rank);
+        const flatIdx = toFlatIndex([...outIndices, j, k], rank);
 
-        const swappedIndices = [...fullIndices];
-        const temp = swappedIndices[rank - 1];
-        swappedIndices[rank - 1] = swappedIndices[rank - 2];
-        swappedIndices[rank - 2] = temp;
-        const swappedIdx = toFlatIndex(swappedIndices, rank);
-
-        const basisVector = new Array(dim).fill(0);
-        basisVector[flatIdx] = 1;
-        if (flatIdx !== swappedIdx) basisVector[swappedIdx] = 1;
-        const averaged = averageTensor(basisVector, group, rank, isAxial, isTimeOdd);
-
-        let foundRelation: { label: string; coeff: number } | null = null;
-        for (let i = 0; i < dim; i++) {
-          if (Math.abs(averaged[i]) > EPSILON) {
-            foundRelation = { label: getLabel(getIndices(i, rank)), coeff: averaged[flatIdx] / averaged[i] };
-            break;
+        // The free parameters this component genuinely depends on, with their coordinates.
+        const terms: { label: string; weight: number }[] = [];
+        if (reduced) {
+          for (let m = 0; m < basis.length; m++) {
+            const pivot = pivots[m];
+            if (pivot === null) continue;
+            const weight = basis[m][flatIdx] / pivot.value;
+            if (Math.abs(weight) > EPSILON) terms.push({ label: pivot.label, weight });
+          }
+        } else {
+          // Historical single-parameter attribution, verbatim: label and scale read off this
+          // component's own projected seed. Equivalent here, and bit-for-bit reproducible.
+          const averaged = averageTensor(seedVector(flatIdx, rank), group, rank, isAxial, isTimeOdd);
+          for (let i = 0; i < dim; i++) {
+            if (Math.abs(averaged[i]) > EPSILON) {
+              terms.push({ label: getLabel(getIndices(i, rank)), weight: averaged[flatIdx] / averaged[i] });
+              break;
+            }
           }
         }
 
-        if (foundRelation) {
+        for (const { label, weight } of terms) {
           // Crystal-frame induced (numeric, shared across both instances).
           const polyFull = multiplyLinearGeneric(numberScalar, E_VEC_FULL[j], E_VEC_FULL[k]);
           for (const [pair, pCoeff] of Object.entries(polyFull)) {
             if (Math.abs(pCoeff) > EPSILON) {
-              if (!crystalTerms.has(foundRelation.label)) crystalTerms.set(foundRelation.label, new Map());
-              const pm = crystalTerms.get(foundRelation.label)!;
-              pm.set(pair, (pm.get(pair) || 0) + foundRelation.coeff * pCoeff);
+              if (!crystalTerms.has(label)) crystalTerms.set(label, new Map());
+              const pm = crystalTerms.get(label)!;
+              pm.set(pair, (pm.get(pair) || 0) + weight * pCoeff);
             }
           }
 
@@ -544,9 +746,9 @@ export function computeShg<S>(
           const polyLab = multiplyLinearGeneric(scalar, E_lab[j], E_lab[k]);
           for (const [pair, pCoeffS] of Object.entries(polyLab)) {
             if (!scalar.isZero(pCoeffS)) {
-              const totalS = scalar.scaleByNumber(pCoeffS, foundRelation.coeff);
-              if (!labTerms.has(foundRelation.label)) labTerms.set(foundRelation.label, new Map());
-              const pm = labTerms.get(foundRelation.label)!;
+              const totalS = scalar.scaleByNumber(pCoeffS, weight);
+              if (!labTerms.has(label)) labTerms.set(label, new Map());
+              const pm = labTerms.get(label)!;
               pm.set(pair, scalar.add(pm.get(pair) ?? scalar.zero, totalS));
             }
           }
