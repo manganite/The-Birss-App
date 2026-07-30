@@ -1926,7 +1926,8 @@ Source: the promoted "accessibility completion" item (STATUS section 1). Maintai
 
 ## EQ physics and rank-4 presentation -- Q-series
 
-**Shipped in v0.23.1 (2026-07-30)** carrying Q0 + Q1; Q2 remains open.
+**CLOSED.** Q0 + Q1 shipped in v0.23.1 (2026-07-30); Q2 (the Hoshi reference goldens)
+landed after it. No open items remain in the EQ physics block.
 
 Source: the Q1 review of the electric-quadrupole channel (2026-07-29) and the rank-4
 minimal-basis finding it surfaced (2026-07-29/30). Maintainer decisions are recorded per
@@ -1936,23 +1937,32 @@ contract lives in `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f)
 
 ### Open
 
-- **Q2 -- literature-anchored EQ goldens for the corrected class.** *Status: Decided (scope),
-  derivation pending.* EQ correctness is thin: one print-anchored golden (`m-3m`, EQ i) plus
-  the 14 `symbolicEQHexagonal` fixtures, against 122 groups x {i, c}. Primary anchor:
-  **Hoshi et al., Phys. Rev. B 52, 12355 (1995)**, §II.A.3 -- his `D_inf_h` / `C_inf_v` /
-  `K_h` Lambda-tensor lists. **Transcription caveat (blocking, must be resolved in the fixture
-  derivation):** Hoshi imposes `Q_ii = 0` on top of `Lambda_ijkl = Lambda_jikl`, and several of
-  his printed relations (e.g. `Lambda_3311 = Lambda_3322 = -(Lambda_1122 + Lambda_1212)`,
-  `Lambda_1111 = Lambda_2222 = Lambda_1122 + 2 Lambda_1212`) follow from the trace condition
-  alone. The app deliberately does NOT enforce tracelessness, so those must be identified and
-  dropped -- transcribing verbatim would smuggle the trace convention into a fixture. His
-  groups are also limit groups, not crystallographic point groups: pick the crystallographic
-  subgroup whose form coincides and say so in the fixture `note`. Acceptance: >= 1
-  print-anchored EQ golden per crystal system, each with the trace convention explicitly
-  accounted for in its `source`/`note`.
+(none)
 
 ### Completed
 
+- **Q2 -- literature-anchored EQ goldens (Hoshi 1995)** (`test/q2-hoshi-eq-goldens`). Closes the
+  series. Anchor: Hoshi et al., Phys. Rev. B 52, 12355 (1995), Eqs. (11)-(12), print-verified by the
+  maintainer 2026-07-30 -- in the app's own convention (`Q_ij = Lambda_ijkl E_k E_l`, axis 3 = c),
+  so it pins the corrected `ij_kl` class directly. The blocking caveat was resolved rather than
+  worked around: Hoshi additionally imposes tracelessness `Q_ii = 0`, which the app deliberately does
+  not, so his printed relations are SPLIT BY PROVENANCE. (a) Eq. (11)'s four equality chains and Eq.
+  (12)'s middle line `L1111 = L1122 + 2*L1212` are group theory -- asserted identically; the latter is
+  the same in-plane closure Birss prints as the Table 4f row-L4 sum cell and the app derives since
+  Q0, so print and engine agree from two independent directions. (b) The two `-2` lines of Eq. (12)
+  are trace-dependent and enter only through an explicit conversion: the app's 6-dimensional EQ space
+  intersected with `Q_ii = 0` equals Hoshi's 4-dimensional space exactly, both inclusions, factors
+  included. The trace condition has RANK 2 on the app's space (three individually nontrivial
+  equations, of which the `xx` and `yy` ones coincide by in-plane symmetry; the six off-diagonal ones
+  are vacuous), giving 6 - 2 = 4 = his count. (c) A negative control pins the maintainer decision of
+  2026-07-29: the app's space is 6-dimensional, NOT 4, and each trace-dependent line demonstrably
+  fails in it -- so silently enforcing tracelessness later becomes a test failure. Limit groups map
+  exactly at rank 4 (`D(inf)h` -> `6/mmm`, `C(inf)v` -> `6mm`, since a 6-fold axis already forces
+  in-plane isotropy); the two groups' EQ forms are asserted identical, matching Hoshi's single
+  printed form. `K_h` is out of scope (no crystallographic realization). The fixture header warns
+  against re-deriving from the PDF text layer -- the OCR drops precisely the signs and factors that
+  carry the physics -- and every transcribed coefficient was mutation-checked to be load-bearing.
+  Suite 2274 -> 2290.
 - **Q1 -- enforce the quadrupole ij-symmetry on the EQ channel** (`fix/q1-eq-ij-symmetry`,
   rebased onto Q0). The app's EQ convention is `Q_ij = chi_ijkl E_k E_l` and the physical
   quadrupole is symmetric in its own indices, so the channel must carry BOTH minor symmetries --
