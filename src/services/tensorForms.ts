@@ -261,9 +261,10 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
   // chain2 + chain4 + chain5 = 3*chain1). RREF makes the basis minimal and canonical, so the pivots
   // name the free parameters unambiguously and the relation formatter can separate proportionality
   // classes from genuine composite relations. Rank-derived counts (spanRank) were always correct and
-  // are unchanged. Gated on the rank so already-minimal cells stay BIT-identical: RREF's extra
-  // eliminations would otherwise perturb the last bits (enough to tip a display rounding boundary on
-  // the irrational trigonal entries).
+  // are unchanged. The reduction is gated on MINIMALITY (`length === spanRank`), not on the tensor
+  // rank, so already-minimal cells stay BIT-identical: RREF's extra eliminations would otherwise
+  // perturb the last bits (enough to tip a display rounding boundary on the irrational trigonal
+  // entries).
   return basisResults.length === spanRank(basisResults) ? basisResults : rref(basisResults, dim);
 }
 

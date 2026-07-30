@@ -428,11 +428,14 @@ function computeTensorBasis(
       spanning.push(averaged);
     }
   }
-  // Reduce ONLY when the spanning set is actually non-minimal, and report which happened. RREF's
-  // extra eliminations perturb the last bits, and on the irrational trigonal/hexagonal entries that
-  // is enough to tip a display rounding boundary (5/16 printing as 0.313 vs 0.312); gating on the
-  // rank keeps every already-minimal cell -- all of rank <= 3, and the whole census complement at
-  // rank 4 -- BIT-identical, while the coupled blocks get a canonical, uniquely-pivoted basis.
+  // Reduce ONLY when the spanning set is actually non-minimal, and report which happened. The guard
+  // is a MINIMALITY test (`spanning.length === spanRank(spanning)`) -- there is deliberately no
+  // `rank === 4` check; the tensor rank is merely where non-minimality happens to occur. Reason:
+  // RREF's extra eliminations perturb the last bits, and on the irrational trigonal/hexagonal
+  // entries that is enough to tip a display rounding boundary (5/16 printing as 0.313 vs 0.312).
+  // Skipping the reduction where it is not needed keeps every already-minimal cell -- all of
+  // rank <= 3, and the whole census complement at rank 4 -- BIT-identical, while the coupled blocks
+  // still get a canonical, uniquely-pivoted basis.
   if (spanning.length === spanRank(spanning)) return { basis: spanning, reduced: false };
   return { basis: rref(spanning, dim), reduced: true };
 }
