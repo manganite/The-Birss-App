@@ -382,7 +382,35 @@ function pairPartner(idx: number, rank: number): number {
   return toFlatIndex(swapped, rank);
 }
 
+/** Memoized `tensorBasisFor` results, keyed by the cached full-group array identity (stable per
+ * group/setting via `getCachedFullGroup`) and then by the spec. Same pattern as `tensorForms`'
+ * `flatOpCache`. The basis depends only on (group, rank, isAxial, isTimeOdd) and is never mutated by
+ * callers, so this is a pure memo. It matters because Q0 made `computeShg` need the basis IN ADDITION
+ * to its per-seed projections on the uncoupled path: without the memo a repeated rank-4 SHG
+ * evaluation (every Simulator angle change re-derives the same group's basis) cost ~1.5-2x its
+ * pre-Q0 time. */
+const basisCache = new WeakMap<Matrix3x3[], Map<string, { basis: number[][]; reduced: boolean }>>();
+
 function tensorBasisFor(
+  group: Matrix3x3[],
+  rank: number,
+  isAxial: boolean,
+  isTimeOdd: boolean,
+): { basis: number[][]; reduced: boolean } {
+  let perGroup = basisCache.get(group);
+  if (!perGroup) {
+    perGroup = new Map();
+    basisCache.set(group, perGroup);
+  }
+  const cacheKey = `${rank}:${isAxial}:${isTimeOdd}`;
+  const cached = perGroup.get(cacheKey);
+  if (cached) return cached;
+  const computed = computeTensorBasis(group, rank, isAxial, isTimeOdd);
+  perGroup.set(cacheKey, computed);
+  return computed;
+}
+
+function computeTensorBasis(
   group: Matrix3x3[],
   rank: number,
   isAxial: boolean,
