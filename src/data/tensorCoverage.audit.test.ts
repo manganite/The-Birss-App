@@ -17,11 +17,22 @@ describe('audit Phase 3b — grey groups: c-tensor ≡ 0 (Step 5e)', () => {
     expect(greyGroups).toHaveLength(32);
   });
 
+  // Explicit generous timeout, same reasoning as PIN_TIMEOUT_MS in shgUnification.pins.test.ts: the
+  // heaviest cells here are rank-4 EQ projections over an order-96 grey group (m-3m1' measures ~1.7 s
+  // cold in isolation), so under full-suite contention they can exceed vitest's 5 s default -- an
+  // intermittent flake that passes when the file runs alone. These assertions fail on a CHANGED VALUE,
+  // never on duration; performance is the bench's job (tensorForms.bench.ts).
+  const GREY_TIMEOUT_MS = 30000;
+
   for (const pg of greyGroups) {
     for (const tensor of TENSOR_TYPES) {
-      it(`${pg.name} ${tensor} c-type ≡ 0`, () => {
-        expect(calculateTensorComponents(pg.name, tensor, 'c')).toEqual(['All components are zero.']);
-      });
+      it(
+        `${pg.name} ${tensor} c-type ≡ 0`,
+        () => {
+          expect(calculateTensorComponents(pg.name, tensor, 'c')).toEqual(['All components are zero.']);
+        },
+        GREY_TIMEOUT_MS,
+      );
     }
   }
 });
