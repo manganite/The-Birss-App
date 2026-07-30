@@ -273,6 +273,19 @@ git switch main && git pull
 git branch -d feature/<short-name>
 ```
 
+**Post-verdict commits on an already-reviewed branch.** Once a branch has a clean review verdict,
+a further commit normally needs a delta re-review before merging. It may merge without that second
+round-trip only when **all four** of these hold:
+
+1. it is **docs- or comment-only** (no change to any executed code path);
+2. it is **responsive** to a review comment or a verdict note (not new, self-directed scope);
+3. it stays **within the paths already enumerated** by the work order or the review ledger; and
+4. the **merge report quotes the diff**, so the merge record shows exactly what was added after
+   the verdict.
+
+Anything failing one of the four — including a one-line code fix, however trivial — goes back for
+a delta re-review.
+
 **Local merge workflow** (still merges a branch — never commit directly on main):
 ```bash
 # Before merging: ensure `npm run lint && npm run test` pass locally
