@@ -27,8 +27,8 @@ import {
   det,
   type Matrix3x3,
 } from './symmetryGroups';
-import { getIndices, formatBasisRelation } from './tensorProjection';
-import { isIndependentOf } from './linalg';
+import { getIndices, formatReducedRelations } from './tensorProjection';
+import { isIndependentOf, rref, spanRank } from './linalg';
 
 export type TensorRank = 0 | 1 | 2 | 3 | 4;
 export type TensorParity = 'polar' | 'axial';
@@ -47,12 +47,16 @@ export interface TensorSpec {
 }
 
 export interface TensorForm {
-  /** The independent, symmetry-averaged basis vectors (each length 3^rank). Empty when the tensor
-   * vanishes identically. */
+  /** The independent, symmetry-averaged basis vectors (each length 3^rank), as a MINIMAL basis --
+   * `basisResults.length` is the true independent-component count. Empty when the tensor vanishes
+   * identically. */
   basisResults: number[][];
   rank: number;
-  /** The symbolic relation strings (`\chi_{xxx} = -\chi_{xyy}`, ...), one per independent basis
-   * vector. `['Identically zero.']` when `isZero`. */
+  /** The symbolic relation strings: one proportionality chain per class
+   * (`\chi_{xxx} = -\chi_{xyy}`, ...) followed by any residual composite relation
+   * (`\chi_{xxxx} = \chi_{xxyy} + \chi_{xyxy} + \chi_{xyyx}`, Birss's printed sum-cell form). The
+   * count therefore exceeds `basisResults.length` exactly when composites are present.
+   * `['Identically zero.']` when `isZero`. */
   relations: string[];
   /** True iff the tensor has no surviving independent component for this group/setting/spec. */
   isZero: boolean;
@@ -129,24 +133,16 @@ function indexOrbit(idx: number, rank: number, gens: number[][]): number[] {
 }
 
 /**
- * Formats independent basis vectors into equality/sign relation strings. The per-vector builder is
- * shared with `latexFormatting.calculateTensorComponentsView` via `tensorProjection.formatBasisRelation` (Wave-2 E5),
- * so `{...,jk}` output equals `calculateTensorComponents` by construction. Rank 0 has no index label,
- * so its single surviving scalar is reported as the sentinel `\chi` (a bare, allowed scalar) rather
- * than an empty `\chi_{}`.
+ * Formats a minimal basis into its relation set. The builder is shared with
+ * `latexFormatting.calculateTensorComponentsView` via `tensorProjection.formatReducedRelations`
+ * (Wave-2 E5; Q0 replaced the per-basis-vector builder with the proportionality-class + composite
+ * one), so `{...,jk}` output equals `calculateTensorComponents` by construction.
  */
 function formatFormRelations(basisResults: number[][], rank: number): string[] {
   if (basisResults.length === 0) return ['Identically zero.'];
-  const output: string[] = [];
-
-  for (const basis of basisResults) {
-    if (rank === 0) {
-      output.push('\\chi'); // scalar: allowed (nonzero invariant); no index label exists
-      continue;
-    }
-    const relation = formatBasisRelation(basis, rank);
-    if (relation !== null) output.push(relation);
-  }
+  // Rank 0 has no index label, so its single surviving scalar is the sentinel `\chi`.
+  if (rank === 0) return basisResults.map(() => '\\chi');
+  const output = formatReducedRelations(basisResults, rank);
   return output.length > 0 ? output : ['Identically zero.'];
 }
 
@@ -204,6 +200,8 @@ function flatOps(group: Matrix3x3[]): FlatOp[] {
  * intrinsic index symmetry is applied by symmetrizing each seed over its index orbit before the
  * group average (instead of the hardwired last-two-index swap).
  *
+ * The returned basis is MINIMAL (see the RREF note at the end of the function).
+ *
  * The symmetry average is inlined here as an allocation-free flat-array projection (identical math
  * to `averageTensor(seed, ...)` -- averaged[out] = (1/N) Σ_op sign(op) Σ_{s∈orbit} Π_r m_op[out_r][s_r]
  * -- but ~2 orders of magnitude fewer allocations at rank 4). The shared `averageTensor` /
@@ -258,7 +256,15 @@ function computeBasis(group: Matrix3x3[], spec: TensorSpec): number[][] {
 
     if (isIndependentOf(averaged, basisResults, dim, EPSILON)) basisResults.push(Array.from(averaged));
   }
-  return basisResults;
+  // Q0: the proportionality dedup above leaves NON-MINIMAL spanning sets for the coupled rank-4
+  // blocks of the 3-/6-fold groups (it cannot see multi-vector dependencies such as
+  // chain2 + chain4 + chain5 = 3*chain1). RREF makes the basis minimal and canonical, so the pivots
+  // name the free parameters unambiguously and the relation formatter can separate proportionality
+  // classes from genuine composite relations. Rank-derived counts (spanRank) were always correct and
+  // are unchanged. Gated on the rank so already-minimal cells stay BIT-identical: RREF's extra
+  // eliminations would otherwise perturb the last bits (enough to tip a display rounding boundary on
+  // the irrational trigonal entries).
+  return basisResults.length === spanRank(basisResults) ? basisResults : rref(basisResults, dim);
 }
 
 function specKey(spec: TensorSpec): string {

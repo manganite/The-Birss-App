@@ -75,13 +75,17 @@ describe('Part C rank 4 -- Table 4f guard (32 classical groups, lockstep pairing
           `${c.group}[${letter}] ${parity}: engine violates a Table-4f relation at idx ${rel.idx}`,
         ).toBe(true);
       }
-    // (b) dimensions match. Compare the RANK of the engine's span, not basisResults.length: for a
-    // general (intrinsic-none) rank-4 tensor the seed-projection returns a non-minimal spanning set
-    // (deduped only by proportionality), so its length can exceed the true independent-component
-    // count. (a)+(b) => engine span == table solution space (subspace equality). See findings Sec. 8.
+    // (b) dimensions match. (a)+(b) => engine span == table solution space (subspace equality).
+    // See findings Sec. 8. Historically this compared the RANK rather than basisResults.length
+    // because the seed projection returned a non-minimal spanning set for the coupled rank-4 blocks
+    // of the 3-/6-fold groups -- an acknowledged gap that nobody connected to the display and
+    // rawPoly consumers until Q0 (2026-07-30), which reduces the basis at the source. The rank
+    // comparison stays (it is the semantically right assertion for subspace equality); minimality is
+    // now asserted separately, so the two cannot silently drift apart again.
     expect(matrixRank(basis), `${c.group}[${letter}] ${parity}: independent-count != Table 4f`).toBe(
       tableDim(relations),
     );
+    expect(basis.length, `${c.group}[${letter}] ${parity}: basis is not minimal`).toBe(matrixRank(basis));
   };
 
   for (const c of CLASS_ROWS) {

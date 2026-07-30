@@ -13,7 +13,7 @@ import {
   calculateTensorBasisResults,
   formatCoeff,
   cleanupExpressionSigns,
-  formatBasisRelation,
+  formatReducedRelations,
 } from './tensorProjection';
 
 /**
@@ -137,11 +137,8 @@ export function calculateTensorComponentsView(
   const result = calculateTensorBasisResults(groupName, tensorType, trType, setting);
   if (!result) return { isNull: true, display: ['Point group not supported.'], relations: [] };
 
-  const relations: string[] = [];
-  for (const basis of result.basisResults) {
-    const relation = formatBasisRelation(basis, result.rank);
-    if (relation !== null) relations.push(relation);
-  }
+  // Q0: proportionality chains plus any residual composite relation, over the minimal (RREF) basis.
+  const relations = formatReducedRelations(result.basisResults, result.rank);
   if (relations.length === 0) return { isNull: true, display: ['All components are zero.'], relations: [] };
   return { isNull: false, display: relations, relations: relations.map(parseRelation) };
 }
