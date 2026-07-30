@@ -144,7 +144,10 @@ describe('Q0 audit — the displayed relations are a faithful constraint set', (
 
   it('coupled cell (3m, rank-4 none): 14 free components, composite relation included', () => {
     // Birss Table 4f row L4: three pair equalities + T_xxxx = T_yyxx + T_xyyx + T_yxyx (printed as a
-    // sum cell) + T_yyyy = T_xxxx + the 11 z-block chains. 15 classes - 1 composite = 14.
+    // sum cell) + T_yyyy = T_xxxx + the 11 z-block chains. 15 classes - 1 composite = 14. The app
+    // renders each composite partner as the canonical member of its class (xxyy/xyxy/xyyx for
+    // Birss's yyxx/xyyx/yxyx) -- an accepted deviation, see BIRSS-APP-CONVENTIONS-REFERENCE.md
+    // Step 5(f); substituting through the pair-equality lines above recovers the printed form.
     const form = computeTensorForm('3m', 1, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'none' })!;
     expect(form.relations).toContain('\\chi_{xxxx} = \\chi_{xxyy} + \\chi_{xyxy} + \\chi_{xyyx}');
     expect(form.relations).toContain('\\chi_{xxxx} = \\chi_{yyyy}');

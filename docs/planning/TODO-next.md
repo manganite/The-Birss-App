@@ -2001,4 +2001,10 @@ contract lives in `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f)
   ~1e-16 -- a genuine two-source crosscheck. New permanent guards: the rank-4 minimality census
   over all 122 groups, the ranks-0-3 counterpart, a display-faithfulness check, and a one-line
   minimality assertion in the 4f guard (all red-proofed against the pre-Q0 engine). Suite
-  2267 -> 2271.
+  2267 -> 2271. **Accepted deviation (review 2026-07-30):** inside a composite relation the app
+  renders each partner as the canonical (lowest-index) member of its proportionality class
+  (`chi_xxxx = chi_xxyy + chi_xyxy + chi_xyyx`) rather than Birss's printed partner choice
+  (`yyxx+xyyx+yxyx`) that the WO's acceptance criterion asked for verbatim -- semantically
+  identical via the adjacent pair-equality lines, and the only form a general formatter can
+  produce without encoding per-row table knowledge. Reasoning recorded in
+  `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f).
