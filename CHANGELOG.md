@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Scientific correction (rank-4 forms of the trigonal and hexagonal groups).** For
+  point groups with a 3- or 6-fold axis, the in-plane block of a fourth-rank tensor
+  couples several independent components through one relation that Birss prints as a
+  sum (Table 4f row L4: `xxxx = yyxx + xyyx + yxyx`). The projector returned a
+  redundant family list for exactly these cells, and two things downstream were wrong
+  in all versions up to and including **v0.23.0**:
+  - **Simulator, EQ source terms and polarimetry (quantitatively wrong):** each tensor
+    component was attributed to a single independent parameter times a fixed ratio,
+    which is only valid when components are locked in proportion. In the coupled
+    in-plane blocks it is not, and the tensor the sliders actually built was **not
+    invariant** under the group's own 3-/6-fold rotation (it violated
+    `χ_xxxx = χ_xxyy + χ_xyxy + χ_xyyx`). EQ polarimetry computed for a trigonal or
+    hexagonal group with an earlier version should be recomputed. Components now show
+    as genuine sums over the parameters they depend on, e.g.
+    `Q_xx = (χ_xxxx + ½χ_xxyy)E_x² + …`, and there is one slider per independent
+    parameter.
+  - **Calculator and Tables component relations (misleading display):** the affected
+    forms listed overlapping relation chains that contradicted one another as
+    simultaneous equations — for `3m` at rank 4 they implied `χ_xxxx = 0` while the
+    same panel counted that component as non-vanishing. The relation list is now a
+    consistent constraint set: one chain per group of proportional components, plus
+    any residual composite relation in Birss's printed form on its own line.
+  Independent-component **counts were always correct** and are unchanged, as are all
+  ED and MD outputs (bit for bit) and every non-trigonal/hexagonal rank-4 form. The
+  elasticity and photoelasticity forms in the Tables page are affected in the same way
+  and equally corrected. Details:
+  `docs/findings/FINDING-2026-07-29-rank4-trigonal-hexagonal-overcount.md`.
+
 ## [0.23.0] - 2026-07-17
 
 ### Changed

@@ -1921,3 +1921,84 @@ Source: the promoted "accessibility completion" item (STATUS section 1). Maintai
   independent components (single-component groups disable them; group `1` is the fixture), and the
   Shift handlers live only on the desktop layout (the `md:hidden` mobile layout omits them).
   Suite 2254 -> 2260.
+
+---
+
+## EQ physics and rank-4 presentation -- Q-series
+
+Source: the Q1 review of the electric-quadrupole channel (2026-07-29) and the rank-4
+minimal-basis finding it surfaced (2026-07-29/30). Maintainer decisions are recorded per
+item. Authoritative background:
+`docs/findings/FINDING-2026-07-29-rank4-trigonal-hexagonal-overcount.md`; the presentation
+contract lives in `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f).
+
+### Open
+
+- **Q1 -- enforce the quadrupole ij-symmetry on the EQ channel.** *Status: Decided;
+  implemented on a HELD local branch (`fix/q1-eq-ij-symmetry`, unpushed), awaiting rebase
+  onto Q0.* The app's EQ convention is `Q_ij = chi_ijkl E_k E_l` and the physical quadrupole
+  is symmetric in its own indices, so the channel must carry BOTH minor symmetries -- the
+  trailing field pair (already enforced) and the leading pair (was not). Sources verified
+  against the project PDFs: Hoshi 1995 eq. 10, in the app's own convention ("Since Q_ij is a
+  symmetric and traceless tensor" -> Lambda_ijkl = Lambda_jikl); Pershan 1963 sec. IV, where
+  the antisymmetric complement IS the magnetic-dipole channel. The correct intrinsic class is
+  `ij_kl` -- both pairs symmetric, no pair exchange, and NO trace condition: tracelessness
+  appears in Hoshi and the general multipole literature but Hoshi is alone in the SHG context,
+  and modern EQ-SHG-RA practice works with the 36-component baseline (maintainer decision
+  2026-07-29). Implementation is complete on the held branch (one shared `intrinsicOrbit(rank)`
+  helper replacing both hard-coded trailing-swap sites; ED/MD bit-identical; the `Q_xy` ->
+  `Q_{xy}` label fix). **On rebase:** re-run the red report against the post-Q0 engine, restate
+  the counts as true ranks measured on that engine (the branch text currently quotes
+  redundant-list lengths -- 36 for triclinic, 20 for `2/m`, 12 for `mm2` are rank-true and
+  stand; the trigonal/hexagonal figures do not: `3m` becomes 10 -> 8), and re-capture the
+  affected EQ pins. Expected per Q0's D3: the `symbolicEQHexagonal` constants SURVIVE Q1
+  unchanged, because the RREF `chi_xxxx` family is identical under `jk` and `ij_kl` for those
+  groups -- Q1's red report verifies that expectation.
+- **Q2 -- literature-anchored EQ goldens for the corrected class.** *Status: Decided (scope),
+  derivation pending.* EQ correctness is thin: one print-anchored golden (`m-3m`, EQ i) plus
+  the 14 `symbolicEQHexagonal` fixtures, against 122 groups x {i, c}. Primary anchor:
+  **Hoshi et al., Phys. Rev. B 52, 12355 (1995)**, §II.A.3 -- his `D_inf_h` / `C_inf_v` /
+  `K_h` Lambda-tensor lists. **Transcription caveat (blocking, must be resolved in the fixture
+  derivation):** Hoshi imposes `Q_ii = 0` on top of `Lambda_ijkl = Lambda_jikl`, and several of
+  his printed relations (e.g. `Lambda_3311 = Lambda_3322 = -(Lambda_1122 + Lambda_1212)`,
+  `Lambda_1111 = Lambda_2222 = Lambda_1122 + 2 Lambda_1212`) follow from the trace condition
+  alone. The app deliberately does NOT enforce tracelessness, so those must be identified and
+  dropped -- transcribing verbatim would smuggle the trace convention into a fixture. His
+  groups are also limit groups, not crystallographic point groups: pick the crystallographic
+  subgroup whose form coincides and say so in the fixture `note`. Acceptance: >= 1
+  print-anchored EQ golden per crystal system, each with the trace convention explicitly
+  accounted for in its `source`/`note`.
+
+### Completed
+
+- **Q0 -- minimal-basis correction for the rank-4 coupled blocks** (`fix/q0-minimal-basis`).
+  Gates Q1. For 3-/6-fold groups the in-plane block of a rank-4 tensor couples several free
+  parameters through one relation Birss prints as a sum cell (Table 4f row L4,
+  `xxxx = yyxx + xyyx + yxyx`; print re-read by the maintainer 2026-07-30 -- no erratum, no
+  transcription slip). The seed projector deduped only proportional directions, so those cells
+  came out non-minimal (census: 478 of 12200 cells, all rank 4, excess +1 or +2; 68 among the
+  32 classical groups x {polar,axial} x 4 intrinsic classes). Counts (`spanRank`) were always
+  right; two consumers of the unreduced list were not: the relation display (overlapping chains
+  that, read as constraints, forced `T_xxxx = 0` under a "14 independent components" header) and
+  the entry-point parameter attribution, which labelled each component by a single parameter
+  times a fixed ratio -- **quantitatively wrong** in a coupled block, and the tensor it implied
+  was not group-invariant (violating `chi_xxxx = chi_xxyy + chi_xyxy + chi_xyyx`; probed: 6 of
+  81 components misattributed for `3m`/`6mm` EQ, 0 for `4mm`/`mm2`/`m-3m`). Because the
+  Simulator evaluates `rawPoly` directly, its rank-4 EQ polarimetry for those groups was wrong,
+  not merely redundantly parametrized -- and this attribution is exactly what produced the
+  non-invariant `symbolicEQHexagonal` provenance family of 2026-07-11. Fix: RREF-reduce the
+  basis in both engines before any consumer (gated on the rank, so already-minimal cells stay
+  bit-identical -- the two attribution routes differ by ~1 ULP, enough to tip a display rounding
+  boundary on the irrational trigonal entries); pivot-named parameters; per-component sums over
+  the parameters a component actually depends on; and a constraint-view display (proportionality
+  chains + composite relations in Birss's printed style, on separate lines). Invariants verified
+  over a 15259-record base-vs-branch dump: ED/MD 0 changed records, tensorForms exactly the 478
+  census cells with 0 rank changes, EQ rawPoly 66 records over 47 groups all 3-/6-fold; `m-3m`
+  golden, grey EQ-c audit, Table-4f/4b-4e, Table-7, ITC 3.2.2.1, by-effect elasticity and the
+  generated sharing partitions all unchanged. Red report: 16 tests (14 `symbolicEQHexagonal`
+  cells + 2 EQ pin cells). The fixture constants were re-anchored from the maintainer's
+  independent hand derivation (`-15/64` family) and the corrected engine reproduces them to
+  ~1e-16 -- a genuine two-source crosscheck. New permanent guards: the rank-4 minimality census
+  over all 122 groups, the ranks-0-3 counterpart, a display-faithfulness check, and a one-line
+  minimality assertion in the 4f guard (all red-proofed against the pre-Q0 engine). Suite
+  2267 -> 2271.
