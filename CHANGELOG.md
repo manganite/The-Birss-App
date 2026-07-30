@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.1] - 2026-07-30
+
 ### Fixed
 
 - **Scientific correction (EQ):** the electric-quadrupole channel now enforces the
@@ -847,7 +849,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help & Documentation page covering physics background, math derivations, and usage instructions.
 - MIT license, repository description, topics, and homepage link.
 
-[Unreleased]: https://github.com/manganite/birss-app/compare/v0.23.0...HEAD
+[Unreleased]: https://github.com/manganite/birss-app/compare/v0.23.1...HEAD
+[0.23.1]: https://github.com/manganite/birss-app/compare/v0.23.0...v0.23.1
 [0.23.0]: https://github.com/manganite/birss-app/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/manganite/birss-app/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/manganite/birss-app/compare/v0.20.0...v0.21.0
