@@ -36,9 +36,12 @@ const isZeroForm = (name: string, setting: number, spec: TensorSpec) => computeT
 
 // =====================================================================================
 // Part B.3 -- internal consistency: the engine reproduces the app's own ED/MD/EQ paths.
-// {rank, parity, timeParity, intrinsic:'jk'} must equal calculateTensorComponents exactly.
+// The spec must carry each channel's intrinsic symmetry: rank-3 'jk' for ED/MD, rank-4 'ij_kl'
+// for EQ (since Q1, 2026-07-29, the EQ channel carries BOTH minor symmetries -- the trailing
+// field pair and the quadrupole's own leading pair). Both must equal calculateTensorComponents
+// exactly.
 // =====================================================================================
-describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', () => {
+describe('B.3 internal consistency -- intrinsic-symmetric forms reproduce ED/MD/EQ', () => {
   const zeroSentinel = ['All components are zero.'];
   const relsOf = (name: string, spec: TensorSpec) => {
     const f = computeTensorForm(name, 1, spec)!;
@@ -73,23 +76,23 @@ describe('B.3 internal consistency -- jk-symmetric forms reproduce ED/MD/EQ', ()
       );
     }
   }, 30000);
-  it('{4,polar,i,jk} == EQ i-type for all 122 groups', () => {
+  it('{4,polar,i,ij_kl} == EQ i-type for all 122 groups', () => {
     // Rank-4 (dim 81) all-122 was long assumed prohibitive and covered by a 13-group
     // representative sample; F2 measurements retired that assumption (tens of seconds per
     // time-parity sweep, container-dependent). The timeout below is deliberately generous:
     // this is a correctness bridge that fails on DIVERGENCE, not on duration -- performance
     // is the bench's job. Generalizes (and subsumes) the former representative sample.
     for (const g of ALL) {
-      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'jk' }), g).toEqual(
+      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'ij_kl' }), g).toEqual(
         calculateTensorComponents(g, 'EQ', 'i', 1),
       );
     }
   }, 120000);
-  it('{4,polar,c,jk} == EQ c-type for all 122 groups', () => {
+  it('{4,polar,c,ij_kl} == EQ c-type for all 122 groups', () => {
     // Closes the last entry-point gap (F2): with this test, the print-guarded engine pins
     // calculateTensorComponents for ALL six tensor-type/time combinations across all 122 groups.
     for (const g of ALL) {
-      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'c', intrinsic: 'jk' }), g).toEqual(
+      expect(relsOf(g, { rank: 4, parity: 'polar', timeParity: 'c', intrinsic: 'ij_kl' }), g).toEqual(
         calculateTensorComponents(g, 'EQ', 'c', 1),
       );
     }

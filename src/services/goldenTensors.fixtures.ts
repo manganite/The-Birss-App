@@ -395,7 +395,7 @@ export const GOLDEN_FIXTURES: GoldenFixture[] = [
       '\\chi_{xyxy} = \\chi_{xyyx} = \\chi_{xzxz} = \\chi_{xzzx} = \\chi_{yxxy} = \\chi_{yxyx} = \\chi_{yzyz} = \\chi_{yzzy} = \\chi_{zxxz} = \\chi_{zxzx} = \\chi_{zyyz} = \\chi_{zyzy}',
     ],
     source: GENERATOR_DERIVATION,
-    note: 'Rank-4 EQ fixture for the highest-symmetry cubic group: three independent invariants (the cubic analogue of the elastic constants C11/C12/C44 pattern, here without Voigt symmetry between the two middle indices).',
+    note: 'Rank-4 EQ fixture for the highest-symmetry cubic group: three independent invariants (the cubic analogue of the elastic constants C11/C12/C44 pattern, here without the Voigt pair exchange (ij)<->(kl)). Unchanged by Q1 (2026-07-29): the cubic axis permutations already merge each chain with its ij-partners, so all three chains are closed under the added Q_ij = Q_ji symmetry and the fixture is byte-identical before and after.',
   },
 
   // =============================================================================

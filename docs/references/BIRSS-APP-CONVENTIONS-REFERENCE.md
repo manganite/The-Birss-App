@@ -156,17 +156,26 @@ The **i / c** flag sets the antiunitary sign: an antiunitary operation contribut
 
 **(b) Symbol class** for each (group, tensor, i/c) is read from **Table 7** (magnetic) or **Table 4a** (classical). **(c) Form** of that class is read from **Table 4e/4f**.
 
-**(d) PARTICULARIZATION (the essential subtlety).** Tables 4a–4f give the **crystal-symmetry-only** general form — the most general tensor consistent with the point group *alone*, before any physical (intrinsic) index symmetry. On top of it the app imposes exactly **one** intrinsic index symmetry — **symmetry in the last two indices only** — for every rank, because the last two indices are the two identical driving ω-fields (`E_j E_k` for ED/MD; `E_k E_l` for EQ, with `E_{jk}=E_{kj}`). Particularization applies this on top of the table form, adding equalities among the surviving components and reducing the independent count below what the table lists.
+**(d) PARTICULARIZATION (the essential subtlety).** Tables 4a–4f give the **crystal-symmetry-only** general form — the most general tensor consistent with the point group *alone*, before any physical (intrinsic) index symmetry. On top of it the app imposes each channel's **intrinsic index symmetry**: always the two identical driving ω-fields in the **last two** indices (`E_j E_k` for ED/MD; `E_k E_l` for EQ, with `E_{kl}=E_{lk}`), and for EQ additionally the **leading pair**, because the induced quadrupole is itself a symmetric rank-2 object. Particularization applies this on top of the table form, adding equalities among the surviving components and reducing the independent count below what the table lists.
 
 - **ED, MD** (rank 3, `χ_{ijk}`): symmetric in `(j,k)` → jk-symmetric.
-- **EQ** (rank 4, `χ_{ij,kl}`; output pair `(i,j)` = response/gradient indices, input pair `(k,l)` = the two fields): symmetric in the **last two** `(k,l)` **only**. The output pair `(i,j)` is kept **general (all 9 components)** and is *not* symmetrized — the EQ output is the full rank-2 object `Q_{ij}`, and only the field pair carries the two-identical-fields symmetry.
+- **EQ** (rank 4, `χ_{ij,kl}`; output pair `(i,j)` = the induced quadrupole `Q_{ij}`, input pair `(k,l)` = the two fields): symmetric in `(k,l)` **and** in `(i,j)`, the two pairs independent of each other — the **`ij_kl`** class (no pair exchange, no trace condition). *Amended 2026-07-29 (Q1).*
 
-So the app's form = the table form **with the last two indices symmetrized**, never the raw table count.
+**Why the leading pair is symmetric (Q1, maintainer decision 2026-07-29).** The app's EQ convention is `Q_{ij} = χ_{ijkl} E_k E_l`, and the physical quadrupole moment is symmetric in its own indices, so `χ_{ijkl} = χ_{jikl}` — a frequency-independent symmetry of the source object, not of the fields. Sources, both verified against the project PDFs in `docs/references/`:
+
+- **Hoshi et al., Phys. Rev. B 52, 12355 (1995)**, §II.A.3 — writes exactly the app's convention `Q_i j = Λ_{ijkl} E_k E_l` and concludes: *"Since Q_ij is a symmetric and traceless tensor, the following relations exist"* → `Λ_{ijkl} = Λ_{jikl}` (and `Λ_{11kl}+Λ_{22kl}+Λ_{33kl} = 0`). This is the load-bearing citation: same rank, same index order, same physical channel.
+- **Pershan, Phys. Rev. 130, 919 (1963)**, §IV — in his `E·∇E` convention the χ *"symmetric in the last two indices"* is the quadrupole, while *"the part of χ antisymmetric in the last two indices can be written as"* the magnetization term. His symmetric pair is the (field, gradient) pair, which in the app's index order is the **leading** `(i,j)` pair; the antisymmetric complement is precisely the magnetic-dipole channel. Read index-by-index, the same statement: the `(i,j)` symmetry **is** the EQ/MD separation.
+
+Consequently an antisymmetric-`(ij)` component in the EQ channel is not a quadrupole at all but MD-type admixture, which the app's separate MD channel already represents. Before Q1 the app symmetrized only `(k,l)`, so its EQ output carried those spurious components (e.g. 54 instead of 36 independent components for triclinic groups).
+
+**Tracelessness is deliberately NOT enforced.** `Q_{ii} = 0` appears in the general multipole literature and in Hoshi above, but Hoshi is alone in imposing it in the SHG context, and modern EQ-SHG-RA practice works with the 36-component baseline. The app therefore stops at `ij_kl`. Any literature form transcribed from a traceless convention (Hoshi's `D_∞h` list among them) must have that accounted for explicitly in the fixture derivation.
+
+So the app's form = the table form **with each channel's intrinsic symmetry imposed**, never the raw table count.
 
 - *Worked check (ED):* `mm2` ED = class **E** → table-4e **E3 = 7** crystal-only components (zzz + xxz-family(3) + yyz-family(3)); symmetrizing `(j,k)` → **5** independent (`χ_xxz=χ_xzx`, `χ_yyz=χ_yzy`, `χ_zxx`, `χ_zyy`, `χ_zzz`). Table lists 7, app computes 5 — both correct in their own convention.
-- *Worked check (EQ):* the `(k,l)` symmetrization identifies `χ_{ijkl}` with `χ_{ijlk}` (e.g. `χ_xyxy = χ_xyyx`), reducing the table-4f count while the `(i,j)` pair stays free; a class whose 4f row separates such permutations therefore yields *fewer* independent app components than the raw 4f entry, and the same number as 4f only when 4f already lists no `(k,l)`-distinct pair for that class.
+- *Worked check (EQ):* the `(k,l)` symmetrization identifies `χ_{ijkl}` with `χ_{ijlk}` and the `(i,j)` symmetrization identifies it with `χ_{jikl}` (e.g. `χ_xyxy = χ_xyyx = χ_yxxy = χ_yxyx` is one component); a class whose 4f row separates such permutations therefore yields *fewer* independent app components than the raw 4f entry. Baseline: group `1` has `6 × 6 = 36`, against the raw 81 and the pre-Q1 `9 × 6 = 54`.
 
-Any Step-5 test must compare against this **last-two-symmetrized** form (ED/MD: symmetrize the 2 field indices of the table-4e row; EQ: symmetrize the last 2 indices of the table-4f row, leave `(i,j)` general).
+Any Step-5 test must compare against this **particularized** form (ED/MD: symmetrize the 2 field indices of the table-4e row; EQ: symmetrize the last 2 *and* the first 2 indices of the table-4f row).
 
 **(e) Grey groups:** i-tensor = parent classical i-tensor; **c-tensor ≡ 0** identically (Table 6 note). Cheap, strong check.
 
