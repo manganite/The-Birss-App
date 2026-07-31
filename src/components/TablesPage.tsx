@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { POINT_GROUPS, PointGroupData } from '../data/pointGroups';
 import {
@@ -28,8 +28,22 @@ import { TablesEmptyState } from './tables/TablesEmptyState';
 import { LookupControls } from './tables/LookupControls';
 import { EffectInfo } from './tables/EffectInfo';
 import { LookupChain } from './tables/LookupChain';
-import { TensorFormResult } from './tables/TensorFormResult';
+import { TensorFormResult, type FormView } from './tables/TensorFormResult';
 import { GroupSharingList } from './tables/GroupSharingList';
+import { deriveNyeScheme } from '../services/nyeScheme';
+
+/** The form-representation choice persists for the browser session, not beyond it: it is a reading
+ * preference for the current sitting, unlike the notation convention, which is a lasting one and
+ * lives in localStorage (App.tsx). Guarded because storage can be unavailable. */
+const FORM_VIEW_STORAGE_KEY = 'birss-app:tables-form-view';
+
+function loadStoredFormView(): FormView {
+  try {
+    return sessionStorage.getItem(FORM_VIEW_STORAGE_KEY) === 'diagram' ? 'diagram' : 'symbolic';
+  } catch {
+    return 'symbolic';
+  }
+}
 
 interface TablesPageProps {
   selectedGroup: PointGroupData | null;
@@ -102,6 +116,15 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
   const [intrinsic, setIntrinsic] = useState<TensorIntrinsic>('jk');
   const [sharingOpen, setSharingOpen] = useState(false);
   const [diagramOpen, setDiagramOpen] = useState(false);
+  const [formView, setFormView] = useState<FormView>(loadStoredFormView);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(FORM_VIEW_STORAGE_KEY, formView);
+    } catch {
+      // storage unavailable (private browsing, storage disabled) -- the choice still holds in-session
+    }
+  }, [formView]);
 
   const validIntrinsics = INTRINSIC_BY_RANK[rank];
   const effIntrinsic = validIntrinsics.includes(intrinsic) ? intrinsic : 'none';
@@ -153,6 +176,11 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
     (aRank === 3 && (aIntrinsic === 'jk' || aIntrinsic === 'ij')) ||
     (aRank === 4 && (aIntrinsic === 'ij_kl' || aIntrinsic === 'voigt'));
   const labels = usesMatrix ? buildLabels(basis, aRank, base) : [];
+
+  // The dot-diagram model: a VIEW over the same computed form the symbolic display renders.
+  // Null for rank/intrinsic combinations that have no scheme geometry -- those keep their
+  // existing display and are offered no toggle.
+  const nyeScheme = deriveNyeScheme(form!, spec);
 
   const nonzero = new Set<number>();
   for (const b of basis) for (let i = 0; i < dim; i++) if (Math.abs(b[i]) > EPS) nonzero.add(i);
@@ -245,6 +273,9 @@ export function TablesPage({ selectedGroup, tensorConfig, onNavigate, effectId, 
         dim={dim}
         toSym={toSym}
         onNavigate={onNavigate}
+        nyeScheme={nyeScheme}
+        formView={formView}
+        setFormView={setFormView}
       />
 
       <GroupSharingList
