@@ -225,3 +225,54 @@ ancestry note.
   engine. Two expectation errors were caught by it and corrected: the sweep compares 20 classes, not
   21 (432's rank-3 form vanishes too), and class ids in the 6×3 layout follow its own reading order
   down the pair axis, so `chi_zzz` is class 2 there where it is class 3 in the 3×6 layout.
+
+---
+
+## AUDIT 2026-07-31 (Codex) — external review of the repository and its documentation
+
+An external audit run against `main` @ `9c0c213`. Recorded here because its findings changed
+documentation that other work depends on, and because an outside reading of this project's
+assurance posture is worth keeping.
+
+### Verification
+
+Four findings, all **verified on the live tree** before any of them was acted on. None was
+refuted; two turned out to be understated.
+
+| finding | verified as | note |
+| --- | --- | --- |
+| `STATUS.md` section 1 drift | confirmed | Section 1 claimed to be the only open-work list while holding two blocks whose own text said they had shipped (B15, Accessibility completion). |
+| Nye diagram has no `tabIndex` management | confirmed | `NyeSchemeDiagram.tsx` contains no `tabIndex` at all, so every cell button sits in the document tab order instead of the grid behaving as one roving-focus composite. Arrow keys and the focus read-out are already correct; the defect is in the tab contract only. |
+| Stale `AGENTS.md` dependency line | confirmed, **understated** | The audit named one wrong line. A complete import enumeration found three wrong lines (`symmetryGroups`, `tensorProjection`, `symbolicProjection`, `trigPolyFormat`) and six modules missing from the section entirely. |
+| `App` casts the navigation view | confirmed | `src/App.tsx:82` casts a plain `string` into the view union; the prop is typed `(view: string, …)` across every page component. |
+
+One **calibration**, not a refutation. The audit's assurance-breadth observation is fair on its
+own terms but understates two guards that were in place when it ran: the cross-geometry
+**transpose sweep** in `nyeScheme.test.ts`, which checks two representations against each other
+rather than both against the same source, and the **i/c-agnosticism pins**, which assert that a
+magnetic c-tensor renders through the identical code path and that the derived scheme is
+invariant under changing the spec's parity or time parity. Both are structural checks of a kind
+that coverage-style reasoning does not surface.
+
+### Dispositions
+
+- **Documentation share → DOCS-TRUTH** (this work order): a truthful `STATUS.md` section 1, the
+  architecture map rebuilt from the enumeration, fixture-provenance classes, and these entries.
+- **`tabIndex` fix → NYE-F**, scheduled in `STATUS.md` § 1; work order pending. Paired with a
+  view-model sweep for the same class of gap, since the Nye diagram is unlikely to be the only
+  widget where a keyboard contract was half-implemented.
+- **Two decisions parked in `BACKLOG.md` § D** — the browser layer (a Playwright smoke lane for
+  the assertions jsdom cannot make) and the coverage signal (reinstate a provider or state that
+  the project relies on targeted, provenance-classed assurance instead). Both are marked
+  *to be decided*, not to be observed again; the observation is complete in each case.
+- **Two refactor candidates in `BACKLOG.md` § D** — the TablesPage presentation-derivation
+  extraction and typed navigation.
+
+### External validation, recorded because it is independent
+
+The audit names the **shared reduced-partition design** — one `reducedPartition` call feeding both
+the relation list and the dot diagram, so the two cannot disagree — as the strongest recent
+decision in the codebase, and rates the **scientific test strategy** as the project's strongest
+asset. Both judgements were reached without sight of this ledger, which is what makes them worth
+writing down: the two things an outside reader singled out are precisely the two the NYE series
+spent its effort on.

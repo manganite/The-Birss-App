@@ -250,3 +250,78 @@ in a commit log:
 still holds — it was re-checked on 2026-07-31 and is clean. These 11 advisories are
 **development-scope only**, GitHub reports **0 open Dependabot alerts**, and they appear only in a
 full `npm audit`, which does not filter by scope.
+
+---
+
+## D. External-audit consequences
+
+*Provenance: Codex audit, 2026-07-31. Findings verified on the live tree before the DOCS-TRUTH
+work order; the documentation share landed there, and these are the parts that need scoping or a
+decision. The `AUDIT 2026-07-31 (Codex)` block in `LEDGER.md` records the verification and the
+dispositions.*
+
+### TablesPage presentation-derivation extraction — `unscoped` (R-candidate)
+
+*Provenance: Codex audit 2026-07-31.*
+
+`TablesPage.buildLabels` re-implements concepts that already live in `linalg` and
+`tensorProjection`: it runs its own `rref`, picks its own lead component per basis vector, and
+composes labels with its own accumulation loop and epsilon (`EPS = 1e-9`, not the shared
+`tolerances` value). It works, and it is guarded by the page's tests — but pivot naming and
+tolerance handling now have two homes, and if either evolves the view can drift from the engine
+without anything going red.
+
+This is the Q0 lesson applied to views: the diagram and the relation list were kept honest by
+making them read one shared partition (`reducedPartition`) rather than two derivations. The
+matrix-label path is the same shape of risk, one layer up. Extraction into a presentation service
+over the existing partition is the obvious move; the sizing question is whether the effect and
+rank-1/2 label paths come with it.
+
+### Typed navigation — `quick-win` (R-candidate)
+
+*Provenance: Codex audit 2026-07-31.*
+
+`onNavigate: (view: string, tab?: string) => void` is declared as a plain string across every page
+component, and `App.handleNavigate` casts it back into the view union
+(`src/App.tsx:82`). The cast is the only thing standing between a typo in a call site and a
+silent no-op navigation. Export the view union and type the signature with it; the cast then
+disappears rather than being replaced.
+
+### Browser-layer decision — `needs-decision`
+
+*Provenance: Codex audit 2026-07-31, consolidating T-obs (CI lane-splitting) and the jsdom limits
+recorded in `App.interaction.test.tsx` and `nyeDiagram.interaction.test.tsx`.*
+
+Two things the current test regime cannot reach, both documented rather than solved:
+
+- **Accessible-name queries are unusable under jsdom** wherever KaTeX MathML is in the tree —
+  jsdom does not implement `style` on `MathMLElement`, so `getComputedStyle` throws inside
+  accessible-name computation. Every interaction suite works around it by locating controls via
+  text or attribute selectors, which means the app's actual accessible names are never asserted.
+- **Three unattributed full-suite contention flakes** (2026-07-30/31, recorded in `LEDGER.md`),
+  none reproducible in isolation.
+
+T5a declined Playwright, and T-obs parked CI lane-splitting partly because the strongest argument
+for it — a test class needing browser binaries — had lapsed with that decision. The concrete
+option now on the table: a small Playwright smoke lane over the Tables/Nye surface (toggle,
+visible focus ring, horizontal scroll of the wide grids, KaTeX actually rendering), which would
+cover exactly the assertions jsdom cannot make and would re-supply the lapsed argument.
+
+**To be decided at the next scoping, not observed again.** The observation is complete; what is
+missing is a yes or no.
+
+### Coverage signal — `needs-decision`
+
+*Provenance: Codex audit 2026-07-31.*
+
+Coverage tooling was removed deliberately, not lost: `3e7002d`
+(`chore(coverage): remove the broken test:coverage script and @vitest/coverage-v8`) took out a
+script that had been broken since the T3/T4 runtime changes, on the reasoning that a broken
+command is worse than none. The consequence is that assurance is currently qualitative — the
+taxonomy, the reference gates and the audit suites say a great deal about *what* is covered and
+nothing about what is *not*.
+
+Decide: reinstate a provider (and accept the runtime cost and the configuration that broke last
+time), or state explicitly that this project relies on targeted, provenance-classed assurance and
+treats a coverage percentage as the wrong instrument. Either is defensible; the current state is
+an unrecorded default rather than a choice.
