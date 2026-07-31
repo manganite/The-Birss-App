@@ -51,6 +51,23 @@ moved here on 2026-07-31 so that a live item is not stranded inside a frozen fil
   No action. Revisit only if a full-suite failure recurs without an obvious cause — at which point
   the first step is to capture the failing test name and duration before anything else.
 
+- **Third occurrence, also uncaptured (2026-07-31, `chore/docs-consolidation` merge).** A full run
+  on the merge commit reported `1 failed | 2292 passed`; the four runs before and after it were
+  green. The failing test's identity was **again not captured** — the gate command filtered output
+  with `grep -E "Tests +[0-9]+"`, which matches the summary lines but not the `FAIL <path> > <name>`
+  line, so the detail was discarded at the moment it existed. That is the precise mistake the entry
+  above tells the reader not to make, repeated by its own author within the hour.
+
+  What this occurrence *does* establish, which the earlier two did not: the change under test
+  **cannot** have caused it. That merge is 37 markdown files — zero code, zero configuration — so
+  no execution path differs from the parent commit, which had just run green. This is now
+  positively an environment/contention phenomenon rather than an unexplained one.
+
+  Standing correction to the gate habit, not just to this entry: when a gate runs the suite, its
+  output must be preserved in full (redirect to a file, then filter the file). Filtering a pipe
+  discards the one thing worth having. Counter: three occurrences, two of them uncaptured for the
+  same avoidable reason.
+
 ### Completed
 
 *(none yet in this file — see `TODO-next.md` for the closed T-series entries.)*
