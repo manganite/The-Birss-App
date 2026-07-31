@@ -184,30 +184,57 @@ export function formatBasisRelation(basis: ArrayLike<number>, rank: number): str
   return members.length > 0 ? members.join('') : null;
 }
 
+/** Where one component sits in the Q0 constraint-view partition: which proportionality class it
+ * belongs to, and its signed ratio to that class's representative. */
+export interface ConstraintMembership {
+  /** Flat index of the class representative -- the lowest-index member of the class. */
+  rep: number;
+  /** This component's signed ratio to the representative (1 for the representative itself). */
+  ratio: number;
+}
+
+/** One residual relation among class representatives: the point group forces a representative to be
+ * a combination of the others, so the class is not a free parameter. Rendered in Birss's printed
+ * sum-cell style (`T_xxxx = T_xxyy + 2T_xyxy`). */
+export interface CompositeConstraint {
+  /** Every representative (flat index) the relation involves, ascending. */
+  involved: number[];
+  /** Left-hand side of the printed form: the lowest-index involved representative. */
+  lhs: number;
+  /** Right-hand side, in ascending representative order. */
+  terms: { rep: number; coeff: number }[];
+  /** The representative this relation DETERMINES -- the non-pivot class of the representative-column
+   * RREF. This, not `lhs`, is the class that stops being a free parameter. */
+  determined: number;
+}
+
+/** The Q0 constraint-view partition of a minimal basis, as DATA. See `reducedPartition`. */
+export interface ConstraintPartition {
+  /** Class representatives (flat indices), ascending -- also the discovery order. */
+  reps: number[];
+  /** Every NON-VANISHING component -> its class and ratio. A component absent from this map
+   * vanishes identically for this group/spec. */
+  memberOf: Map<number, ConstraintMembership>;
+  /** Residual relations among the representatives (empty for a disjoint-support cell). */
+  composites: CompositeConstraint[];
+}
+
 /**
- * The relation set of a MINIMAL (RREF-reduced) basis, as display strings (Q0, 2026-07-30).
+ * The Q0 constraint-view partition of a MINIMAL (RREF-reduced) basis: per component one of
+ * {vanishing, class representative, class member with a signed ratio}, plus the residual composite
+ * relations among the representatives.
  *
- * A relation list built one-string-per-basis-vector is only honest when each basis vector's support
- * is a proportionality class, i.e. when no component is touched by two basis vectors. That holds for
- * every cell except the coupled rank-4 blocks of the 3-/6-fold groups, where several free parameters
- * genuinely meet in the same components (Birss Table 4f rows K4-L4, N4, P4 print exactly this as a
- * SUM cell). There, per-vector chains overlap at `T_xxxx` and, read as simultaneous constraints,
- * contradict each other. So the output semantics is:
+ * This is the DATA behind `formatReducedRelations`, which is the same partition rendered as display
+ * strings. It is extracted so the Nye dot-diagram view (`nyeScheme.ts`) is a view over exactly the
+ * partition the relation list shows, rather than a second, independently drifting derivation of it.
+ * No group theory happens here -- the invariant subspace arrives already computed in `basis`.
  *
- *   1. one chain per PROPORTIONALITY CLASS -- components whose columns across the reduced basis are
- *      proportional. For a disjoint-support cell this reproduces the per-vector chains exactly
- *      (the only row touching a class is the row spanning it), which is why every unaffected cell
- *      is byte-identical;
- *   2. the residual COMPOSITE relations among the class representatives -- the nullspace of the
- *      representative-column matrix, rendered in Birss's printed style
- *      (`T_xxxx = T_xxyy + T_xyxy + T_xyyx`), one relation per line, never mixed into a chain.
- *
- * Vanishing components are not listed (callers report them separately). Rank 0 must be handled by
- * the caller, as for `formatBasisRelation`.
+ * @see docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md § (f) (canonical presentation)
  */
-export function formatReducedRelations(basis: number[][], rank: number): string[] {
+export function reducedPartition(basis: number[][], rank: number): ConstraintPartition {
   const dim = Math.pow(3, rank);
-  if (basis.length === 0) return [];
+  const empty: ConstraintPartition = { reps: [], memberOf: new Map(), composites: [] };
+  if (basis.length === 0) return empty;
 
   // Column c of the reduced basis: the coordinate vector of component c in the pivot parameters.
   const col = (c: number): number[] => basis.map((row) => row[c]);
@@ -228,7 +255,7 @@ export function formatReducedRelations(basis: number[][], rank: number): string[
   // (1) proportionality classes, discovered in ascending component order so the representative of
   // each class is its lowest index and the class order matches the old per-vector order.
   const reps: number[] = [];
-  const memberRatio = new Map<number, { rep: number; ratio: number }>();
+  const memberOf = new Map<number, ConstraintMembership>();
   for (let c = 0; c < dim; c++) {
     const vc = col(c);
     if (isZeroVec(vc)) continue;
@@ -236,25 +263,15 @@ export function formatReducedRelations(basis: number[][], rank: number): string[
     for (const r of reps) {
       const ratio = ratioOf(vc, col(r));
       if (ratio !== null) {
-        memberRatio.set(c, { rep: r, ratio });
+        memberOf.set(c, { rep: r, ratio });
         placed = true;
         break;
       }
     }
     if (!placed) {
       reps.push(c);
-      memberRatio.set(c, { rep: c, ratio: 1 });
+      memberOf.set(c, { rep: c, ratio: 1 });
     }
-  }
-
-  // Each class becomes a synthetic vector fed to the SAME builder the per-vector path used, so the
-  // chain strings (ratios, signs, coefficient formatting) are produced by identical code.
-  const relations: string[] = [];
-  for (const r of reps) {
-    const v = new Array(dim).fill(0);
-    for (const [c, m] of memberRatio) if (m.rep === r) v[c] = m.ratio;
-    const chain = formatBasisRelation(v, rank);
-    if (chain !== null) relations.push(chain);
   }
 
   // (2) residual composite relations: reduce the representative-column matrix; every non-pivot
@@ -265,6 +282,7 @@ export function formatReducedRelations(basis: number[][], rank: number): string[
   const pivotOf = R.map((row) => row.findIndex((x) => Math.abs(x) > RANK_PIVOT_EPS));
   const isPivot = new Set(pivotOf.filter((p) => p >= 0));
 
+  const composites: CompositeConstraint[] = [];
   for (let j = 0; j < reps.length; j++) {
     if (isPivot.has(j)) continue;
     // Nullspace vector for free column j: a_j = 1, a_{pivot_k} = -R[k][j]. It states sum_i a_i T_i = 0.
@@ -281,15 +299,70 @@ export function formatReducedRelations(basis: number[][], rank: number): string[
     // representative reproduces that shape, with each partner the canonical member of its class.
     const [lhs, ...rhs] = involved;
     const scale = -a.get(lhs)!;
-    const terms = rhs.map((p, n) => {
-      const coeff = a.get(p)! / scale;
-      const piece = `${formatCoeff(Math.abs(coeff))}${getLabel(getIndices(reps[p], rank))}`;
-      return n === 0 ? (coeff < 0 ? `-${piece}` : piece) : coeff < 0 ? `- ${piece}` : `+ ${piece}`;
+    composites.push({
+      involved: involved.map((p) => reps[p]),
+      lhs: reps[lhs],
+      terms: rhs.map((p) => ({ rep: reps[p], coeff: a.get(p)! / scale })),
+      determined: reps[j],
     });
-    relations.push(`${getLabel(getIndices(reps[lhs], rank))} = ${terms.join(' ')}`);
   }
 
+  return { reps, memberOf, composites };
+}
+
+/**
+ * The relation set of a MINIMAL (RREF-reduced) basis, as display strings (Q0, 2026-07-30).
+ *
+ * A relation list built one-string-per-basis-vector is only honest when each basis vector's support
+ * is a proportionality class, i.e. when no component is touched by two basis vectors. That holds for
+ * every cell except the coupled rank-4 blocks of the 3-/6-fold groups, where several free parameters
+ * genuinely meet in the same components (Birss Table 4f rows K4-L4, N4, P4 print exactly this as a
+ * SUM cell). There, per-vector chains overlap at `T_xxxx` and, read as simultaneous constraints,
+ * contradict each other. So the output semantics is:
+ *
+ *   1. one chain per PROPORTIONALITY CLASS -- components whose columns across the reduced basis are
+ *      proportional. For a disjoint-support cell this reproduces the per-vector chains exactly
+ *      (the only row touching a class is the row spanning it), which is why every unaffected cell
+ *      is byte-identical;
+ *   2. the residual COMPOSITE relations among the class representatives -- the nullspace of the
+ *      representative-column matrix, rendered in Birss's printed style
+ *      (`T_xxxx = T_xxyy + T_xyxy + T_xyyx`), one relation per line, never mixed into a chain.
+ *
+ * Vanishing components are not listed (callers report them separately). Rank 0 must be handled by
+ * the caller, as for `formatBasisRelation`.
+ *
+ * The partition itself lives in `reducedPartition`; this function only renders it, so the Nye
+ * dot-diagram view and this list cannot disagree about what a component is.
+ */
+export function formatReducedRelations(basis: number[][], rank: number): string[] {
+  const dim = Math.pow(3, rank);
+  if (basis.length === 0) return [];
+
+  const { reps, memberOf, composites } = reducedPartition(basis, rank);
+
+  // Each class becomes a synthetic vector fed to the SAME builder the per-vector path used, so the
+  // chain strings (ratios, signs, coefficient formatting) are produced by identical code.
+  const relations: string[] = [];
+  for (const r of reps) {
+    const v = new Array(dim).fill(0);
+    for (const [c, m] of memberOf) if (m.rep === r) v[c] = m.ratio;
+    const chain = formatBasisRelation(v, rank);
+    if (chain !== null) relations.push(chain);
+  }
+
+  for (const comp of composites) relations.push(formatCompositeConstraint(comp, rank));
+
   return relations;
+}
+
+/** One composite relation as a display string, in Birss's printed sum-cell style
+ * (`\chi_{xxxx} = \chi_{xxyy} + 2\chi_{xyxy}`). Shared by the relation list and the Nye view. */
+export function formatCompositeConstraint(comp: CompositeConstraint, rank: number): string {
+  const terms = comp.terms.map(({ rep, coeff }, n) => {
+    const piece = `${formatCoeff(Math.abs(coeff))}${getLabel(getIndices(rep, rank))}`;
+    return n === 0 ? (coeff < 0 ? `-${piece}` : piece) : coeff < 0 ? `- ${piece}` : `+ ${piece}`;
+  });
+  return `${getLabel(getIndices(comp.lhs, rank))} = ${terms.join(' ')}`;
 }
 
 export function transformTensor(

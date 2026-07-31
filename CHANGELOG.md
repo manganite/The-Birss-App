@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tables: a **dot-diagram view** of the reduced tensor form, toggled beside the symbolic one
+  (rank 2, both rank-3 compressed layouts — `i(jk)` as the classical 3×6 scheme and `(ij)k` as
+  its 6×3 transpose — and the two rank-4 Voigt classes). It uses the Nye scheme's glyph
+  vocabulary — small dot for a vanishing component, heavy dot for an independent one, open
+  circle for a partner of equal magnitude and opposite sign, cross for a component fixed by a
+  relation between classes — with a class index on every surviving component, and the class
+  chain shown on hover, tap or keyboard focus. The choice of view persists for the session.
+
 ### Changed
 
 - Tables: the book-misprint footnote on the Birss Table-7 lookup chain now offers the same

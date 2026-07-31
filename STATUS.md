@@ -75,7 +75,13 @@ reference tests that re-parse the vendored tables at test time. The engine
 across all 122 groups (T4/F2).
 
 **Open residue (near-term, maintainer decision 2026-07-15):**
-- Nye dot diagrams for tensor forms (Tables Phase 4).
+- ~~Nye dot diagrams for tensor forms (Tables Phase 4)~~ — **CLOSED 2026-07-31 (NYE)**. Shipped
+  as a per-representation toggle beside the symbolic form, for the rank/intrinsic combinations
+  that have a scheme geometry. The series also produced the app's first independent print anchor
+  for the rank-3 `i(jk)` grid and for alternate-setting forms (Yariv Table 16.1, all 24 panels
+  transcribed positionally and gated), and four erratum candidates in ITC-D Ch. 1.1's rank-3
+  material. See the NYE entry in `docs/planning/LEDGER.md` and
+  `docs/findings/FINDING-2026-07-31-itc-d-rank3-scheme-defects.md`.
 - ~~Complete the Table-7 lookup-chain breadcrumb for magnetic c-tensors~~ — **CLOSED
   2026-07-31 (T7-BC)**. This entry's "currently a neutral 'runs via Table 7' placeholder"
   wording was stale from v0.21.0: the full chain (A/B fork, source reference axes, the

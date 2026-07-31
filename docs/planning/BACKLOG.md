@@ -124,6 +124,16 @@ deferred and never shipped:
   no visual distinction between primary section headers and secondary sublabels.
   Proposed: two levels of label treatment for scannability.
 
+### Nye diagram side by side with the symbolic form — `needs-design-session`
+
+*Provenance: maintainer, 2026-07-31, recorded while scoping the NYE series (D-placement).*
+
+The dot diagram ships as a **toggle** beside the symbolic representation, v1 everywhere. Showing
+both simultaneously on a wide desktop was considered and deliberately kept out of v1, to avoid
+entangling it with the parked Feature-8 desktop-layout work — the two would be deciding the same
+question about how much horizontal room the Tables results column may claim. Revisit together
+with Feature 8, not before.
+
 ### Feature 9 — [hkl] surface orientation (Phase 2 residual) — `unscoped`
 
 - The removed diagonal presets (`k∥xy`, `k∥xz`, `k∥yz` from the Feature 1B cleanup)

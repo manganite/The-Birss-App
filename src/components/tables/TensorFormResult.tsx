@@ -6,7 +6,9 @@ import {
   type TensorTimeParity,
   type TensorIntrinsic,
 } from '../../services/tensorForms';
+import { type NyeScheme, SINGLE_SLOTS, PAIR_SLOTS, type NyeSlot } from '../../services/nyeScheme';
 import { TermInfo } from '../TermInfo';
+import { NyeSchemeDiagram } from './NyeSchemeDiagram';
 import { bar } from './shared';
 
 const RANK0_READING: Record<string, string> = {
@@ -17,24 +19,9 @@ const RANK0_READING: Record<string, string> = {
 };
 
 /** A "slot" is the crystallographic indices a row/column header stands for: a single index (x/y/z)
- * or a Voigt-compressed pair (xx,yy,zz,yz,zx,xy in the standard 1..6 order). */
-interface Slot {
-  label: string;
-  idx: number[];
-}
-const SINGLE_SLOTS: Slot[] = [
-  { label: 'x', idx: [0] },
-  { label: 'y', idx: [1] },
-  { label: 'z', idx: [2] },
-];
-const PAIR_SLOTS: Slot[] = [
-  { label: 'xx', idx: [0, 0] },
-  { label: 'yy', idx: [1, 1] },
-  { label: 'zz', idx: [2, 2] },
-  { label: 'yz', idx: [1, 2] },
-  { label: 'zx', idx: [2, 0] },
-  { label: 'xy', idx: [0, 1] },
-];
+ * or a Voigt-compressed pair (xx,yy,zz,yz,zx,xy in the standard 1..6 order). Defined once in
+ * `services/nyeScheme.ts`, so this matrix and the dot diagram cannot disagree about the layout. */
+type Slot = NyeSlot;
 const flatOf = (indices: number[]) => indices.reduce((a, x) => a * 3 + x, 0);
 
 /**
@@ -51,8 +38,8 @@ function CompressedMatrix({
   onNavigate,
 }: {
   labels: string[];
-  rowSlots: Slot[];
-  colSlots: Slot[];
+  rowSlots: readonly Slot[];
+  colSlots: readonly Slot[];
   /** glossary id for the top-left help icon (the Nye 3x6 vs the general Voigt-pair layouts differ). */
   cornerTip: string;
   onNavigate?: (view: string, tab?: string) => void;
@@ -128,7 +115,16 @@ interface TensorFormResultProps {
   dim: number;
   toSym: (s: string) => string;
   onNavigate: (view: string, tab?: string) => void;
+  /** The dot-diagram model, or null when this rank/intrinsic combination has no scheme geometry. */
+  nyeScheme: NyeScheme | null;
+  formView: FormView;
+  setFormView: (v: FormView) => void;
 }
+
+/** Which representation of the reduced form is showing. `symbolic` is the default everywhere. */
+export type FormView = 'symbolic' | 'diagram';
+
+const viewChip = 'px-3 py-1 text-[11px] tracking-[0.05em] transition-all border border-ink';
 
 /** The reduced tensor form: the vanishes/forbidden note, the native/Voigt matrix, or the relation
  *  list, plus the independent-component count and the vanishing-component tally. */
@@ -149,7 +145,15 @@ export function TensorFormResult({
   dim,
   toSym,
   onNavigate,
+  nyeScheme,
+  formView,
+  setFormView,
 }: TensorFormResultProps) {
+  // The toggle is offered for exactly the rank/intrinsic combinations that have a scheme geometry,
+  // and only when there is something to draw. Everything else keeps its existing display untouched.
+  const canDiagram = nyeScheme !== null && !form.isZero;
+  const showDiagram = canDiagram && formView === 'diagram';
+
   return (
     <div className="space-y-4">
       <div className="flex items-baseline justify-between">
@@ -157,15 +161,36 @@ export function TensorFormResult({
           Tensor form
           {!form.isZero && !usesMatrix && aRank >= 3 && <TermInfo id="tbl-relations" onNavigate={onNavigate} />}
         </h2>
-        {!form.isZero && aRank > 0 && (
-          <span className="text-xs text-ink/50 flex items-center gap-1">
-            {independentCount} independent component{independentCount === 1 ? '' : 's'}{' '}
-            <TermInfo id="tbl-indep-count" onNavigate={onNavigate} />
-          </span>
-        )}
+        <div className="flex items-baseline gap-4">
+          {canDiagram && (
+            <div className="flex gap-1" role="group" aria-label="Tensor form representation">
+              {(['symbolic', 'diagram'] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  aria-pressed={formView === v}
+                  onClick={() => setFormView(v)}
+                  className={`${viewChip} ${
+                    formView === v ? 'bg-ink text-paper' : 'hover:bg-ink hover:text-paper text-ink/70 border-opacity-20'
+                  }`}
+                >
+                  {v === 'symbolic' ? 'Symbolic' : 'Dot diagram'}
+                </button>
+              ))}
+            </div>
+          )}
+          {!form.isZero && aRank > 0 && (
+            <span className="text-xs text-ink/50 flex items-center gap-1">
+              {independentCount} independent component{independentCount === 1 ? '' : 's'}{' '}
+              <TermInfo id="tbl-indep-count" onNavigate={onNavigate} />
+            </span>
+          )}
+        </div>
       </div>
 
-      {form.isZero ? (
+      {showDiagram ? (
+        <NyeSchemeDiagram scheme={nyeScheme!} />
+      ) : form.isZero ? (
         <div className="border border-ink/20 bg-ink/5 p-6 text-center">
           <p className="text-sm text-ink/70 inline-flex items-center gap-1">
             {forbiddenName} {isEffect ? 'is forbidden' : 'vanishes identically'} for{' '}
