@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Tables: the book-misprint footnote on the Birss Table-7 lookup chain now offers the same
+  "Learn more" link into Help > Deeper Topics from the expandable diagram as it already did
+  from the breadcrumb above it. The two views show the same warning, so they now offer the
+  same way to read up on it.
+
 ## [0.23.1] - 2026-07-30
 
 ### Fixed
