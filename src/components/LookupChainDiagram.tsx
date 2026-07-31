@@ -248,7 +248,26 @@ export function LookupChainDiagram({
           <Connector />
           {terminal(chain.letter)}
         </div>
-        {chain.bookErrorNote && <p className="text-[11px] text-ink/50 italic pt-2">⚠ {chain.bookErrorNote}</p>}
+        {/* Same footnote the breadcrumb renders (tables/LookupChain.tsx), including its "Learn more"
+            affordance: the two views show the same note from the same `bookErrorNote`, so they must
+            offer the same way out of it. The diagram had the note but not the link. */}
+        {chain.bookErrorNote && (
+          <p className="text-[11px] text-ink/50 italic pt-2">
+            ⚠ {chain.bookErrorNote}
+            {onNavigate && (
+              <>
+                {' '}
+                <button
+                  type="button"
+                  onClick={() => onNavigate('help', 'deeper')}
+                  className="not-italic uppercase tracking-wider text-ink/60 hover:text-ink"
+                >
+                  Learn more →
+                </button>
+              </>
+            )}
+          </p>
+        )}
       </div>
     );
   }
