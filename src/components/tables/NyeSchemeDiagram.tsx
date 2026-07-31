@@ -110,7 +110,13 @@ export function NyeSchemeDiagram({ scheme }: { scheme: NyeScheme }) {
   const width = HEADER_W + scheme.cols.length * CELL;
   const height = HEADER_H + scheme.rows.length * CELL;
 
-  /** Roving focus across the interactive cells, by grid position. */
+  /**
+   * Roving focus across the interactive cells, in READING ORDER -- not by grid position. The
+   * non-vanishing cells are a sparse subset of the grid, so column-wise movement would keep landing
+   * on gaps; all four arrow keys therefore step one cell forward or back through the same sequence
+   * (Right/Down forward, Left/Up back), wrapping at both ends, with Home/End for the extremes and
+   * Escape to clear the highlight.
+   */
   const onKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
     const { key, currentTarget, target } = event;
     if (key === 'Escape') {
