@@ -14,6 +14,7 @@ at the top of each file before trusting its contents.
 | file | subject |
 | --- | --- |
 | [`FINDING-2026-07-29-rank4-trigonal-hexagonal-overcount.md`](FINDING-2026-07-29-rank4-trigonal-hexagonal-overcount.md) | The rank-4 minimal-basis defect for 3-/6-fold groups (shipped as Q0 in v0.23.1). |
+| [`FINDING-2026-07-31-itc-d-rank3-scheme-defects.md`](FINDING-2026-07-31-itc-d-rank3-scheme-defects.md) | Four defects in ITC-D Ch. 1.1's rank-3 scheme material, and the print-anchor rules for the Nye view. |
 | [`SESSION-FINDINGS-2026-07-04-6pmmpm-and-table7.md`](SESSION-FINDINGS-2026-07-04-6pmmpm-and-table7.md) | `6'/mm'm` frame error, Table-7 bracket semantics, the 58-row audit. |
 | [`AUDIT-convention-references.md`](AUDIT-convention-references.md) | The five-phase audit of the app against its convention references. |
 | [`ANALYSIS-table-4b-4d-semantics.md`](ANALYSIS-table-4b-4d-semantics.md) | Semantics of Birss Tables 4b/4c/4d and the lockstep pairing rule. |
