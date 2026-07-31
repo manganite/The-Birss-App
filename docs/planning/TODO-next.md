@@ -2024,3 +2024,54 @@ contract lives in `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f)
   identical via the adjacent pair-equality lines, and the only form a general formatter can
   produce without encoding per-row table knowledge. Reasoning recorded in
   `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(f).
+
+---
+
+## Tables lookup chain -- T7-BC
+
+### Open
+
+(none)
+
+### Completed
+
+- **T7-BC -- Table-7 breadcrumb completion** (`feat/t7-breadcrumb-completion`, 2026-07-31). Opened
+  against a ledger entry describing a *neutral "runs via Table 7" placeholder*; that wording was
+  **stale from v0.21.0** and is corrected in `STATUS.md`. The two premise checks the work order
+  required found its remaining gap list to be largely already-implemented, so the four-commit shape
+  was retired in favour of one fix. Recorded here so the next session does not inherit the same
+  stale premise:
+
+  **Affordance inventory (the surprise).** The magnetic chain is a strict SUPERSET of the classical
+  one, not a subset. In `LookupChainDiagram.tsx` the classical variant carries exactly one
+  affordance -- `tbl-ref-axes` (-> Help "Notations & Conventions") on the reference-axes line -- and
+  nothing on the group chip, tensor tag, Table-4a strip or terminal. The Table-7 variant carries
+  `tbl-rotated` (-> "Deeper Topics") on each bracketed A/B source, `tbl-crossover` (-> "Tables") on
+  the parity-crossover marker, and the same `tbl-ref-axes` on the source reference axes. There was
+  therefore **no classical inventory to mirror**: the work order's parity target did not exist, and
+  building it would have inverted the asymmetry rather than removing it.
+
+  **Misprint applicability.** `birss-tables/table-7.md` (2026-07-04 findings) documents two
+  book errors. Only `-6m'2'` reaches this route: its printed `A = -6m2` contradicts the row's own
+  Table-6 generator, so the app forces the rotated form and surfaces `bookErrorNote` -- fires on 5
+  (parity, rank) cells of that group and on no other group (probed across all 122). The other row,
+  `(-6'2m')`, is a bracket omission in the **i-cells** with, in the findings' own words, "no
+  physical consequence"; the Table-7 route renders only for **c-tensors**, so nothing it displays is
+  affected. A footnote there would warn about a print detail the app never reaches.
+
+  **The one real defect, fixed.** Both the breadcrumb and the diagram render the same
+  `bookErrorNote`, but only the breadcrumb offered the "Learn more" link into Help > Deeper Topics.
+  The diagram now renders the identical button with the identical target, guarded on the optional
+  `onNavigate` (the Help embed passes none). Pinned by three jsdom interaction tests -- affordance
+  navigates to `('help', 'deeper')`; note renders without the link when `onNavigate` is absent;
+  negative control on `-6'2m'` has neither -- and red-proofed: only the affordance test fails
+  against the pre-fix component. Suite 2290 -> 2293.
+
+### Parking lot (design, needs a maintainer decision)
+
+- **Classical-chain affordance enrichment.** Bring the classical lookup chain up to the magnetic
+  one's affordance level (group chip / family class, tensor tag, Table-4a strip, terminal). This is
+  design enrichment rather than a defect -- the classical chain is self-explanatory in a way the
+  Table-7 route is not, which is plausibly why it grew fewer affordances -- and it needs Help-content
+  decisions (there is no Help material behind several of the candidate targets). Deliberately out of
+  scope for T7-BC; raise with Thomas before scoping.

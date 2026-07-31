@@ -148,8 +148,15 @@ across all 122 groups (T4/F2).
 
 **Open residue (near-term, maintainer decision 2026-07-15):**
 - Nye dot diagrams for tensor forms (Tables Phase 4).
-- Complete the Table-7 lookup-chain breadcrumb for magnetic c-tensors (currently a
-  neutral "runs via Table 7" placeholder).
+- ~~Complete the Table-7 lookup-chain breadcrumb for magnetic c-tensors~~ — **CLOSED
+  2026-07-31 (T7-BC)**. This entry's "currently a neutral 'runs via Table 7' placeholder"
+  wording was stale from v0.21.0: the full chain (A/B fork, source reference axes, the
+  Table-4a column with the parity crossover marked, the class → rank-table tail, the grey
+  tail, and the misprint footnote) has shipped since then. A premise survey found the
+  residue to be one defect only — the diagram rendered the book-misprint footnote without
+  the breadcrumb's "Learn more" link — now fixed. See `docs/planning/TODO-next.md`, T7-BC,
+  for the affordance inventory and why the second documented misprint does not apply to
+  this route.
 - Further Tables refinements pending maintainer scoping.
 
 (LaTeX copy of tensor forms moved to the parking lot, section 4.)
