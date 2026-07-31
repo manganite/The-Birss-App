@@ -1,10 +1,12 @@
 # Discrepancy Report: birss-app vs. birss-tables
 
-> **⚠️ Partially superseded (2026-07-04).** Any statement in this file about `-6m2`,
-> trigonal, or hexagonal mirror orientation reflects the pre-2026-07 "no swap" reading and
-> is **superseded**. Authoritative treatment:
+> **Content:** Comparison passes between the app data/logic and the vendored birss-tables transcriptions.
+> **Status:** superseded in part (2026-07-04) -> `docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md`
+> **Authority:** historical record, PARTIALLY SUPERSEDED (2026-07-04). Any statement in this file
+> about `-6m2`, trigonal, or hexagonal mirror orientation reflects the pre-2026-07 "no swap"
+> reading and is **superseded**. Authoritative treatment:
 > `docs/references/BIRSS-ITC-CONVENTION-DIVERGENCES.md` (evidence:
-> `docs/findings/SESSION-FINDINGS-2026-07-04-6pmmpm-and-table7.md`).
+> `docs/findings/SESSION-FINDINGS-2026-07-04-6pmmpm-and-table7.md`). The rest of the file stands.
 
 Tracks differences found between the app's data/logic and the authoritative transcriptions
 in [manganite/birss-tables](https://github.com/manganite/birss-tables).

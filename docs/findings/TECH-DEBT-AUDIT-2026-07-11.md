@@ -1,5 +1,9 @@
 # Technical Debt Audit — 2026-07-11
 
+> **Content:** Technical-debt snapshot that seeded the E-series.
+> **Status:** frozen (2026-07-11)
+> **Authority:** historical record. Actionable items became `E#` entries; the E-series ledger is in `docs/planning/TODO-next.md`.
+
 > **Findings snapshot as of 2026-07-11; actionable items are tracked as `E#` entries
 > in [`docs/planning/TODO-next.md`](../planning/TODO-next.md) — this file is not updated.**
 > Wave 1 (H1, M9, M10, M11, L1, L2, L6, L12) has since shipped on `chore/tech-debt-wave1`.

@@ -1,6 +1,12 @@
 # Roadmap
 
-> Historical / per-item detail. For current status see [STATUS.md](../../STATUS.md) (root).
+> **Content:** The original design notebook: feature ideas, decisions and reasoning from the pre-v0.8 cycles.
+> **Status:** frozen (2026-07-31)
+> **Authority:** historical record. Not a source of current plans.
+
+**Closed out 2026-07-31.** Its still-relevant leftovers were extracted to `BACKLOG.md` section B (via what was then `STATUS.md` section 3, now retired), and its standing decisions to `STATUS.md` section 5. The body below is unchanged, including its then-open
+items; open work now lives in `STATUS.md` section 1 and deferred ideas in
+`docs/planning/BACKLOG.md`.
 
 Feature ideas, design decisions, and implementation notes for birss-app. This document serves as a living design notebook — it records not just what to build and in what order, but the reasoning behind decisions, verified constraints, and brainstorming context that informs future work. Items are roughly ordered by priority.
 

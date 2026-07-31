@@ -1,5 +1,9 @@
 # Changelog
 
+> **Content:** Per-release record of user-facing changes, including corrections to calculated output.
+> **Status:** living
+> **Authority:** authoritative for release history. Correction entries state what was wrong and from which version it is fixed.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

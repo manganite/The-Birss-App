@@ -1,5 +1,9 @@
 # Sign-off report -- the seven rank-3 VERIFY fixtures (goldenTensors.fixtures.ts)
 
+> **Content:** Human sign-off record for the seven rank-3 VERIFY golden fixtures.
+> **Status:** frozen (2026-07-09)
+> **Authority:** historical record. The sign-off it documents is reflected in the fixture comments themselves.
+
 Date: 2026-07-09. Scope: the seven fixtures carrying `// VERIFY: pending human sign-off ...`
 markers (lines ~978, 984, 1343, 1349, 1360, 1366, 1372 at base `b988cbe`).
 Method: (A) literature check against the LOCAL Fiebig et al., JOSA B 22, 96 (2005) PDF;

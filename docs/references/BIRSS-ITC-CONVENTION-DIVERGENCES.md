@@ -1,5 +1,9 @@
 # The Birss App and the International Tables: Axis Conventions, Settings, and Symbol Divergences
 
+> **Content:** Every Birss<->ITC symbol, setting and orientation divergence the app has had to arbitrate.
+> **Status:** living
+> **Authority:** AUTHORITATIVE for Birss/ITC divergence questions. Supersedes the older comparison in `docs/findings/DISCREPANCIES.md`.
+
 **Status:** findings document -- the verified basis for the planned in-app transparency layer.
 **Revision 2 (2026-07-04):** updated after the v0.14.1 `6'/mm'm` frame correction (PR #52) and the
 full 58-row Table-7 audit; see `SESSION-FINDINGS-2026-07-04-6pmmpm-and-table7.md` for the evidence

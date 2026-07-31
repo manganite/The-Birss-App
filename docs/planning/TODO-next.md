@@ -1,5 +1,27 @@
 # Birss App — TODO for the next version (working draft)
 
+> **Content:** The v0.12-era working draft of the A#/B# backlog, plus the completed series ledgers
+> (E, T, F, R, A, Q, T7-BC) written against it.
+> **Status:** frozen (2026-07-31)
+> **Authority:** historical record. Superseded for every live purpose — see below.
+
+**This file is frozen and is not maintained.** It is kept in full because it is the process record:
+how each item was scoped, argued and closed. Nothing here should be read as current.
+
+| for | read instead |
+| --- | --- |
+| what is open and in scope now | `STATUS.md` section 1 |
+| deferred ideas, parking lot, residual sub-items | `docs/planning/BACKLOG.md` |
+| new series entries (from 2026-07-31) | `docs/planning/LEDGER.md` |
+| release history | `CHANGELOG.md` |
+
+_Extraction note (2026-07-31): the deferred ideas that `STATUS.md` had carried from this file were
+moved into `BACKLOG.md`. The bodies below are unchanged; the only edits are this header, the
+superseded pointer on the at-a-glance block, and the T-obs entry moved to `LEDGER.md`._
+
+---
+
+
 > Historical / per-item detail. For current status see [STATUS.md](../../STATUS.md) (root).
 > New items only — does **not** track the still-open items from `TODO-v0.7-audit.md`.
 > Assembled iteratively from review notes. Each item is **provisional** until
@@ -65,6 +87,10 @@ Items keep **stable IDs** (**A#** = bug, **B#** = change proposal); ordering bel
 ---
 
 ## Open points at a glance
+
+> **Superseded (2026-07-31).** This block is a v0.12.0-era snapshot and is kept only as part of the
+> frozen record. The current open list is `STATUS.md` section 1; deferred ideas are in
+> `docs/planning/BACKLOG.md`.
 
 Most items are **Decided** (problem + concrete fix + action items). This block is the
 v0.12.0-era summary; entries below reflect that cycle. For the CURRENT open state see
@@ -1738,16 +1764,9 @@ independently re-verified against `main` @ 5fe1914 before scoping.
 
 ### Open
 
-- **T-obs -- CI lane-splitting (observation point, not scheduled).** The evaluation proposed
-  separate CI lanes (fast / exhaustive-scientific / generated-drift / browser) with deliberate
-  worker counts and timeouts. Deferred measure-first in T1; the conceptual value landed
-  separately as the filename-suffix taxonomy (`chore/test-taxonomy`: convenience scripts
-  test:reference/audit/pins/interaction plus the AGENTS.md taxonomy section) -- local tools
-  only, CI still runs the whole suite as one gate. The strongest structural argument for real
-  CI lanes (a class with different execution requirements, i.e. browser binaries) lapsed with
-  the T5a decision to decline Playwright, and T3/T4 removed the wall-time pressure (~155 s ->
-  ~96 s full suite in the reviewer's container class). Revisit only if CI-side flakes or
-  unacceptable wall-times reappear, or if a browser-runner class is ever introduced (T5b).
+- **T-obs -- CI lane-splitting (observation point).** Moved to `docs/planning/LEDGER.md`
+  on 2026-07-31: it is the one still-live item of this otherwise closed series, and a live
+  item does not belong in a frozen file. Content unchanged there.
 
 ### Completed
 

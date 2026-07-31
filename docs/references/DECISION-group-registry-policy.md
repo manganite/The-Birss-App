@@ -1,5 +1,9 @@
 # Decision: group-registry policy (E23 / audit M13)
 
+> **Content:** The accepted decision on group-registry policy (E23 / audit M13).
+> **Status:** living (accepted decision)
+> **Authority:** authoritative for the decision it records. Decisions are superseded by a later dated decision, never edited in place.
+
 Status: accepted, 2026-07-12. Supersedes the M13 recommendation to generate
 the hand-transcribed notation maps.
 

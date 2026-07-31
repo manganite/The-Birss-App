@@ -1,5 +1,9 @@
 # Security Policy
 
+> **Content:** How to report a vulnerability, and which versions receive fixes.
+> **Status:** living
+> **Authority:** authoritative for the security-reporting process.
+
 ## Supported Versions
 
 Only the latest released version of the Birss App is supported with security updates.

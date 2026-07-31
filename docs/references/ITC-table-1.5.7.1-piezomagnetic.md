@@ -1,5 +1,9 @@
 # ITC Table 1.5.7.1 -- Piezomagnetic tensor forms (independent MD-c anchor)
 
+> **Content:** Transcription of ITC Table 1.5.7.1, with the app-side notes needed to read it.
+> **Status:** living (transcription)
+> **Authority:** source-side material: a transcription of the printed ITC table, vendored so the reference tests can re-parse it. Change it only to correct the transcription against print.
+
 **SOURCE: International Tables for Crystallography, Vol. D, Sec. 1.5.7.1, Table 1.5.7.1 (p. 135).
 This is ITC data, NOT Birss.** Used as an independent second source for the app's **MD-c**
 tensor class (axial rank-3, jk-symmetric, time-odd = the piezomagnetic tensor Lambda_ijk).

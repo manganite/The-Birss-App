@@ -1,5 +1,9 @@
 # Verifikation: Trigonale magnetische Gruppen (Tabelle 6 & 7)
 
+> **Content:** Verification of the 11 trigonal rows of Birss tables 6 and 7 (in German).
+> **Status:** frozen (2026-06-30)
+> **Authority:** historical record.
+
 **Datum**: 2026-06-30
 **Umfang**: Die 11 trigonalen Zeilen in `table-6.md` und `table-7.md` —
 `3`, `-3`, `-3'`, `32`, `32'`, `3m`, `3m'`, `-3m`, `-3m'`, `-3'm'`, `-3'm`
