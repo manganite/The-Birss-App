@@ -28,7 +28,11 @@ bit-identical through both. `BIRSS-APP-CONVENTIONS-REFERENCE.md` Step 5(d) and 5
 the amended contract. Suite 2274 green. See `CHANGELOG.md` `[0.23.1]` for the corrected
 count table and the affected surfaces, and
 `docs/findings/FINDING-2026-07-29-rank4-trigonal-hexagonal-overcount.md` for the evidence
-record. **Q2** (Hoshi-anchored EQ goldens) remains open.
+record. **Post-release:** Q2 landed the Hoshi 1995 reference goldens -- his Eqs. (11)-(12) split
+by provenance, so the group-theory relations are asserted identically while his traceless
+convention enters only through an explicit, exactly-verified conversion, with a negative control
+pinning the app's deliberate non-enforcement of `Q_ii = 0`. **The EQ series is closed**; no open
+items remain in the EQ physics block.
 
 ### v0.23.0 (2026-07-17)
 
