@@ -171,6 +171,24 @@ controls live. Scoping any one of them alone would pre-decide the others.*
   amplitudes, phases). Open design question: file download/upload vs. URL-encoded permalink
   (citable). Schema versioning needed.
 
+### Classical lookup-chain affordance enrichment — `unscoped`
+
+*Provenance: promoted 2026-07-31 from the T7-BC parking-lot note in `docs/planning/TODO-next.md`
+(§ "Tables lookup chain -- T7-BC"). Copied, not moved: that file is frozen, so the original stays
+where it is and this is the live copy.*
+
+Bring the classical lookup chain up to the magnetic one's affordance level (group chip / family
+class, tensor tag, Table-4a strip, terminal). This is design enrichment rather than a defect — the
+classical chain is self-explanatory in a way the Table-7 route is not, which is plausibly why it
+grew fewer affordances — and it needs Help-content decisions (there is no Help material behind
+several of the candidate targets). Deliberately out of scope for T7-BC; raise with Thomas before
+scoping.
+
+*Context from the T7-BC survey: the asymmetry runs the other way from what was assumed. The
+Table-7 variant carries `tbl-rotated`, `tbl-crossover` and `tbl-ref-axes`; the classical variant
+carries `tbl-ref-axes` alone. So this entry is about raising the classical chain, not the
+magnetic one.*
+
 ### Circular polarization basis — `unscoped`
 
 Express source terms in E± = (E_X ± iE_Y)/√2. Unitary transformation of existing symbolic
