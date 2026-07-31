@@ -48,12 +48,13 @@ const renderDiagram = (
 
 describe("Table-7 misprint footnote — the diagram's Learn-more affordance", () => {
   it("-6m'2' polar rank-3: the footnote renders and its Learn more navigates to Help > Deeper Topics", async () => {
+    const user = userEvent.setup();
     const onNavigate = vi.fn();
     renderDiagram("-6m'2'", 'polar', 3, onNavigate);
 
     expect(screen.getByText(/⚠/)).toBeTruthy();
     const link = screen.getByRole('button', { name: /learn more/i });
-    await userEvent.click(link);
+    await user.click(link);
     // Same target as the breadcrumb's footnote in tables/LookupChain.tsx.
     expect(onNavigate).toHaveBeenCalledWith('help', 'deeper');
   });
