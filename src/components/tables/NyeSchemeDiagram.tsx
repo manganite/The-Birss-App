@@ -136,12 +136,7 @@ export function NyeSchemeDiagram({ scheme }: { scheme: NyeScheme }) {
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
-        <div
-          className="relative"
-          style={{ width, height }}
-          onKeyDown={onKeyDown}
-          onMouseLeave={() => setActive(null)}
-        >
+        <div className="relative" style={{ width, height }} onKeyDown={onKeyDown} onMouseLeave={() => setActive(null)}>
           {/* Glyph and connector layer. Presentational: every cell is also a real control below. */}
           <svg width={width} height={height} className="absolute inset-0" aria-hidden="true" focusable="false">
             {scheme.cols.map((c, col) => (
