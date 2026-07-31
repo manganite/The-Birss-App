@@ -11,17 +11,10 @@ Scientific React SPA that calculates non-zero susceptibility tensor components (
 **Start with `STATUS.md` (root)** — the canonical index for the current cycle:
 what is done, what is open, and what the standing decisions are.
 
-The detailed backlog lives in two companion documents (derivation and per-item
-detail):
-
-- **`docs/planning/TODO-next.md`** — the detailed findings: per-item problem, fix,
-  file:line anchors, acceptance, and a `Status:` tag (`Decided` / `Open decision` /
-  `Derivation / verification pending`). Items have stable IDs (`A#` = bug,
-  `B#` = change). An "Open points at a glance" list near the top shows what still
-  needs a decision or derivation.
-- **`docs/planning/ROADMAP-next.md`** — the execution plan: items grouped into **Waves A–E** by
-  dependency and risk, with a dependency graph, release cadence, and a per-item
-  contract. Start here to decide *what to pick up next*.
+Its **section 1 is the only list of open, in-scope work.** Everything deferred lives in
+**`docs/planning/BACKLOG.md`**; the record of how past series were decided lives in
+**`docs/planning/LEDGER.md`** (from 2026-07-31) and **`docs/planning/TODO-next.md`** (frozen
+archive of everything before that). The full picture is in the documentation map below.
 
 Working rules for this cycle:
 
@@ -47,6 +40,70 @@ Working rules for this cycle:
   item is unclear, ask for clarification rather than interpreting on your own. The
   items encode specific design decisions and physics reasoning — guessing risks
   implementing the wrong thing.
+
+## Documentation map (normative)
+
+This section is the rule; the folder READMEs are descriptions of it. If they disagree, this wins.
+
+### What each file is for
+
+| file | role | status |
+| --- | --- | --- |
+| `STATUS.md` | Current release, **section 1 = the only open-work list**, and the standing decisions (§ 5). | living |
+| `CHANGELOG.md` | Per-release user-facing changes; correction entries say what was wrong and since when it is fixed. | living |
+| `README.md` | Public overview. | living |
+| `AGENTS.md` | This file: process, conventions, architecture, and this map. | living |
+| `SECURITY.md` | Vulnerability reporting. | living |
+| `CLAUDE.md` | Pointer to this file. Non-authoritative. | living |
+| `docs/planning/BACKLOG.md` | The idea inventory: everything deferred, tagged and with provenance. Nothing here is scheduled. | living |
+| `docs/planning/LEDGER.md` | Append-only series record from 2026-07-31 onward, plus standing observation points. | living |
+| `docs/planning/TODO-next.md` | The v0.12-era working draft and the completed series ledgers (E/T/F/R/A/Q/T7-BC). The process record. | frozen |
+| `docs/planning/ROADMAP.md`, `ROADMAP-next.md`, `DESIGN-tables-feature.md` | Closed-out plans, kept for their reasoning. | frozen |
+| `docs/findings/*` | Dated investigation records. | frozen by default |
+| `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`, `BIRSS-ITC-CONVENTION-DIVERGENCES.md` | The app's convention contracts. | living, authoritative |
+| `docs/references/DECISION-*.md` | Accepted decision records. | living |
+| `docs/references/ITC-table-*.md` | Transcribed ITC tables, re-parsed by the reference tests. | source-side |
+| `birss-tables/*` | **Vendored** Birss transcriptions (git subtree). | source-side |
+
+### Authority hierarchy
+
+1. **The app's convention contract wins over the book compilation.** Where
+   `BIRSS-APP-CONVENTIONS-REFERENCE.md` and a vendored table appear to disagree about what the
+   *app* does, the contract is authoritative; the vendored table is authoritative about what the
+   *book* says. (Where Birss and ITC themselves diverge, Birss wins — that rule is in the contract.)
+2. **`BIRSS-ITC-CONVENTION-DIVERGENCES.md` wins over `docs/findings/DISCREPANCIES.md`** on every
+   symbol/setting/orientation question. The latter is partially superseded and says so.
+3. **Shipped, test-guarded behaviour wins over any design document.** A frozen design record
+   describes an intent, not the product.
+
+### Vendored files
+
+`birss-tables/` arrives by `git subtree` from `manganite/birss-tables`. Do not add app-side
+banners or app-side notes to it, and change a table only to correct it against print — the
+reference tests re-parse these files at test time and CI regenerates `table-nomenclature.md` from
+the generator and fails on drift.
+
+### Where a decision goes
+
+- **Convention or data-model decision** → `docs/references/DECISION-*.md`, dated. Superseded by a
+  later dated decision, never edited in place.
+- **A constraint that binds future work** → `STATUS.md` § 5 (standing decisions).
+- **A decision made while executing a series** → the series entry in `LEDGER.md`. If it turns out
+  to bind work beyond that series, promote it to § 5 and leave a pointer.
+
+### Freeze discipline
+
+- A **frozen** document changes only by a dated addendum or a supersession line in its banner.
+  Its body is not rewritten — that is the whole point of freezing it.
+- **Open state lives in `STATUS.md` § 1 and nowhere else.** A live item inside a frozen file is a
+  bug; move it out (that is why T-obs moved to `LEDGER.md`).
+- **Ledgers are append-only.** Correct an entry with a dated follow-up beneath it.
+
+### Maintenance rule
+
+Adding a new documentation file means, in the same commit: the three-line banner at the top, and
+a line for it in the containing folder's `README.md`. Add both to the self-check of any work order
+that creates documentation.
 
 ## Build & Dev
 

@@ -4,7 +4,7 @@
 > **Status:** frozen (2026-07-31)
 > **Authority:** historical record. Not a source of current plans.
 
-**Closed out 2026-07-31.** Its still-relevant leftovers were extracted to `BACKLOG.md` section B (via `STATUS.md` section 3), and its standing decisions to `STATUS.md` section 5. The body below is unchanged, including its then-open
+**Closed out 2026-07-31.** Its still-relevant leftovers were extracted to `BACKLOG.md` section B (via what was then `STATUS.md` section 3, now retired), and its standing decisions to `STATUS.md` section 5. The body below is unchanged, including its then-open
 items; open work now lives in `STATUS.md` section 1 and deferred ideas in
 `docs/planning/BACKLOG.md`.
 
