@@ -127,36 +127,48 @@ describe('Yariv Table 16.1 -- the print gate against the engine', () => {
    * Each panel resolves to exactly one app setting: the one whose computed cell set equals the
    * transcribed one. The mapping is an OUTPUT of the gate, not an input -- Yariv's "standard
    * orientation" is not the app's setting 1 (see the fixture header).
+   *
+   * Computed on demand, per panel, so every test below is self-sufficient: none depends on another
+   * having run first, and the file is safe under re-ordering or concurrent execution. Recomputation
+   * is free -- `computeTensorForm` memoizes per group/setting/spec.
    */
-  const resolved = new Map<string, { group: string; setting: number }>();
+  function resolveSettings(fx: YarivScheme): Array<{ group: string; setting: number }> {
+    const want = transcribedCells(fx).join(',');
+    const matches: Array<{ group: string; setting: number }> = [];
+    for (const group of fx.groups) {
+      for (const setting of settingsOf(group)) {
+        if (engineCells(schemeFor(group, setting)).join(',') === want) matches.push({ group, setting });
+      }
+    }
+    return matches;
+  }
+
+  /** The single setting a panel resolves to, failing loudly here rather than downstream. */
+  function resolveOne(fx: YarivScheme): { group: string; setting: number } {
+    const matches = resolveSettings(fx);
+    expect(matches.length, `${fx.id}: expected one resolving setting, got ${JSON.stringify(matches)}`).toBeGreaterThan(
+      0,
+    );
+    return matches[0];
+  }
 
   it.each(YARIV_T161_SCHEMES.map((fx) => [fx.id, fx] as const))(
     '%s: exactly one app setting reproduces the transcribed cell set',
     (_id, fx) => {
-      const want = transcribedCells(fx);
-      const matches: Array<{ group: string; setting: number }> = [];
-      for (const group of fx.groups) {
-        for (const setting of settingsOf(group)) {
-          if (engineCells(schemeFor(group, setting)).join(',') === want.join(',')) {
-            matches.push({ group, setting });
-          }
-        }
-      }
+      const matches = resolveSettings(fx);
       // One match per group the panel covers (Yariv prints -43m and 23 together).
       expect(
         matches.map((m) => m.group),
         `${fx.id}: matched settings ${JSON.stringify(matches)}`,
       ).toEqual(fx.groups);
-      resolved.set(fx.id, matches[0]);
     },
   );
 
   it.each(YARIV_T161_SCHEMES.map((fx) => [fx.id, fx] as const))(
     '%s: derived classes, partition and signs equal the engine',
     (_id, fx) => {
-      const at = resolved.get(fx.id);
-      expect(at, `${fx.id}: setting not resolved`).toBeDefined();
-      const scheme = schemeFor(at!.group, at!.setting);
+      const at = resolveOne(fx);
+      const scheme = schemeFor(at.group, at.setting);
 
       // Derived class count -- from the transcription, not from the parenthetical.
       expect(fx.links.length, `${fx.id}: class count`).toBe(scheme.classes.length);
@@ -181,7 +193,7 @@ describe('Yariv Table 16.1 -- the print gate against the engine', () => {
     // app's ALTERNATE setting for both monoclinic and trigonal 3m.
     const mapping = Object.fromEntries(
       YARIV_T161_SCHEMES.map((fx) => {
-        const at = resolved.get(fx.id)!;
+        const at = resolveOne(fx);
         return [fx.id, `${at.group}#${at.setting}`];
       }),
     );
