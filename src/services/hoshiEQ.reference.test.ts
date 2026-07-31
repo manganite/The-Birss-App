@@ -32,9 +32,17 @@ import {
 const DIM = 81;
 const EPS = 1e-9;
 
-/** Flat index of a component label such as 'xxyy'. */
+/**
+ * Flat index of a component label such as 'xxyy'. Strict on the axis characters as well as the
+ * length: this whole fixture is a hand transcription from a printed page, so a typo'd label is a
+ * realistic failure mode. Without the check `'xyz'.indexOf(ch)` would return -1 for a stray
+ * character and silently produce a bogus (possibly negative) flat index, turning a transcription
+ * slip into an unrelated-looking assertion failure somewhere downstream.
+ */
 const idxOf = (label: string): number => {
-  expect(label, 'component label is rank 4').toHaveLength(4);
+  expect(label, `component label ${JSON.stringify(label)} is rank 4`).toHaveLength(4);
+  for (const ch of label)
+    expect('xyz'.includes(ch), `component label ${JSON.stringify(label)} uses only the axes x, y, z`).toBe(true);
   return [...label].reduce((acc, ch) => acc * 3 + 'xyz'.indexOf(ch), 0);
 };
 
