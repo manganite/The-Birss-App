@@ -140,6 +140,24 @@ describe('Nye diagram — the toggle', () => {
   );
 
   it(
+    'is offered for the converse 6x3 layout too, with the pair axis down the rows',
+    async () => {
+      const user = userEvent.setup();
+      renderTables('4mm');
+      await user.click(button('(ij)k'));
+      await user.click(button('Dot diagram'));
+
+      // The transpose of the classical scheme: the same five components of 4mm, read down the
+      // pair axis. Class ids follow reading order, so chi_zzz is class 2 here, not class 3.
+      expect(cells().map((c) => c.getAttribute('data-cell'))).toEqual(['xxz', 'yyz', 'zzz', 'yzy', 'zxx']);
+      expect(describedAs('xxz')).toBe('xxz, class 1, independent component');
+      expect(describedAs('zzz')).toBe('zzz, class 2, independent component');
+      expect(describedAs('zxx')).toBe('zxx, class 3, equal');
+    },
+    TIMEOUT_MS,
+  );
+
+  it(
     'is not offered when the tensor vanishes identically',
     async () => {
       const user = userEvent.setup();

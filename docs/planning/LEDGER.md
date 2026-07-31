@@ -201,3 +201,27 @@ ancestry note.
 ### Open
 
 *(none — the series is closed.)*
+
+#### Follow-up 2026-07-31 — review of PR #123: one gate failure, one authorised extension
+
+- **Gate failure at the PR head.** `format:check` failed on `NyeSchemeDiagram.tsx` in the
+  reviewer's fresh clone, contradicting the branch report. Mechanism: commit 4's `prettier --write`
+  ran during its full-gate step, and the removal of the then-unused `ref={gridRef}` happened
+  *after* it — which shortened the remaining attributes enough that prettier wants them on one
+  line. The follow-up gate was `lint` + `lint:eslint` only, so the regression was never measured.
+  The claim was true when made and stale when reported. **Standing lesson, and the second of its
+  kind in this file after the grep-filtered suite output: a gate result is only valid for the tree
+  it ran against. Re-run the full gate set at the final HEAD before reporting, not at whichever
+  commit was last convenient.** Fixed in `style(nye)`, a pure reflow hunk.
+- **Commit 6 — rank-3 `(ij)k` as a 6×3 grid** (maintainer authorisation, in-thread WO amendment).
+  The executor had flagged the exclusion as defensible-but-inconsistent and declined to widen scope
+  unasked; the maintainer's ruling was to extend rather than ship the inconsistency. The 6×3 layout
+  is Nye's converse-piezoelectric presentation, and it is a genuine transpose rather than a rotated
+  drawing: `chi_abc -> chi_cba` is a bijection between the `ij`- and `jk`-symmetric invariant
+  subspaces, because every index transforms with the same matrix and the projection therefore
+  commutes with index permutation. That statement is derivable without either scheme, so the new
+  sweep — 6×3 equals the transposed 3×6 cell for cell, class for class, sign for sign, over all
+  classical classes with a non-vanishing rank-3 form — is a real check and not a restatement of the
+  engine. Two expectation errors were caught by it and corrected: the sweep compares 20 classes, not
+  21 (432's rank-3 form vanishes too), and class ids in the 6×3 layout follow its own reading order
+  down the pair axis, so `chi_zzz` is class 2 there where it is class 3 in the 3×6 layout.

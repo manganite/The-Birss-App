@@ -29,7 +29,7 @@ import type { TensorForm, TensorSpec } from './tensorForms';
 import { getIndices, getLabel, reducedPartition, formatCompositeConstraint } from './tensorProjection';
 
 /** The compressed-matrix layouts a scheme can take. Anything else has no scheme. */
-export type NyeGrid = '3x3' | '3x6' | '6x6';
+export type NyeGrid = '3x3' | '3x6' | '6x3' | '6x6';
 
 /** A row/column header: the crystallographic indices it stands for -- one index (x/y/z) or a
  * Voigt-compressed pair in the standard 1..6 order (xx yy zz yz zx xy). */
@@ -125,13 +125,23 @@ const flatOf = (indices: number[]) => indices.reduce((a, x) => a * 3 + x, 0);
 /**
  * The grid geometry `spec` calls for, or null when the spec has no scheme. Only the compressed
  * layouts that a dot diagram can express are covered:
- *   rank 2 (either intrinsic) -> 3x3;  rank 3 with `jk` -> 3x6;  rank 4 with `ij_kl`/`voigt` -> 6x6.
+ *   rank 2 (either intrinsic) -> 3x3;  rank 3 with `jk` -> 3x6;  rank 3 with `ij` -> 6x3;
+ *   rank 4 with `ij_kl`/`voigt` -> 6x6.
  * Every other rank/intrinsic combination returns null and keeps its existing display unchanged.
+ *
+ * The 6x3 case is the transpose of the classical scheme -- Nye's own converse-piezoelectric
+ * presentation, where the compressed pair indexes the ROW and the free index the column. It is a
+ * genuine transpose, not merely a rotated drawing: relabelling `chi_abc -> chi_cba` is a bijection
+ * between the `ij`-symmetric and `jk`-symmetric invariant subspaces (every index transforms with
+ * the same matrix, so the projection commutes with index permutation), and it carries grid cell
+ * `(pair, single)` to `(single, pair)`. `nyeScheme.test.ts` asserts exactly that against the
+ * engine for every classical class.
  */
 function geometryFor(spec: TensorSpec): { grid: NyeGrid; rows: readonly NyeSlot[]; cols: readonly NyeSlot[] } | null {
   const { rank, intrinsic } = spec;
   if (rank === 2) return { grid: '3x3', rows: SINGLE_SLOTS, cols: SINGLE_SLOTS };
   if (rank === 3 && intrinsic === 'jk') return { grid: '3x6', rows: SINGLE_SLOTS, cols: PAIR_SLOTS };
+  if (rank === 3 && intrinsic === 'ij') return { grid: '6x3', rows: PAIR_SLOTS, cols: SINGLE_SLOTS };
   if (rank === 4 && (intrinsic === 'ij_kl' || intrinsic === 'voigt'))
     return { grid: '6x6', rows: PAIR_SLOTS, cols: PAIR_SLOTS };
   return null;

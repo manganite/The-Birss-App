@@ -18,7 +18,44 @@ import { spanRank } from './linalg';
  */
 
 const RANK3_JK: TensorSpec = { rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'jk' };
+const RANK3_IJ: TensorSpec = { rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'ij' };
 const RANK4_IJKL: TensorSpec = { rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'ij_kl' };
+
+/** The 32 classical crystal classes, for the sweeps below. */
+const CLASSICAL = [
+  '1',
+  '-1',
+  '2',
+  'm',
+  '2/m',
+  '222',
+  'mm2',
+  'mmm',
+  '4',
+  '-4',
+  '4/m',
+  '422',
+  '4mm',
+  '-42m',
+  '4/mmm',
+  '3',
+  '-3',
+  '32',
+  '3m',
+  '-3m',
+  '6',
+  '-6',
+  '6/m',
+  '622',
+  '6mm',
+  '-6m2',
+  '6/mmm',
+  '23',
+  'm-3',
+  '432',
+  '-43m',
+  'm-3m',
+];
 
 /** The scheme for a group/setting/spec, with the form computed for that same spec. */
 function schemeFor(group: string, setting: number, spec: TensorSpec): NyeScheme {
@@ -43,12 +80,12 @@ describe('deriveNyeScheme -- grid geometry', () => {
       [{ rank: 2, parity: 'polar', timeParity: 'i', intrinsic: 'none' }, '3x3'],
       [{ rank: 2, parity: 'polar', timeParity: 'i', intrinsic: 'ij' }, '3x3'],
       [RANK3_JK, '3x6'],
+      [RANK3_IJ, '6x3'],
       [RANK4_IJKL, '6x6'],
       [{ rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'voigt' }, '6x6'],
       // No scheme: these keep their existing display untouched.
       [{ rank: 0, parity: 'polar', timeParity: 'i', intrinsic: 'none' }, null],
       [{ rank: 1, parity: 'polar', timeParity: 'i', intrinsic: 'none' }, null],
-      [{ rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'ij' }, null],
       [{ rank: 3, parity: 'polar', timeParity: 'i', intrinsic: 'none' }, null],
       [{ rank: 4, parity: 'polar', timeParity: 'i', intrinsic: 'none' }, null],
     ];
@@ -149,6 +186,72 @@ describe('deriveNyeScheme -- rank-3 jk cell sets and class counts', () => {
       const free = scheme.classes.filter((c) => !c.determined).length;
       expect(free, group).toBe(spanRank(form.basisResults));
     }
+  });
+});
+
+describe('deriveNyeScheme -- the 6x3 converse layout is the transpose of the 3x6 one', () => {
+  /**
+   * Relabelling `chi_abc -> chi_cba` is a bijection between the `ij`-symmetric and `jk`-symmetric
+   * invariant subspaces: every index transforms with the same matrix, so the group projection
+   * commutes with index permutation. It carries grid cell `(pair, single)` to `(single, pair)`.
+   *
+   * That is a statement about the tensors, derivable without either scheme, so it is a genuine
+   * check on the 6x3 layout rather than a restatement of the engine.
+   */
+
+  /** A cell keyed the same way in both layouts: `single|pair`, whichever axis each sits on. */
+  const canonical = (scheme: NyeScheme, cellIndex: number): string => {
+    const cell = scheme.cells[cellIndex];
+    const row = scheme.rows[cell.row].label;
+    const col = scheme.cols[cell.col].label;
+    return row.length === 1 ? `${row}|${col}` : `${col}|${row}`;
+  };
+
+  /** Each class as `key=ratio` pairs, sorted, with ratios relative to the lexicographically first
+   *  member -- so the comparison does not depend on which cell each layout reads first. */
+  function classSignatures(scheme: NyeScheme): string[] {
+    return scheme.classes
+      .map((cls) => {
+        const members = cls.cells
+          .map((cellIndex) => ({ key: canonical(scheme, cellIndex), ratio: scheme.cells[cellIndex].ratio }))
+          .sort((a, b) => (a.key < b.key ? -1 : 1));
+        const ref = members[0].ratio;
+        return members.map((m) => `${m.key}=${(m.ratio / ref).toFixed(6)}`).join(',');
+      })
+      .sort();
+  }
+
+  it('matches cell for cell, class for class and sign for sign, over all 32 classical classes', () => {
+    let compared = 0;
+    for (const groupName of CLASSICAL) {
+      const jkForm = computeTensorForm(groupName, 1, RANK3_JK)!;
+      const ijForm = computeTensorForm(groupName, 1, RANK3_IJ)!;
+      expect(ijForm.isZero, groupName).toBe(jkForm.isZero);
+      if (jkForm.isZero) continue;
+
+      const jk = deriveNyeScheme(jkForm, RANK3_JK)!;
+      const ij = deriveNyeScheme(ijForm, RANK3_IJ)!;
+      expect(classSignatures(ij), groupName).toEqual(classSignatures(jk));
+      compared++;
+    }
+    // The 11 centrosymmetric classes vanish on both sides, and so does 432 -- its rank-3 form is
+    // identically zero (Yariv prints its parenthetical as 0). That leaves 20 real comparisons.
+    expect(compared).toBe(20);
+  });
+
+  it('4mm: the same five components, read down the pair axis', () => {
+    const scheme = schemeFor('4mm', 1, RANK3_IJ);
+    expect(scheme.grid).toBe('6x3');
+    expect(scheme.rows.map((r) => r.label)).toEqual(['xx', 'yy', 'zz', 'yz', 'zx', 'xy']);
+    expect(scheme.cols.map((c) => c.label)).toEqual(['x', 'y', 'z']);
+    expect(scheme.classes).toHaveLength(3);
+
+    const named = scheme.classes.map((cls) =>
+      cls.cells.map((i) => `${scheme.rows[scheme.cells[i].row].label}${scheme.cols[scheme.cells[i].col].label}`),
+    );
+    // Class ids follow grid reading order, which runs down the pair axis: the zz row is reached
+    // before the yz and zx rows, so chi_zzz is class 2 here where it is class 3 in the 3x6 layout.
+    expect(named).toEqual([['xxz', 'yyz'], ['zzz'], ['yzy', 'zxx']]);
   });
 });
 
