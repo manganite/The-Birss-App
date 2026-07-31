@@ -1,5 +1,9 @@
 # Code-Review-Report: The Birss App v0.7.0
 
+> **Content:** Full-codebase review of v0.7.0 (in German).
+> **Status:** frozen (2026-06-27)
+> **Authority:** historical record. Predates most of the current architecture; kept for provenance only.
+
 **Datum:** 27. Juni 2026  
 **Scope:** Vollständiger Review der gesamten Codebase  
 **Geprüfte Version:** Commit `3d36b9a` (v0.7.0)  

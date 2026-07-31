@@ -1,5 +1,9 @@
 # Allowed ED SHG tensor components (i and c) per magnetic point group
 
+> **Content:** Reference listing of the allowed ED SHG components (i and c) for every magnetic point group.
+> **Status:** frozen
+> **Authority:** historical record. Generated from a past app state; the engine and its print-anchored tests are authoritative.
+
 For every magnetic point group that permits a **non-zero electric-dipole (ED) second-harmonic** response of either time-reversal parity, this table lists the independent, symmetry-allowed components of the **i-tensor** (time-even) and **c-tensor** (time-odd). Groups whose ED response vanishes for *both* parities are omitted.
 
 **Convention.** ED is a polar rank-3 tensor, intrinsically symmetric in its last two indices (χ_ijk = χ_ikj); each component listed stands for its jk-partner too (e.g. `xxz` ⇒ χ_xxz = χ_xzx). Independent components are comma-separated; `=` / `= -` give the symmetry-forced relations. `0` = that parity is entirely forbidden.

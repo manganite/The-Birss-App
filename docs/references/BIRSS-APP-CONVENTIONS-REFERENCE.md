@@ -1,5 +1,9 @@
 # birss-app ↔ Birss Tables: Convention Contract & Verification Ladder
 
+> **Content:** The convention contract and verification ladder: how the app maps onto Birss/ITC, step by step, with a per-step anti-circular test.
+> **Status:** living
+> **Authority:** AUTHORITATIVE for the app's conventions. It outranks the vendored book compilation where the two are compared; where Birss and ITC diverge, Birss wins.
+
 **Purpose.** Guarantee that, for every **Default group**, `manganite/birss-app` reproduces the Birss tables *in every respect* — name, axes, generators, operation set, and tensor components, and specify a safe, table-anchored test for each link in the chain.
 
 **Central app references.** This document and its companion **[`table-nomenclature.md`](../../birss-tables/table-nomenclature.md)** (the 122-group Schoenflies / full-HM / Shubnikov / operator / generator table) are the two central convention references for the app. For Birss↔ITC divergences (symbol/orientation) and Birss's Table-7 bracket semantics, see the companion **[`BIRSS-ITC-CONVENTION-DIVERGENCES.md`](BIRSS-ITC-CONVENTION-DIVERGENCES.md)**. This document is **self-contained**: all conventions are explained here in full. It references the frozen Birss **data tables** (`table-3`, `table-4a`, `table-4e/4f`, `table-6`, `table-7`) and `table-nomenclature.md` for *data* (symbols, matrices, forms), and the Birss book for equation numbers, but no explanation is deferred to another narrative document.

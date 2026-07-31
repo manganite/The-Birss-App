@@ -1,5 +1,9 @@
 # ITC Table 1.5.8.1 -- Magnetic point groups admitting the linear magnetoelectric effect
 
+> **Content:** Transcription of ITC Table 1.5.8.1, with the app-side notes needed to read it.
+> **Status:** living (transcription)
+> **Authority:** source-side material: a transcription of the printed ITC table, vendored so the reference tests can re-parse it. Change it only to correct the transcription against print.
+
 Source: International Tables for Crystallography, Vol. D, Chapter 1.5, Table 1.5.8.1 ("The forms
 of the tensor characterizing the linear magnetoelectric effect"). Transcribed 2026-07-08 from the
 maintainer-provided screenshot of the printed table.

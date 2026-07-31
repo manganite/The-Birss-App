@@ -1,5 +1,9 @@
 # ITC Table 1.5.2.4 -- Magnetic classes in which ferromagnetism is admitted
 
+> **Content:** Transcription of ITC Table 1.5.2.4, with the app-side notes needed to read it.
+> **Status:** living (transcription)
+> **Authority:** source-side material: a transcription of the printed ITC table, vendored so the reference tests can re-parse it. Change it only to correct the transcription against print.
+
 Source: International Tables for Crystallography, Vol. D, Chapter 1.5 (local `ch1o5.pdf`,
 Table 1.5.2.4, PDF page 6). Transcribed 2026-07-08 from the text extraction of the local PDF with
 primes/overbars decoded. Self-check: 31 entries (matches the known count, ITC text: "Only 31

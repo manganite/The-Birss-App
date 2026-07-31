@@ -1,5 +1,9 @@
 # Finding: `-3'm'` generator bug (and a likely-wrong canonical Cr₂O₃ fixture)
 
+> **Content:** The `-3'm'` generator bug and the Cr2O3 fixture it invalidated.
+> **Status:** frozen (fixed, commit d17671c)
+> **Authority:** historical record.
+
 **Status:** Fixed and committed (`fix/trigonal-3m-prime-pattern`, commit `d17671c`).
 Cross-checked against four independent sources (Birss table-6/7, the printed ITC
 trigonal listing, an independent group-theoretic re-derivation against the original

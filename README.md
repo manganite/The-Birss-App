@@ -1,5 +1,9 @@
 # The Birss App
 
+> **Content:** Public overview of the app: what it computes, how to run it, and where the science comes from.
+> **Status:** living
+> **Authority:** authoritative for the public description of the project.
+
 [![CI](https://github.com/manganite/birss-app/actions/workflows/ci.yml/badge.svg)](https://github.com/manganite/birss-app/actions/workflows/ci.yml)
 [![Deploy](https://github.com/manganite/birss-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/manganite/birss-app/actions/workflows/deploy.yml)
 [![Release](https://img.shields.io/github/v/release/manganite/birss-app)](https://github.com/manganite/birss-app/releases)

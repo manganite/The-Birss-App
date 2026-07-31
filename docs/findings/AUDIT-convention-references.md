@@ -1,5 +1,9 @@
 # Audit: app vs. convention references — progress report
 
+> **Content:** Progress report of the five-phase audit of the app against its convention references.
+> **Status:** frozen (2026-07-02, complete)
+> **Authority:** historical record. Its coverage figures and gate counts are a 2026-07-02 snapshot and have since moved on.
+
 **Status: COMPLETE (2026-07-02).** All five phases are done and merged to `main`. Phase 1
 (nomenclature, 122/122) and Phase 2 (operator-set, 122/122 after six app fixes + five
 birss-tables corrections) landed via PR #47. Phases 3 (tensor-form coverage: ED 21/21 classes,

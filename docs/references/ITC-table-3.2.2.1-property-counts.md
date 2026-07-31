@@ -1,5 +1,9 @@
 # ITC Table 3.2.2.1 -- Laue classes, noncentrosymmetric point groups, property occurrence and counts
 
+> **Content:** Transcription of ITC Table 3.2.2.1, with the app-side notes needed to read it.
+> **Status:** living (transcription)
+> **Authority:** source-side material: a transcription of the printed ITC table, vendored so the reference tests can re-parse it. Change it only to correct the transcription against print.
+
 Source: International Tables for Crystallography, Vol. D, Chapter 3.2,
 Table 3.2.2.1 (page scan 19 of ch3o2.pdf).
 Transcribed: 2026-07-11 from (i) user-provided screenshot, (ii) the page

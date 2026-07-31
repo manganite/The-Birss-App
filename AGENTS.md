@@ -1,5 +1,9 @@
 # The Birss App — Agent Guidelines
 
+> **Content:** Working agreement for anyone (human or agent) changing this repo: build, architecture, conventions, git workflow, and the documentation map.
+> **Status:** living
+> **Authority:** authoritative for process and conventions. Where another doc disagrees on process, this one wins.
+
 Scientific React SPA that calculates non-zero susceptibility tensor components (ED, MD, EQ) and SHG source terms for all 32 crystallographic and 122 magnetic point groups.
 
 ## Current work (next cycle)

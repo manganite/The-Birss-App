@@ -1,5 +1,9 @@
 # ANALYSIS -- Birss Tables 4b / 4c / 4d semantics (Tables feature, Phase 1)
 
+> **Content:** Semantics of Birss Tables 4b/4c/4d and the lockstep pairing rule, derived for the Tables engine.
+> **Status:** frozen (2026-07-09)
+> **Authority:** historical record. The rules it established are enforced by the reference tests; read those for current behaviour.
+
 **Date:** 2026-07-09
 **Author:** engine work order (Tables Phase 1), evidence re-parsed from the vendored tables.
 **Purpose:** the DESIGN doc forbids *assuming* what Tables 4b-4d tabulate before writing a

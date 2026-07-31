@@ -1,5 +1,9 @@
 # Session Findings 2026-07-04 — `6'/mm'm` Frame Error, Table-7 Bracket Semantics, and the Full 58-Row Audit
 
+> **Content:** The `6'/mm'm` frame error, Table-7 bracket semantics, and the full 58-row audit.
+> **Status:** frozen (2026-07-04)
+> **Authority:** historical record, and the evidence base for the Birss/ITC divergences reference.
+
 **Status:** verified findings record. Companion documents:
 `WORKORDER-6pmmpm-frame-fix-and-table7-guard.md` (implementation),
 `BIRSS-ITC-CONVENTION-DIVERGENCES.md` (convention framework; to be updated after the fix).

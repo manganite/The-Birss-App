@@ -1,5 +1,9 @@
 # DESIGN -- "Tables": the interactive Birss-tables feature (B15)
 
+> **Content:** The approved design record for the Tables feature (B15), as of 2026-07-09.
+> **Status:** frozen (closed out 2026-07-16)
+> **Authority:** historical record. The shipped behaviour is authoritative, not this document.
+
 Status: CLOSED OUT 2026-07-16. The design was executed through Phase 3 (v0.20.0):
 Tables page, by-type and by-class modes, lookup chain, Explorer cross-links. Table 4f
 was print-verified 2026-07-09 and the Table-7 class map landed (reference-guarded).

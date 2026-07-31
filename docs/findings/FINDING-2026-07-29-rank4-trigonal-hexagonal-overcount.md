@@ -1,5 +1,9 @@
 # FINDING (2026-07-29): rank-4 trigonal/hexagonal group projection overcounts by +1 -- blocks the Q1 fixture amendment, exceeds Q1's scope
 
+> **Content:** The rank-4 minimal-basis defect for 3-/6-fold groups: evidence chain, mechanism, census and Q0 verification record.
+> **Status:** frozen (2026-07-30)
+> **Authority:** historical record. The correction shipped in v0.23.1; the presentation contract it produced lives in Step 5(f) of the conventions reference.
+
 Reported by the WO author during the Q1 symbolicEQHexagonal hand
 re-derivation. The two-source crosscheck did exactly its job: calibration
 against the fixture's documented provenance anchor exposed the

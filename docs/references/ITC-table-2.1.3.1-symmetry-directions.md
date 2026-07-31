@@ -1,5 +1,9 @@
 # ITC Table 2.1.3.1 -- Lattice symmetry directions (three dimensions)
 
+> **Content:** Transcription of ITC Table 2.1.3.1, with the app-side notes needed to read it.
+> **Status:** living (transcription)
+> **Authority:** source-side material: a transcription of the printed ITC table, vendored so the reference tests can re-parse it. Change it only to correct the transcription against print.
+
 Source: International Tables for Crystallography, Vol. A, Chapter 2.1
 (Guide to the use of the space-group tables), Table 2.1.3.1.
 Transcribed: 2026-07-11 from a user-provided screenshot (single read;
