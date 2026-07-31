@@ -160,11 +160,18 @@ plain names; `sharingPartitions.reference.test.ts` guards GENERATED data rather 
 ```
 src/
   types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType, GroupKey) and TENSOR_META
+  domainTypes.ts                 # Dependency-free domain unions (R2), imported by types.ts and the data modules
   data/pointGroups.ts            # Static registry of all 122 magnetic point groups
-  services/
+  services/                      # 16 non-test modules; the dependency direction is spelled out below
     tensorCalculator.ts          # Thin barrel re-exporting the public API below
+    tolerances.ts                # Shared numeric epsilons (COEFF_EPSILON, ROOT_MATCH_EPSILON, …)
     symmetryGroups.ts            # Matrix algebra, GENERATORS table, group closure, getSymmetryOperations
-    tensorProjection.ts          # Numeric tensor projection (transform/average/basis), SHG polynomials, lab-frame vectors
+    linalg.ts                    # rref/spanRank/isIndependentOf, 3x3 rotations, and the symbolic TrigMat3 helpers
+    tensorProjection.ts          # Numeric tensor projection (transform/average/basis), SHG polynomials, lab-frame vectors, the Q0 constraint partition
+    tensorForms.ts               # computeTensorForm — rank 0-4 x parity x i/c x intrinsic symmetry (the Tables engine)
+    nyeScheme.ts                 # Dot-diagram view model over the Q0 constraint partition
+    propertyFlags.ts             # isPolar / isChiral / isFerromagnetic / isMagnetoelectric
+    conventionMapping.ts         # App ↔ Birss ↔ ITC group-symbol mapping and display names
     orientation.ts               # Miller index → preset angles (hklToPresetAngles), azimuth-zero convention
     trigPoly.ts                  # Trigonometric polynomial algebra for symbolic rotation angles (phiX, phiY, psi)
     symbolicProjection.ts        # Symbolic SHG source terms — parallel path producing TrigPoly coefficients
@@ -189,39 +196,65 @@ All cross-page state (selected group, tensor type, time-reversal, rotation angle
 
 ### `services/` module dependency direction
 
-`tensorCalculator.ts` is a barrel: it only re-exports symbols from the modules
-below and should stay short. Dependencies flow one way —
-**`trigPolyFormat` → `symbolicProjection` → `trigPoly`** and
-**`latexFormatting` → `tensorProjection` → `symmetryGroups`** (formatting may import
-physics, never the reverse). The symbolic path is a parallel layer that imports from
-the numeric path but never the other way round:
+**This section is derived from a complete enumeration of the intra-`src` imports of every
+non-test module in `src/services/`, not maintained by hand.** Regenerate it after any change to
+the import graph; a map patched from memory drifts, and this one had (before 2026-07-31).
 
+The graph is a DAG with six layers. A module may import from any layer below it and never from
+its own or above — the two long-standing rules, *formatting may import physics but never the
+reverse* and *the symbolic path imports from the numeric path but never the other way round*,
+are both consequences of that layering rather than separate conventions.
+
+| layer | modules | imports from |
+| --- | --- | --- |
+| 0 | `tolerances`, `trigPoly`, `simulatorEngine` | nothing in `src` |
+| 1 | `symmetryGroups` | `tolerances` |
+| 1 | `linalg` | `trigPoly` |
+| 2 | `tensorProjection` | `symmetryGroups`, `linalg`, `tolerances` |
+| 2 | `conventionMapping` | `symmetryGroups` |
+| 3 | `tensorForms` | `symmetryGroups`, `tensorProjection`, `linalg` |
+| 3 | `symbolicProjection` | `trigPoly`, `tensorProjection`, `linalg`, `symmetryGroups` |
+| 3 | `latexFormatting` | `symmetryGroups`, `tensorProjection` |
+| 3 | `propertyFlags` | `symmetryGroups`, `tensorProjection`, `data/` |
+| 3 | `orientation` | `tensorProjection` |
+| 3 | `groupSearch` | `conventionMapping`, `data/` |
+| 4 | `nyeScheme` | `tensorForms` (type-only), `tensorProjection` |
+| 4 | `trigPolyFormat` | `trigPoly`, `tensorProjection`, `symbolicProjection` (type-only), `tolerances` |
+| 5 | `tensorCalculator` | the barrel — re-exports from seven of the above |
+
+What each module is for, and the constraints that are not visible in the graph:
+
+- **`tolerances.ts`** — the shared numeric epsilons. Layer 0 by design: an epsilon that lives
+  next to one of its users drifts from the others.
 - **`symmetryGroups.ts`** — `Matrix3x3`, the `GENERATORS` table, matrix algebra
-  (`multiply`/`det`), group closure + caching, `isCentrosymmetric`,
-  `getSymmetryOperations`, and the shared `EPSILON`/`AXIS_EPSILON` constants. No
-  dependencies on the other modules.
-- **`tensorProjection.ts`** — the numeric projection core
-  (`calculateTensorBasisResults`, `calculateSHGExpressions`, `getLabFrameVectors`,
-  `transformTensor`/`averageTensor`), plus four dependency-free leaf helpers
-  (`getIndices`, `getLabel`, `formatCoeff`, `cleanupExpressionSigns`). These leaves
-  are needed by both this module (`calculateSHGExpressions`, `getLabFrameVectors`)
-  and by `latexFormatting.ts` (`formatResults`, `formatSubstitutedPolySum`); per the
-  "shared utilities live in the lower module" rule they're defined here rather than
-  in `latexFormatting.ts`, so that `latexFormatting` can depend on `tensorProjection`
-  without creating a reverse dependency. Depends only on `symmetryGroups`.
-- **`trigPoly.ts`** — trigonometric polynomial representation (`TrigPoly`) and
-  algebra (`trigAdd`, `trigMul`, `trigEval`, `trigSimplify`) for three rotation angles
-  (phiX, phiY, psi). No dependencies on other modules.
-- **`symbolicProjection.ts`** — `calculateSymbolicSHGExpressions`: builds a
-  symbolic rotation matrix (`TrigMat3`) with preset angles numeric and user angles
-  symbolic, then contracts source terms with `TrigPoly` coefficients. Depends on
-  `trigPoly`, `tensorProjection`, and `symmetryGroups`.
-- **`trigPolyFormat.ts`** — `formatTrigPoly` and `formatSymbolicSourceTerm`:
-  LaTeX rendering for `TrigPoly` and `SymPoly` values. Depends on
-  `trigPoly`, `symbolicProjection`, and `tensorProjection` (for `formatCoeff`).
-- **`latexFormatting.ts`** — `calculateTensorComponents` (thin wrapper around
-  `calculateTensorBasisResults` + a local `formatResults`) and
-  `formatSubstitutedPolySum`. Depends on `tensorProjection` and `symmetryGroups`.
+  (`multiply`/`det`), group closure + caching, `isCentrosymmetric`, `getSymmetryOperations`, and
+  the re-exported `EPSILON`/`AXIS_EPSILON` (kept re-exported so the many existing import sites
+  stay unchanged — the definitions moved to `tolerances`).
+- **`linalg.ts`** — `rref`, `spanRank`, `isIndependentOf` and the pivot epsilons, the numeric 3×3
+  rotations, and the symbolic `TrigMat3` helpers. The `trigPoly` dependency comes from that last
+  group only; the numeric half is independent of it.
+- **`tensorProjection.ts`** — the numeric projection core (`calculateTensorBasisResults`,
+  `calculateSHGExpressions`, `getLabFrameVectors`, `transformTensor`/`averageTensor`), the Q0
+  constraint partition (`reducedPartition`, `formatReducedRelations`,
+  `formatCompositeConstraint`), plus the dependency-free leaf helpers (`getIndices`, `getLabel`,
+  `formatCoeff`, `cleanupExpressionSigns`). Those leaves are needed both here and by
+  `latexFormatting`; per the "shared utilities live in the lower module" rule they are defined
+  here, so `latexFormatting` can depend on `tensorProjection` without a reverse edge.
+- **`tensorForms.ts`** — `computeTensorForm`, the rank-parametrized generalization of
+  `calculateTensorBasisResults`, plus the form signatures behind the sharing partitions.
+- **`nyeScheme.ts`** — the dot-diagram view model. A view over `reducedPartition`, deliberately
+  not a second derivation of it, so the diagram and the relation list cannot disagree.
+- **`trigPoly.ts`** — trigonometric polynomial representation (`TrigPoly`) and algebra
+  (`trigAdd`, `trigMul`, `trigEval`, `trigSimplify`) for three rotation angles.
+- **`symbolicProjection.ts`** — `calculateSymbolicSHGExpressions`: builds a symbolic rotation
+  matrix with preset angles numeric and user angles symbolic, then contracts source terms with
+  `TrigPoly` coefficients.
+- **`trigPolyFormat.ts`** / **`latexFormatting.ts`** — the two LaTeX renderers, for the symbolic
+  and numeric paths respectively.
+- **`propertyFlags.ts`**, **`conventionMapping.ts`**, **`orientation.ts`**, **`groupSearch.ts`**,
+  **`simulatorEngine.ts`** — leaf services for the Explorer, the convention toggle, the crystal
+  cut and the polarimetry sweep.
+- **`tensorCalculator.ts`** — a barrel. It only re-exports and should stay short.
 
 ## Key Conventions
 
