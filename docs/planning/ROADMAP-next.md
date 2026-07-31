@@ -1,6 +1,12 @@
 # Roadmap — next cycle (post-v0.7.1)
 
-> Historical / per-item detail. For current status see [STATUS.md](../../STATUS.md) (root).
+> **Content:** The wave-ordered execution plan for the post-v0.7.1 cycle, companion to the TODO-next working draft.
+> **Status:** frozen (2026-07-31)
+> **Authority:** historical record. Not a source of current plans.
+
+**Closed out 2026-07-31.** Its waves are complete; the series that grew out of them are recorded in `TODO-next.md` and, from 2026-07-31, in `LEDGER.md`. The body below is unchanged, including its then-open
+items; open work now lives in `STATUS.md` section 1 and deferred ideas in
+`docs/planning/BACKLOG.md`.
 
 Execution plan for the next development cycle: **what order, in what waves, with which
 gates**. It is the companion to `TODO-next.md`, which holds the detailed per-item
