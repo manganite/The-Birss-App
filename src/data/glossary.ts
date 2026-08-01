@@ -161,13 +161,13 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     id: 'chiral',
     term: 'Chiral (Enantiomorphic)',
     brief:
-      'The crystal class contains only proper rotations (no mirror, inversion, or rotoinversion), so the structure is distinguishable from its mirror image. Time reversal does not affect handedness.',
+      'The crystal class contains only proper rotations (no mirror, inversion, or rotoinversion), so the structure is distinguishable from its mirror image. Time reversal does not affect handedness, so a group and its primed relatives agree -- the family alone decides. Guarded against the 11 enantiomorphic classes.',
   },
   {
     id: 'polar-property',
     term: 'Polar (Pyro-/Ferroelectric)',
     brief:
-      'Admits a spontaneous electric polarization (a time-even polar vector). Pyroelectric and ferroelectric share this symmetry requirement; ferroelectricity additionally requires the polarization be switchable, which symmetry alone cannot decide.',
+      'Admits a spontaneous electric polarization (a time-even polar vector) -- the symmetry permits one, it does not assert that a given material has one. Pyroelectric and ferroelectric share this requirement; ferroelectricity additionally needs the polarization to be switchable, which symmetry alone cannot decide. Guarded against the 10 polar classes (Schmid, Ferroelectrics 162, 317 (1994)).',
   },
   {
     id: 'piezoelectric',
@@ -179,7 +179,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     id: 'ferromagnetic-property',
     term: 'Ferromagnetic',
     brief:
-      'Admits a spontaneous magnetization (a time-odd axial vector). Covers ferro-, ferri-, and weak (canted) magnetism — 31 magnetic point groups (ITC Table 1.5.2.4).',
+      'Admits a spontaneous magnetization (a time-odd axial vector) -- the symmetry permits one, it does not assert an ordered moment. Covers ferro-, ferri-, and weak (canted) magnetism; grey groups admit none, since pure time reversal kills every time-odd tensor. Guarded against ITC Table 1.5.2.4 (31 magnetic point groups).',
   },
   {
     id: 'piezomagnetic',
@@ -191,7 +191,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     id: 'magnetoelectric',
     term: 'Magnetoelectric (linear)',
     brief:
-      'Admits a second-rank axial, time-odd tensor αᵢⱼ coupling an electric field to magnetization (and vice versa) — 58 magnetic point groups (ITC Table 1.5.8.1).',
+      'Admits a second-rank axial, time-odd tensor αᵢⱼ coupling an electric field to magnetization (and vice versa). Like the other time-odd flags it vanishes for every grey group. Guarded against ITC Table 1.5.8.1 (58 magnetic point groups).',
   },
   {
     id: 'polar-directions',

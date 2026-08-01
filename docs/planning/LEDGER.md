@@ -349,3 +349,90 @@ Runtime 4.2 s for the file; no timeout was widened, and none needed to be.
 ### Open
 
 *(none — the series is closed. `STATUS.md` § 1 now states that nothing is scheduled.)*
+
+---
+
+## B27-S — property flags in the group identity header
+
+Branch `feat/property-flag-badges`, 2026-08-01. Closes the B27 property-flag residual from
+`BACKLOG.md` § A. Base `33afdd4`, suite 2408 green at branch point; 2422 at close.
+
+### The premise was false, and the drift is datable
+
+The work order opened: *"`propertyFlags.ts` … has NO UI consumer -- the BACKLOG section-A
+quick-win."* The premise pass found a consumer immediately.
+
+| date | commit | event |
+| --- | --- | --- |
+| 2026-07-08 | `cd1532a` | `feat(explorer): property flags + 432-family SHG correction` — `OperationsModal.tsx` starts rendering the flags. The claim becomes false. |
+| 2026-07-16 | `31922ff` | `docs(status): reconcile STATUS.md with the shipped state (D1)` writes "no component consumes the service yet" — eight days later, in a commit whose stated purpose was reconciling with the shipped state. |
+| 2026-07-31 | `c95bee8` | The BACKLOG extraction moves the entry verbatim. It promised "moved, not rewritten" and delivered exactly that, stale claim included. |
+
+The extraction is not at fault; it did what it said. The failure is at D1, and it is the same
+species DOCS-TRUTH caught in `STATUS.md` § 1 — a document asserting a state it had not re-checked.
+
+**Author rule adopted from this (maintainer, 2026-08-01):** *a work-order premise asserting the
+ABSENCE of a consumer or a feature cites the usage grep that establishes it, or it is not written.*
+Absence claims are the ones a reader cannot spot-check by reading the thing itself, and a
+`grep -rl propertyFlags src/components` would have taken seconds. This generalises the Erratum-11
+enumeration rule from findings to work-order premises.
+
+### What was actually true, and what shipped
+
+The flags were visible only in the Explorer's operations modal. Three of the four pages that show a
+group identity — Calculator, Simulator, Tables — said nothing about what the group admits. So the
+task was not "surface them" but "surface them on the other three", and the risk changed with it:
+adding a second surface meant two files would separately decide which service function backs which
+label. That is the Q0 shared-partition lesson at small scale, so the definitions were extracted to
+`components/propertyFlagDefs.ts` first and the modal moved onto it before anything new was built.
+
+Three decisions, all the maintainer's (2026-08-01), recorded at the definition list so the
+divergence reads as intent:
+
+- **Flag sets differ.** Modal: five chips plus a chiral row, piezo included — a lookup view.
+  Header: the four material-class flags — piezo availability is already reachable through Tables
+  by-effect, and a persistent header should not repeat it.
+- **Absent flags differ.** Modal strikes them through, because in a lookup view the absence of a property is itself informative. Header
+  omits them, because four struck-through badges on every centrosymmetric crystal on every page is
+  noise.
+- **Placement.** Own row below the collapsible block. The summary row is a `<button>`, so an info
+  affordance inside it would nest interactive elements; the expandable panel starts collapsed for
+  every group without alternate settings, so badges there would be hidden for most groups.
+
+### Premise-pass results worth keeping
+
+- **Header inventory:** one component, `GroupIdentityHeader` in `MathComponents.tsx`, three mounts
+  (Calculator, Simulator, Tables). No others.
+- **Grey groups:** 0 of 32 are ferromagnetic or magnetoelectric — pure time reversal kills every
+  time-odd tensor. Polar and chiral match the classical parent in 32/32 cases.
+- **Distribution over 122:** polar 31, chiral 32, ferromagnetic 31, magnetoelectric 58, no flag 32.
+- **Two work-order errors corrected.** Group `1` admits all four flags, not the two the WO named —
+  it has no symmetry operation, so nothing kills anything. And provenance is not uniformly ITC:
+  ferromagnetic and magnetoelectric are anchored on ITC Tables 1.5.2.4 / 1.5.8.1, but polar is
+  anchored on the 10 polar classes (Schmid, *Ferroelectrics* **162**, 317 (1994)) and chiral on the
+  11 enantiomorphic classes. Following the WO literally would have printed a false citation on two
+  of four badges.
+
+### Verification
+
+- **Witnesses** (read off the service, then hard-coded): `1` → all four; `2'/m'` → ferromagnetic
+  only, print-verified in ITC 1.5.2.4 row 36; `-3'm'` → magnetoelectric only (Cr2O3); `m-3m` → no
+  badge row; `11'` → polar and chiral only, the grey contrast against `1`.
+- **Sweep:** all 122 groups render and show exactly the service's flag set, collected-and-compared
+  rather than fail-on-first.
+- **Modal behaviour pin:** chip markup captured by SSR *before* the extraction and re-captured
+  after — five chips, same order, same admitted sets for four witnesses, byte-identical. The
+  maintainer's condition on authorising the extraction, discharged with measurements.
+- Real browser: `2'` shows the four badges under the summary row; `m-3m` shows no row.
+
+### Completed
+
+- Commit 1 `9c0af9e` — the shared definition list; modal moved onto it, behaviour-identical.
+- Commit 2 `34c3424` — the header badge row, plus per-flag provenance in the four glossary briefs
+  (shared with the modal, so both surfaces gained it).
+- Commit 3 — the pins: witnesses, provenance strings, the 122-group sweep, the modal pin.
+- Commit 4 — this entry, the CHANGELOG bullet, the STATUS closure, and the BACKLOG correction.
+
+### Open
+
+*(none — the series is closed. The two remaining B27 residuals stay in `BACKLOG.md`, unscoped.)*

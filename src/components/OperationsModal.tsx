@@ -9,14 +9,9 @@ import {
   getParentGroup,
   getHalvingSubgroup,
   isCentrosymmetric,
-  isPolar,
-  isPiezoelectric,
-  isFerromagnetic,
-  isPiezomagnetic,
-  isMagnetoelectric,
-  isChiral,
   getLaueClass,
 } from '../services/tensorCalculator';
+import { MODAL_CHIP_IDS, propertyFlag } from './propertyFlagDefs';
 import {
   getGroupDisplayName,
   getSettingLabels,
@@ -183,13 +178,15 @@ export const OperationsModal = ({
   );
 
   const laueClass = getLaueClass(group.name);
-  const properties = [
-    { id: 'polar-property', label: 'Polar', allowed: isPolar(group.name) },
-    { id: 'piezoelectric', label: 'Piezoelectric', allowed: isPiezoelectric(group.name) },
-    { id: 'ferromagnetic-property', label: 'Ferromagnetic', allowed: isFerromagnetic(group.name) },
-    { id: 'piezomagnetic', label: 'Piezomagnetic', allowed: isPiezomagnetic(group.name) },
-    { id: 'magnetoelectric', label: 'Magnetoelectric', allowed: isMagnetoelectric(group.name) },
-  ];
+  // Definitions come from the shared list, so the modal and the header cannot disagree about what
+  // a flag means or which service function backs it. The order and the struck-through rendering of
+  // absent flags are this surface's own; see `propertyFlagDefs.ts` for why they differ from the
+  // header's.
+  const properties = MODAL_CHIP_IDS.map(propertyFlag).map((f) => ({
+    id: f.id,
+    label: f.label,
+    allowed: f.test(group.name),
+  }));
 
   const containerRef = useRef<HTMLDivElement>(null);
   useDialogA11y({ onClose, containerRef });
@@ -373,7 +370,7 @@ export const OperationsModal = ({
                 <dt className="text-xs uppercase tracking-widest text-ink/70 mb-1 flex items-center gap-1.5">
                   Chiral <TermInfo id="chiral" />
                 </dt>
-                <dd>{isChiral(group.name) ? 'Yes' : 'No'}</dd>
+                <dd>{propertyFlag('chiral').test(group.name) ? 'Yes' : 'No'}</dd>
               </div>
             </dl>
             <div className="flex flex-wrap gap-1.5">

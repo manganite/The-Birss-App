@@ -73,6 +73,19 @@ the **Nye dot diagrams** (NYE — see the `LEDGER.md` entry and
 closed 2026-07-16 (E24/T5a baseline, A1 ARIA tabs keyboard pattern, A2 walkthrough, A3 detent
 snapping — A-series ledger in `TODO-next.md`).
 
+### Recently closed
+
+- **NYE-F** (2026-08-01) — the dot diagram is a real roving-focus composite: one tab stop instead
+  of one per cell, red-proofed at 18 → 1, plus an exhaustive structural sweep of the view model
+  over all 4224 diagram-capable combinations.
+- **B27-S** (2026-08-01) — the four material-class property flags surfaced as badges under the
+  group identity header, so they are visible on Calculator, Simulator and Tables rather than only
+  inside the Explorer's operations modal. The premise pass corrected a stale claim on the way:
+  `propertyFlags.ts` was never without a UI consumer.
+- **NYE** (2026-07-31) — the dot-diagram view itself; see the feature paragraph above.
+
+Full records for all three are in `docs/planning/LEDGER.md`.
+
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
 
@@ -80,16 +93,10 @@ candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item
 
 ## 1. Open items
 
-_Nothing is currently scheduled._ NYE-F closed on 2026-08-01; see below. Candidates for the next
-cycle live in `docs/planning/BACKLOG.md`, and nothing there is committed work until the maintainer
-promotes it into this section.
-
-### ~~NYE-F — Nye roving-tabindex fix + view-model audit sweep~~ — CLOSED 2026-08-01
-
-Both findings of the external audit that were not documentation disposed of. The dot diagram is
-now a real roving-focus composite — one tab stop instead of one per cell, red-proofed at 18 → 1 —
-and the view model carries an exhaustive structural sweep over all 4224 diagram-capable
-combinations. See the NYE-F entry in `docs/planning/LEDGER.md`.
+_Nothing is currently scheduled._ Candidates for the next cycle live in
+`docs/planning/BACKLOG.md`, and nothing there is committed work until the maintainer promotes it
+into this section. Series closed in this cycle are summarised under "Recently closed" above and
+recorded in full in `docs/planning/LEDGER.md`.
 
 ---
 
