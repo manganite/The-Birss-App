@@ -80,17 +80,16 @@ candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item
 
 ## 1. Open items
 
-### NYE-F — Nye roving-tabindex fix + view-model audit sweep
+_Nothing is currently scheduled._ NYE-F closed on 2026-08-01; see below. Candidates for the next
+cycle live in `docs/planning/BACKLOG.md`, and nothing there is committed work until the maintainer
+promotes it into this section.
 
-**Status:** scheduled; work order pending. Raised by the external audit of 2026-07-31 (see the
-`AUDIT 2026-07-31 (Codex)` block in `docs/planning/LEDGER.md`). The dot diagram's cell buttons
-have no `tabIndex` management, so the whole grid sits in the tab order instead of behaving as one
-roving-focus composite; the arrow-key handler and the focus read-out are already in place, so this
-is a defect in the widget's tab contract, not in its navigation. The sweep pairs that fix with a
-review of the view model for the same class of gap.
+### ~~NYE-F — Nye roving-tabindex fix + view-model audit sweep~~ — CLOSED 2026-08-01
 
-Nothing else is currently scheduled. Candidates for the next cycle live in
-`docs/planning/BACKLOG.md`; nothing there is committed work until it is moved into this section.
+Both findings of the external audit that were not documentation disposed of. The dot diagram is
+now a real roving-focus composite — one tab stop instead of one per cell, red-proofed at 18 → 1 —
+and the view model carries an exhaustive structural sweep over all 4224 diagram-capable
+combinations. See the NYE-F entry in `docs/planning/LEDGER.md`.
 
 ---
 
