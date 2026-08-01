@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-08-01
+
 ### Added
 
 - Group identity header: the point group's **admitted properties** now appear as badges — polar,
@@ -884,7 +886,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help & Documentation page covering physics background, math derivations, and usage instructions.
 - MIT license, repository description, topics, and homepage link.
 
-[Unreleased]: https://github.com/manganite/birss-app/compare/v0.23.1...HEAD
+[Unreleased]: https://github.com/manganite/birss-app/compare/v0.24.0...HEAD
+[0.24.0]: https://github.com/manganite/birss-app/compare/v0.23.1...v0.24.0
 [0.23.1]: https://github.com/manganite/birss-app/compare/v0.23.0...v0.23.1
 [0.23.0]: https://github.com/manganite/birss-app/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/manganite/birss-app/compare/v0.21.0...v0.22.0

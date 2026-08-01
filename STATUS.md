@@ -5,19 +5,46 @@
 > **Authority:** authoritative for the current cycle. Section 1 is the ONLY list of open,
 > in-scope work; deferred ideas live in `docs/planning/BACKLOG.md`.
 
-_Last updated: 2026-07-31. Synthesises open points from the planning documents in
+_Last updated: 2026-08-01. Synthesises open points from the planning documents in
 `docs/planning/` (`ROADMAP.md` and `ROADMAP-next.md` are closed out; `TODO-next.md` is the
-frozen working-draft archive and series ledger). See those files for derivation details,
-file:line anchors, and acceptance criteria. Since 2026-07-01,
-two structural changes landed: the `birss-tables` consolidation (PR #48 — the transcribed
-Birss reference tables now live in-repo under `birss-tables/`, full history preserved) and
-the nomenclature generator + CI drift guard (PR #49 —
-`birss-tables/tools/generate_nomenclature.py` regenerates `table-nomenclature.md`, CI fails
-on drift)._
+frozen working-draft archive of series closed before 2026-07-31; `LEDGER.md` is the append-only
+record from that date on). See those files for derivation details, file:line anchors, and
+acceptance criteria. The most recent structural changes to the planning documents themselves are
+the 2026-07-31 split — `BACKLOG.md` extracted from this file's sections 2–4, and `LEDGER.md`
+forked forward from the frozen `TODO-next.md` — and the DOCS-TRUTH pass that followed it, which
+rebuilt the `AGENTS.md` architecture map from a mechanical import enumeration and gave section 1
+its entry and exit rules. Earlier structural work on the reference data (the `birss-tables`
+subtree consolidation, PR #48, and the nomenclature generator with its CI drift guard, PR #49)
+is described in `AGENTS.md`._
 
 ---
 
-## Current release: v0.23.1 (2026-07-30)
+## Current release: v0.24.0 (2026-08-01)
+
+**The Nye-view release** — a MINOR carrying two new capabilities, one behaviour fix and one
+display change. No calculated output changed.
+
+- **NYE** — the **dot-diagram view** of a reduced tensor form, toggled beside the symbolic one for
+  every rank/intrinsic combination that has a compressed geometry (rank 2, both rank-3 layouts, the
+  two rank-4 Voigt classes). Beyond the feature, the series produced the app's first independent
+  print anchor for the rank-3 `i(jk)` grid and for alternate-setting forms — all 24 panels of
+  Yariv, *Quantum Electronics* 2nd ed., Table 16.1, transcribed positionally and gated (16 read
+  blind) — and four erratum candidates in ITC-D Ch. 1.1's rank-3 material, two of them previously
+  unreported. It also pinned an independent print result: Yariv's "standard orientation" is the
+  app's *alternate* setting across all four affected group families.
+- **NYE-F** — the dot diagram is a proper roving-focus composite: one tab stop for the widget
+  instead of one per component (18 → 1 for a fourth-rank trigonal form), plus an exhaustive
+  structural sweep of the view model over all 4224 diagram-capable combinations.
+- **B27-S** — the four material-class **property flags** (polar, chiral, ferromagnetic,
+  magnetoelectric) surfaced as badges under the group identity header, so they are visible on the
+  Calculator, Simulator and Tables pages rather than only inside the Explorer's operations modal.
+
+Also carried: the Table-7 misprint footnote now offers its "Learn more" link from the expandable
+diagram as well as the breadcrumb (T7-BC straggler). Suite 2422 green. See `CHANGELOG.md`
+`[0.24.0]` for the user-facing detail, and the NYE, NYE-F and B27-S entries in
+`docs/planning/LEDGER.md` for the series records.
+
+### v0.23.1 (2026-07-30)
 
 **The EQ correction pair** — a PATCH carrying two corrections to calculated output for
 fourth-rank tensors. **Q0:** rank-4 tensor bases are now minimal (RREF-reduced,
@@ -75,16 +102,10 @@ snapping — A-series ledger in `TODO-next.md`).
 
 ### Recently closed
 
-- **NYE-F** (2026-08-01) — the dot diagram is a real roving-focus composite: one tab stop instead
-  of one per cell, red-proofed at 18 → 1, plus an exhaustive structural sweep of the view model
-  over all 4224 diagram-capable combinations.
-- **B27-S** (2026-08-01) — the four material-class property flags surfaced as badges under the
-  group identity header, so they are visible on Calculator, Simulator and Tables rather than only
-  inside the Explorer's operations modal. The premise pass corrected a stale claim on the way:
-  `propertyFlags.ts` was never without a UI consumer.
-- **NYE** (2026-07-31) — the dot-diagram view itself; see the feature paragraph above.
+Series closed since the last release cut. Each release absorbs them into its own block above, so
+this list is empty immediately after a cut and grows again as work closes.
 
-Full records for all three are in `docs/planning/LEDGER.md`.
+_Nothing closed since v0.24.0._
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
