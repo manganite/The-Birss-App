@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Group identity header: the point group's **admitted properties** now appear as badges — polar,
+  chiral, ferromagnetic, magnetoelectric — on the Calculator, Simulator and Tables pages. Each
+  badge says what the symmetry permits, not what a material does, and its info affordance cites the
+  reference the flag is checked against. Only admitted properties are shown, so the header stays
+  quiet for a group that admits none. The Explorer's operations modal continues to show the fuller
+  five-property matrix including the absent ones.
 - Tables: a **dot-diagram view** of the reduced tensor form, toggled beside the symbolic one
   (rank 2, both rank-3 compressed layouts — `i(jk)` as the classical 3×6 scheme and `(ij)k` as
   its 6×3 transpose — and the two rank-4 Voigt classes). It uses the Nye scheme's glyph

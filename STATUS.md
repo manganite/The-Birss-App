@@ -80,7 +80,7 @@ candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item
 
 ## 1. Open items
 
-_Nothing is currently scheduled._ NYE-F closed on 2026-08-01; see below. Candidates for the next
+_Nothing is currently scheduled._ NYE-F and B27-S both closed on 2026-08-01; see below. Candidates for the next
 cycle live in `docs/planning/BACKLOG.md`, and nothing there is committed work until the maintainer
 promotes it into this section.
 
@@ -90,6 +90,14 @@ Both findings of the external audit that were not documentation disposed of. The
 now a real roving-focus composite — one tab stop instead of one per cell, red-proofed at 18 → 1 —
 and the view model carries an exhaustive structural sweep over all 4224 diagram-capable
 combinations. See the NYE-F entry in `docs/planning/LEDGER.md`.
+
+### ~~B27-S — property flags in the group identity header~~ — CLOSED 2026-08-01
+
+The four material-class flags are surfaced as badges under the header, so they are visible on the
+Calculator, Simulator and Tables pages rather than only inside the Explorer's operations modal. The
+premise pass corrected a stale claim on the way: `propertyFlags.ts` was never without a UI consumer.
+See the B27-S entry in `docs/planning/LEDGER.md`; the two remaining B27 residuals stay in
+`docs/planning/BACKLOG.md`.
 
 ---
 

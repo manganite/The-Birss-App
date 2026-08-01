@@ -55,12 +55,17 @@ Each entry carries its **provenance** (where it came from) and a **status tag**:
 The high-value fields shipped in v0.12.0 (Schoenflies, parent group, halving
 subgroup H, SHG consequence, "Open in Explorer"). Remaining lower-priority items:
 
-- **Property flags (polar / chiral / centrosymmetric) in the header — `quick-win`.** The
-  computation is done and print-reference-guarded since the T-series (`propertyFlags.ts` +
-  `propertyFlags.reference.test.ts`, incl. magnetic i/c groups); the UI surfacing
-  remains open (no component consumes the service yet).
+- ~~Property flags in the header~~ — **SHIPPED 2026-08-01 (B27-S).** Polar, chiral, ferromagnetic
+  and magnetoelectric now render as badges under the group identity header.
 - Independent-component count per multipole (ED/MD/EQ) at a glance. — `unscoped`
 - Generators as compact alternative to listing all operations. — `unscoped`
+
+*Correction, 2026-08-01:* the shipped entry above used to read "the UI surfacing remains open (no
+component consumes the service yet)". That was false when written. `OperationsModal.tsx` has
+consumed `propertyFlags.ts` since `cd1532a` (2026-07-08); the claim entered `STATUS.md` on
+2026-07-16 via `31922ff` — a reconcile-with-shipped-state commit — and the 2026-07-31 extraction
+into this file carried it over faithfully, as an extraction should. B27-S was therefore not "no
+surfacing" but "surfacing on one page of four". See the B27-S entry in `LEDGER.md`.
 
 ### Note/callout styling (B25 — deferred unification) — `needs-design-session`
 
