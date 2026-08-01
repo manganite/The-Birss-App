@@ -107,6 +107,27 @@ const LEGEND: Array<{ draw: React.ReactNode; text: string }> = [
 export function NyeSchemeDiagram({ scheme }: { scheme: NyeScheme }) {
   const [active, setActive] = useState<number | null>(null);
 
+  /**
+   * Roving tabindex (WAI-ARIA composite pattern, as `useTablistKeyboard` does it for the tab
+   * widgets). The grid holds exactly ONE tab stop however many cells it has: the stop carries
+   * `tabIndex={0}` and every other interactive cell `tabIndex={-1}`, so Tab enters the grid once
+   * and the next Tab leaves it. Arrow keys move focus, and the stop follows via `onFocus`.
+   *
+   * The stop PERSISTS after focus leaves, per the A-series precedent -- returning by Tab lands
+   * where the user left, not back at the start.
+   *
+   * `tabStop` holds a cell index rather than an ordinal, and is validated against the current
+   * scheme on every render: switching group or spec replaces the cell set, and a stale index must
+   * fall back to the first interactive cell rather than leave the grid with no tab stop at all.
+   * Doing that in the render pass rather than an effect means there is never a frame without one.
+   */
+  const interactive = scheme.cells.reduce<number[]>((acc, cell, index) => {
+    if (cell.kind !== 'zero') acc.push(index);
+    return acc;
+  }, []);
+  const [tabStop, setTabStop] = useState<number | null>(null);
+  const activeTabStop = tabStop !== null && interactive.includes(tabStop) ? tabStop : (interactive[0] ?? null);
+
   const width = HEADER_W + scheme.cols.length * CELL;
   const height = HEADER_H + scheme.rows.length * CELL;
 
@@ -212,10 +233,15 @@ export function NyeSchemeDiagram({ scheme }: { scheme: NyeScheme }) {
                 key={index}
                 type="button"
                 data-cell={indexOf(scheme, cell)}
+                tabIndex={index === activeTabStop ? 0 : -1}
                 className="absolute focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
                 style={{ left: HEADER_W + cell.col * CELL, top: HEADER_H + cell.row * CELL, width: CELL, height: CELL }}
                 onMouseEnter={() => setActive(cell.classId)}
-                onFocus={() => setActive(cell.classId)}
+                // The tab stop follows focus, whatever moved it -- arrow keys, Tab, or a click.
+                onFocus={() => {
+                  setActive(cell.classId);
+                  setTabStop(index);
+                }}
                 // Selects, never toggles: with a mouse the hover has already selected this class, so
                 // a toggling click would clear the very highlight it was meant to show. Leaving the
                 // grid or pressing Escape is what clears it.
