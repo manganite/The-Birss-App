@@ -276,3 +276,76 @@ decision in the codebase, and rates the **scientific test strategy** as the proj
 asset. Both judgements were reached without sight of this ledger, which is what makes them worth
 writing down: the two things an outside reader singled out are precisely the two the NYE series
 spent its effort on.
+
+---
+
+## NYE-F — roving-tabindex fix and view-model audit sweep
+
+Branch `fix/nye-focus-and-sweep`, 2026-08-01. Disposes of the two non-documentation findings of the
+`AUDIT 2026-07-31 (Codex)` block above; closes the NYE-F item in `STATUS.md` § 1. Base `1e8c5ba`,
+suite 2397 green at branch point; 2408 at close.
+
+### Audit finding 2 — the tab contract
+
+`NyeSchemeDiagram.tsx` had no `tabIndex` management although its docblock claimed roving focus. The
+arrow navigation, wrapping, Home/End, Escape and the focus read-out were all correct; what was
+missing was the property that makes a composite a composite. Every interactive cell was its own tab
+stop, so crossing the widget took one Tab per surviving component.
+
+**Red-proof**, captured against the unfixed tree before the fix existed, using the formulation
+proposed when the item was scheduled — count the cells carrying a tab stop for 3m rank 4 `ij_kl`:
+
+    AssertionError: expected [ <button …(4)>…(1)</button>, …(17) ]
+      to have a length of 1 but got 18
+
+5 of the 6 new assertions failed. Order used: red first, then the fix as commit 1, then the test
+file as commit 2 — so the red is provable from the history rather than asserted in prose.
+
+Two sub-decisions, both conventional, taken without a round-trip as the work order allowed:
+
+- **Initial tab stop** = the first interactive cell in reading order, which is also where the
+  already-pinned arrow contract begins. The alternative (no stop until first entry) would have made
+  the widget unreachable by Tab on first render.
+- **The stop persists** after focus leaves the grid, per the A-series precedent: returning by Tab
+  lands where the user left. This is what makes the widget usable when the diagram is one of several
+  controls on the page.
+
+Implementation note worth keeping: `tabStop` stores a cell index and is validated against the
+current scheme **in the render pass**, not in an effect. Switching group or spec replaces the cell
+set, and a stale index must fall back to the first interactive cell; an effect would leave one frame
+in which the grid has no tab stop at all, and a Tab arriving in that frame would skip the widget.
+
+### Audit finding 3 — view-model assurance breadth
+
+`src/services/nyeScheme.audit.test.ts` sweeps **4224 combinations**: 176 (group, setting) pairs —
+122 groups plus 54 alternate settings — times the 24 diagram-capable specs. By geometry: 1408 × 3×3,
+704 × 3×6, 704 × 6×3, 1408 × 6×6. 1486 are vanishing forms, deliberately in scope, since rendering
+those as the all-zero scheme rather than skipping them is part of the contract. All four counts are
+pinned so the sweep cannot quietly shrink.
+
+Four structural properties, all green on the first run:
+
+1. free diagram classes == `spanRank` of the same form — the load-bearing one, tying the diagram to
+   the Q0 span rank rather than to a restatement of its own arithmetic;
+2. the classes partition the surviving cells, in both directions;
+3. no composite constraint is dropped, checked in both directions — every composite names a
+   determined class, and every determined class is named by a composite;
+4. internal consistency of ids, representatives, ratios and the zero case.
+
+Each property accumulates all violations and asserts an empty list rather than failing on the first,
+so a systematic defect would report its full extent in one run.
+
+Runtime 4.2 s for the file; no timeout was widened, and none needed to be.
+
+### Completed
+
+- Commit 1 `39b9eed` — the roving-tabindex fix.
+- Commit 2 `20bee0e` — the tab contract pinned in a sibling interaction file, deliberately not in
+  the existing one: that suite pins what the diagram *does*, this one what it *occupies*, so a
+  failure localises without reading the diff.
+- Commit 3 `26820c6` — the exhaustive sweep.
+- Commit 4 — this entry, plus the CHANGELOG `### Fixed` bullet and the `STATUS.md` § 1 closure.
+
+### Open
+
+*(none — the series is closed. `STATUS.md` § 1 now states that nothing is scheduled.)*

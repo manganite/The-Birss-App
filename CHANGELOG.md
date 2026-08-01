@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   relation between classes — with a class index on every surviving component, and the class
   chain shown on hover, tap or keyboard focus. The choice of view persists for the session.
 
+### Fixed
+
+- Tables: the dot diagram now behaves as a single keyboard widget. Every one of its component
+  cells used to be its own tab stop, so tabbing past the diagram took one press per surviving
+  component — 18 for a fourth-rank trigonal form. It now holds one tab stop, entered and left with
+  a single Tab, with the arrow keys moving between components inside it as before; returning by
+  Tab lands on the component you left.
+
 ### Changed
 
 - Tables: the book-misprint footnote on the Birss Table-7 lookup chain now offers the same
