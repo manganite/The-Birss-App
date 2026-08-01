@@ -59,52 +59,38 @@ pass. See `CHANGELOG.md` `[0.22.0]`.
 
 v0.21.0 and earlier: see `CHANGELOG.md` for the full, per-release detail.
 
+### Feature surface (shipped)
+
+Recorded here rather than in section 1, which lists only what is open. **B15 — Explorer as
+interactive Birss table** shipped through Phase 3 (v0.20.0) and is complete: the Tables page
+gives the full rank 0–4 × polar/axial × i/c lookup with the Birss symbol classes (A–U), the
+Tables 4a–4f / Table 7 chain, and Explorer cross-links; `computeTensorForm` is rank-parametrized
+0–4 and bridged to the public `calculateTensorComponents` for all six tensor-type/time
+combinations across all 122 groups (T4/F2). Its two near-term residues both closed on 2026-07-31:
+the **Table-7 lookup-chain breadcrumb** for magnetic c-tensors (T7-BC — see `TODO-next.md`) and
+the **Nye dot diagrams** (NYE — see the `LEDGER.md` entry and
+`docs/findings/FINDING-2026-07-31-itc-d-rank3-scheme-defects.md`). **Accessibility completion**
+closed 2026-07-16 (E24/T5a baseline, A1 ARIA tabs keyboard pattern, A2 walkthrough, A3 detent
+snapping — A-series ledger in `TODO-next.md`).
+
+Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
+candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
+
 ---
 
 ## 1. Open items
 
-### B15 — Explorer as interactive Birss table
-**Status:** Shipped through Phase 3 (v0.20.0). The Tables page provides the full
-rank 0-4 x polar/axial x i/c lookup with the Birss symbol classes (A-U) exposed,
-the Tables 4a-4f / Table 7 chain, and Explorer cross-links. Backing: the
-print-verified tables (Table 4f print-verified 2026-07-09, see
-`birss-tables/table-4f.md`), the ~150 literature-anchored golden fixtures, and the
-reference tests that re-parse the vendored tables at test time. The engine
-(`computeTensorForm`) is rank-parametrized 0-4 and bridged to the public
-`calculateTensorComponents` entry point for all six tensor-type/time combinations
-across all 122 groups (T4/F2).
+### NYE-F — Nye roving-tabindex fix + view-model audit sweep
 
-**Open residue (near-term, maintainer decision 2026-07-15):**
-- ~~Nye dot diagrams for tensor forms (Tables Phase 4)~~ — **CLOSED 2026-07-31 (NYE)**. Shipped
-  as a per-representation toggle beside the symbolic form, for the rank/intrinsic combinations
-  that have a scheme geometry. The series also produced the app's first independent print anchor
-  for the rank-3 `i(jk)` grid and for alternate-setting forms (Yariv Table 16.1, all 24 panels
-  transcribed positionally and gated), and four erratum candidates in ITC-D Ch. 1.1's rank-3
-  material. See the NYE entry in `docs/planning/LEDGER.md` and
-  `docs/findings/FINDING-2026-07-31-itc-d-rank3-scheme-defects.md`.
-- ~~Complete the Table-7 lookup-chain breadcrumb for magnetic c-tensors~~ — **CLOSED
-  2026-07-31 (T7-BC)**. This entry's "currently a neutral 'runs via Table 7' placeholder"
-  wording was stale from v0.21.0: the full chain (A/B fork, source reference axes, the
-  Table-4a column with the parity crossover marked, the class → rank-table tail, the grey
-  tail, and the misprint footnote) has shipped since then. A premise survey found the
-  residue to be one defect only — the diagram rendered the book-misprint footnote without
-  the breadcrumb's "Learn more" link — now fixed. See `docs/planning/TODO-next.md`, T7-BC,
-  for the affordance inventory and why the second documented misprint does not apply to
-  this route.
-- Further Tables refinements pending maintainer scoping.
+**Status:** scheduled; work order pending. Raised by the external audit of 2026-07-31 (see the
+`AUDIT 2026-07-31 (Codex)` block in `docs/planning/LEDGER.md`). The dot diagram's cell buttons
+have no `tabIndex` management, so the whole grid sits in the tab order instead of behaving as one
+roving-focus composite; the arrow-key handler and the focus read-out are already in place, so this
+is a defect in the widget's tab contract, not in its navigation. The sweep pairs that fix with a
+review of the view model for the same class of gap.
 
-(LaTeX copy of tensor forms moved to the parking lot, section 4.)
-
-### Accessibility completion (promoted from the parking lot, 2026-07-15)
-**Status:** Closed 2026-07-16.
-Baseline (E24/T5a): additive ARIA (tab widgets, `aria-current` navigation, slider/input
-`aria-label`s) and tested dialog focus management. A1 added the full ARIA tabs keyboard pattern,
-un-suppressed the slider number-input focus outlines (option a: UA defaults), pinned the slider
-coarse-step contract, and corrected the "slider keyboard absent" misdiagnosis. A2 ran a scripted
-keyboard walkthrough that returned a clean bill on tab order, labels, the search combobox, and the
-dialog flows, and fixed three low findings: the crystal-cut legend label upgrade, mobile
-coarse-step parity, and the `<nav aria-label="Main">` landmark. See the A-series ledger in
-`docs/planning/TODO-next.md` for detail.
+Nothing else is currently scheduled. Candidates for the next cycle live in
+`docs/planning/BACKLOG.md`; nothing there is committed work until it is moved into this section.
 
 ---
 

@@ -26,7 +26,8 @@ Working rules for this cycle:
 - **Safety net first.** For any data/math item, extend the relevant golden / rotated
   fixture (`goldenTensors.fixtures.ts`, `rotatedSHG.fixtures.ts`) **first** and require
   it green, then change code. Two fixture classes with distinct rules: **correctness
-  goldens** (e.g. `goldenTensors.fixtures.ts`) come from print-verified literature,
+  goldens** (e.g. `goldenTensors.fixtures.ts`) trace to print-verified literature, directly or
+  through a calibrated derivation (the three provenance classes are set out under Architecture),
   never from app output; **behavioral regression pins** (`rotatedSHG.fixtures.ts`,
   `shgUnification.pins.test.ts`) are captured from a known-good app revision and are
   regenerated only by re-capturing from a known-good base -- never edited to turn a
@@ -151,20 +152,37 @@ Known naming impurities, documented rather than renamed: `groupNotation.test.ts`
 plain names; `sharingPartitions.reference.test.ts` guards GENERATED data rather than literature;
 `handBirss.e2e.test.ts` is a named acceptance checkpoint, not a browser E2E test.
 
-`npm run lint` and `npm run test` are the automated quality gates (run in CI via `.github/workflows/ci.yml`, which also regenerates `birss-tables/table-nomenclature.md` from `birss-tables/tools/generate_nomenclature.py` and fails the build on drift; CI additionally runs `npm run build`). Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: ~150 table-anchored golden fixtures (`goldenTensors.fixtures.ts`, detailed below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
+`npm run lint` and `npm run test` are the automated quality gates (run in CI via `.github/workflows/ci.yml`, which also regenerates `birss-tables/table-nomenclature.md` from `birss-tables/tools/generate_nomenclature.py` and fails the build on drift; CI additionally runs `npm run build`). Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: the ~150 golden fixtures of `goldenTensors.fixtures.ts` (provenance classes below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
 
-`src/services/goldenTensors.fixtures.ts` + `goldenTensors.test.ts` extend this with golden component-relation fixtures for **every Type-III crystal family**, c-type ED (incl. the canonical Cr2O3 `-3'm'` magnetoelectric SHG tensor), and the axial (MD) `det(g)` branch — each pinning down the *identity* of a hand-curated `GENERATORS` entry, not just its order or invariants. Most of these fixtures are derived directly from each group's generators via the rank-3/4 transformation law (Birss, *Symmetry and Magnetism* (1966), eq. 3.22/3.27), independently re-implemented and calibrated against the six pre-existing fixtures; see each fixture's `source`/`note` for the citation and any group-theory cross-checks. 11 of these (the six generator-set corrections' fixtures plus five more) carry a `// VERIFIED:` comment — signed off directly against printed Birss Table 4e (2026-07-02); the rest rely on the independently re-implemented transformation law and calibration against those, not a direct book read.
+`src/services/goldenTensors.fixtures.ts` + `goldenTensors.test.ts` extend this with golden component-relation fixtures for **every Type-III crystal family**, c-type ED (incl. the canonical Cr2O3 `-3'm'` magnetoelectric SHG tensor), and the axial (MD) `det(g)` branch — each pinning down the *identity* of a hand-curated `GENERATORS` entry, not just its order or invariants.
+
+### Fixture provenance classes
+
+Not every "golden" carries the same authority, and the distinction matters when one goes red. Three classes, in descending strength — the class is what a fixture's `source`/`note` field records, and the policy below is unchanged, only stated precisely:
+
+- **(a) Direct print-verified.** The expected values were read off a printed source and cross-checked against it entry for entry: the vendored table transcriptions re-parsed by `*.reference.test.ts`, the Hoshi 1995 EQ goldens, the Yariv Table 16.1 scheme transcription, and the 11 `goldenTensors` fixtures carrying a `// VERIFIED:` comment (signed off against printed Birss Table 4e, 2026-07-02). A red one of these means the app disagrees with print.
+- **(b) Analytically derived, calibrated against (a).** Most of the ~150 `goldenTensors` fixtures: derived from each group's generators via the rank-3/4 transformation law (Birss, *Symmetry and Magnetism* (1966), eq. 3.22/3.27), independently re-implemented and calibrated against the six pre-existing fixtures; F4 sign-off 2026-07-09 (`docs/findings/SIGNOFF-rank3-verify-2026-07-09.md`). These are strong, and they are **not** the same thing as a book read — the derivation shares an author with the code it guards, which is exactly why the calibration subset exists. A red one means the app disagrees with an independent re-implementation of the transformation law.
+- **(c) Behavioral pins.** `*.pins.test.ts` and `rotatedSHG.fixtures.ts`: captured from a known-good software state. **Regression detectors only, never correctness authority.** They are regenerated by re-capture from a known-good base and never edited to turn a red pin green. A red one means behaviour changed — whether for better or worse is a separate question the pin cannot answer.
+
+Class (a) and (b) together are the correctness goldens of the anti-circularity rule; class (c) is the other side of that rule's two-class split. Where earlier wording called the whole `goldenTensors` set "literature-anchored" or "table-anchored", read class (b) with an (a) calibration subset.
 
 ## Architecture
 
 ```
 src/
   types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType, GroupKey) and TENSOR_META
+  domainTypes.ts                 # Dependency-free domain unions (R2), imported by types.ts and the data modules
   data/pointGroups.ts            # Static registry of all 122 magnetic point groups
-  services/
+  services/                      # 16 non-test modules; the dependency direction is spelled out below
     tensorCalculator.ts          # Thin barrel re-exporting the public API below
+    tolerances.ts                # Shared numeric epsilons (COEFF_EPSILON, ROOT_MATCH_EPSILON, …)
     symmetryGroups.ts            # Matrix algebra, GENERATORS table, group closure, getSymmetryOperations
-    tensorProjection.ts          # Numeric tensor projection (transform/average/basis), SHG polynomials, lab-frame vectors
+    linalg.ts                    # rref/spanRank/isIndependentOf, 3x3 rotations, and the symbolic TrigMat3 helpers
+    tensorProjection.ts          # Numeric tensor projection (transform/average/basis), SHG polynomials, lab-frame vectors, the Q0 constraint partition
+    tensorForms.ts               # computeTensorForm — rank 0-4 x parity x i/c x intrinsic symmetry (the Tables engine)
+    nyeScheme.ts                 # Dot-diagram view model over the Q0 constraint partition
+    propertyFlags.ts             # isPolar / isChiral / isFerromagnetic / isMagnetoelectric
+    conventionMapping.ts         # App ↔ Birss ↔ ITC group-symbol mapping and display names
     orientation.ts               # Miller index → preset angles (hklToPresetAngles), azimuth-zero convention
     trigPoly.ts                  # Trigonometric polynomial algebra for symbolic rotation angles (phiX, phiY, psi)
     symbolicProjection.ts        # Symbolic SHG source terms — parallel path producing TrigPoly coefficients
@@ -189,39 +207,65 @@ All cross-page state (selected group, tensor type, time-reversal, rotation angle
 
 ### `services/` module dependency direction
 
-`tensorCalculator.ts` is a barrel: it only re-exports symbols from the modules
-below and should stay short. Dependencies flow one way —
-**`trigPolyFormat` → `symbolicProjection` → `trigPoly`** and
-**`latexFormatting` → `tensorProjection` → `symmetryGroups`** (formatting may import
-physics, never the reverse). The symbolic path is a parallel layer that imports from
-the numeric path but never the other way round:
+**This section is derived from a complete enumeration of the intra-`src` imports of every
+non-test module in `src/services/`, not maintained by hand.** Regenerate it after any change to
+the import graph; a map patched from memory drifts, and this one had (before 2026-07-31).
 
+The graph is a DAG with six layers. A module may import from any layer below it and never from
+its own or above — the two long-standing rules, *formatting may import physics but never the
+reverse* and *the symbolic path imports from the numeric path but never the other way round*,
+are both consequences of that layering rather than separate conventions.
+
+| layer | modules | imports from |
+| --- | --- | --- |
+| 0 | `tolerances`, `trigPoly`, `simulatorEngine` | nothing in `src` |
+| 1 | `symmetryGroups` | `tolerances` |
+| 1 | `linalg` | `trigPoly` |
+| 2 | `tensorProjection` | `symmetryGroups`, `linalg`, `tolerances` |
+| 2 | `conventionMapping` | `symmetryGroups` |
+| 3 | `tensorForms` | `symmetryGroups`, `tensorProjection`, `linalg` |
+| 3 | `symbolicProjection` | `trigPoly`, `tensorProjection`, `linalg`, `symmetryGroups` |
+| 3 | `latexFormatting` | `symmetryGroups`, `tensorProjection` |
+| 3 | `propertyFlags` | `symmetryGroups`, `tensorProjection`, `data/` |
+| 3 | `orientation` | `tensorProjection` |
+| 3 | `groupSearch` | `conventionMapping`, `data/` |
+| 4 | `nyeScheme` | `tensorForms` (type-only), `tensorProjection` |
+| 4 | `trigPolyFormat` | `trigPoly`, `tensorProjection`, `symbolicProjection` (type-only), `tolerances` |
+| 5 | `tensorCalculator` | the barrel — re-exports from seven of the above |
+
+What each module is for, and the constraints that are not visible in the graph:
+
+- **`tolerances.ts`** — the shared numeric epsilons. Layer 0 by design: an epsilon that lives
+  next to one of its users drifts from the others.
 - **`symmetryGroups.ts`** — `Matrix3x3`, the `GENERATORS` table, matrix algebra
-  (`multiply`/`det`), group closure + caching, `isCentrosymmetric`,
-  `getSymmetryOperations`, and the shared `EPSILON`/`AXIS_EPSILON` constants. No
-  dependencies on the other modules.
-- **`tensorProjection.ts`** — the numeric projection core
-  (`calculateTensorBasisResults`, `calculateSHGExpressions`, `getLabFrameVectors`,
-  `transformTensor`/`averageTensor`), plus four dependency-free leaf helpers
-  (`getIndices`, `getLabel`, `formatCoeff`, `cleanupExpressionSigns`). These leaves
-  are needed by both this module (`calculateSHGExpressions`, `getLabFrameVectors`)
-  and by `latexFormatting.ts` (`formatResults`, `formatSubstitutedPolySum`); per the
-  "shared utilities live in the lower module" rule they're defined here rather than
-  in `latexFormatting.ts`, so that `latexFormatting` can depend on `tensorProjection`
-  without creating a reverse dependency. Depends only on `symmetryGroups`.
-- **`trigPoly.ts`** — trigonometric polynomial representation (`TrigPoly`) and
-  algebra (`trigAdd`, `trigMul`, `trigEval`, `trigSimplify`) for three rotation angles
-  (phiX, phiY, psi). No dependencies on other modules.
-- **`symbolicProjection.ts`** — `calculateSymbolicSHGExpressions`: builds a
-  symbolic rotation matrix (`TrigMat3`) with preset angles numeric and user angles
-  symbolic, then contracts source terms with `TrigPoly` coefficients. Depends on
-  `trigPoly`, `tensorProjection`, and `symmetryGroups`.
-- **`trigPolyFormat.ts`** — `formatTrigPoly` and `formatSymbolicSourceTerm`:
-  LaTeX rendering for `TrigPoly` and `SymPoly` values. Depends on
-  `trigPoly`, `symbolicProjection`, and `tensorProjection` (for `formatCoeff`).
-- **`latexFormatting.ts`** — `calculateTensorComponents` (thin wrapper around
-  `calculateTensorBasisResults` + a local `formatResults`) and
-  `formatSubstitutedPolySum`. Depends on `tensorProjection` and `symmetryGroups`.
+  (`multiply`/`det`), group closure + caching, `isCentrosymmetric`, `getSymmetryOperations`, and
+  the re-exported `EPSILON`/`AXIS_EPSILON` (kept re-exported so the many existing import sites
+  stay unchanged — the definitions moved to `tolerances`).
+- **`linalg.ts`** — `rref`, `spanRank`, `isIndependentOf` and the pivot epsilons, the numeric 3×3
+  rotations, and the symbolic `TrigMat3` helpers. The `trigPoly` dependency comes from that last
+  group only; the numeric half is independent of it.
+- **`tensorProjection.ts`** — the numeric projection core (`calculateTensorBasisResults`,
+  `calculateSHGExpressions`, `getLabFrameVectors`, `transformTensor`/`averageTensor`), the Q0
+  constraint partition (`reducedPartition`, `formatReducedRelations`,
+  `formatCompositeConstraint`), plus the dependency-free leaf helpers (`getIndices`, `getLabel`,
+  `formatCoeff`, `cleanupExpressionSigns`). Those leaves are needed both here and by
+  `latexFormatting`; per the "shared utilities live in the lower module" rule they are defined
+  here, so `latexFormatting` can depend on `tensorProjection` without a reverse edge.
+- **`tensorForms.ts`** — `computeTensorForm`, the rank-parametrized generalization of
+  `calculateTensorBasisResults`, plus the form signatures behind the sharing partitions.
+- **`nyeScheme.ts`** — the dot-diagram view model. A view over `reducedPartition`, deliberately
+  not a second derivation of it, so the diagram and the relation list cannot disagree.
+- **`trigPoly.ts`** — trigonometric polynomial representation (`TrigPoly`) and algebra
+  (`trigAdd`, `trigMul`, `trigEval`, `trigSimplify`) for three rotation angles.
+- **`symbolicProjection.ts`** — `calculateSymbolicSHGExpressions`: builds a symbolic rotation
+  matrix with preset angles numeric and user angles symbolic, then contracts source terms with
+  `TrigPoly` coefficients.
+- **`trigPolyFormat.ts`** / **`latexFormatting.ts`** — the two LaTeX renderers, for the symbolic
+  and numeric paths respectively.
+- **`propertyFlags.ts`**, **`conventionMapping.ts`**, **`orientation.ts`**, **`groupSearch.ts`**,
+  **`simulatorEngine.ts`** — leaf services for the Explorer, the convention toggle, the crystal
+  cut and the polarimetry sweep.
+- **`tensorCalculator.ts`** — a barrel. It only re-exports and should stay short.
 
 ## Key Conventions
 
