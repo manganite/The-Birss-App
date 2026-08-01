@@ -436,3 +436,23 @@ divergence reads as intent:
 ### Open
 
 *(none — the series is closed. The two remaining B27 residuals stay in `BACKLOG.md`, unscoped.)*
+
+---
+
+## Releases
+
+*One line per release cut from 2026-07-31 on. The detail lives in `CHANGELOG.md` and in the series
+entries above; this is the index that says which series a given tag carried.*
+
+- **v0.24.0** (2026-08-01) — the Nye-view release. Carries **NYE** (the dot-diagram view, its Yariv
+  Table 16.1 print gate and the four ITC-D erratum candidates), **NYE-F** (roving tabindex plus the
+  4224-combination view-model sweep) and **B27-S** (property-flag badges in the group identity
+  header), together with the T7-BC footnote-affordance straggler that had been sitting in
+  `[Unreleased]` since before the NYE series. MINOR: two new capabilities, no corrected calculated
+  output. Suite 2422.
+
+  Standing pattern recorded at this cut: **"Recently closed" in `STATUS.md` holds the series closed
+  since the last release, and each release cut absorbs them into its release block**, leaving the
+  subsection empty. Together with the section-1 entry and exit rules from DOCS-TRUTH and B27-S,
+  that closes the loop — an item enters section 1 when promoted, leaves it entirely when it ships,
+  is summarised under "Recently closed" until the next cut, and ends in the release block.
