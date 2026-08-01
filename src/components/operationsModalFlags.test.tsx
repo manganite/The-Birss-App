@@ -26,14 +26,19 @@ const group = (name: string) => POINT_GROUPS.find((p) => p.name === name)!;
 const markup = (name: string) =>
   renderToStaticMarkup(<OperationsModal group={group(name)} convention="birss" onClose={() => {}} />);
 
-/** The chips as `[label, allowed]`, in render order. `bg-ink` is the filled (admitted) styling. */
+/**
+ * The chips as `[label, allowed]`, in render order. `bg-ink` is the filled (admitted) styling.
+ *
+ * The label is captured directly -- the text node that follows the chip's icon -- rather than by
+ * stripping tags out of the chip body. A single-pass `replace(/<[^>]*>/g, '')` is not a correct way
+ * to remove markup, and CodeQL rightly flags it (`js/incomplete-multi-character-sanitization`) even
+ * though nothing untrusted reaches this function. Capturing what we want beats deleting what we
+ * do not.
+ */
 function chips(html: string): Array<[string, boolean]> {
   const pattern =
-    /<span class="inline-flex items-center gap-1 px-2\.5 py-1 text-xs border ([^"]*)"[^>]*>([\s\S]*?)<\/span><\/span>/g;
-  return [...html.matchAll(pattern)].map(([, cls, body]) => [
-    body.replace(/<[^>]*>/g, '').trim(),
-    cls.includes('bg-ink'),
-  ]);
+    /<span class="inline-flex items-center gap-1 px-2\.5 py-1 text-xs border ([^"]*)"[^>]*>[\s\S]*?<\/svg>([^<]*)</g;
+  return [...html.matchAll(pattern)].map(([, cls, label]) => [label.trim(), cls.includes('bg-ink')]);
 }
 
 describe('Operations modal — property chips unchanged by the shared-definition extraction', () => {

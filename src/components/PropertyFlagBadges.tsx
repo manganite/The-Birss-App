@@ -7,7 +7,7 @@ import { admittedHeaderFlags } from './propertyFlagDefs';
  * Only ADMITTED flags are drawn -- an absent one is simply not there. The header is present on the
  * Calculator, Simulator and Tables pages at all times, so it has to stay quiet: four struck-through
  * badges on every centrosymmetric crystal would be noise on every page. The Explorer's operations
- * modal makes the opposite choice deliberately, because in a lookup view absence is the answer; see
+ * modal makes the opposite choice deliberately, because in a lookup view the absence of a property is itself informative; see
  * `propertyFlagDefs.ts`.
  *
  * Each badge states what the symmetry PERMITS, never what a material does: `2'/m'` admits a

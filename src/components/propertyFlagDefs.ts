@@ -24,8 +24,8 @@ import {
  *   flags; the header is present on three pages at all times and carries only the four
  *   material-class flags. Piezo availability is already reachable through the Tables by-effect
  *   view, so repeating it in a persistent header buys nothing.
- * - **Absent flags.** The modal draws them struck through, because in a lookup view absence is
- *   itself the answer. The header omits them: four struck-through chips on every centrosymmetric
+ * - **Absent flags.** The modal draws them struck through, because in a lookup view the absence of
+ *   a property is itself informative. The header omits them: four struck-through chips on every centrosymmetric
  *   crystal, on every page, would be noise.
  *
  * `id` doubles as the glossary term id, so a badge's explanation and its provenance travel with

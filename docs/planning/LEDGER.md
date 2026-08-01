@@ -392,7 +392,7 @@ divergence reads as intent:
 - **Flag sets differ.** Modal: five chips plus a chiral row, piezo included — a lookup view.
   Header: the four material-class flags — piezo availability is already reachable through Tables
   by-effect, and a persistent header should not repeat it.
-- **Absent flags differ.** Modal strikes them through, because there absence is the answer. Header
+- **Absent flags differ.** Modal strikes them through, because in a lookup view the absence of a property is itself informative. Header
   omits them, because four struck-through badges on every centrosymmetric crystal on every page is
   noise.
 - **Placement.** Own row below the collapsible block. The summary row is a `<button>`, so an info
