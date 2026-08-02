@@ -641,6 +641,64 @@ projection fixtures re-derived with their comments, and the layout changed to a 
 `md` with the slider group capped at `max-w-xl` and the scene `self-start`, so its top edge lines up
 with the first slider row. Suite 2473 → 2474.
 
+### Revision 2, 2026-08-02 (pre-push) — the camera was distorted, and the fix was in the brief
+
+**The defect.** Visual acceptance found the body drawn as a rhomboid and the reading directions
+still off. The axis directions were right this time; the *metric* was not.
+
+**The cause is the specification of Revision 1, not its execution — and that specification is the
+work order author's.** Revision 1 replaced the azimuth/elevation camera with three free axis-image
+constants, on the reasoning that a parallel projection is fully determined by where it sends the
+basis vectors. True, and the trap: not every such triple is an ORTHOGRAPHIC projection. By Gauss's
+theorem of axonometry the three images, read as complex numbers, must satisfy
+`z₁² + z₂² + z₃² = 0`; the prescribed triple `X(−0.82, −0.42)`, `Y(0, 1)`, `Z(0.94, 0.20)` gives
+`0.3396 + 1.0648i`. It specified a shear. Constants cannot enforce a constraint they are free to
+violate.
+
+**The fix, per the maintainer's brief.** The camera is a rotation built from `linalg` primitives,
+`M = Rx(−20°)·Ry(115°)`; the screen image of an axis is the first two components of the rotated
+vector; the line of sight is the third row. Orthonormality is now structural. Verified against the
+brief before implementing: all three target images reproduce to seven places, `M·Mᵀ = I` to 3.5e−17,
+`row0 × row1 = row2` exactly, and Gauss goes from `0.3396 + 1.0648i` to ~1e−16.
+
+| axis | image (u, v) | reads as |
+| --- | --- | --- |
+| Y_lab | (0.0000, 0.9397) | exactly vertical, up |
+| Z_lab ∥ k | (0.9063, −0.1445) | to the right, slightly lowered |
+| X_lab | (−0.4226, −0.3100) | to the left and down |
+
+**On the sketch, for the record.** The brief's own note is confirmed: Z slightly RAISED is not
+reachable by any orthographic camera that also has Y vertical and X pointing down. This is the
+view-from-above; the mirror choice is elevation +20°, which raises Z but tips X upward with it. The
+maintainer's acceptance decides.
+
+**Three pins, and their measured division of labour.** Mutation-tested rather than argued — the
+third row is the one that corrects an assumption in the brief:
+
+| mutation | metric pin | screen identity [001] | parallelism [100] | orientation contract |
+| --- | --- | --- | --- | --- |
+| Revision 1 camera (permutation + shear) | **fails** | **fails** | green | fails |
+| pure shear (Z image ×1.25, directions kept) | **fails** | **fails** | green | **green** |
+| triad read off the ROWS of R (camera intact) | green | **green** | **fails** | green |
+
+Row 2 is the class that shipped: a pure shear leaves every orientation assertion green. Row 3
+corrects the brief's expectation that the screen-identity pin would also catch wiring — it cannot,
+because it is set at [001] where `R_preset` is the identity and rows and columns coincide. That is
+the parallelism pin's job, and it is set at [100] for exactly that reason. All three are needed;
+none is redundant.
+
+**Second evidence for the standing decision.** Promoted to `STATUS.md` § 5 with this case as its
+second datapoint: *a test of the modelled quantity is not a test of its depiction; visualisation
+contracts need their own orientation AND metric pins.* Revision 1 supplied the orientation half of
+that lesson, Revision 2 the metric half — and the metric half is the harder one, because a shear is
+invisible to every assertion the orientation half suggests.
+
+Also in this revision: envelope re-measured (now a DISC of ±71 units at SCALE 28 — roundness is
+itself a consequence of orthonormality, since the sweep is rotation-covariant), canvas 272×200, all
+projection fixtures hand-derived for the third time with their comments, and the handedness identity
+simplified back to a unit line of sight. Layout and the reported 30-px inner-padding point unchanged.
+Suite 2474 → 2476.
+
 ### Open
 
 *(none — the series is closed.)*

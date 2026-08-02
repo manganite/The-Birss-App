@@ -10,7 +10,9 @@ import {
   AXO_X,
   AXO_Y,
   AXO_Z,
-  AXO_KERNEL,
+  CAMERA,
+  CAM_AZIMUTH_DEG,
+  CAM_ELEVATION_DEG,
   VIEW_TO_CAMERA,
   LAB_ORIGIN,
   LAB_AXIS_SCALE,
@@ -67,23 +69,68 @@ const closeTo = (v: readonly number[], expected: readonly number[], p = 6) => {
 
 describe('orientationScene — the fixed viewpoint', () => {
   /**
-   * THE CAMERA CONTRACT. The projection is stated as the screen images of the three lab axes, so the
-   * contract is a statement about those images: sign structure, not magnitudes. This is the
-   * assertion whose absence let a cyclic axis permutation ship -- every other direction test in this
-   * file compares LAB-space vectors and is blind to where the camera puts them.
+   * THE METRIC PIN -- the class of defect that reached visual acceptance twice.
    *
-   * Screen convention: u to the right, v UP (SVG's downward y is applied inside `project`).
+   * The first revision got the axis DIRECTIONS wrong (a cyclic permutation); the second got them
+   * right but the METRIC wrong. Free axis-image constants specify a general PARALLEL projection, and
+   * only some of those are orthographic: by Gauss's theorem of axonometry the three images, read as
+   * complex numbers, must satisfy z1^2 + z2^2 + z3^2 = 0. The previous triple gave 0.3396 + 1.0648i,
+   * so the picture was sheared -- a slab drawn as a rhomboid, with the axes still pointing the right
+   * way. No orientation test can see that, because shear preserves direction of the axes it is
+   * defined by.
+   *
+   * The camera is now a ROTATION, so orthonormality is structural rather than checked-for. This test
+   * asserts it anyway, at the matrix level (M M^T = I) and at the level a reader can see (Gauss),
+   * because the point of a pin is to fail if someone later replaces the construction with constants.
+   */
+  it('is metrically a rotation: M M^T = I, and the axis images satisfy Gauss', () => {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const entry = CAMERA[i][0] * CAMERA[j][0] + CAMERA[i][1] * CAMERA[j][1] + CAMERA[i][2] * CAMERA[j][2];
+        expect(Math.abs(entry - (i === j ? 1 : 0))).toBeLessThan(AXIS_EPSILON);
+      }
+    }
+
+    // det = +1: a proper rotation, not a rotation composed with a reflection (which would flip the
+    // handedness of everything drawn while leaving M M^T = I intact).
+    const det =
+      CAMERA[0][0] * (CAMERA[1][1] * CAMERA[2][2] - CAMERA[1][2] * CAMERA[2][1]) -
+      CAMERA[0][1] * (CAMERA[1][0] * CAMERA[2][2] - CAMERA[1][2] * CAMERA[2][0]) +
+      CAMERA[0][2] * (CAMERA[1][0] * CAMERA[2][1] - CAMERA[1][1] * CAMERA[2][0]);
+    expect(det).toBeCloseTo(1, 12);
+
+    // Gauss's theorem of axonometry, the same fact stated in the picture plane: sum of the squared
+    // axis images, as complex numbers, vanishes for an orthographic projection.
+    let re = 0;
+    let im = 0;
+    for (const a of [AXO_X, AXO_Y, AXO_Z]) {
+      re += a.u * a.u - a.v * a.v;
+      im += 2 * a.u * a.v;
+    }
+    expect(Math.abs(re)).toBeLessThan(AXIS_EPSILON);
+    expect(Math.abs(im)).toBeLessThan(AXIS_EPSILON);
+
+    // The same theorem in its more familiar form: the three squared foreshortening factors of an
+    // orthographic axonometry sum to 2. Here 0.274691 + 0.883022 + 0.842287 = 2.000000.
+    const squares = [AXO_X, AXO_Y, AXO_Z].reduce((acc, a) => acc + a.u * a.u + a.v * a.v, 0);
+    expect(squares).toBeCloseTo(2, 9);
+  });
+
+  /**
+   * THE ORIENTATION CONTRACT: where the camera puts the axes. Structure only -- the magnitudes
+   * follow from the two angles and are free to be re-aimed.
    */
   it('places the lab axes on screen as the contract requires', () => {
-    // Y_lab: exactly vertical, up. Exactly, not approximately -- it is the picture's plumb line.
+    // Y_lab: exactly vertical, up. Exactly, not approximately -- the azimuth turns ABOUT Y and the
+    // row supplying u carries a zero in the y slot, so nothing can tip the plumb line.
     expect(AXO_Y.u).toBe(0);
     expect(AXO_Y.v).toBeGreaterThan(0);
 
-    // Z_lab (the beam): to the right, slightly raised. The rise is small -- it must read as a
-    // direction ACROSS the picture, not as a second vertical.
+    // Z_lab (the beam): to the right. Its VERTICAL sense is deliberately NOT pinned -- it is the one
+    // open aesthetic choice (elevation -20 lowers it, +20 raises it and tips X up with it). What is
+    // pinned is that it reads as a direction ACROSS the picture, not as a second vertical.
     expect(AXO_Z.u).toBeGreaterThan(0);
-    expect(AXO_Z.v).toBeGreaterThan(0);
-    expect(AXO_Z.v).toBeLessThan(AXO_Z.u / 2);
+    expect(Math.abs(AXO_Z.v)).toBeLessThan(AXO_Z.u / 2);
 
     // X_lab: to the left and down.
     expect(AXO_X.u).toBeLessThan(0);
@@ -99,41 +146,63 @@ describe('orientationScene — the fixed viewpoint', () => {
   });
 
   /**
-   * DERIVATION of the line of sight. The projection's two rows are
-   *     p_u = (X.u, Y.u, Z.u) = (-0.82, 0, 0.94)
-   *     p_v = (X.v, Y.v, Z.v) = (-0.42, 1, 0.20)
-   * and its kernel is their cross product:
-   *     i = 0(0.20) - 0.94(1)        = -0.94
-   *     j = 0.94(-0.42) - (-0.82)(0.20) = -0.3948 + 0.164 = -0.2308
-   *     k = (-0.82)(1) - 0(-0.42)    = -0.82
-   * so AXO_KERNEL = (-0.94, -0.2308, -0.82), of length
-   *     sqrt(0.8836 + 0.05326864 + 0.6724) = sqrt(1.60926864) = 1.2685695,
-   * giving the unit line of sight (-0.7409919, -0.1819374, -0.6463970).
+   * DERIVATION. M = Rx(-20) Ry(115), with cos115 = -0.4226183, sin115 = 0.9063078,
+   * cos(-20) = 0.9396926, sin(-20) = -0.3420201.
    *
-   * Its NEGATIVE z-component is the load-bearing part: the camera sits on the -Z side, so the large
-   * face the viewer sees is the -Z one and the slab's thickness runs off to the RIGHT, towards the
-   * "∥ k" arrow, instead of to the left.
+   *   Ry(115) = [[-0.4226183, 0, 0.9063078], [0, 1, 0], [-0.9063078, 0, -0.4226183]]
+   *   Rx(-20) = [[1, 0, 0], [0, 0.9396926, 0.3420201], [0, -0.3420201, 0.9396926]]
+   *
+   *   row0 = (1,0,0) Ry             = (-0.4226183,  0,          0.9063078)
+   *   row1 = 0.9396926 (0,1,0) + 0.3420201 (-0.9063078, 0, -0.4226183)
+   *                                 = (-0.3099755,  0.9396926, -0.1445440)
+   *   row2 = -0.3420201 (0,1,0) + 0.9396926 (-0.9063078, 0, -0.4226183)
+   *                                 = (-0.8516507, -0.3420201, -0.3971313)
+   *
+   * The axis images are the COLUMNS of the first two rows, so
+   *   X (-0.4226183, -0.3099755), Y (0, 0.9396926), Z (0.9063078, -0.1445440).
+   *
+   * row2 is the line of sight, and for a proper rotation row0 x row1 = row2 exactly, so it points
+   * towards the viewer without a sign having to be chosen. Its NEGATIVE z-component is load-bearing:
+   * the camera is on the -Z side, so the visible large face is the -Z one and the slab's thickness
+   * runs off to the RIGHT, towards the "∥ k" arrow.
    */
-  it('has the hand-derived line of sight, on the -Z side', () => {
-    closeTo(AXO_KERNEL, [-0.94, -0.2308, -0.82]);
-    expect(Math.hypot(...AXO_KERNEL)).toBeCloseTo(1.2685695, 6);
-    closeTo(VIEW_TO_CAMERA, [-0.7409919, -0.1819374, -0.646397]);
+  it('has the hand-derived camera rows and line of sight', () => {
+    expect(CAM_AZIMUTH_DEG).toBe(115);
+    expect(CAM_ELEVATION_DEG).toBe(-20);
+
+    closeTo(CAMERA[0], [-0.4226183, 0, 0.9063078]);
+    closeTo(CAMERA[1], [-0.3099755, 0.9396926, -0.144544]);
+    closeTo(CAMERA[2], [-0.8516507, -0.3420201, -0.3971313]);
+
+    closeTo([AXO_X.u, AXO_X.v], [-0.4226183, -0.3099755]);
+    closeTo([AXO_Y.u, AXO_Y.v], [0, 0.9396926]);
+    closeTo([AXO_Z.u, AXO_Z.v], [0.9063078, -0.144544]);
+
+    closeTo(VIEW_TO_CAMERA, CAMERA[2]);
     expect(Math.hypot(...VIEW_TO_CAMERA)).toBeCloseTo(1, 12);
     expect(VIEW_TO_CAMERA[2]).toBeLessThan(0);
 
-    // the kernel really is annihilated by the projection
+    // row0 x row1 = row2 -- the identity the projected-handedness test rests on
+    const cross = [
+      CAMERA[0][1] * CAMERA[1][2] - CAMERA[0][2] * CAMERA[1][1],
+      CAMERA[0][2] * CAMERA[1][0] - CAMERA[0][0] * CAMERA[1][2],
+      CAMERA[0][0] * CAMERA[1][1] - CAMERA[0][1] * CAMERA[1][0],
+    ];
+    closeTo(cross, CAMERA[2], 12);
+
+    // and the line of sight really is annihilated by the projection
     const origin = project([0, 0, 0], { x: 0, y: 0 }, 1);
-    const along = project(AXO_KERNEL, { x: 0, y: 0 }, 1);
+    const along = project(VIEW_TO_CAMERA, { x: 0, y: 0 }, 1);
     expect(along.x - origin.x).toBeCloseTo(0, 12);
     expect(along.y - origin.y).toBeCloseTo(0, 12);
   });
 
   /**
-   * DERIVATION. The lab triad is drawn at LAB_ORIGIN = (40, 180) with LAB_AXIS_SCALE = 24, and
+   * DERIVATION. The lab triad is drawn at LAB_ORIGIN = (40, 168) with LAB_AXIS_SCALE = 26, and
    * screen = (origin.x + s*u, origin.y - s*v):
-   *   X: x = 40 + 24(-0.82) = 20.32   y = 180 - 24(-0.42) = 190.08
-   *   Y: x = 40 + 24(0)     = 40      y = 180 - 24(1)     = 156
-   *   Z: x = 40 + 24(0.94)  = 62.56   y = 180 - 24(0.20)  = 175.20
+   *   X: x = 40 + 26(-0.4226183) = 29.01193   y = 168 - 26(-0.3099755) = 176.05936
+   *   Y: x = 40 + 26(0)          = 40         y = 168 - 26(0.9396926)  = 143.56799
+   *   Z: x = 40 + 26(0.9063078)  = 63.56400   y = 168 - 26(-0.1445440) = 171.75814
    */
   it('projects the lab triad to its hand-derived screen positions', () => {
     const scene = buildOrientationScene();
@@ -142,12 +211,12 @@ describe('orientationScene — the fixed viewpoint', () => {
     expect(Y.label).toBe('Y');
     expect(Z.label).toBe('Z');
 
-    expect(X.to.x).toBeCloseTo(20.32, 9);
-    expect(X.to.y).toBeCloseTo(190.08, 9);
+    expect(X.to.x).toBeCloseTo(29.01193, 5);
+    expect(X.to.y).toBeCloseTo(176.05936, 5);
     expect(Y.to.x).toBeCloseTo(40, 12);
-    expect(Y.to.y).toBeCloseTo(156, 12);
-    expect(Z.to.x).toBeCloseTo(62.56, 9);
-    expect(Z.to.y).toBeCloseTo(175.2, 9);
+    expect(Y.to.y).toBeCloseTo(143.56799, 5);
+    expect(Z.to.x).toBeCloseTo(63.564, 4);
+    expect(Z.to.y).toBeCloseTo(171.75814, 5);
   });
 
   /** Y is the plumb line: it leaves the origin straight up, with no horizontal component at all. */
@@ -156,10 +225,9 @@ describe('orientationScene — the fixed viewpoint', () => {
     expect(Y.to.x - Y.from.x).toBe(0);
     expect(Y.to.y).toBeLessThan(Y.from.y); // up, in SVG coordinates
 
-    // the beam runs to the right and rises only slightly
+    // the beam runs to the right and departs from the horizontal only slightly, either way
     expect(Z.to.x).toBeGreaterThan(Z.from.x);
-    expect(Z.from.y - Z.to.y).toBeGreaterThan(0);
-    expect(Z.from.y - Z.to.y).toBeLessThan((Z.to.x - Z.from.x) / 2);
+    expect(Math.abs(Z.to.y - Z.from.y)).toBeLessThan((Z.to.x - Z.from.x) / 2);
 
     // and X goes left and down
     expect(X.to.x).toBeLessThan(X.from.x);
@@ -267,6 +335,58 @@ describe('orientationScene — the zero-rotation special case', () => {
       const box = getLabFrameVectors(preset);
       expect([box.X, box.Y, box.Z]).toEqual([...latex]);
     });
+  });
+
+  /**
+   * THE SCREEN-IDENTITY PIN -- the picture-level witness for both shipped camera defects.
+   *
+   * At cut [001] with no rotation the equation box reads x = X, y = Y, z = Z: the crystal frame IS
+   * the lab frame. So the three crystal arrows and the three lab arrows must be THE SAME PICTURE,
+   * not merely parallel -- same directions, and the same relative lengths, since the two triads
+   * differ only by where they are drawn and by their two length conventions. A permutation breaks
+   * the pairing; a shear breaks the relative lengths, because it foreshortens the three axes by
+   * unequal factors. Both shipped defects fail here.
+   *
+   * ITS BLIND SPOT, stated because the division of labour only works if each pin's reach is known:
+   * at [001] the preset is the IDENTITY, so the rows and the columns of R coincide and a transposed
+   * triad is invisible to this test. That is the parallelism pin's job, and it is set at [100]
+   * precisely because the preset there is not the identity. Verified by mutation, not assumed --
+   * see the table in the ledger entry.
+   *
+   * The comparison divides out the two conventions: each arrow is scaled by its own triad's
+   * (length x scale), leaving the raw axis image, and translation is removed by working with
+   * deltas rather than endpoints.
+   */
+  it('[001]: the crystal triad and the lab triad are the same picture, to scale', () => {
+    const scene = buildOrientationScene(presetFor('[001]'));
+    const delta = (axis: { from: { x: number; y: number }; to: { x: number; y: number } }, unit: number) => ({
+      x: (axis.to.x - axis.from.x) / unit,
+      y: (axis.to.y - axis.from.y) / unit,
+    });
+
+    const crystal = scene.crystalAxes.map((a) => delta(a, SCALE * CRYSTAL_AXIS_LENGTH));
+    const lab = scene.labAxes.map((a) => delta(a, LAB_AXIS_SCALE));
+
+    crystal.forEach((c, i) => {
+      expect(Math.abs(c.x - lab[i].x)).toBeLessThan(AXIS_EPSILON);
+      expect(Math.abs(c.y - lab[i].y)).toBeLessThan(AXIS_EPSILON);
+    });
+
+    // and each normalized arrow is exactly the axis image (u, -v) -- the SVG flip, once
+    expect(crystal[0].x).toBeCloseTo(AXO_X.u, 9);
+    expect(crystal[0].y).toBeCloseTo(-AXO_X.v, 9);
+    expect(crystal[1].x).toBeCloseTo(AXO_Y.u, 9);
+    expect(crystal[1].y).toBeCloseTo(-AXO_Y.v, 9);
+    expect(crystal[2].x).toBeCloseTo(AXO_Z.u, 9);
+    expect(crystal[2].y).toBeCloseTo(-AXO_Z.v, 9);
+
+    // Relative lengths on screen: unequal foreshortening is what a shear would show up as, and an
+    // orthographic camera fixes the three ratios completely. |X| = |Y| = |Z| = 1 in lab space, so
+    // the drawn ratios are the images' lengths: 0.5241, 0.9397, 0.9178.
+    const len = (d: { x: number; y: number }) => Math.hypot(d.x, d.y);
+    expect(len(crystal[0])).toBeCloseTo(0.5241, 4);
+    expect(len(crystal[1])).toBeCloseTo(0.9397, 4);
+    expect(len(crystal[2])).toBeCloseTo(0.9178, 4);
   });
 
   /**
@@ -442,8 +562,8 @@ describe('orientationScene — visible faces', () => {
 
   /**
    * DERIVATION. At zero rotation the slab is axis-aligned, so a face is visible exactly when its
-   * outward normal has a positive component along the line of sight (-0.7410, -0.1819, -0.6464):
-   * the three NEGATIVE faces, with depths 0.7410 (-x), 0.1819 (-y) and 0.6464 (-z). Painter's order
+   * outward normal has a positive component along the line of sight (-0.8517, -0.3420, -0.3971):
+   * the three NEGATIVE faces, with depths 0.8517 (-x), 0.3420 (-y) and 0.3971 (-z). Painter's order
    * is ascending depth, so -y is drawn first and -x last.
    *
    * That the visible large face is -z is the whole geometric consequence of the viewpoint: the
@@ -458,7 +578,7 @@ describe('orientationScene — visible faces', () => {
       [0, 0, -1],
       [-1, 0, 0],
     ]);
-    expect(faces.map((f) => +f.depth.toFixed(4))).toEqual([0.1819, 0.6464, 0.741]);
+    expect(faces.map((f) => +f.depth.toFixed(4))).toEqual([0.342, 0.3971, 0.8517]);
 
     // the far large face projects to the RIGHT of the near one — that is "thickness runs right"
     const near = project([0, 0, -HALF_EXTENTS.z]);
@@ -627,13 +747,13 @@ describe('orientationScene — handedness as drawn', () => {
    * of drawn length L is the screen delta d = (L s (Pe)_u, -L s (Pe)_v) — the minus is SVG's
    * downward y. The 2-D cross product of two such deltas is
    *     d1.x d2.y - d1.y d2.x = -(L s)^2 [ (Pe1)_u (Pe2)_v - (Pe1)_v (Pe2)_u ]
-   *                           = -(L s)^2 (e1 x e2) . (p_u x p_v),
-   * and p_u x p_v is AXO_KERNEL, so for a RIGHT-handed triad, where e1 x e2 = e3,
-   *     cross2(d1, d2) = -(L s)^2 (e3 . AXO_KERNEL).
+   *                           = -(L s)^2 (e1 x e2) . (row0 x row1),
+   * and row0 x row1 = row2 = VIEW_TO_CAMERA, so for a RIGHT-handed triad, where e1 x e2 = e3,
+   *     cross2(d1, d2) = -(L s)^2 (e3 . VIEW_TO_CAMERA).
    * That identity is what "the triad is right-handed as drawn" means for a flat picture: it ties the
-   * 2-D winding on screen to the third axis's depth. A left-handed triad would flip its sign. Note
-   * the kernel enters UNNORMALIZED — its length is the projection's area scale, and a general
-   * axonometric does not preserve area the way an orthonormal camera does.
+   * 2-D winding on screen to the third axis's depth. A left-handed triad would flip its sign. The
+   * camera being a rotation is what lets the line of sight enter with unit length -- under the
+   * sheared predecessor an area factor had to be carried along.
    */
   const cross2 = (a: { x: number; y: number }, b: { x: number; y: number }) => a.x * b.y - a.y * b.x;
   const delta = (axis: { from: { x: number; y: number }; to: { x: number; y: number } }) => ({
@@ -651,7 +771,7 @@ describe('orientationScene — handedness as drawn', () => {
           for (let psi = -180; psi <= 180; psi += 60) {
             const { crystalAxes } = buildOrientationScene({ ...preset, phiX, phiY, psi });
             const [x, y, z] = crystalAxes;
-            expect(cross2(delta(x), delta(y))).toBeCloseTo(-s * s * dot(z.direction, AXO_KERNEL), 6);
+            expect(cross2(delta(x), delta(y))).toBeCloseTo(-s * s * dot(z.direction, VIEW_TO_CAMERA), 6);
           }
         }
       }
@@ -661,11 +781,11 @@ describe('orientationScene — handedness as drawn', () => {
   it('draws a right-handed lab triad', () => {
     const s = LAB_AXIS_SCALE;
     const [X, Y, Z] = buildOrientationScene().labAxes;
-    expect(cross2(delta(X), delta(Y))).toBeCloseTo(-s * s * dot(Z.direction, AXO_KERNEL), 9);
-    // and concretely: Z . AXO_KERNEL = -0.82, so cross2 = 24^2 * 0.82 = 472.32, positive in SVG
-    // coordinates. Checked against the deltas directly: X = (-19.68, 10.08), Y = (0, -24), and
-    // (-19.68)(-24) - (10.08)(0) = 472.32.
-    expect(cross2(delta(X), delta(Y))).toBeCloseTo(472.32, 9);
+    expect(cross2(delta(X), delta(Y))).toBeCloseTo(-s * s * dot(Z.direction, VIEW_TO_CAMERA), 9);
+    // and concretely: Z . VIEW_TO_CAMERA = -0.3971313, so cross2 = 26^2 * 0.3971313 = 268.46074,
+    // positive in SVG coordinates. Checked against the deltas directly: X = (-10.98808, 8.05936),
+    // Y = (0, -24.43201), and (-10.98808)(-24.43201) - (8.05936)(0) = 268.46074.
+    expect(cross2(delta(X), delta(Y))).toBeCloseTo(268.46074, 4);
   });
 });
 
