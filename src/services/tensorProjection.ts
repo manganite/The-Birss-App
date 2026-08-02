@@ -901,6 +901,46 @@ export function computeShg<S>(
   return { inducedCrystal, source };
 }
 
+/** The six rotation angles, in degrees: the crystal cut as preset angles, plus the user rotation. */
+export interface OrientationAngles {
+  /** Preset inner tilt about lab-x (deg) — part of the crystal cut. */
+  thetaX?: number;
+  /** Preset inner tilt about lab-y (deg) — part of the crystal cut. */
+  thetaY?: number;
+  /** Preset azimuth offset about the beam (deg) — the azimuth-zero convention, see orientation.ts. */
+  psi0?: number;
+  /** User tilt about lab-x (deg), lab-fixed. */
+  phiX?: number;
+  /** User tilt about lab-y (deg), lab-fixed. */
+  phiY?: number;
+  /** User azimuth about the beam (deg), crystal-tied. */
+  psi?: number;
+}
+
+/**
+ * The crystal → lab rotation matrix for a cut and a user rotation:
+ *
+ *     R_preset = Rz(psi0) · Ry(thetaY) · Rx(thetaX)
+ *     R        = Ry(phiY) · Rx(phiX) · Rz(psi) · R_preset
+ *
+ * Tilts (φ_x, φ_y) are lab-fixed; the azimuth (ψ) is crystal-tied, which is why it sits INSIDE the
+ * tilts and outside the preset. Crystal axis i expressed in the lab basis is column i of R; lab axis
+ * i expressed in the crystal basis is row i (see `getLabFrameVectors`).
+ *
+ * THE COMPOSITION ORDER IS A CONVENTION, NOT ALGEBRA — it fixes what the app means by φ_x, φ_y, ψ,
+ * and every surface that draws or computes an orientation must share it rather than restate it.
+ * This function is its single numeric home: it was inlined identically in `calculateSHGExpressions`
+ * and `getLabFrameVectors` before SIM-O, which needed a third consumer (`orientationScene`) and made
+ * the duplication a drift risk. The symbolic path builds the same product over `TrigMat3` in
+ * `symbolicProjection.ts` and is deliberately NOT unified with this one: it keeps the user angles
+ * symbolic, so it shares the order but not the arithmetic.
+ */
+export function composeOrientationMatrix(angles: OrientationAngles = {}): number[][] {
+  const { thetaX = 0, thetaY = 0, psi0 = 0, phiX = 0, phiY = 0, psi = 0 } = angles;
+  const R_preset = mat3mul(rotZ(psi0), mat3mul(rotY(thetaY), rotX(thetaX)));
+  return mat3mul(rotY(phiY), mat3mul(rotX(phiX), mat3mul(rotZ(psi), R_preset)));
+}
+
 export function calculateSHGExpressions(options: SHGOptions): SHGResult {
   const {
     groupName,
@@ -921,11 +961,9 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
   const cacheKey = setting > 1 ? `${groupName}::setting${setting}` : groupName;
   const group = getCachedFullGroup(cacheKey, generators);
 
-  // R = Ry(φ_y) · Rx(φ_x) · Rz(ψ) · R_preset, where R_preset = Rz(psi0) · Ry(thetaY) · Rx(thetaX).
-  // Tilts (φ_x, φ_y) are lab-fixed; azimuth (ψ) is crystal-tied. Numeric: angles substituted now, so
-  // R is a plain number matrix (the symbolic path keeps them symbolic in TrigPoly instead).
-  const R_preset = mat3mul(rotZ(psi0), mat3mul(rotY(thetaY), rotX(thetaX)));
-  const R = mat3mul(rotY(phiY), mat3mul(rotX(phiX), mat3mul(rotZ(psi), R_preset)));
+  // Numeric: angles are substituted now, so R is a plain number matrix (the symbolic path keeps
+  // them symbolic in TrigPoly instead). Composition order lives in composeOrientationMatrix.
+  const R = composeOrientationMatrix({ thetaX, thetaY, psi0, phiX, phiY, psi });
 
   const { inducedCrystal, source } = computeShg(numberScalar, group, tensorType, trType, R);
 
@@ -958,18 +996,10 @@ export function calculateSHGExpressions(options: SHGOptions): SHGResult {
   return { induced: inducedCrystal, source: sourceExprs };
 }
 
-export interface LabFrameOptions {
-  thetaX?: number;
-  thetaY?: number;
-  psi0?: number;
-  phiX?: number;
-  phiY?: number;
-  psi?: number;
-}
+/** Kept as a named alias: `LabFrameOptions` is the long-standing public name of this angle set. */
+export type LabFrameOptions = OrientationAngles;
 
 export function getLabFrameVectors(options: LabFrameOptions = {}) {
-  const { thetaX = 0, thetaY = 0, psi0 = 0, phiX = 0, phiY = 0, psi = 0 } = options;
-
   const formatVecLab = (v: number[]) => {
     const terms: string[] = [];
     const labels = ['X', 'Y', 'Z'];
@@ -996,9 +1026,7 @@ export function getLabFrameVectors(options: LabFrameOptions = {}) {
     return terms.length > 0 ? terms.join(' ') : '0';
   };
 
-  // R = Ry(φ_y) · Rx(φ_x) · Rz(ψ) · R_preset
-  const R_preset = mat3mul(rotZ(psi0), mat3mul(rotY(thetaY), rotX(thetaX)));
-  const R = mat3mul(rotY(phiY), mat3mul(rotX(phiX), mat3mul(rotZ(psi), R_preset)));
+  const R = composeOrientationMatrix(options);
 
   // Forward: crystal axes in lab basis (columns of R^T)
   const x_crys = [R[0][0], R[1][0], R[2][0]];
