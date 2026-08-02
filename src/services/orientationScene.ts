@@ -39,15 +39,19 @@ import { AXIS_EPSILON } from './tolerances';
 // Fixed geometry. Lab units for anything 3-D; SVG user units for anything projected.
 // ===========================================================================================
 
-/** Canvas, in SVG user units. */
-export const SCENE_WIDTH = 260;
-export const SCENE_HEIGHT = 200;
+/**
+ * Canvas, in SVG user units. Sized from the measured envelope rather than guessed: over the whole
+ * reachable space the body and its triad sweep a square roughly +-78 units about BODY_ORIGIN, and
+ * the labels add about 11 more. The lower left stays clear of that envelope for the lab triad.
+ */
+export const SCENE_WIDTH = 276;
+export const SCENE_HEIGHT = 210;
 
 /** Where the body's centre projects to. Right of centre, leaving the lower left for the lab triad. */
-export const BODY_ORIGIN = { x: 148, y: 92 };
+export const BODY_ORIGIN = { x: 158, y: 100 };
 
 /** Lab units -> SVG user units for the body and the crystal triad. */
-export const SCALE = 26;
+export const SCALE = 30;
 
 /**
  * Half-extents of the sample slab in lab units at zero rotation: a flat plate whose large face is
@@ -56,12 +60,12 @@ export const SCALE = 26;
  */
 export const HALF_EXTENTS = { x: 1.1, y: 0.9, z: 0.26 };
 
-/** Length of a drawn crystal axis, in lab units. */
-export const CRYSTAL_AXIS_LENGTH = 1.45;
+/** Length of a drawn crystal axis, in lab units. Short enough that the sample stays the subject. */
+export const CRYSTAL_AXIS_LENGTH = 1.25;
 
 /** The lab triad: fixed screen origin, and its own (smaller) scale in SVG units per lab unit. */
-export const LAB_ORIGIN = { x: 42, y: 152 };
-export const LAB_AXIS_SCALE = 30;
+export const LAB_ORIGIN = { x: 38, y: 170 };
+export const LAB_AXIS_SCALE = 25;
 
 /**
  * The viewpoint. A fixed axonometric (orthographic) camera, given as a direction FROM the scene

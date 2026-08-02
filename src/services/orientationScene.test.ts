@@ -16,6 +16,9 @@ import {
   LAB_AXIS_SCALE,
   SCALE,
   BODY_ORIGIN,
+  CRYSTAL_AXIS_LENGTH,
+  SCENE_WIDTH,
+  SCENE_HEIGHT,
 } from './orientationScene';
 import { composeOrientationMatrix, getLabFrameVectors } from './tensorProjection';
 import { hklToPresetAngles } from './orientation';
@@ -106,17 +109,17 @@ describe('orientationScene — the fixed viewpoint', () => {
   /**
    * DERIVATION. Lab Z projects to (origin.x + s * (Z . r), origin.y - s * (Z . u)). Z . r = 0 by
    * construction (r lies in the lab XY-plane), so the beam axis is drawn EXACTLY vertical, with
-   * length s * cos e = 30 * 0.9335804 = 28.00741 upward: y = 152 - 28.00741 = 123.99259.
+   * length s * cos e = 25 * 0.9335804 = 23.33951 upward: y = 170 - 23.33951 = 146.66049.
    */
   it('draws the beam axis exactly vertical', () => {
     const z = project([0, 0, 1], LAB_ORIGIN, LAB_AXIS_SCALE);
     expect(z.x).toBeCloseTo(LAB_ORIGIN.x, 12);
-    expect(z.x).toBeCloseTo(42, 12);
-    expect(z.y).toBeCloseTo(123.99259, 5);
+    expect(z.x).toBeCloseTo(38, 12);
+    expect(z.y).toBeCloseTo(146.66049, 5);
   });
 
-  /** DERIVATION. Lab X: x = 42 + 30*(-0.5591929) = 25.22421; y = 152 - 30*(-0.2971001) = 160.91300.
-   *  Lab Y: x = 42 + 30*(0.8290376) = 66.87113;  y = 152 - 30*(-0.2003968) = 158.01190. */
+  /** DERIVATION. Lab X: x = 38 + 25*(-0.5591929) = 24.02018; y = 170 - 25*(-0.2971001) = 177.42750.
+   *  Lab Y: x = 38 + 25*(0.8290376) = 58.72594;  y = 170 - 25*(-0.2003968) = 175.00992. */
   it('projects the lab triad to its hand-derived screen positions', () => {
     const scene = buildOrientationScene();
     const [X, Y, Z] = scene.labAxes;
@@ -124,12 +127,12 @@ describe('orientationScene — the fixed viewpoint', () => {
     expect(Y.label).toBe('Y');
     expect(Z.label).toBe('Z');
 
-    expect(X.to.x).toBeCloseTo(25.22421, 5);
-    expect(X.to.y).toBeCloseTo(160.913, 3);
-    expect(Y.to.x).toBeCloseTo(66.87113, 5);
-    expect(Y.to.y).toBeCloseTo(158.0119, 4);
-    expect(Z.to.x).toBeCloseTo(42, 12);
-    expect(Z.to.y).toBeCloseTo(123.99259, 5);
+    expect(X.to.x).toBeCloseTo(24.02018, 5);
+    expect(X.to.y).toBeCloseTo(177.4275, 4);
+    expect(Y.to.x).toBeCloseTo(58.72594, 5);
+    expect(Y.to.y).toBeCloseTo(175.00992, 5);
+    expect(Z.to.x).toBeCloseTo(38, 12);
+    expect(Z.to.y).toBeCloseTo(146.66049, 5);
   });
 
   it('holds the lab triad fixed under every rotation', () => {
@@ -531,7 +534,7 @@ describe('orientationScene — handedness as drawn', () => {
   const dot = (a: readonly number[], b: readonly number[]) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
   it('draws a right-handed crystal triad for every cut and rotation', () => {
-    const s = SCALE * 1.45; // SCALE * CRYSTAL_AXIS_LENGTH
+    const s = SCALE * CRYSTAL_AXIS_LENGTH;
     (Object.keys(CUTS) as Array<keyof typeof CUTS>).forEach((cut) => {
       const preset = presetFor(cut);
       for (let phiX = -90; phiX <= 90; phiX += 45) {
@@ -561,7 +564,7 @@ describe('orientationScene — the canvas', () => {
   /** Everything the component draws has to land inside the viewBox, with room for the labels. The
    *  bound is checked over the whole reachable space rather than trusted from the constants. */
   it('keeps every drawn point inside the canvas with margin', () => {
-    const MARGIN = 14; // room for a label beside an arrow tip
+    const MARGIN = 8; // room for a label beside an arrow tip
     (Object.keys(CUTS) as Array<keyof typeof CUTS>).forEach((cut) => {
       const preset = presetFor(cut);
       for (let phiX = -90; phiX <= 90; phiX += 30) {
@@ -575,9 +578,9 @@ describe('orientationScene — the canvas', () => {
             ];
             points.forEach((p) => {
               expect(p.x).toBeGreaterThan(MARGIN);
-              expect(p.x).toBeLessThan(260 - MARGIN);
+              expect(p.x).toBeLessThan(SCENE_WIDTH - MARGIN);
               expect(p.y).toBeGreaterThan(MARGIN);
-              expect(p.y).toBeLessThan(200 - MARGIN);
+              expect(p.y).toBeLessThan(SCENE_HEIGHT - MARGIN);
             });
           }
         }

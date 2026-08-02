@@ -3,6 +3,7 @@ import { InlineMath } from 'react-katex';
 import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { getPresetsForSystem, KDirectionSelector } from './crystalCut';
 import { TensorClassificationControl, TimeReversalControl } from './TensorSetupControls';
+import { OrientationSceneView } from './OrientationSceneView';
 import { TermInfo } from './TermInfo';
 import type { PointGroupData } from '../data/pointGroups';
 import type { TensorConfig, OrientationState } from '../types';
@@ -121,59 +122,74 @@ export function SimulatorSetupPanel({
         </div>
 
         {showRotation && (
-          <div className="space-y-3">
-            {(
-              [
-                { label: '\\varphi_X', value: phiX, setValue: setPhiX, min: -90, max: 90, desc: 'Tilt about lab-x' },
-                { label: '\\varphi_Y', value: phiY, setValue: setPhiY, min: -90, max: 90, desc: 'Tilt about lab-y' },
-                { label: '\\psi', value: psi, setValue: setPsi, min: -180, max: 180, desc: 'Azimuth about k' },
-              ] as const
-            ).map(({ label, value, setValue, min, max, desc }) => (
-              <div key={label} className="flex items-center gap-3">
-                <div className="w-10 shrink-0 text-right">
-                  <InlineMath math={label} />
-                </div>
-                <input
-                  aria-label={desc}
-                  type="range"
-                  min={min}
-                  max={max}
-                  step="1"
-                  value={value}
-                  onChange={(e) => setValue(parseFloat(e.target.value))}
-                  className="flex-1 accent-ink"
-                  title={desc}
-                />
-                <div className="flex items-center gap-1 shrink-0">
+          <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+            <div className="flex-1 min-w-0 space-y-3">
+              {(
+                [
+                  { label: '\\varphi_X', value: phiX, setValue: setPhiX, min: -90, max: 90, desc: 'Tilt about lab-x' },
+                  { label: '\\varphi_Y', value: phiY, setValue: setPhiY, min: -90, max: 90, desc: 'Tilt about lab-y' },
+                  { label: '\\psi', value: psi, setValue: setPsi, min: -180, max: 180, desc: 'Azimuth about k' },
+                ] as const
+              ).map(({ label, value, setValue, min, max, desc }) => (
+                <div key={label} className="flex items-center gap-3">
+                  <div className="w-10 shrink-0 text-right">
+                    <InlineMath math={label} />
+                  </div>
                   <input
                     aria-label={desc}
-                    type="number"
+                    type="range"
                     min={min}
                     max={max}
                     step="1"
                     value={value}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      if (!isNaN(v)) setValue(Math.max(min, Math.min(max, v)));
-                    }}
-                    className="w-16 text-right text-xs font-mono bg-white/50 border border-ink/20 px-2 py-1 rounded-sm focus:border-ink/60"
+                    onChange={(e) => setValue(parseFloat(e.target.value))}
+                    className="flex-1 accent-ink"
+                    title={desc}
                   />
-                  <span className="text-xs text-ink/70">°</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <input
+                      aria-label={desc}
+                      type="number"
+                      min={min}
+                      max={max}
+                      step="1"
+                      value={value}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        if (!isNaN(v)) setValue(Math.max(min, Math.min(max, v)));
+                      }}
+                      className="w-16 text-right text-xs font-mono bg-white/50 border border-ink/20 px-2 py-1 rounded-sm focus:border-ink/60"
+                    />
+                    <span className="text-xs text-ink/70">°</span>
+                  </div>
                 </div>
-              </div>
-            ))}
-            <button
-              onClick={() => {
-                setPhiX(0);
-                setPhiY(0);
-                setPsi(0);
-              }}
-              disabled={!rotationActive}
-              className="flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-20 disabled:cursor-default transition-colors transition-opacity mt-1"
-            >
-              <RotateCcw className="w-3 h-3" />
-              Reset rotation
-            </button>
+              ))}
+              <button
+                onClick={() => {
+                  setPhiX(0);
+                  setPhiY(0);
+                  setPsi(0);
+                }}
+                disabled={!rotationActive}
+                className="flex items-center gap-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-20 disabled:cursor-default transition-colors transition-opacity mt-1"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset rotation
+              </button>
+            </div>
+
+            {/* The live picture of the same state. Beside the sliders where the row fits, below
+                them between md and lg — the scene is a fixed 260 units wide and would otherwise
+                squeeze the slider tracks below usable length. */}
+            <OrientationSceneView
+              cutLabel={activePreset ? activePreset.label : 'Custom'}
+              thetaX={thetaX}
+              thetaY={thetaY}
+              psi0={psi0}
+              phiX={phiX}
+              phiY={phiY}
+              psi={psi}
+            />
           </div>
         )}
       </div>
