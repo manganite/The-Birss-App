@@ -116,14 +116,16 @@ this list is empty immediately after a cut and grows again as work closes.
   all three of the corner's face normals), and [110] is degenerate as well as [111]. Visual
   acceptance then found the viewpoint itself wrong — the lab axes came out cyclically permuted, and
   no test could see it, because every fixture compared lab-space vectors the camera never touches;
-  a second pass then found it sheared as well (free axis-image constants had specified a
-  non-orthographic projection), and a third that the maths was right but the camera was the wrong one
-  of the two the contract admitted — lab X was the depth axis instead of the beam. The camera is now
-  a rotation built from `linalg` primitives, so orthonormality is structural, and four pins with a
-  mutation-tested division of labour guard the class: metric, semantic, screen identity, and
-  screen-space parallelism. The generalisation is promoted to § 5 below. Suite 2422 → 2477. Full
-  record, including all three dated revisions, in `docs/planning/LEDGER.md`; user-facing detail in
-  `CHANGELOG.md` `[Unreleased]`.
+  three further passes found it sheared (free axis-image constants had specified a non-orthographic
+  projection), then aimed at the wrong one of the two cameras the contract admitted, then drawing
+  left-handed on the page — a net parity flip through SVG's downward y, the maintainer's finding. The
+  camera is now built from `linalg` primitives with a declared `SCREEN_PARITY_FIX`, chosen by
+  **contact sheet**: six candidates rendered by the real component, labelled with their measured
+  invariants, picked at acceptance. Six pins with a mutation-tested division of labour guard the
+  class — metric, orientation, semantic, screen handedness, screen identity, parallelism — and every
+  rejected candidate breaks at least one. The generalisation is promoted to § 5 below as a contract
+  ladder for drawing surfaces. Suite 2422 → 2478. Full record, including all four dated revisions, in
+  `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md` `[Unreleased]`.
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
@@ -181,17 +183,24 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
   captured from a known-good revision and regenerated only by re-capture — never
   edited to turn a red pin green. For any data/math item, extend the relevant
   fixture first and require it green, then change the code.
-- **A test of the modelled quantity is not a test of its depiction.** Visualisation contracts need
-  their own **orientation** and **metric** pins: an assertion about the vectors a picture depicts
-  says nothing about where the camera puts them, and an assertion about their directions says
-  nothing about whether the projection distorts. Both failure modes reached visual acceptance in
-  SIM-O with a green suite — a cyclic axis permutation, then a shear, then the wrong one of two
-  contract-conforming cameras — because every fixture compared lab-space quantities the camera never
-  touches. Any future drawing surface carries at minimum three things: the axis images' **sign
-  structure**; a **metric** identity (for an orthographic view, `M·Mᵀ = I`, or equivalently Gauss's
-  `z₁² + z₂² + z₃² = 0` on the axis images); and the view's **semantics** — above all which axis is
-  depth, since sign and metric together still leave that free, and it is what the picture is _about_.
-  See the SIM-O entry and its three dated revisions in `docs/planning/LEDGER.md`.
+- **A test of the modelled quantity is not a test of its depiction.** Four defects reached visual
+  acceptance in SIM-O with a fully green suite — an axis permutation, a shear, the wrong one of two
+  contract-conforming cameras, and a net parity flip — because every fixture compared lab-space
+  quantities the camera never touches. A drawing surface therefore carries its own **contract
+  ladder**, each rung blind to the ones below it:
+  1. **Metric** — the projection does not distort. For an orthographic view, `M·Mᵀ = I`, or
+     equivalently Gauss's `z₁² + z₂² + z₃² = 0` on the axis images.
+  2. **Orientation** — the sign structure of the axis images: which way each axis goes.
+  3. **Semantics** — what the view is _of_; above all which axis is depth. Metric and orientation
+     together still leave this free.
+  4. **Screen handedness** — parity as it reaches the page. Count the whole chain
+     world → camera → output frame; a downward-y target frame is itself a reflection, so a camera
+     built only from rotations draws a right-handed world left-handed, and the picture's two depth
+     cues (triad winding, occlusion) then contradict each other.
+  And **choose views by contact sheet, not by decree**: render the candidates from the real code,
+  label each with its measured invariants, and let acceptance pick. Three of the four defects above
+  were specification errors that a six-tile sheet would have caught before any of them was written
+  down. See the SIM-O entry and its four dated revisions in `docs/planning/LEDGER.md`.
 - **Authoritative convention references:** `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`
   (convention contract & verification ladder) and `birss-tables/table-nomenclature.md`
   (122-group nomenclature + operators/generators) are the two central, cross-linked

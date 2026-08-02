@@ -13,6 +13,7 @@ import {
   CAMERA,
   CAM_AZIMUTH_DEG,
   CAM_ELEVATION_DEG,
+  SCREEN_PARITY_FIX,
   VIEW_TO_CAMERA,
   LAB_ORIGIN,
   LAB_AXIS_SCALE,
@@ -91,13 +92,17 @@ describe('orientationScene — the fixed viewpoint', () => {
       }
     }
 
-    // det = +1: a proper rotation, not a rotation composed with a reflection (which would flip the
-    // handedness of everything drawn while leaving M M^T = I intact).
+    // det = -1, DECLARED. The camera carries SCREEN_PARITY_FIX to cancel SVG's downward-y flip, so
+    // it is an improper orthogonal map by design -- a mirrored orthography, which is an ordinary
+    // drawing convention once it is declared. Handedness is therefore NOT guarded by this
+    // determinant (it would be the wrong question); it is guarded by the H pin below, which
+    // measures what actually reaches the page.
     const det =
       CAMERA[0][0] * (CAMERA[1][1] * CAMERA[2][2] - CAMERA[1][2] * CAMERA[2][1]) -
       CAMERA[0][1] * (CAMERA[1][0] * CAMERA[2][2] - CAMERA[1][2] * CAMERA[2][0]) +
       CAMERA[0][2] * (CAMERA[1][0] * CAMERA[2][1] - CAMERA[1][1] * CAMERA[2][0]);
-    expect(det).toBeCloseTo(1, 12);
+    expect(det).toBeCloseTo(-1, 12);
+    expect(SCREEN_PARITY_FIX[2][2]).toBe(-1);
 
     // Gauss's theorem of axonometry, the same fact stated in the picture plane: sum of the squared
     // axis images, as complex numbers, vanishes for an orthographic projection.
@@ -115,6 +120,47 @@ describe('orientationScene — the fixed viewpoint', () => {
     // 0.274691 = 2.000000.
     const squares = [AXO_X, AXO_Y, AXO_Z].reduce((acc, a) => acc + a.u * a.u + a.v * a.v, 0);
     expect(squares).toBeCloseTo(2, 9);
+  });
+
+  /**
+   * THE H PIN -- handedness as it reaches the page, and the last of the four contract layers.
+   *
+   * THE PARITY CHAIN (maintainer's finding, 2026-08-02). Between the world and the pixel sit three
+   * frames: the lab frame (right-handed), the camera, and SVG -- whose y grows DOWNWARD, which is a
+   * reflection. A camera built purely from rotations preserves parity, so the net chain flips it and
+   * a right-handed world is drawn LEFT-handed. Every rendering before the final revision had that,
+   * and nothing caught it: M M^T = I is parity-blind, and so is any assertion about axis directions
+   * or their signs.
+   *
+   * WHY IT MATTERS RATHER THAN BEING A CURIOSITY. The picture has exactly two depth cues, and under
+   * a net flip they contradict each other: the winding of the drawn triad says one face of the slab
+   * is nearer, while the occlusion -- which face is drawn over which -- says the other is. A reader
+   * resolves that by trusting the occlusion and concluding the axes are labelled wrongly.
+   *
+   * H, as defined on the camera contact sheet:
+   *     H = sign( cross2( drawn X, drawn Y ) ) * sign( Z . line-of-sight )
+   * with cross2 taken in SVG COORDINATES, y downward -- computing it in maths coordinates instead
+   * flips H for every camera, so the convention is part of the definition. H = +1 is right-handed
+   * on the page. All six contact-sheet candidates were measured: the four proper cameras gave -1,
+   * the two carrying the parity fix gave +1.
+   */
+  it('draws the lab frame right-handed on the page (H = +1)', () => {
+    const [X, Y, Z] = buildOrientationScene().labAxes;
+    const d = (a: { from: { x: number; y: number }; to: { x: number; y: number } }) => ({
+      x: a.to.x - a.from.x,
+      y: a.to.y - a.from.y,
+    });
+    const cross2 = (a: { x: number; y: number }, b: { x: number; y: number }) => a.x * b.y - a.y * b.x;
+
+    const winding = Math.sign(cross2(d(X), d(Y)));
+    const depth = Math.sign(
+      Z.direction[0] * VIEW_TO_CAMERA[0] + Z.direction[1] * VIEW_TO_CAMERA[1] + Z.direction[2] * VIEW_TO_CAMERA[2],
+    );
+    expect(winding * depth).toBe(1);
+
+    // and the two factors, so a regression says WHICH half moved
+    expect(winding).toBe(1);
+    expect(depth).toBe(1);
   });
 
   /**
@@ -160,13 +206,15 @@ describe('orientationScene — the fixed viewpoint', () => {
    *       and |Y| = 0.9397. (Squares sum to 2, as the metric pin checks, so shortening one axis
    *       necessarily lengthens the others -- these three numbers are not independent.)
    *   (b) at zero rotation the slab is axis-aligned and its large face is perpendicular to k, so the
-   *       face that shows its FACE to the viewer must be the -Z one: among the visible faces it must
-   *       carry the largest |depth|. Depths are the components of the line of sight
-   *       (-0.3971, -0.3420, -0.8517), so -z leads at 0.8517 against 0.3971 (-x) and 0.3420 (-y).
+   *       face that shows its FACE to the viewer must be a +-Z one: among the visible faces it must
+   *       carry the largest depth. Depths are the components of the line of sight
+   *       (0.3971, 0.3420, 0.8517), so +z leads at 0.8517 against 0.3971 (+x) and 0.3420 (+y).
+   *       Positive faces, because the parity fix put the line of sight in the +X/+Y/+Z octant --
+   *       the "seen from slightly above, top of the plate visible" signature of the chosen tile.
    *
-   * Under the 115 deg camera (b) came out -x at 0.8517 and the slab was drawn nearly edge-on, as a
-   * narrow upright sliver. That was the acceptance finding, and it is what these two assertions now
-   * make impossible to ship again.
+   * Under the 115 deg cameras (b) came out on an X face at 0.8517 and the slab was drawn nearly
+   * edge-on, as a narrow upright sliver. That was an acceptance finding, and it is what these two
+   * assertions now make impossible to ship again.
    */
   it('makes the beam the depth axis, so the sample shows its face', () => {
     const len = (a: { u: number; v: number }) => Math.hypot(a.u, a.v);
@@ -180,39 +228,42 @@ describe('orientationScene — the fixed viewpoint', () => {
     const deepest = faces.reduce((a, f) => (f.depth > a.depth ? f : a));
     closeTo(
       deepest.normal.map((v) => Math.round(v)),
-      [0, 0, -1],
+      [0, 0, 1],
     );
     expect(deepest.depth).toBeCloseTo(0.8516507, 6);
   });
 
   /**
-   * DERIVATION. M = Rx(-20) Ry(155), with cos155 = -0.9063078, sin155 = 0.4226183,
-   * cos(-20) = 0.9396926, sin(-20) = -0.3420201.
+   * DERIVATION. M = Rx(20) Ry(205) D, with D = diag(1, 1, -1) the parity fix,
+   * cos205 = -0.9063078, sin205 = -0.4226183, cos20 = 0.9396926, sin20 = 0.3420201.
    *
-   *   Ry(155) = [[-0.9063078, 0, 0.4226183], [0, 1, 0], [-0.4226183, 0, -0.9063078]]
-   *   Rx(-20) = [[1, 0, 0], [0, 0.9396926, 0.3420201], [0, -0.3420201, 0.9396926]]
+   *   Ry(205)   = [[-0.9063078, 0, -0.4226183], [0, 1, 0], [ 0.4226183, 0, -0.9063078]]
+   *   Ry(205) D = [[-0.9063078, 0,  0.4226183], [0, 1, 0], [ 0.4226183, 0,  0.9063078]]   (col 2 negated)
+   *   Rx(20)    = [[1, 0, 0], [0, 0.9396926, -0.3420201], [0, 0.3420201, 0.9396926]]
    *
-   *   row0 = (1,0,0) Ry             = (-0.9063078,  0,          0.4226183)
-   *   row1 = 0.9396926 (0,1,0) + 0.3420201 (-0.4226183, 0, -0.9063078)
-   *                                 = (-0.1445440,  0.9396926, -0.3099755)
-   *   row2 = -0.3420201 (0,1,0) + 0.9396926 (-0.4226183, 0, -0.9063078)
-   *                                 = (-0.3971313, -0.3420201, -0.8516507)
+   *   row0 = (1,0,0) Ry D            = (-0.9063078,  0,         0.4226183)
+   *   row1 = 0.9396926 (0,1,0) - 0.3420201 (0.4226183, 0, 0.9063078)
+   *                                  = (-0.1445440,  0.9396926, -0.3099755)
+   *   row2 = 0.3420201 (0,1,0) + 0.9396926 (0.4226183, 0, 0.9063078)
+   *                                  = ( 0.3971313,  0.3420201,  0.8516507)
    *
    * The axis images are the COLUMNS of the first two rows, so
-   *   X (-0.9063078, -0.1445440), Y (0, 0.9396926), Z (0.4226183, -0.3099755).
+   *   X (-0.9063078, -0.1445440), Y (0, 0.9396926), Z (0.4226183, -0.3099755)
+   * -- identical to contact-sheet candidate P2, which is the point of the parity fix: it changes
+   * only the line of sight, i.e. the OCCLUSION, and leaves every arrow exactly where it was.
    *
-   * row2 is the line of sight, and for a proper rotation row0 x row1 = row2 exactly, so it points
-   * towards the viewer without a sign having to be chosen. Its NEGATIVE z-component is load-bearing:
-   * the camera is on the -Z side, so the visible large face is the -Z one and the slab's thickness
-   * runs off to the RIGHT, towards the "∥ k" arrow.
+   * row2 is the line of sight. The camera is improper, so row0 x row1 = -row2 rather than +row2 and
+   * the toward-the-viewer sense is a declared choice; row2 is the one taken, and it is the one the
+   * accepted contact-sheet tile was rendered with. It points into the +X/+Y/+Z octant, so the
+   * visible faces at zero rotation are the POSITIVE ones and the slab shows its large +Z face.
    */
   it('has the hand-derived camera rows and line of sight', () => {
-    expect(CAM_AZIMUTH_DEG).toBe(155);
-    expect(CAM_ELEVATION_DEG).toBe(-20);
+    expect(CAM_AZIMUTH_DEG).toBe(205);
+    expect(CAM_ELEVATION_DEG).toBe(20);
 
     closeTo(CAMERA[0], [-0.9063078, 0, 0.4226183]);
     closeTo(CAMERA[1], [-0.144544, 0.9396926, -0.3099755]);
-    closeTo(CAMERA[2], [-0.3971313, -0.3420201, -0.8516507]);
+    closeTo(CAMERA[2], [0.3971313, 0.3420201, 0.8516507]);
 
     closeTo([AXO_X.u, AXO_X.v], [-0.9063078, -0.144544]);
     closeTo([AXO_Y.u, AXO_Y.v], [0, 0.9396926]);
@@ -220,15 +271,19 @@ describe('orientationScene — the fixed viewpoint', () => {
 
     closeTo(VIEW_TO_CAMERA, CAMERA[2]);
     expect(Math.hypot(...VIEW_TO_CAMERA)).toBeCloseTo(1, 12);
-    expect(VIEW_TO_CAMERA[2]).toBeLessThan(0);
+    expect(VIEW_TO_CAMERA[2]).toBeGreaterThan(0);
 
-    // row0 x row1 = row2 -- the identity the projected-handedness test rests on
+    // row0 x row1 = -row2, the improper case -- the identity the projected-handedness test rests on
     const cross = [
       CAMERA[0][1] * CAMERA[1][2] - CAMERA[0][2] * CAMERA[1][1],
       CAMERA[0][2] * CAMERA[1][0] - CAMERA[0][0] * CAMERA[1][2],
       CAMERA[0][0] * CAMERA[1][1] - CAMERA[0][1] * CAMERA[1][0],
     ];
-    closeTo(cross, CAMERA[2], 12);
+    closeTo(
+      cross,
+      CAMERA[2].map((v) => -v),
+      12,
+    );
 
     // and the line of sight really is annihilated by the projection
     const origin = project([0, 0, 0], { x: 0, y: 0 }, 1);
@@ -610,29 +665,29 @@ describe('orientationScene — visible faces', () => {
 
   /**
    * DERIVATION. At zero rotation the slab is axis-aligned, so a face is visible exactly when its
-   * outward normal has a positive component along the line of sight (-0.3971, -0.3420, -0.8517):
-   * the three NEGATIVE faces, with depths 0.3971 (-x), 0.3420 (-y) and 0.8517 (-z). Painter's order
-   * is ascending depth, so -y is drawn first and -z -- the large face, meeting the viewer nearly
-   * square on -- last.
+   * outward normal has a positive component along the line of sight (0.3971, 0.3420, 0.8517): the
+   * three POSITIVE faces, with depths 0.3971 (+x), 0.3420 (+y) and 0.8517 (+z). Painter's order is
+   * ascending depth, so +y is drawn first and +z -- the large face, meeting the viewer nearly square
+   * on -- last.
    *
-   * That the visible large face is -z is the whole geometric consequence of the viewpoint: the
-   * sample stands as a wall facing the viewer and its thickness runs off to the right, along +Z,
-   * towards the "∥ k" arrow.
+   * That the visible large face is +z is the geometric consequence of the viewpoint: the sample
+   * shows its face to the viewer, its top is in view, and the body recedes behind that face along
+   * -Z, which projects to the left.
    */
-  it('shows the -z large face at zero rotation, thickness running towards +Z', () => {
+  it('shows the +z large face and the top at zero rotation', () => {
     const { faces } = buildOrientationScene();
     expect(faces).toHaveLength(3);
     expect(faces.map((f) => f.normal.map((v) => Math.round(v)))).toEqual([
-      [0, -1, 0],
-      [-1, 0, 0],
-      [0, 0, -1],
+      [0, 1, 0],
+      [1, 0, 0],
+      [0, 0, 1],
     ]);
     expect(faces.map((f) => +f.depth.toFixed(4))).toEqual([0.342, 0.3971, 0.8517]);
 
-    // the far large face projects to the RIGHT of the near one — that is "thickness runs right"
-    const near = project([0, 0, -HALF_EXTENTS.z]);
-    const far = project([0, 0, HALF_EXTENTS.z]);
-    expect(far.x).toBeGreaterThan(near.x);
+    // the body recedes to the LEFT behind its visible +z face
+    const visible = project([0, 0, HALF_EXTENTS.z]);
+    const behind = project([0, 0, -HALF_EXTENTS.z]);
+    expect(behind.x).toBeLessThan(visible.x);
   });
 });
 
@@ -797,12 +852,12 @@ describe('orientationScene — handedness as drawn', () => {
    * downward y. The 2-D cross product of two such deltas is
    *     d1.x d2.y - d1.y d2.x = -(L s)^2 [ (Pe1)_u (Pe2)_v - (Pe1)_v (Pe2)_u ]
    *                           = -(L s)^2 (e1 x e2) . (row0 x row1),
-   * and row0 x row1 = row2 = VIEW_TO_CAMERA, so for a RIGHT-handed triad, where e1 x e2 = e3,
-   *     cross2(d1, d2) = -(L s)^2 (e3 . VIEW_TO_CAMERA).
-   * That identity is what "the triad is right-handed as drawn" means for a flat picture: it ties the
-   * 2-D winding on screen to the third axis's depth. A left-handed triad would flip its sign. The
-   * camera being a rotation is what lets the line of sight enter with unit length -- under the
-   * sheared predecessor an area factor had to be carried along.
+   * so for a RIGHT-handed triad, where e1 x e2 = e3,
+   *     cross2(d1, d2) = -(L s)^2 (e3 . (row0 x row1)).
+   * The identity is written against row0 x row1 rather than against the line of sight because the
+   * camera is IMPROPER: here row0 x row1 = -VIEW_TO_CAMERA, and using the row directly would carry
+   * a hidden sign. In this form the assertion is camera-agnostic -- it holds for either parity.
+   * It ties the 2-D winding on screen to the third axis's depth; a left-handed triad flips it.
    */
   const cross2 = (a: { x: number; y: number }, b: { x: number; y: number }) => a.x * b.y - a.y * b.x;
   const delta = (axis: { from: { x: number; y: number }; to: { x: number; y: number } }) => ({
@@ -810,6 +865,12 @@ describe('orientationScene — handedness as drawn', () => {
     y: axis.to.y - axis.from.y,
   });
   const dot = (a: readonly number[], b: readonly number[]) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  /** row0 x row1 — the projection's signed kernel, equal to det(CAMERA) * VIEW_TO_CAMERA. */
+  const screenNormal = [
+    CAMERA[0][1] * CAMERA[1][2] - CAMERA[0][2] * CAMERA[1][1],
+    CAMERA[0][2] * CAMERA[1][0] - CAMERA[0][0] * CAMERA[1][2],
+    CAMERA[0][0] * CAMERA[1][1] - CAMERA[0][1] * CAMERA[1][0],
+  ];
 
   it('draws a right-handed crystal triad for every cut and rotation', () => {
     const s = SCALE * CRYSTAL_AXIS_LENGTH;
@@ -820,7 +881,7 @@ describe('orientationScene — handedness as drawn', () => {
           for (let psi = -180; psi <= 180; psi += 60) {
             const { crystalAxes } = buildOrientationScene({ ...preset, phiX, phiY, psi });
             const [x, y, z] = crystalAxes;
-            expect(cross2(delta(x), delta(y))).toBeCloseTo(-s * s * dot(z.direction, VIEW_TO_CAMERA), 6);
+            expect(cross2(delta(x), delta(y))).toBeCloseTo(-s * s * dot(z.direction, screenNormal), 6);
           }
         }
       }
@@ -830,10 +891,11 @@ describe('orientationScene — handedness as drawn', () => {
   it('draws a right-handed lab triad', () => {
     const s = LAB_AXIS_SCALE;
     const [X, Y, Z] = buildOrientationScene().labAxes;
-    expect(cross2(delta(X), delta(Y))).toBeCloseTo(-s * s * dot(Z.direction, VIEW_TO_CAMERA), 9);
-    // and concretely: Z . VIEW_TO_CAMERA = -0.8516507, so cross2 = 26^2 * 0.8516507 = 575.71594,
-    // positive in SVG coordinates. Checked against the deltas directly: X = (-23.56400, 3.75814),
-    // Y = (0, -24.43201), and (-23.56400)(-24.43201) - (3.75814)(0) = 575.71594.
+    expect(cross2(delta(X), delta(Y))).toBeCloseTo(-s * s * dot(Z.direction, screenNormal), 9);
+    // and concretely: row0 x row1 = -VIEW_TO_CAMERA, so Z . screenNormal = -0.8516507 and
+    // cross2 = 26^2 * 0.8516507 = 575.71594, positive in SVG coordinates. Checked against the
+    // deltas directly: X = (-23.56400, 3.75814), Y = (0, -24.43201), and
+    // (-23.56400)(-24.43201) - (3.75814)(0) = 575.71594.
     expect(cross2(delta(X), delta(Y))).toBeCloseTo(575.71594, 4);
   });
 });

@@ -83,51 +83,75 @@ export interface AxoImage {
 }
 
 /**
- * THE VIEWPOINT, as a camera rotation rather than as three hand-chosen axis images.
+ * THE VIEWPOINT, as a camera matrix rather than as hand-chosen axis images.
  *
- * `CAMERA` is a rotation of the lab frame into the viewer's frame: its first two rows are the screen
- * right and screen up directions in lab coordinates, its third the line of sight. Projecting is
- * therefore just taking the first two components of the rotated vector, and the projection is
- * ORTHONORMAL BY CONSTRUCTION -- no shear, no differential foreshortening, whatever the two angles.
+ * `CAMERA` maps the lab frame into the viewer's frame: its first two rows are screen right and
+ * screen up in lab coordinates, its third the line of sight. Projecting is taking the first two
+ * components of the mapped vector. The rotation factors make it ORTHONORMAL BY CONSTRUCTION -- no
+ * shear, no differential foreshortening, whatever the angles.
  *
- * WHY IT IS BUILT AND NOT WRITTEN DOWN. The previous revision stated the three axis images as free
+ * WHY IT IS BUILT AND NOT WRITTEN DOWN. An earlier revision stated the three axis images as free
  * constants. That is a complete specification of a general PARALLEL projection, but not every such
- * triple is an ORTHOGRAPHIC one: by Gauss's theorem of axonometry, the images z1, z2, z3 read as
- * complex numbers must satisfy z1^2 + z2^2 + z3^2 = 0, and the chosen triple gave 0.3396 + 1.0648i.
- * The picture was consequently sheared -- correct axis directions, distorted body. Constants cannot
- * enforce a constraint they are free to violate; a rotation cannot violate it.
+ * triple is an ORTHOGRAPHIC one: by Gauss's theorem of axonometry the images z1, z2, z3, read as
+ * complex numbers, must satisfy z1^2 + z2^2 + z3^2 = 0, and the chosen triple gave 0.3396 + 1.0648i.
+ * The picture was consequently sheared. Constants cannot enforce a constraint they are free to
+ * violate; a rotation cannot violate it.
  *
- * THE ANGLES. Azimuth turns about lab Y, elevation about lab X, applied in that order. At
- * (155 deg, -20 deg) the axes land at
+ * THE PARITY CHAIN, and why there is a mirror in here (maintainer's finding, 2026-08-02). Three
+ * frames sit between the world and the drawn pixel, and each may flip handedness:
+ *
+ *     lab (right-handed)  ->  camera (rotation, parity preserved)  ->  SVG (y grows DOWNWARD)
+ *
+ * The last step is a reflection. A camera built purely from rotations therefore lands a
+ * right-handed world on the page LEFT-handed: the drawn triad winds the wrong way, and the only cue
+ * left telling the viewer which face of the slab is nearer is occlusion -- which then contradicts
+ * the winding. Every rendering before this revision had that defect, and no test saw it, because
+ * both the metric and the orientation contract are parity-blind.
+ *
+ * `SCREEN_PARITY_FIX` is the compensation: one declared reflection, cancelling the one SVG applies.
+ * The composed camera is consequently IMPROPER, det = -1. A mirrored orthography is a perfectly
+ * ordinary drawing convention -- it is what "the picture is seen from the other side of the page"
+ * means -- but it has to be DECLARED rather than discovered, which is what this constant and the
+ * H pin in the unit tests do between them.
+ *
+ * THE ANGLES. Azimuth turns about lab Y, elevation about lab X, then the parity fix. Candidate M2
+ * of the camera contact sheet, chosen by the maintainer on 2026-08-02 against five alternatives:
  *
  *   Y_lab      ( 0.0000,  0.9397)   exactly vertical, up -- the picture's plumb line
  *   X_lab      (-0.9063, -0.1445)   a long arrow to the left, slightly lowered
- *   Z_lab ∥ k  ( 0.4226, -0.3100)   a SHORT arrow to the lower right
+ *   Z_lab || k ( 0.4226, -0.3100)   a SHORT arrow to the lower right
  *
- * Y's zero is exact, not rounded: the azimuth is a rotation ABOUT Y, and the elevation row that
- * supplies `u` has a zero in the y slot, so nothing can tip the plumb line.
+ * Y's zero is exact, not rounded: the azimuth is a rotation ABOUT Y, the parity fix does not touch
+ * the y column, and the elevation row supplying `u` carries a zero in the y slot.
  *
- * WHICH AXIS IS DEPTH IS THE MEANING OF THE VIEW, not a matter of taste, and it is the part the
- * first two revisions of this contract left open. The image lengths are |X| = 0.9178,
- * |Y| = 0.9397, |Z| = 0.5241: the BEAM is the most foreshortened axis, i.e. the depth axis, so at
- * zero rotation the slab's large face (⊥ k) faces the viewer and its thickness is the short run to
- * the lower right, along the "∥ k" arrow. The sample shows its FACE to the beam, which is what the
- * picture is about.
+ * WHICH AXIS IS DEPTH IS THE MEANING OF THE VIEW, not a matter of taste, and it is the part two
+ * earlier versions of this contract left open. The image lengths are |X| = 0.9178, |Y| = 0.9397,
+ * |Z| = 0.5241: the BEAM is the most foreshortened axis, i.e. the depth axis, so the slab's large
+ * face (perpendicular to k) meets the viewer nearly square on. Sign structure alone does not fix
+ * this -- at azimuth 115 deg the same three lengths appear with X and Z exchanged, and the slab is
+ * then seen edge-on as a narrow sliver. The unit tests pin the ordering.
  *
- * The alternative had the same signs and the same orthonormality. At azimuth 115 deg the three
- * image lengths are the same three numbers with X and Z exchanged -- X becomes the short axis, so
- * the depth axis is lab X, and the slab is seen nearly edge-on as a narrow upright sliver. Sign
- * structure cannot tell the two apart; the length ordering can, and does, in the unit tests.
- *
- * A NOTE ON THE BRIEF, kept from the previous revision: the sketch had Z slightly RAISED. With Y
- * vertical and X pointing down that is not reachable by any orthographic camera. This is the
- * view-from-above; the mirror choice is elevation +20 deg, which raises Z but tips X upward too.
+ * WHAT IT MAKES THE PICTURE. A view from slightly above: the slab shows its large face and its top,
+ * and the beam runs into the picture as the short arrow to the lower right.
  */
-export const CAM_AZIMUTH_DEG = 155;
-export const CAM_ELEVATION_DEG = -20;
+export const CAM_AZIMUTH_DEG = 205;
+export const CAM_ELEVATION_DEG = 20;
 
-/** Lab -> viewer rotation. Rows: screen right, screen up, line of sight. */
-export const CAMERA: readonly number[][] = mat3mul(rotX(CAM_ELEVATION_DEG), rotY(CAM_AZIMUTH_DEG));
+/**
+ * The declared reflection that cancels SVG's downward-y flip, so a right-handed lab frame is drawn
+ * right-handed. See the parity chain above; guarded by the H pin, not by a determinant check.
+ */
+export const SCREEN_PARITY_FIX: readonly number[][] = [
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, 0, -1],
+];
+
+/** Lab -> viewer map. Rows: screen right, screen up, line of sight. Improper by design (det = -1). */
+export const CAMERA: readonly number[][] = mat3mul(
+  mat3mul(rotX(CAM_ELEVATION_DEG), rotY(CAM_AZIMUTH_DEG)),
+  SCREEN_PARITY_FIX as number[][],
+);
 
 /** The screen images of the three lab axes -- the columns of the camera's first two rows. Derived,
  *  never authored: they are how the camera READS, not how it is defined. */
@@ -137,12 +161,14 @@ export const AXO_Y: AxoImage = axoImage(1);
 export const AXO_Z: AxoImage = axoImage(2);
 
 /**
- * The line of sight: the projection's kernel, and the camera's third row. For a proper rotation the
- * rows are a right-handed orthonormal frame, so row0 x row1 = row2 exactly -- the sign convention
- * that makes this point TOWARDS the viewer comes for free instead of having to be chosen.
+ * The line of sight: the projection's kernel, and the camera's third row. Unit length, since the
+ * camera is orthogonal.
  *
- * It lands on the -Z side, which is what puts the sample's thickness to the RIGHT of its visible
- * large face rather than to the left. Unit length, unlike the sheared predecessor.
+ * SIGN CONVENTION. For a PROPER rotation row0 x row1 = row2 and the toward-the-viewer sense comes
+ * for free. This camera is improper, so row0 x row1 = -row2 and the sense is a choice; the row
+ * itself is the one taken, and it is the one the accepted contact-sheet tile was rendered with. It
+ * points into the +X/+Y/+Z octant, so at zero rotation the visible faces are the POSITIVE ones and
+ * the slab shows its large +Z face and its top.
  */
 export const VIEW_TO_CAMERA: readonly number[] = CAMERA[2];
 

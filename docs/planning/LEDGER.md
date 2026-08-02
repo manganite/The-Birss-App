@@ -759,6 +759,84 @@ the canvas. The envelope is unchanged at ±71.3 — a rotation-covariant sweep u
 camera traces the same disc whatever the angles, so the canvas needed nothing. Layout untouched.
 Suite 2476 → 2477.
 
+### Revision 4 (final), 2026-08-02 — the parity chain, and choosing by contact sheet
+
+**The finding is the maintainer's** (2026-08-02): every rendering up to Revision 3 was, as a screen
+image, LEFT-handed. The suspected mechanism was a net parity flip in the pipeline, and it is exactly
+that.
+
+**The parity chain — the mechanism, named.** Three frames sit between the world and the pixel, and
+each may flip handedness:
+
+    lab (right-handed)  ->  camera (rotation: parity preserved)  ->  SVG (y grows DOWNWARD: reflection)
+
+A camera built purely from rotations preserves parity, so the chain's net effect is one flip. The
+picture then carries two depth cues that contradict each other: the winding of the drawn triad says
+one face of the slab is nearer, the occlusion says the other. A reader resolves that by trusting the
+occlusion and concluding the axis labels are wrong — which is what the sample looked like all along.
+Nothing in the suite could see it: `M·Mᵀ = I` is parity-blind, and so is every assertion about axis
+directions or their signs. Parity is a fourth, independent property.
+
+`SCREEN_PARITY_FIX = diag(1, 1, −1)` is the compensation: one declared reflection cancelling the one
+SVG applies. The composed camera is consequently improper, `det = −1`. A mirrored orthography is an
+ordinary drawing convention — but it must be **declared**, not discovered, which is what that named
+constant and the H pin do between them. The `det = +1` pin is gone: it was asking the wrong question,
+since it inspects the camera rather than the page. `det = −1` is now asserted as a *declaration*.
+
+**The H pin.** `H = sign(cross2(drawn X, drawn Y)) · sign(Z · line-of-sight)`, with `cross2` taken in
+SVG coordinates — computing it in maths coordinates flips H for every camera, so the convention is
+part of the definition. `H = +1` is right-handed on the page, asserted for the lab triad, with both
+factors asserted separately so a regression says which half moved.
+
+**The contact-sheet method — adopted as standing practice for view acceptances.** Six candidate
+cameras were rendered by the real component against the real service (camera injected, nothing
+committed), each tile labelled with its measured invariants: azimuth, elevation, det, H, the three
+image lengths and depth(Z). The maintainer chose from the sheet. Two things it made visible that no
+prose specification had:
+
+- **H is a family property.** All four proper cameras measured −1; both carrying the parity fix
+  measured +1. The defect was not in the angles at all.
+- **The mirror changes only occlusion.** M2's axis images are identical to P2's to the last decimal;
+  `diag(1,1,−1)` moves the line of sight and nothing else. The sheet therefore showed the depth cue
+  isolated — the one comparison that settles the question.
+
+The rule: **candidate matrix with measured invariants before constant decree.**
+
+**Chosen: M2** = `Rx(+20°)·Ry(205°)·diag(1,1,−1)`. Seen from slightly above; the slab shows its large
+`+Z` face and its top; the beam is the short arrow to the lower right. Line of sight
+`(0.3971, 0.3420, 0.8517)` — into the `+X/+Y/+Z` octant, so the visible faces at zero rotation are
+the positive ones, depths `0.3971 (+x)`, `0.3420 (+y)`, `0.8517 (+z)`.
+
+**Mutation tableau, all five rejected candidates. Each breaks at least one rung of the ladder:**
+
+| candidate | metric (det decl.) | orientation | semantic | H | visible-face set |
+| --- | --- | --- | --- | --- | --- |
+| P1 (115°, −20°) | **fails** | green | **fails** | **fails** | **fails** |
+| P2 (155°, −20°) | **fails** | green | **fails** | **fails** | **fails** |
+| P3 (115°, +20°) | **fails** | **fails** | **fails** | **fails** | **fails** |
+| P4 (155°, +20°) | **fails** | **fails** | **fails** | **fails** | **fails** |
+| M1 (205°, −20°) | green | **fails** | green | green | **fails** |
+
+M1 is the instructive row: same parity, same metric, same depth axis as the chosen camera — it
+differs only in elevation sign, and only the visible-face set and the orientation contract catch it.
+Its line of sight points below the plate, so the top face is not in view.
+
+**The revision balance, honestly.** Four rounds, and three of them corrected a specification the work
+order author had written down as fact: the **shear** (Revision 2 — free axis images do not make an
+orthographic projection), the **camera branch** (Revision 3 — sign structure admits two cameras), and
+the **parity premise** (Revision 4 — a rotation-only camera was assumed to draw right-handed). The
+executor's premise pass checked every one of those numerically before implementing and reproduced the
+stated targets each time; what it did not do, until asked, was question whether the stated contract
+was *complete*. That is the transferable lesson, and it is now `STATUS.md` § 5: the contract ladder
+for drawing surfaces — metric, orientation, semantics, screen handedness — plus choose views by
+contact sheet, not by decree.
+
+Fixtures derived a final time (camera rows, lab tips unchanged at X (22.436, 171.758) / Y (46,
+143.568) / Z (56.988, 176.059) since M2 and P2 share their axis images, visible-face set and depths,
+handedness area 575.71594 now written against `row0 × row1` so the identity is parity-agnostic).
+Envelope unchanged at ±71.3, canvas unchanged. Direction, anchor, parallelism, screen-identity and
+neutrality tests untouched in substance. Suite 2477 → 2478.
+
 ### Open
 
 *(none — the series is closed.)*
