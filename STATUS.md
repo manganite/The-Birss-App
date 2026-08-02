@@ -116,16 +116,16 @@ this list is empty immediately after a cut and grows again as work closes.
   all three of the corner's face normals), and [110] is degenerate as well as [111]. Visual
   acceptance then found the viewpoint itself wrong — the lab axes came out cyclically permuted, and
   no test could see it, because every fixture compared lab-space vectors the camera never touches;
-  three further passes found it sheared (free axis-image constants had specified a non-orthographic
-  projection), then aimed at the wrong one of the two cameras the contract admitted, then drawing
-  left-handed on the page — a net parity flip through SVG's downward y, the maintainer's finding. The
-  camera is now built from `linalg` primitives with a declared `SCREEN_PARITY_FIX`, chosen by
-  **contact sheet**: six candidates rendered by the real component, labelled with their measured
-  invariants, picked at acceptance. Six pins with a mutation-tested division of labour guard the
-  class — metric, orientation, semantic, screen handedness, screen identity, parallelism — and every
-  rejected candidate breaks at least one. The generalisation is promoted to § 5 below as a contract
-  ladder for drawing surfaces. Suite 2422 → 2478. Full record, including all four dated revisions, in
-  `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md` `[Unreleased]`.
+  further passes found it sheared (free axis-image constants had specified a non-orthographic
+  projection), then aimed at the wrong one of the two cameras the contract admitted, then — on a
+  handedness figure of merit that turned out to be inverted — sent into a mirrored camera family that
+  was never needed. The camera is a plain rotation built from `linalg` primitives, chosen by **contact
+  sheet**: six candidates rendered by the real component, labelled with their measured invariants,
+  picked at acceptance. Six pins with a mutation-tested division of labour guard the class — metric,
+  orientation, semantic, screen handedness, screen identity, parallelism — and every rejected
+  candidate breaks at least one. The generalisation is promoted to § 5 below as a contract ladder for
+  drawing surfaces. Suite 2422 → 2478. Full record, including all five dated revisions and the
+  retraction, in `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md` `[Unreleased]`.
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
@@ -193,10 +193,14 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
   2. **Orientation** — the sign structure of the axis images: which way each axis goes.
   3. **Semantics** — what the view is _of_; above all which axis is depth. Metric and orientation
      together still leave this free.
-  4. **Screen handedness** — parity as it reaches the page. Count the whole chain
-     world → camera → output frame; a downward-y target frame is itself a reflection, so a camera
-     built only from rotations draws a right-handed world left-handed, and the picture's two depth
-     cues (triad winding, occlusion) then contradict each other.
+  4. **Screen handedness** — parity as it reaches the page: the winding of the drawn triad must
+     agree with the occlusion, or a reader trusts the occlusion and concludes the labels are wrong.
+     Such a pin must **derive its depth side from the same code that decides the occlusion**, never
+     restate the convention. Restating it is how this one shipped inverted: the winding was read in
+     screen coordinates, where the right-handed third axis points _into_ the page, and paired with a
+     depth taken _towards the viewer_ — the two differ by a sign, and the resulting figure of merit
+     was wrong for every camera at once, which is exactly the kind of error a second statement of a
+     convention produces and a single source cannot.
   And **choose views by contact sheet, not by decree**: render the candidates from the real code,
   label each with its measured invariants, and let acceptance pick. Three of the four defects above
   were specification errors that a six-tile sheet would have caught before any of them was written

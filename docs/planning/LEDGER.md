@@ -837,6 +837,94 @@ handedness area 575.71594 now written against `row0 × row1` so the identity is 
 Envelope unchanged at ±71.3, canvas unchanged. Direction, anchor, parallelism, screen-identity and
 neutrality tests untouched in substance. Suite 2477 → 2478.
 
+### Revision 5, 2026-08-02 — the correction of the correction: retracting the parity claim
+
+**Revision 4's mechanism was wrong, and measurably so.** It claimed a net parity flip through the
+pipeline and added `SCREEN_PARITY_FIX = diag(1,1,-1)` to compensate. Probes taken at `8ebd7bb`,
+`051375e` and the branch head establish the opposite: `project` has negated the screen-up component
+when emitting SVG's downward y since the very first commit of the service —
+
+    y: origin.y - scale * w
+
+— so the drawn picture is a faithful embedding of the (u, v) picture, and a proper camera draws a
+right-handed world right-handed. There was never a flip to fix. **The claim is retracted**, the
+mirror is removed, and the docblock carries the retraction rather than being quietly rewritten.
+
+**The actual error chain, and it is one sign in one formula.** In screen coordinates — x right,
+y DOWNWARD — the right-handed third axis points INTO the page. The H figure of merit read the
+winding there, but paired it with `sign(Z · line-of-sight)`, i.e. Z *towards the viewer*, which is
+the culling convention's outward sense. The two differ by a sign, so:
+
+    H-pin convention  ⊥  culling convention
+        -> the contact sheet's H column was inverted for all six candidates at once
+        -> the proper cameras were labelled left-handed and the mirrored ones right-handed
+        -> the choice went into the mirrored family (M2), and a mirror was invented to explain it
+
+The inversion is the executor's: the H definition was written for the contact sheet and carried
+verbatim into the pin, so the sheet could not audit the formula it was labelled with. The M2
+recommendation that followed from the inverted column is the reviewer's share. What neither caught is
+that a figure of merit wrong for *every* candidate is not a measurement — it is a convention error,
+and its signature is exactly that uniformity.
+
+**The structural fix: one convention, one source.** The H pin no longer restates a depth convention.
+It asks the renderer: at zero rotation exactly one of the two z-normal faces survives culling, and
+Z runs into the page precisely when that face is `-z`. The pin and the picture therefore cannot
+disagree about which way is back, whatever camera is fitted.
+
+**Corrected sheet, corrected column.** Re-labelled and re-issued with the struck-through old values
+visible, because the artefact that misled should carry its own correction:
+
+| candidate | det | H (old, wrong) | **H (corrected)** | drawn Z face |
+| --- | --- | --- | --- | --- |
+| P1 (115°, −20°) | +1 | −1 | **+1** | −z |
+| P2 (155°, −20°) | +1 | −1 | **+1** | −z |
+| P3 (115°, +20°) | +1 | −1 | **+1** | −z |
+| **P4 (155°, +20°)** | +1 | −1 | **+1** | −z |
+| M1 (205°, −20°) | −1 | +1 | **−1** | +z |
+| M2 (205°, +20°) | −1 | +1 | **−1** | +z |
+
+**Chosen: P4** = `Rx(+20°)·Ry(155°)`, proper. Images X (−0.9063, 0.1445) long to the upper left,
+Y (0, 0.9397) vertical, Z (0.4226, 0.3100) short to the upper right; line of sight
+(−0.3971, 0.3420, −0.8517), so the visible faces at zero rotation are −z (dominant, 0.8517), +y (the
+plate's top, 0.3420) and −x (0.3971). The maintainer's original sketch — long left arrow, vertical Y,
+short right arrow, plate showing its face from slightly above — decodes to exactly these arrows.
+
+**Mutation tableau under the corrected pins.** Every rejected candidate still breaks at least one
+rung, and the H column now does its own work rather than the metric pin's:
+
+| candidate | metric | orientation | semantic | H | visible faces |
+| --- | --- | --- | --- | --- | --- |
+| P1 | green | **fails** | **fails** | green | **fails** |
+| P2 | green | **fails** | green | green | **fails** |
+| P3 | green | green | **fails** | green | **fails** |
+| M1 | **fails** | green | **fails** | **fails** | **fails** |
+| M2 | **fails** | **fails** | **fails** | **fails** | **fails** |
+
+P1–P3 are all right-handed, as proper cameras must be — they are rejected on orientation, semantics
+and the visible-face set, never on H. That separation is the point: before the correction, H fired on
+every proper camera and on nothing else, which looked like discrimination and was noise.
+
+**§ 5, final form.** Rung 4 now states the requirement that would have prevented this: a screen
+handedness pin **derives its depth side from the code that decides the occlusion**, never restates
+the convention. A second statement of a convention is a second chance to state it backwards, and the
+failure mode is silent because it is uniform.
+
+**Process note, recorded because it is a rule and it was broken.** Push and PR happened before the
+maintainer had seen the Revision-4 screenshots. The standing sequence is screenshots → acceptance →
+commit, and it applies to a branch with an open PR exactly as it did before one existed. The
+executor read the previous work order's closing "then push and PR" as standing authorisation; it was
+conditional on the acceptance that preceded it in the same sentence. PR #126 stays open and takes
+this revision as a further commit after acceptance.
+
+**Revision balance, final.** Five rounds. Three corrected a specification the work order carried as
+fact (shear, camera branch, parity premise); one corrected the executor's own instrument (the H
+formula, which produced the parity premise). The transferable part is the § 5 ladder plus the
+contact-sheet rule — and, added by this round, the discipline that a pin measuring the output must
+draw its conventions from the code that produces the output.
+
+Fixtures derived a final time under P4. Envelope unchanged at ±71.3, canvas unchanged. Direction,
+anchor, parallelism, screen-identity and neutrality tests untouched in substance. Suite 2478 → 2478.
+
 ### Open
 
 *(none — the series is closed.)*
