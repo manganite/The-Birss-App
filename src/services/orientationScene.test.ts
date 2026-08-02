@@ -463,6 +463,18 @@ describe('orientationScene — the anchor corner', () => {
     });
   });
 
+  /**
+   * A correction to the recorded expectation: the work order assumed [111] anchors differently from
+   * [100]. It does not — both land on corner 4, (-,+,+). Under [100] the axes are (z, y, -x); under
+   * [111] all three carry +1/sqrt(3) of Z; the same corner serves both best. Within the cubic preset
+   * set it is [110] that re-anchors, to corner 0. Recorded as an assertion so the coincidence cannot
+   * be mistaken for a bug later.
+   */
+  it('[100] and [111] share an anchor corner, [110] does not', () => {
+    expect(anchorCornerFor(presetFor('[111]'))).toBe(anchorCornerFor(presetFor('[100]')));
+    expect(anchorCornerFor(presetFor('[110]'))).not.toBe(anchorCornerFor(presetFor('[100]')));
+  });
+
   /** Switching the cut DOES re-anchor — the negative control for the test above. */
   it('re-anchors when the cut changes', () => {
     const rotation = { phiX: 20, phiY: 40, psi: -70 };
