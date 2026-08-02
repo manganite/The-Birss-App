@@ -42,7 +42,7 @@ import { AXIS_EPSILON } from './tolerances';
 /**
  * Canvas, in SVG user units. Sized from the measured envelope rather than guessed: over the whole
  * reachable space the body and its triad sweep a DISC about BODY_ORIGIN -- +-71 units either way at
- * SCALE 28 -- and the labels add roughly 11 more. That the envelope is round rather than oblong is
+ * SCALE 28, and the radius is independent of the camera angles for the same reason -- and the labels add roughly 11 more. That the envelope is round rather than oblong is
  * itself a consequence of the camera being orthonormal: the sweep is rotation-covariant, so a
  * projection that preserves lengths must trace a circle. The lower left stays clear of it for the
  * lab triad.
@@ -67,7 +67,7 @@ export const HALF_EXTENTS = { x: 1.1, y: 0.9, z: 0.26 };
 export const CRYSTAL_AXIS_LENGTH = 1.2;
 
 /** The lab triad: fixed screen origin, and its own (smaller) scale in SVG units per lab unit. */
-export const LAB_ORIGIN = { x: 40, y: 168 };
+export const LAB_ORIGIN = { x: 46, y: 168 };
 export const LAB_AXIS_SCALE = 26;
 
 const dot3 = (a: readonly number[], b: readonly number[]): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -98,26 +98,32 @@ export interface AxoImage {
  * enforce a constraint they are free to violate; a rotation cannot violate it.
  *
  * THE ANGLES. Azimuth turns about lab Y, elevation about lab X, applied in that order. At
- * (115 deg, -20 deg) the axes land at
+ * (155 deg, -20 deg) the axes land at
  *
  *   Y_lab      ( 0.0000,  0.9397)   exactly vertical, up -- the picture's plumb line
- *   Z_lab ∥ k  ( 0.9063, -0.1445)   to the right, slightly lowered
- *   X_lab      (-0.4226, -0.3100)   to the left and down
+ *   X_lab      (-0.9063, -0.1445)   a long arrow to the left, slightly lowered
+ *   Z_lab ∥ k  ( 0.4226, -0.3100)   a SHORT arrow to the lower right
  *
  * Y's zero is exact, not rounded: the azimuth is a rotation ABOUT Y, and the elevation row that
  * supplies `u` has a zero in the y slot, so nothing can tip the plumb line.
  *
- * A NOTE ON THE BRIEF, for the record: the maintainer's sketch had Z slightly RAISED. With Y
- * vertical and X pointing down, that is not reachable by any orthographic camera -- the three
- * directions would have to sum, as squares, to something other than zero. This is the standard
- * view-from-above instead (Z slightly lowered), which is the nearest true camera; the mirror choice
- * is elevation +20 deg, which raises Z but then also tips X upward.
+ * WHICH AXIS IS DEPTH IS THE MEANING OF THE VIEW, not a matter of taste, and it is the part the
+ * first two revisions of this contract left open. The image lengths are |X| = 0.9178,
+ * |Y| = 0.9397, |Z| = 0.5241: the BEAM is the most foreshortened axis, i.e. the depth axis, so at
+ * zero rotation the slab's large face (⊥ k) faces the viewer and its thickness is the short run to
+ * the lower right, along the "∥ k" arrow. The sample shows its FACE to the beam, which is what the
+ * picture is about.
  *
- * WHAT IT MAKES THE PICTURE. The slab's large face is perpendicular to k = Z_lab, so at zero
- * rotation it spans the images of X and Y: the sample STANDS like an obliquely seen wall, and its
- * thickness runs off to the right, along the "∥ k" arrow.
+ * The alternative had the same signs and the same orthonormality. At azimuth 115 deg the three
+ * image lengths are the same three numbers with X and Z exchanged -- X becomes the short axis, so
+ * the depth axis is lab X, and the slab is seen nearly edge-on as a narrow upright sliver. Sign
+ * structure cannot tell the two apart; the length ordering can, and does, in the unit tests.
+ *
+ * A NOTE ON THE BRIEF, kept from the previous revision: the sketch had Z slightly RAISED. With Y
+ * vertical and X pointing down that is not reachable by any orthographic camera. This is the
+ * view-from-above; the mirror choice is elevation +20 deg, which raises Z but tips X upward too.
  */
-export const CAM_AZIMUTH_DEG = 115;
+export const CAM_AZIMUTH_DEG = 155;
 export const CAM_ELEVATION_DEG = -20;
 
 /** Lab -> viewer rotation. Rows: screen right, screen up, line of sight. */

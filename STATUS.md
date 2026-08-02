@@ -116,12 +116,14 @@ this list is empty immediately after a cut and grows again as work closes.
   all three of the corner's face normals), and [110] is degenerate as well as [111]. Visual
   acceptance then found the viewpoint itself wrong — the lab axes came out cyclically permuted, and
   no test could see it, because every fixture compared lab-space vectors the camera never touches;
-  a second pass then found the picture sheared as well — free axis-image constants had specified a
-  non-orthographic projection. The camera is now a rotation built from `linalg` primitives, so
-  orthonormality is structural, and three pins with a mutation-tested division of labour guard the
-  class: metric, screen identity, and screen-space parallelism. The generalisation is promoted to
-  § 5 below. Suite 2422 → 2476. Full record, including both dated revisions, in
-  `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md` `[Unreleased]`.
+  a second pass then found it sheared as well (free axis-image constants had specified a
+  non-orthographic projection), and a third that the maths was right but the camera was the wrong one
+  of the two the contract admitted — lab X was the depth axis instead of the beam. The camera is now
+  a rotation built from `linalg` primitives, so orthonormality is structural, and four pins with a
+  mutation-tested division of labour guard the class: metric, semantic, screen identity, and
+  screen-space parallelism. The generalisation is promoted to § 5 below. Suite 2422 → 2477. Full
+  record, including all three dated revisions, in `docs/planning/LEDGER.md`; user-facing detail in
+  `CHANGELOG.md` `[Unreleased]`.
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
@@ -183,11 +185,13 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
   their own **orientation** and **metric** pins: an assertion about the vectors a picture depicts
   says nothing about where the camera puts them, and an assertion about their directions says
   nothing about whether the projection distorts. Both failure modes reached visual acceptance in
-  SIM-O with a green suite — first a cyclic axis permutation, then a shear — because every fixture
-  compared lab-space quantities the camera never touches. Any future drawing surface carries at
-  minimum: the axis images' sign structure, and a metric identity (for an orthographic view,
-  `M·Mᵀ = I`, or equivalently Gauss's `z₁² + z₂² + z₃² = 0` on the axis images). See the SIM-O entry
-  and its two dated revisions in `docs/planning/LEDGER.md`.
+  SIM-O with a green suite — a cyclic axis permutation, then a shear, then the wrong one of two
+  contract-conforming cameras — because every fixture compared lab-space quantities the camera never
+  touches. Any future drawing surface carries at minimum three things: the axis images' **sign
+  structure**; a **metric** identity (for an orthographic view, `M·Mᵀ = I`, or equivalently Gauss's
+  `z₁² + z₂² + z₃² = 0` on the axis images); and the view's **semantics** — above all which axis is
+  depth, since sign and metric together still leave that free, and it is what the picture is _about_.
+  See the SIM-O entry and its three dated revisions in `docs/planning/LEDGER.md`.
 - **Authoritative convention references:** `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`
   (convention contract & verification ladder) and `birss-tables/table-nomenclature.md`
   (122-group nomenclature + operators/generators) are the two central, cross-linked

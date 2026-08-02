@@ -699,6 +699,66 @@ projection fixtures hand-derived for the third time with their comments, and the
 simplified back to a unit line of sight. Layout and the reported 30-px inner-padding point unchanged.
 Suite 2474 → 2476.
 
+### Revision 3, 2026-08-02 (pre-push) — the right maths, the wrong one of two cameras
+
+**The defect.** Orthonormality held, the metric was clean, the signs matched — and at [001] the slab
+was still drawn as a narrow upright sliver instead of showing its face. The camera was lab **X**'s
+view, not the beam's.
+
+**The cause is again the specification, and again the work order author's.** The Revision 2 contract
+pinned orthonormality and four signs. That admits exactly two cameras here, and they are close
+relatives:
+
+| azimuth | \|image X\| | \|image Y\| | \|image Z\| | depth axis | what the slab looks like at [001] |
+| --- | --- | --- | --- | --- | --- |
+| 115° | 0.5241 | 0.9397 | 0.9178 | lab X | narrow upright sliver, seen nearly edge-on |
+| **155°** | 0.9178 | 0.9397 | **0.5241** | **lab Z ∥ k** | flat plate showing its face, thickness short to the lower right |
+
+The same three image lengths, X and Z exchanged. Both are proper orthographic views; both put Y
+vertical, X to the left and down, Z to the right. Sign structure cannot separate them, and neither
+can any metric identity — the squares sum to 2 either way. What separates them is what the picture
+is FOR.
+
+**The pin that closes it.** Two assertions, both in the camera-contract block:
+
+- **(a) the beam is the depth axis:** `|image(Z)|` strictly less than `|image(X)|` and `|image(Y)|`.
+  Because the squares sum to 2, shortening one axis lengthens the others — the three numbers are not
+  independent, so this single ordering fixes the whole shape of the view.
+- **(b) the sample shows its face:** at zero rotation the visible face carrying the largest depth is
+  the −Z one, at 0.8517 against 0.3971 (−x) and 0.3420 (−y). Under the 115° camera it was −x at
+  0.8517 — the acceptance finding, stated as a number.
+
+**Mutation tableau, now four rows.** The new row is the point: the ambiguity was invisible to
+everything that existed.
+
+| mutation | metric | semantic | screen identity [001] | parallelism [100] | orientation contract |
+| --- | --- | --- | --- | --- | --- |
+| Revision 1 camera (permutation + shear) | **fails** | — | **fails** | green | fails |
+| pure shear (Z image ×1.25, directions kept) | **fails** | — | **fails** | green | **green** |
+| triad read off the ROWS of R (camera intact) | green | green | **green** | **fails** | green |
+| **azimuth back to 115° (the sibling camera)** | **green** | **fails** | **fails** | green | **green** |
+
+Row 4: metric green, signs green, wiring green — only the semantic pin and the length-ratio half of
+the screen-identity pin see it. Which is exactly why Revisions 1 and 2 shipped a contract that could
+not.
+
+**Numbers checked against the brief before implementing**, as for every revision: the three target
+images reproduce to seven places, and the length ordering holds. One correction — the brief gives
+`|X| ≈ 0.930`; it is **0.9178**. The claim that mattered, `|Z| = 0.5241` being the minimum, is right.
+
+**Third evidence for the standing decision**, and it extends it rather than repeating it. Revision 1
+gave the ORIENTATION half of the lesson, Revision 2 the METRIC half, Revision 3 the SEMANTIC half:
+sign structure and metric together still leave which-axis-is-depth free, and that is the one thing a
+reader of the picture actually reads. `STATUS.md` § 5 now names all three as the minimum for any
+future drawing surface.
+
+Also in this revision: all projection fixtures hand-derived a fourth time with their comments (lab
+tips, visible-face order and depths, handedness area 575.71594, screen-identity length ratios), and
+`LAB_ORIGIN` moved 6 units right because X is now the long arrow and its label would otherwise leave
+the canvas. The envelope is unchanged at ±71.3 — a rotation-covariant sweep under an orthonormal
+camera traces the same disc whatever the angles, so the canvas needed nothing. Layout untouched.
+Suite 2476 → 2477.
+
 ### Open
 
 *(none — the series is closed.)*
