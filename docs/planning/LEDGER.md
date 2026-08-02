@@ -925,6 +925,48 @@ draw its conventions from the code that produces the output.
 Fixtures derived a final time under P4. Envelope unchanged at ±71.3, canvas unchanged. Direction,
 anchor, parallelism, screen-identity and neutrality tests untouched in substance. Suite 2478 → 2478.
 
+### Revision 6, 2026-08-02 — placement, and three notes on method
+
+Layout and scene-constant polish after the maintainer's sighting of the placement. The measurements
+are in the commits; three things earned a place here because they are about how the work was done.
+
+**The definition-list effect at its smallest.** The two triads were drawn at two different arrow
+lengths — the crystal axes at `SCALE × CRYSTAL_AXIS_LENGTH`, the lab gizmo at `LAB_AXIS_SCALE`. One
+shared `AXIS_ARROW_LENGTH` replaced both, and the screen-identity pin got *simpler and sharper in the
+same move*: where it previously had to divide out two length conventions before it could compare the
+two triads, a congruence pin now asserts them equal directly. Two constants were two chances to
+drift; collapsing them removed the drift and removed the normalisation that was hiding it. Same
+lesson as the Q0 shared partitions and the B27-S definition list, at the scale of two numbers.
+
+**A layout instruction turned into a checked property.** The lab gizmo's anchor was a pair of screen
+coordinates; it is now a world point, and the maintainer's instruction "move it 10% towards the
+sample along +ẑ" became something the suite can verify rather than something the author has to
+believe. That +ẑ really points at the sample from there is now a computed fact — the axis projects to
+(0.806, −0.591), the direction from gizmo to body centre to (0.851, −0.525), dot product 0.996, four
+degrees apart — and the pin additionally asserts that the approach *decreases* the anchor-to-body
+distance, so the semantics cannot silently invert if the camera is ever re-aimed. Realized shift:
+0.50249 lab units, (+5.946, −4.361) px on screen. The base point's projection lands on exactly
+(43.60, 154.80), because its screen-plane offsets are round by construction — the design is visible
+in the numbers.
+
+**"I corrected the script, not the expectation."** The independent re-derivation of the gizmo
+fixtures disagreed with the service on the first run. Two sign errors in the *derivation script* —
+`row1[2]` and `row2[2]`, both from mis-transcribing which row of Rx(20) multiplies which row of
+Ry(155). The temptation an independent derivation exists to resist is to treat the disagreement as a
+finding about the code; here it was a finding about the derivation, and the fix went there. After it,
+the two agree to five places. That is what "hand-derived, independently" is supposed to feel like
+when it works: it catches the author, not only the code, and which of the two it caught is decided by
+looking rather than by assuming. Recorded because the fixtures in this file are only worth their
+comments if that discipline is real.
+
+Also here: the canvas was fitted to the painted envelope rather than guessed — measured in a browser
+as the union of `getBBox` over five cuts × a rotation sweep, so it includes label text an analytic
+bound cannot see. 235.40 × 149.74 units, canvas 255 × 169, margins 9.7 / 9.6 / 9.9 / 9.7. The
+constant 31.2-unit dead strip along the bottom is gone, and with it the "floating" look. Fixture
+consequences were named in advance and came out as named: lab tips and the handedness area (26² →
+30², a consequence of the shared arrow length, not a change to the identity). Nothing else moved.
+Suite 2478 → 2480.
+
 ### Open
 
 *(none — the series is closed.)*

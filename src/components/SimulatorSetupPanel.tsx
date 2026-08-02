@@ -109,7 +109,7 @@ export function SimulatorSetupPanel({
           the two columns instead of dead beside the picture. */}
       <div className="hidden md:block border-t border-ink border-opacity-10 pt-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-7">
-          <div className="col-start-1 row-start-1 flex max-w-2xl items-center gap-2">
+          <div className="col-start-1 row-start-1 flex max-w-3xl items-center gap-2">
             <button
               type="button"
               aria-expanded={showRotation}
@@ -134,7 +134,7 @@ export function SimulatorSetupPanel({
           {showRotation && (
             <>
               {/* Capped, so the tracks stop growing rather than running the full column width. */}
-              <div className="col-start-1 row-start-2 mt-4 min-w-0 max-w-2xl space-y-3">
+              <div className="col-start-1 row-start-2 mt-4 min-w-0 max-w-3xl space-y-3">
                 {(
                   [
                     {

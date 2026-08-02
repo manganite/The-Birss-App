@@ -47,11 +47,11 @@ import { AXIS_EPSILON } from './tolerances';
  * projection that preserves lengths must trace a circle. The lower left stays clear of it for the
  * lab triad.
  */
-export const SCENE_WIDTH = 272;
-export const SCENE_HEIGHT = 200;
+export const SCENE_WIDTH = 255;
+export const SCENE_HEIGHT = 169;
 
 /** Where the body's centre projects to. Right of centre, leaving the lower left for the lab triad. */
-export const BODY_ORIGIN = { x: 166, y: 94 };
+export const BODY_ORIGIN = { x: 164, y: 82 };
 
 /** Lab units -> SVG user units for the body and the crystal triad. */
 export const SCALE = 28;
@@ -63,12 +63,17 @@ export const SCALE = 28;
  */
 export const HALF_EXTENTS = { x: 1.1, y: 0.9, z: 0.26 };
 
-/** Length of a drawn crystal axis, in lab units. Short enough that the sample stays the subject. */
-export const CRYSTAL_AXIS_LENGTH = 1.2;
-
-/** The lab triad: fixed screen origin, and its own (smaller) scale in SVG units per lab unit. */
-export const LAB_ORIGIN = { x: 46, y: 168 };
-export const LAB_AXIS_SCALE = 26;
+/**
+ * The drawn length of a UNIT axis, in SVG user units, before the camera's foreshortening.
+ *
+ * ONE CONSTANT, TWO CONSUMERS. Both triads use it: the crystal axes are extended by
+ * AXIS_ARROW_LENGTH / SCALE lab units before projection, the lab gizmo's arrows are projected at
+ * this scale directly. The two therefore draw congruent arrows for congruent directions -- which is
+ * exactly what the zero-rotation screen-identity pin asserts at cut [001], and it used to hold only
+ * after dividing out two different length conventions. Two constants would have been two chances to
+ * drift; the definition-list lesson at its smallest.
+ */
+export const AXIS_ARROW_LENGTH = 30;
 
 const dot3 = (a: readonly number[], b: readonly number[]): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const norm3 = (v: readonly number[]): number[] => {
@@ -259,6 +264,42 @@ export function project(v: readonly number[], origin: ScenePoint = BODY_ORIGIN, 
   };
 }
 
+/**
+ * WHERE THE LAB GIZMO HANGS -- a point in the WORLD, not a pair of screen coordinates.
+ *
+ * The lab triad is a fixed gizmo: it must not move when the sample turns, and it must keep its
+ * screen size. That could be had by naming a pixel position, and was. Naming a world point instead
+ * costs nothing and buys one thing that matters: an offset along a WORLD axis becomes meaningful.
+ * "Move it towards the sample" is then a statement about the experiment rather than about the page.
+ *
+ * The base point is placed by how far it should sit from the sample AS SEEN -- so many lab units
+ * along screen-right and screen-up -- and lies in the screen plane through the world origin, since
+ * its depth component would not be visible anyway. The body's centre is the world origin, so the
+ * base point's length IS the anchor-to-sample distance.
+ *
+ * THE APPROACH. The gizmo is then moved 10% of that distance along world +z, towards the sample.
+ * That +z really does point at the sample from here is a fact about this camera rather than an
+ * assumption: on screen +z runs (0.806, -0.591) and the direction from the gizmo to the body centre
+ * runs (0.851, -0.525) -- a dot product of 0.996, so the two are within four degrees.
+ */
+const LAB_GIZMO_RIGHT = -4.3;
+const LAB_GIZMO_UP = -2.6;
+export const LAB_APPROACH_FRACTION = 0.1;
+
+const LAB_ANCHOR_BASE: readonly number[] = [0, 1, 2].map(
+  (i) => LAB_GIZMO_RIGHT * CAMERA[0][i] + LAB_GIZMO_UP * CAMERA[1][i],
+);
+
+/** The gizmo's world point: the base, walked towards the sample along world +z. */
+export const LAB_ANCHOR_WORLD: readonly number[] = [
+  LAB_ANCHOR_BASE[0],
+  LAB_ANCHOR_BASE[1],
+  LAB_ANCHOR_BASE[2] + LAB_APPROACH_FRACTION * Math.hypot(...LAB_ANCHOR_BASE),
+];
+
+/** ...and where that lands on the canvas. Derived, never authored. */
+export const LAB_ORIGIN: ScenePoint = project(LAB_ANCHOR_WORLD);
+
 /** Crystal axis i (0=x, 1=y, 2=z) expressed in the lab basis: column i of R. */
 export function crystalAxisInLab(R: number[][], i: number): number[] {
   return [R[0][i], R[1][i], R[2][i]];
@@ -354,7 +395,7 @@ export function buildOrientationScene(angles: OrientationAngles = {}): Orientati
       label,
       direction,
       from: anchorPoint,
-      to: project([0, 1, 2].map((j) => anchor3[j] + CRYSTAL_AXIS_LENGTH * direction[j])),
+      to: project([0, 1, 2].map((j) => anchor3[j] + (AXIS_ARROW_LENGTH / SCALE) * direction[j])),
     };
   });
 
@@ -365,7 +406,7 @@ export function buildOrientationScene(angles: OrientationAngles = {}): Orientati
       label,
       direction,
       from: LAB_ORIGIN,
-      to: project(direction, LAB_ORIGIN, LAB_AXIS_SCALE),
+      to: project(direction, LAB_ORIGIN, AXIS_ARROW_LENGTH),
     };
   });
 

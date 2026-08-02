@@ -15,10 +15,11 @@ import {
   CAM_ELEVATION_DEG,
   VIEW_TO_CAMERA,
   LAB_ORIGIN,
-  LAB_AXIS_SCALE,
+  LAB_ANCHOR_WORLD,
+  LAB_APPROACH_FRACTION,
+  AXIS_ARROW_LENGTH,
   SCALE,
   BODY_ORIGIN,
-  CRYSTAL_AXIS_LENGTH,
   SCENE_WIDTH,
   SCENE_HEIGHT,
 } from './orientationScene';
@@ -289,12 +290,46 @@ describe('orientationScene — the fixed viewpoint', () => {
   });
 
   /**
-   * DERIVATION. The lab triad is drawn at LAB_ORIGIN = (46, 168) with LAB_AXIS_SCALE = 26, and
-   * screen = (origin.x + s*u, origin.y - s*v):
-   *   X: x = 46 + 26(-0.9063078) = 22.43600   y = 168 - 26(0.1445440) = 164.24186
-   *   Y: x = 46 + 26(0)          = 46         y = 168 - 26(0.9396926) = 143.56799
-   *   Z: x = 46 + 26(0.4226183)  = 56.98807   y = 168 - 26(0.3099755) = 159.94064
+   * DERIVATION of the lab gizmo, which is anchored in the WORLD and then walked towards the sample.
+   *
+   * Its base sits -4.3 lab units along screen right and -2.6 along screen up, in the screen plane
+   * through the world origin, so with row0 and row1 from the block above
+   *   base = -4.3 row0 - 2.6 row1 = (3.52131, -2.44320, -2.62319),
+   * and because the body's centre IS the world origin, |base| = 5.02494 is the whole anchor-to-
+   * sample distance. The approach is a tenth of that along world +z:
+   *   anchor = base + 0.50249 z = (3.52131, -2.44320, -2.12070).
+   *
+   * Projected about BODY_ORIGIN = (164, 82) at SCALE 28:
+   *   base   . row0 = -4.3      -> x = 164 + 28(-4.3)      = 43.60000    (exact by construction)
+   *   base   . row1 = -2.6      -> y =  82 - 28(-2.6)      = 154.80000
+   *   anchor . row0 = -4.08763  -> x = 164 + 28(-4.08763)  = 49.54617
+   *   anchor . row1 = -2.44424  -> y =  82 - 28(-2.44424)  = 150.43870
+   * so the approach moves the gizmo by (+5.94617, -4.36130), i.e. 7.374 units right and UP -- on
+   * screen, straight at the sample.
+   *
+   * The arrows are then drawn at AXIS_ARROW_LENGTH = 30 from that point:
+   *   X: x = 49.54617 + 30(-0.90631) = 22.35693   y = 150.43870 - 30( 0.14454) = 146.10238
+   *   Y: x = 49.54617 + 30( 0)       = 49.54617   y = 150.43870 - 30( 0.93969) = 122.24792
+   *   Z: x = 49.54617 + 30( 0.42262) = 62.22471   y = 150.43870 - 30( 0.30998) = 141.13943
    */
+  it('anchors the lab gizmo in the world and walks it towards the sample', () => {
+    // the base point, before the approach — its projection is exact by construction
+    const base = [LAB_ANCHOR_WORLD[0], LAB_ANCHOR_WORLD[1], LAB_ANCHOR_WORLD[2] - LAB_APPROACH_FRACTION * 5.02494];
+    const basePoint = project(base);
+    expect(basePoint.x).toBeCloseTo(43.6, 4);
+    expect(basePoint.y).toBeCloseTo(154.8, 4);
+
+    closeTo(LAB_ANCHOR_WORLD, [3.52131, -2.4432, -2.1207], 4);
+    expect(LAB_ORIGIN.x).toBeCloseTo(49.54617, 4);
+    expect(LAB_ORIGIN.y).toBeCloseTo(150.4387, 4);
+
+    // the approach really does run at the sample: towards the body origin, not away from it
+    const toBody = Math.hypot(BODY_ORIGIN.x - basePoint.x, BODY_ORIGIN.y - basePoint.y);
+    const toBodyAfter = Math.hypot(BODY_ORIGIN.x - LAB_ORIGIN.x, BODY_ORIGIN.y - LAB_ORIGIN.y);
+    expect(toBodyAfter).toBeLessThan(toBody);
+    expect(Math.hypot(LAB_ORIGIN.x - basePoint.x, LAB_ORIGIN.y - basePoint.y)).toBeCloseTo(7.374, 3);
+  });
+
   it('projects the lab triad to its hand-derived screen positions', () => {
     const scene = buildOrientationScene();
     const [X, Y, Z] = scene.labAxes;
@@ -302,12 +337,26 @@ describe('orientationScene — the fixed viewpoint', () => {
     expect(Y.label).toBe('Y');
     expect(Z.label).toBe('Z');
 
-    expect(X.to.x).toBeCloseTo(22.436, 4);
-    expect(X.to.y).toBeCloseTo(164.24186, 5);
-    expect(Y.to.x).toBeCloseTo(46, 12);
-    expect(Y.to.y).toBeCloseTo(143.56799, 5);
-    expect(Z.to.x).toBeCloseTo(56.98807, 5);
-    expect(Z.to.y).toBeCloseTo(159.94064, 5);
+    expect(X.to.x).toBeCloseTo(22.35693, 4);
+    expect(X.to.y).toBeCloseTo(146.10238, 4);
+    expect(Y.to.x).toBeCloseTo(49.54617, 4);
+    expect(Y.to.y).toBeCloseTo(122.24792, 4);
+    expect(Z.to.x).toBeCloseTo(62.22471, 4);
+    expect(Z.to.y).toBeCloseTo(141.13943, 4);
+  });
+
+  /**
+   * ONE ARROW LENGTH, TWO TRIADS. Both are drawn at AXIS_ARROW_LENGTH, so congruent directions give
+   * congruent arrows. The screen-identity pin at cut [001] leans on this: it used to divide out two
+   * different length conventions before it could compare, and now has nothing to divide out.
+   */
+  it('draws both triads at the same arrow length', () => {
+    const scene = buildOrientationScene(presetFor('[001]'));
+    const len = (a: { from: { x: number; y: number }; to: { x: number; y: number } }) =>
+      Math.hypot(a.to.x - a.from.x, a.to.y - a.from.y);
+    scene.crystalAxes.forEach((c, i) => expect(len(c)).toBeCloseTo(len(scene.labAxes[i]), 9));
+    // and that shared length is the constant itself, foreshortened by the axis image
+    expect(len(scene.labAxes[1])).toBeCloseTo(AXIS_ARROW_LENGTH * 0.9396926, 5);
   });
 
   /** Y is the plumb line: it leaves the origin straight up, with no horizontal component at all. */
@@ -460,8 +509,8 @@ describe('orientationScene — the zero-rotation special case', () => {
       y: (axis.to.y - axis.from.y) / unit,
     });
 
-    const crystal = scene.crystalAxes.map((a) => delta(a, SCALE * CRYSTAL_AXIS_LENGTH));
-    const lab = scene.labAxes.map((a) => delta(a, LAB_AXIS_SCALE));
+    const crystal = scene.crystalAxes.map((a) => delta(a, AXIS_ARROW_LENGTH));
+    const lab = scene.labAxes.map((a) => delta(a, AXIS_ARROW_LENGTH));
 
     crystal.forEach((c, i) => {
       expect(Math.abs(c.x - lab[i].x)).toBeLessThan(AXIS_EPSILON);
@@ -866,7 +915,7 @@ describe('orientationScene — handedness as drawn', () => {
   ];
 
   it('draws a right-handed crystal triad for every cut and rotation', () => {
-    const s = SCALE * CRYSTAL_AXIS_LENGTH;
+    const s = AXIS_ARROW_LENGTH;
     (Object.keys(CUTS) as Array<keyof typeof CUTS>).forEach((cut) => {
       const preset = presetFor(cut);
       for (let phiX = -90; phiX <= 90; phiX += 45) {
@@ -882,14 +931,14 @@ describe('orientationScene — handedness as drawn', () => {
   });
 
   it('draws a right-handed lab triad', () => {
-    const s = LAB_AXIS_SCALE;
+    const s = AXIS_ARROW_LENGTH;
     const [X, Y, Z] = buildOrientationScene().labAxes;
     expect(cross2(delta(X), delta(Y))).toBeCloseTo(-s * s * dot(Z.direction, screenNormal), 9);
     // and concretely: row0 x row1 = VIEW_TO_CAMERA here, so Z . screenNormal = -0.8516507 and
-    // cross2 = 26^2 * 0.8516507 = 575.71594, positive in SVG coordinates. Checked against the
-    // deltas directly: X = (-23.56400, -3.75814), Y = (0, -24.43201), and
-    // (-23.56400)(-24.43201) - (-3.75814)(0) = 575.71594.
-    expect(cross2(delta(X), delta(Y))).toBeCloseTo(575.71594, 4);
+    // cross2 = AXIS_ARROW_LENGTH^2 * 0.8516507 = 900 * 0.8516507 = 766.48567, positive in SVG
+    // coordinates. Checked against the deltas directly: X = (-27.18923, -4.33632),
+    // Y = (0, -28.19078), and (-27.18923)(-28.19078) - (-4.33632)(0) = 766.48567.
+    expect(cross2(delta(X), delta(Y))).toBeCloseTo(766.48567, 4);
   });
 });
 
