@@ -450,17 +450,22 @@ describe('orientationScene — the anchor corner', () => {
   /** The rigid-ride property: the anchor is a function of the CUT alone. Rotating the sample must
    *  not make the triad jump to another corner — it rides with the body. */
   it('keeps the anchor corner fixed under every rotation', () => {
+    const drifted: string[] = [];
     (Object.keys(CUTS) as Array<keyof typeof CUTS>).forEach((cut) => {
       const preset = presetFor(cut);
       const atRest = buildOrientationScene(preset).anchorCorner;
       for (let phiX = -90; phiX <= 90; phiX += 15) {
         for (let phiY = -90; phiY <= 90; phiY += 15) {
           for (let psi = -180; psi <= 180; psi += 30) {
-            expect(buildOrientationScene({ ...preset, phiX, phiY, psi }).anchorCorner).toBe(atRest);
+            const seen = buildOrientationScene({ ...preset, phiX, phiY, psi }).anchorCorner;
+            if (seen !== atRest) drifted.push(`${cut} (${phiX}, ${phiY}, ${psi}): ${atRest} -> ${seen}`);
           }
         }
       }
     });
+    // Collected rather than fail-on-first: a drift would be a property failure, and the pattern of
+    // WHERE it drifts is what would diagnose it. Also keeps ~11k iterations off the assertion clock.
+    expect(drifted).toEqual([]);
   });
 
   /**
@@ -573,31 +578,48 @@ describe('orientationScene — handedness as drawn', () => {
 // ===========================================================================================
 
 describe('orientationScene — the canvas', () => {
-  /** Everything the component draws has to land inside the viewBox, with room for the labels. The
-   *  bound is checked over the whole reachable space rather than trusted from the constants. */
+  /**
+   * Everything the component draws has to land inside the viewBox, with room for the labels. The
+   * bound is measured over the whole reachable space rather than trusted from the constants.
+   *
+   * The envelope is accumulated and asserted ONCE rather than per point: the sweep visits ~2200
+   * scenes, and four expectations per point put ~10^5 assertions on the clock, which timed out
+   * under full-suite contention (the T1/E29 lesson, in its unit-test form). Collecting also makes
+   * the failure message useful -- it reports the extent that broke the bound, not just that one did.
+   */
   it('keeps every drawn point inside the canvas with margin', () => {
     const MARGIN = 8; // room for a label beside an arrow tip
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
     (Object.keys(CUTS) as Array<keyof typeof CUTS>).forEach((cut) => {
       const preset = presetFor(cut);
       for (let phiX = -90; phiX <= 90; phiX += 30) {
         for (let phiY = -90; phiY <= 90; phiY += 30) {
           for (let psi = -180; psi <= 180; psi += 45) {
             const scene = buildOrientationScene({ ...preset, phiX, phiY, psi });
-            const points = [
+            for (const p of [
               ...scene.corners,
               ...scene.crystalAxes.flatMap((a) => [a.from, a.to]),
               ...scene.labAxes.flatMap((a) => [a.from, a.to]),
-            ];
-            points.forEach((p) => {
-              expect(p.x).toBeGreaterThan(MARGIN);
-              expect(p.x).toBeLessThan(SCENE_WIDTH - MARGIN);
-              expect(p.y).toBeGreaterThan(MARGIN);
-              expect(p.y).toBeLessThan(SCENE_HEIGHT - MARGIN);
-            });
+            ]) {
+              if (p.x < minX) minX = p.x;
+              if (p.x > maxX) maxX = p.x;
+              if (p.y < minY) minY = p.y;
+              if (p.y > maxY) maxY = p.y;
+            }
           }
         }
       }
     });
+
+    // Infinity on either side would mean the sweep never ran; the four bounds below reject that.
+    expect(minX).toBeGreaterThan(MARGIN);
+    expect(maxX).toBeLessThan(SCENE_WIDTH - MARGIN);
+    expect(minY).toBeGreaterThan(MARGIN);
+    expect(maxY).toBeLessThan(SCENE_HEIGHT - MARGIN);
   });
 
   it('projects the body about the body origin', () => {

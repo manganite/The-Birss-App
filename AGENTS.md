@@ -173,7 +173,7 @@ src/
   types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType, GroupKey) and TENSOR_META
   domainTypes.ts                 # Dependency-free domain unions (R2), imported by types.ts and the data modules
   data/pointGroups.ts            # Static registry of all 122 magnetic point groups
-  services/                      # 16 non-test modules; the dependency direction is spelled out below
+  services/                      # 17 non-test modules; the dependency direction is spelled out below
     tensorCalculator.ts          # Thin barrel re-exporting the public API below
     tolerances.ts                # Shared numeric epsilons (COEFF_EPSILON, ROOT_MATCH_EPSILON, …)
     symmetryGroups.ts            # Matrix algebra, GENERATORS table, group closure, getSymmetryOperations
@@ -184,6 +184,7 @@ src/
     propertyFlags.ts             # isPolar / isChiral / isFerromagnetic / isMagnetoelectric
     conventionMapping.ts         # App ↔ Birss ↔ ITC group-symbol mapping and display names
     orientation.ts               # Miller index → preset angles (hklToPresetAngles), azimuth-zero convention
+    orientationScene.ts          # Scene model for the Simulator's sample-orientation widget (slab, triads, anchor corner)
     trigPoly.ts                  # Trigonometric polynomial algebra for symbolic rotation angles (phiX, phiY, psi)
     symbolicProjection.ts        # Symbolic SHG source terms — parallel path producing TrigPoly coefficients
     trigPolyFormat.ts            # LaTeX formatting for TrigPoly and SymPoly expressions
@@ -196,6 +197,7 @@ src/
     PointGroupExplorer.tsx       # Explorer page — browse & filter the 122 groups
     OperationsModal.tsx          # Modal showing symmetry operations for a selected group
     SimulatorPage.tsx            # Simulator page — radar chart polarimetry, Fourier series formulas
+    OrientationSceneView.tsx     # Simulator: the live sample-orientation scene beside the rotation sliders
     TablesPage.tsx               # Tables page — interactive Birss-table lookup
     tables/                      # Tables-page sub-views (LookupControls, LookupChain, TensorFormResult, GroupSharingList, …)
     help/                        # Help-page per-tab sub-views (Overview, Conventions, Physics, Simulation, Deeper)
@@ -228,6 +230,7 @@ are both consequences of that layering rather than separate conventions.
 | 3 | `latexFormatting` | `symmetryGroups`, `tensorProjection` |
 | 3 | `propertyFlags` | `symmetryGroups`, `tensorProjection`, `data/` |
 | 3 | `orientation` | `tensorProjection` |
+| 3 | `orientationScene` | `tensorProjection`, `tolerances` |
 | 3 | `groupSearch` | `conventionMapping`, `data/` |
 | 4 | `nyeScheme` | `tensorForms` (type-only), `tensorProjection` |
 | 4 | `trigPolyFormat` | `trigPoly`, `tensorProjection`, `symbolicProjection` (type-only), `tolerances` |
@@ -244,6 +247,11 @@ What each module is for, and the constraints that are not visible in the graph:
 - **`linalg.ts`** — `rref`, `spanRank`, `isIndependentOf` and the pivot epsilons, the numeric 3×3
   rotations, and the symbolic `TrigMat3` helpers. The `trigPoly` dependency comes from that last
   group only; the numeric half is independent of it.
+- **`orientationScene.ts`** — the scene model behind the Simulator's sample-orientation widget:
+  slab corners, camera-facing faces, the two triads and the anchor corner, already projected into
+  SVG units. Like `nyeScheme` it is a VIEW over an existing derivation, not a second one — its
+  rotation matrix is `tensorProjection.composeOrientationMatrix`, so the picture and the
+  crystal-axes equation box cannot disagree.
 - **`tensorProjection.ts`** — the numeric projection core (`calculateTensorBasisResults`,
   `calculateSHGExpressions`, `getLabFrameVectors`, `transformTensor`/`averageTensor`), the Q0
   constraint partition (`reducedPartition`, `formatReducedRelations`,

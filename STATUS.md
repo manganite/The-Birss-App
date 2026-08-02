@@ -5,7 +5,7 @@
 > **Authority:** authoritative for the current cycle. Section 1 is the ONLY list of open,
 > in-scope work; deferred ideas live in `docs/planning/BACKLOG.md`.
 
-_Last updated: 2026-08-01. Synthesises open points from the planning documents in
+_Last updated: 2026-08-02. Synthesises open points from the planning documents in
 `docs/planning/` (`ROADMAP.md` and `ROADMAP-next.md` are closed out; `TODO-next.md` is the
 frozen working-draft archive of series closed before 2026-07-31; `LEDGER.md` is the append-only
 record from that date on). See those files for derivation details, file:line anchors, and
@@ -105,7 +105,17 @@ snapping — A-series ledger in `TODO-next.md`).
 Series closed since the last release cut. Each release absorbs them into its own block above, so
 this list is empty immediately after a cut and grows again as work closes.
 
-_Nothing closed since v0.24.0._
+- **SIM-O — sample-orientation widget for the Simulator** (2026-08-02). A live axonometric scene
+  beside the crystal-rotation sliders: the sample as a flat plate turning with the sliders, carrying
+  the crystal triad from one corner, in front of a fixed lab triad whose Z is the beam. Desktop-only,
+  inheriting the rotation controls' own breakpoint gate rather than adding one. The widget takes its
+  rotation matrix from the engine, which required extracting the composition — inlined identically in
+  two places — into `composeOrientationMatrix`; the extraction was proven behaviour-neutral against
+  the pins rather than asserted. Two corrections to the recorded anchor-corner rule came out of it:
+  the score's sign is not the defect criterion (an axis leaves the body unless it runs inward along
+  all three of the corner's face normals), and [110] is degenerate as well as [111]. Suite 2422 →
+  2473. Full record in `docs/planning/LEDGER.md`, user-facing detail in `CHANGELOG.md`
+  `[Unreleased]`.
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).

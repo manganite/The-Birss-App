@@ -439,6 +439,159 @@ divergence reads as intent:
 
 ---
 
+## SIM-O — pseudo-3D sample-orientation widget for the Simulator
+
+Branch `feat/sim-orientation-widget`, 2026-08-02. Base `e7733b2` (v0.24.0), suite 2422 green at
+branch point; 2473 at close. Maintainer design recorded 2026-08-02: a small always-live scene beside
+the crystal-rotation sliders — fixed axonometric viewpoint, a fixed lab triad in front of the sample
+with Z ∥ k, the sample a flat cuboid rotating with the sliders and carrying a crystal triad anchored
+at one corner. The cuboid is cut-independent; the cut changes only how the crystal axes lie inside
+it. Desktop-only, because crystal rotation is.
+
+### The premise pass held, and produced an engine change
+
+All three premises checked out, but P2 did not resolve as written.
+
+- **P1 (mount point, desktop/mobile reality).** The rotation controls sit in
+  `SimulatorSetupPanel.tsx` inside an **unconditional** `hidden md:block` container — distinct from
+  the setup block above it, which is `hidden md:block` only while the mobile disclosure is
+  collapsed. There is no path on which they render on mobile, so the desktop-only premise held and
+  the widget needed no gate of its own: it inherits that container's.
+- **P2 (engine API).** No function returned the composed matrix. The composition was inlined
+  identically at `tensorProjection.ts:927-928` (`calculateSHGExpressions`, the Simulator's path) and
+  `:1000-1001` (`getLabFrameVectors`, the equation box), with a symbolic counterpart at
+  `symbolicProjection.ts:41`. Citable, so the stop-trigger did not fire — but "the widget must use
+  the same composition, from the same code" then had no code to point at.
+- **P3 (patterns).** Desktop-only is pure Tailwind everywhere in `src`; the single `window.innerWidth`
+  is tooltip positioning in `TermInfo.tsx`. The SVG precedent is `tables/NyeSchemeDiagram.tsx`
+  (service supplies the view model, component only draws; fixed geometry constants; ink/paper only;
+  `aria-hidden` glyph layer with a separate accessibility layer).
+
+**Maintainer decision (2026-08-02) on P2:** extract `composeOrientationMatrix` into
+`tensorProjection.ts` (layer 2), both inline sites rewired, `orientationScene` a layer-3 consumer.
+The reasoning is the executor's own and is worth keeping: *the composition order is physics
+convention — the order and sense of Ry·Rx·Rz·R_preset — not matrix algebra, so it belongs beside its
+consumers and `linalg` stays convention-free.* Authorised with a neutrality condition: `rotatedSHG`,
+`shgUnification.pins` and `azimuthConvention` green **unchanged, with no re-capture**, or stop. They
+were, and the full suite stayed at 2422 with `tensorProjection.ts` the only file in the diff. The
+symbolic path is a deliberate nil-action: it shares the order but keeps the angles symbolic over
+`TrigMat3`, so it has no arithmetic to share. Noted in the new function's doc comment.
+
+### Two corrections to the recorded anchor-corner rule
+
+The rule as written — *the corner maximizing the minimum outward component of the three axes*, with
+a priority order as tie-break — survives as the SELECTION metric. Two things around it did not.
+
+**(i) The score's sign is not the defect criterion.** The stop-trigger read "an axis pointing INTO
+the body is a rule defect". Evaluating the score over the complete cut space showed [110] at exactly
+0 and [111] at −0.138071 for their best corners, which under the literal reading would have fired
+the trigger for two of five cuts. But a negative score does not mean an axis enters the body: an
+arrow from a corner enters the slab only if it runs inward along **all three** of that corner's
+adjacent face normals at once, which is strictly weaker than the single-diagonal score. Under that
+test no axis of any cut enters the body, with margins 1, 1, 1, 0.707, 0.577.
+
+| cut | anchor corner | score | face-normal margin | axis into body? |
+| --- | --- | --- | --- | --- |
+| [100] | 4 = (−,+,+) | +0.577 | 1.000 | no |
+| [010] | 2 = (+,−,+) | +0.577 | 1.000 | no |
+| [001] | 0 = (+,+,+) | +0.577 | 1.000 | no |
+| [110] | 0 = (+,+,+) | **0.000** (2-way tie) | 0.707 | no |
+| [111] | 4 = (−,+,+) | **−0.138** (2-way tie) | 0.577 | no |
+
+The maintainer separated the two roles accordingly: score selects, face-normal test detects defects.
+`pointsIntoBody` is that criterion, exported and asserted for every axis of all five cuts.
+
+**(ii) [110] is degenerate too, and more sharply than [111].** The work order named only [111]. Both
+are two-way ties; [110]'s two corners tie at *exactly* zero, i.e. at `0` versus `-0` in floating
+point, so a bare `>` comparison would have let the sign of a zero decide which corner the triad hangs
+from. The tie-break takes the lowest corner index and compares with `AXIS_EPSILON` from
+`tolerances.ts` — the maintainer's call, and the right home: it is documented there as the tolerance
+for "dot-product sign checks", which is exactly this. Determinism is asserted for both degenerate
+cuts.
+
+**(iii) A third correction, found at the interaction layer.** The work order expected [111] to anchor
+at a different corner from [100]. It does not — both land on corner 4. Under [100] the axes are
+(z, y, −x); under [111] all three carry +1/√3 of Z; the same corner serves both. In the cubic preset
+set it is [110] that re-anchors, so that is the pair the DOM test uses. Pinned in both layers as an
+assertion, so the coincidence cannot later be mistaken for a bug.
+
+### The cut space is complete, not sampled
+
+`thetaX/thetaY/psi0` have exactly one writer, `KDirectionSelector` (mounted by the Simulator and, in
+two places, the Calculator), offering five directions across all seven crystal systems: [100], [010],
+[001], [110], [111]. The anchor is rotation-invariant by construction — body and triad carry the same
+`R_user`, so every dot product in the rule is unchanged by it — so five presets is an exhaustive check
+of the anchor rule, not a sample of it. That is what lets the table above be stated as a property
+rather than as spot checks.
+
+### Design decisions
+
+- **No subscripts on the labels.** Lower-case x/y/z for the crystal axes against upper-case X/Y/Z for
+  the lab — the app's established case convention — with `∥ k` on lab Z, the one fact the picture
+  cannot show. The adjacent crystal-axes equation box keeps its subscripts and serves as the legend,
+  so the picture does not have to repeat what sits two rows above it.
+- **The picture is the equation box's general case.** At zero rotation the drawn triad IS
+  `getLabFrameVectors`; under rotation it is the same matrix with the user angles filled in. Neither
+  derives the matrix, so they cannot disagree. The unit tests assert that identity literally for all
+  five cuts, with both sides carrying independently hand-written values.
+- **Layout (probe result).** Beside the sliders from `lg` up; between `md` and `lg` the 276-unit scene
+  would squeeze the slider tracks below usable length, so it drops below them there. Inside the
+  `showRotation` disclosure, i.e. it appears with the sliders it mirrors rather than in place of them.
+- **Accessibility.** One labelled image: `role="img"`, no tab stop, no interactive surface, and an
+  aria-label naming the cut and the three angles in the same words the slider labels use.
+- **Scene constants measured, not guessed.** The body and its triad sweep a square of about ±78 units
+  about the body origin over the whole reachable space; the canvas was sized from that envelope and a
+  bounds test re-checks it over the sweep.
+
+### Verification
+
+- **Unit (44).** Hand-derived expectations with the derivation in each fixture comment: the screen
+  basis in closed form (r = (−sin a, cos a, 0), u = (−sin e cos a, −sin e sin a, cos e)), the beam
+  axis drawn exactly vertical, the zero-rotation identity with the equation box for all five cuts,
+  one 90° case per axis, a generic triple against an independent re-derivation of the product, the
+  anchor corner and its tie-break for all five cuts, rigid-ride over a rotation sweep, the
+  face-normal defect criterion with a positive control, projected handedness of both triads, and the
+  canvas bounds. The rotation matrix is deliberately **not** re-derived — it is guarded upstream, and
+  re-deriving it would only restate the convention against itself.
+- **Interaction (7).** Mount and containment, the image contract, live redraw against the sliders
+  with the lab triad held fixed, the aria-label tracking angles and cut, cut-switch re-mapping with
+  the body unmoved, and re-anchoring on [100] → [110].
+- **Browser (Playwright, review time).** 1440 px: beside the sliders. 900 px: below them. 390 px: in
+  the DOM but not rendered. Zero rotation reproduces the equation box `x=X, y=Y, z=Z` on screen.
+
+### Paragraph-D datapoint — the desktop cut is not assertable at the interaction layer
+
+The work order asked for a jsdom pin that the widget "renders on a desktop viewport and NOT on a
+mobile viewport". That cannot be written against a Tailwind-only implementation: jsdom applies no
+stylesheet, so the element is in the DOM at every viewport and resizing the jsdom window proves
+nothing. The alternative — a `matchMedia` gate — would buy testability at the price of STATUS § 5's
+*"pure Tailwind responsive breakpoints; no UA sniffing"*, for a widget that needs no JS-side
+knowledge of the viewport.
+
+**Maintainer decision (2026-08-02):** keep Tailwind; re-formulate the pin as the containment
+contract — the widget sits inside a container carrying the breakpoint classes, together with the
+sliders it mirrors, and no ungated second instance exists — and take the rendered cut as
+browser-layer evidence. Recorded here as one more datapoint on the standing question of what the
+interaction layer can and cannot certify, not re-argued at the file. Third such datapoint after the
+T5a fine-step boundary and the KaTeX accessible-name limitation; unlike those two, this one is about
+CSS rather than about an unimplemented DOM API, which is the sharper version of the same gap.
+
+### Completed
+
+- Commit `574567f` — `composeOrientationMatrix` extracted, neutrality proven against the three named
+  guards with no re-capture.
+- Commit `0806082` — the scene service and its 44 unit anchors.
+- Commit `a6f32c1` — the SVG widget and its desktop mount.
+- Commit `46500d5` — the interaction pins.
+- Commit 5 — this entry, the CHANGELOG bullet, the STATUS closure, and the AGENTS map correction
+  (17 service modules, `orientationScene` at layer 3).
+
+### Open
+
+*(none — the series is closed.)*
+
+---
+
 ## Releases
 
 *One line per release cut from 2026-07-31 on. The detail lives in `CHANGELOG.md` and in the series

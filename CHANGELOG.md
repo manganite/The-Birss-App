@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Simulator: a live **sample-orientation view** beside the crystal-rotation sliders (desktop, where
+  crystal rotation lives). A fixed axonometric scene shows the sample as a flat plate whose large
+  face meets the beam at zero rotation, turning in real time as the sliders move, carrying the
+  crystal axes x, y, z from one corner of the plate; in front of it stands a lab frame X, Y, Z that
+  never moves, with Z marked as the beam direction. Lower-case axes are the crystal's, upper-case
+  the lab's — the same case convention the rest of the app uses — and the crystal-axes equation box
+  just above doubles as the legend: at zero rotation the picture and that box say the same thing.
+  Switching the crystal cut re-maps the axes inside the plate (and can move the corner they hang
+  from); rotating never does. The scene is a picture of the same rotation the Simulator computes
+  with, not a separate model of it, and is described for screen readers by the current cut and the
+  three angles.
+
 ## [0.24.0] - 2026-08-01
 
 ### Added
