@@ -586,6 +586,61 @@ CSS rather than about an unimplemented DOM API, which is the sharper version of 
 - Commit 5 — this entry, the CHANGELOG bullet, the STATUS closure, and the AGENTS map correction
   (17 service modules, `orientationScene` at layer 3).
 
+### Revision 2026-08-02 (pre-push) — the camera was wrong, and the tests could not see it
+
+Appended rather than folded into the entry above, per the append-only rule: what the first pass got
+wrong is part of the record.
+
+**The defect.** Visual acceptance found the scene rendering a cyclic permutation of the lab axes —
+Z_lab ran up the screen instead of across it, so the sample lay flat like a table instead of standing
+as a wall facing the beam. Every direction, anchor and identity test stayed green throughout, and
+correctly so: **they all compare LAB-space vectors, and are blind to where the camera puts them.**
+The suite had no assertion about the picture's own geometry, only about the geometry it depicts.
+
+**The root cause was the form of the constants, not their values.** The camera was parameterized as
+azimuth + elevation with an implied world-up, and that construction can only make lab Z the vertical —
+`SCREEN_RIGHT` was built as `normalize(Z × c)`, which bakes the beam axis into the definition of the
+horizon. There was no value of the two angles that would have produced the intended picture.
+
+**The fix.** The viewpoint is now stated directly as the screen images of the three lab axes
+(`AXO_X`, `AXO_Y`, `AXO_Z`; u right, v up), which is a complete specification of a general
+axonometric projection and makes the contract legible instead of implied. Backface culling takes the
+line of sight from the projection's kernel — the cross product of its two rows — whose sign follows
+the same right-handed rule an orthonormal camera obeys. The maintainer's target:
+
+| axis | image (u, v) | reads as |
+| --- | --- | --- |
+| Y_lab | (0.00, 1.00) | exactly vertical, up — the picture's plumb line |
+| Z_lab ∥ k | (0.94, 0.20) | to the right, slightly raised |
+| X_lab | (−0.82, −0.42) | to the left and down |
+
+Contractual is the sign structure, not the magnitudes (±10 % is aesthetic). The consequence is the
+point: the large face is ⊥ k, so at zero rotation it spans the images of X and Y — the sample stands
+as an obliquely seen wall and its thickness runs off to the right, along the "∥ k" arrow. The kernel
+lands on the −Z side, which is exactly what puts the thickness right rather than left.
+
+**The two pins that close the class**, and they divide the work — confirmed by mutation while
+writing, not assumed:
+
+- **Camera contract** — the sign structure of the three images, mutual non-degeneracy, and the
+  hand-derived kernel. Restoring the old constants fails this test and five others.
+- **Image parallelism at zero rotation, cut [100]** — the drawn x arrow is parallel to the drawn Z
+  arrow, y to Y, and z ANTI-parallel to X, i.e. the equation box `x = Z, y = Y, z = −X` restated in
+  screen space with its signs. Tolerance `AXIS_EPSILON`. This one is blind to the camera constants by
+  design and catches the other half: reading the triad off the ROWS of R instead of its columns fails
+  it. The old camera does **not** fail it — which is precisely why both are needed.
+
+**The generalisable lesson**, offered for § 5 if the maintainer wants it there: *a test that asserts
+the modelled quantity does not test the depiction of it.* The widget was the app's first drawing, and
+the suite had grown up around services whose output IS the answer. Every fixture in the first pass
+compared vectors the camera never touches.
+
+Also in this revision: canvas re-measured under the new projection (the envelope is wider than tall
+because the projection is oblique — ±83 by ±73 about the body origin at SCALE 26), all hand-derived
+projection fixtures re-derived with their comments, and the layout changed to a two-column flex from
+`md` with the slider group capped at `max-w-xl` and the scene `self-start`, so its top edge lines up
+with the first slider row. Suite 2473 → 2474.
+
 ### Open
 
 *(none — the series is closed.)*

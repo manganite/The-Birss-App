@@ -122,8 +122,9 @@ export function SimulatorSetupPanel({
         </div>
 
         {showRotation && (
-          <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-            <div className="flex-1 min-w-0 space-y-3">
+          <div className="flex flex-col md:flex-row md:items-start gap-6">
+            {/* Capped, so the tracks stop growing rather than pushing the scene off to one side. */}
+            <div className="flex-1 min-w-0 max-w-xl space-y-3">
               {(
                 [
                   { label: '\\varphi_X', value: phiX, setValue: setPhiX, min: -90, max: 90, desc: 'Tilt about lab-x' },
@@ -178,9 +179,8 @@ export function SimulatorSetupPanel({
               </button>
             </div>
 
-            {/* The live picture of the same state. Beside the sliders where the row fits, below
-                them between md and lg — the scene is a fixed 260 units wide and would otherwise
-                squeeze the slider tracks below usable length. */}
+            {/* The live picture of the same state, beside the sliders from md up: its top edge
+                lines up with the first slider row rather than hanging below the group. */}
             <OrientationSceneView
               cutLabel={activePreset ? activePreset.label : 'Custom'}
               thetaX={thetaX}

@@ -41,17 +41,18 @@ import { AXIS_EPSILON } from './tolerances';
 
 /**
  * Canvas, in SVG user units. Sized from the measured envelope rather than guessed: over the whole
- * reachable space the body and its triad sweep a square roughly +-78 units about BODY_ORIGIN, and
- * the labels add about 11 more. The lower left stays clear of that envelope for the lab triad.
+ * reachable space the body and its triad sweep about +-84 units horizontally and +-74 vertically
+ * about BODY_ORIGIN, and the labels add roughly 11 more. The envelope is wider than it is tall
+ * because the projection is oblique. The lower left stays clear of it for the lab triad.
  */
-export const SCENE_WIDTH = 276;
-export const SCENE_HEIGHT = 210;
+export const SCENE_WIDTH = 300;
+export const SCENE_HEIGHT = 224;
 
 /** Where the body's centre projects to. Right of centre, leaving the lower left for the lab triad. */
-export const BODY_ORIGIN = { x: 158, y: 100 };
+export const BODY_ORIGIN = { x: 172, y: 102 };
 
 /** Lab units -> SVG user units for the body and the crystal triad. */
-export const SCALE = 30;
+export const SCALE = 26;
 
 /**
  * Half-extents of the sample slab in lab units at zero rotation: a flat plate whose large face is
@@ -61,35 +62,12 @@ export const SCALE = 30;
 export const HALF_EXTENTS = { x: 1.1, y: 0.9, z: 0.26 };
 
 /** Length of a drawn crystal axis, in lab units. Short enough that the sample stays the subject. */
-export const CRYSTAL_AXIS_LENGTH = 1.25;
+export const CRYSTAL_AXIS_LENGTH = 1.2;
 
 /** The lab triad: fixed screen origin, and its own (smaller) scale in SVG units per lab unit. */
-export const LAB_ORIGIN = { x: 38, y: 170 };
-export const LAB_AXIS_SCALE = 25;
+export const LAB_ORIGIN = { x: 40, y: 180 };
+export const LAB_AXIS_SCALE = 24;
 
-/**
- * The viewpoint. A fixed axonometric (orthographic) camera, given as a direction FROM the scene
- * TOWARDS the camera in lab coordinates: azimuth measured in the lab XY-plane from +X, elevation
- * above it. Chosen so lab Z (the beam) reads close to vertical on screen and none of the three lab
- * axes projects onto another.
- */
-export const VIEW_AZIMUTH_DEG = 34;
-export const VIEW_ELEVATION_DEG = 21;
-
-const deg = (d: number) => (d * Math.PI) / 180;
-
-/** Unit vector from the scene towards the camera. A face is visible iff its outward normal · this > 0. */
-export const VIEW_TO_CAMERA: readonly number[] = [
-  Math.cos(deg(VIEW_ELEVATION_DEG)) * Math.cos(deg(VIEW_AZIMUTH_DEG)),
-  Math.cos(deg(VIEW_ELEVATION_DEG)) * Math.sin(deg(VIEW_AZIMUTH_DEG)),
-  Math.sin(deg(VIEW_ELEVATION_DEG)),
-];
-
-/**
- * Screen basis. `SCREEN_RIGHT` is horizontal in the lab XY-plane (so lab Z never tilts the horizon),
- * `SCREEN_UP` completes a right-handed frame with the view direction: RIGHT x UP = VIEW_TO_CAMERA.
- * That identity is what makes the projected handedness test in the unit tests meaningful.
- */
 const norm3 = (v: number[]): number[] => {
   const n = Math.hypot(v[0], v[1], v[2]);
   return [v[0] / n, v[1] / n, v[2] / n];
@@ -99,11 +77,58 @@ const cross3 = (a: readonly number[], b: readonly number[]): number[] => [
   a[2] * b[0] - a[0] * b[2],
   a[0] * b[1] - a[1] * b[0],
 ];
-const dot3 = (a: readonly number[], b: readonly number[]): number =>
-  a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const dot3 = (a: readonly number[], b: readonly number[]): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
-export const SCREEN_RIGHT: readonly number[] = norm3(cross3([0, 0, 1], VIEW_TO_CAMERA));
-export const SCREEN_UP: readonly number[] = cross3(VIEW_TO_CAMERA, SCREEN_RIGHT);
+/** A screen-space direction: `u` to the right, `v` UP. SVG's downward y is applied in `project`. */
+export interface AxoImage {
+  u: number;
+  v: number;
+}
+
+/**
+ * THE VIEWPOINT, given directly as the screen images of the three lab axes.
+ *
+ * A general axonometric (parallel) projection is fully determined by where it sends the three basis
+ * vectors, and stating it that way makes the picture's contract legible: what an axis DOES on screen
+ * is the specification, not a consequence of a camera azimuth one then has to simulate to check.
+ * The earlier azimuth/elevation form was expressed in terms of a world-up that had to be lab Z, which
+ * is exactly how the axes ended up cyclically permuted -- the beam ran up the screen instead of
+ * across it, and every direction test stayed green because they all compare LAB-space vectors and
+ * are blind to the camera.
+ *
+ * THE CONTRACT, asserted in the unit tests and the part that must not drift (the magnitudes are
+ * aesthetic and may be nudged by ~10%; the structure may not):
+ *
+ *   Y_lab   exactly vertical, pointing up   (u = 0, v > 0)
+ *   Z_lab   to the right, slightly raised   (u > 0, small v > 0)
+ *   X_lab   to the left and down            (u < 0, v < 0)
+ *
+ * WHAT THAT MAKES THE PICTURE. The slab's large face is perpendicular to k = Z_lab, so at zero
+ * rotation it spans the images of X and Y: the sample STANDS like an obliquely seen wall, and its
+ * thickness runs off to the right, along the "∥ k" arrow. That is the whole point of the viewpoint --
+ * the beam axis is a direction across the picture, and the sample faces it.
+ */
+export const AXO_X: AxoImage = { u: -0.82, v: -0.42 };
+export const AXO_Y: AxoImage = { u: 0.0, v: 1.0 };
+export const AXO_Z: AxoImage = { u: 0.94, v: 0.2 };
+
+/**
+ * The projection's kernel: the lab direction that maps to the origin of the screen, i.e. the line of
+ * sight. It is the cross product of the projection's two rows, and its sign follows the same
+ * right-handed rule an orthonormal (right, up, toward-camera) frame obeys -- so it points TOWARDS the
+ * viewer, and a face is visible exactly when its outward normal has a positive component along it.
+ *
+ * With the images above it comes out on the -Z side, which is what puts the sample's thickness to the
+ * RIGHT of its visible large face rather than to the left. Not normalized: the unit tests use its
+ * length as the area scale of the projection in the projected-handedness identity.
+ */
+export const AXO_KERNEL: readonly number[] = cross3(
+  [AXO_X.u, AXO_Y.u, AXO_Z.u],
+  [AXO_X.v, AXO_Y.v, AXO_Z.v],
+);
+
+/** Unit line of sight. A face is visible iff its outward normal · this > 0. */
+export const VIEW_TO_CAMERA: readonly number[] = norm3([...AXO_KERNEL]);
 
 // ===========================================================================================
 // Corners and faces of the slab.
@@ -194,12 +219,14 @@ const apply = (M: number[][], v: readonly number[]): number[] => [
   M[2][0] * v[0] + M[2][1] * v[1] + M[2][2] * v[2],
 ];
 
-/** Orthographic projection of a lab-space point onto the canvas, about a given screen origin. */
+/** Axonometric projection of a lab-space point onto the canvas, about a given screen origin. */
 export function project(v: readonly number[], origin: ScenePoint = BODY_ORIGIN, scale = SCALE): ScenePoint {
+  const u = v[0] * AXO_X.u + v[1] * AXO_Y.u + v[2] * AXO_Z.u;
+  const w = v[0] * AXO_X.v + v[1] * AXO_Y.v + v[2] * AXO_Z.v;
   return {
-    x: origin.x + scale * dot3(v, SCREEN_RIGHT),
+    x: origin.x + scale * u,
     // SVG y grows downward, so screen-up is negated here and nowhere else.
-    y: origin.y - scale * dot3(v, SCREEN_UP),
+    y: origin.y - scale * w,
   };
 }
 

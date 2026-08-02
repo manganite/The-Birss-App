@@ -125,7 +125,7 @@ export function OrientationSceneView({ cutLabel, thetaX, thetaY, psi0, phiX, phi
       width={SCENE_WIDTH}
       height={SCENE_HEIGHT}
       viewBox={`0 0 ${SCENE_WIDTH} ${SCENE_HEIGHT}`}
-      className="shrink-0 max-w-full"
+      className="shrink-0 max-w-full self-start"
     >
       {/* The sample. Camera-facing faces only, painter's order; opacity carries the depth. */}
       {scene.faces.map((face) => (

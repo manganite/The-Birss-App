@@ -113,8 +113,12 @@ this list is empty immediately after a cut and grows again as work closes.
   two places — into `composeOrientationMatrix`; the extraction was proven behaviour-neutral against
   the pins rather than asserted. Two corrections to the recorded anchor-corner rule came out of it:
   the score's sign is not the defect criterion (an axis leaves the body unless it runs inward along
-  all three of the corner's face normals), and [110] is degenerate as well as [111]. Suite 2422 →
-  2473. Full record in `docs/planning/LEDGER.md`, user-facing detail in `CHANGELOG.md`
+  all three of the corner's face normals), and [110] is degenerate as well as [111]. Visual
+  acceptance then found the viewpoint itself wrong — the lab axes came out cyclically permuted, and
+  no test could see it, because every fixture compared lab-space vectors the camera never touches;
+  the projection is now stated as the screen images of the three lab axes, with a camera-contract pin
+  and a screen-space parallelism pin closing that class. Suite 2422 → 2474. Full record, including
+  the dated revision, in `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md`
   `[Unreleased]`.
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
