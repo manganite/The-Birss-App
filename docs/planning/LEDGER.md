@@ -1074,6 +1074,13 @@ is not a check.
 *One line per release cut from 2026-07-31 on. The detail lives in `CHANGELOG.md` and in the series
 entries above; this is the index that says which series a given tag carried.*
 
+- **v0.25.0** (2026-08-03) — the sample-orientation release. Carries **SIM-O** (the pseudo-3D
+  sample-orientation widget in the Simulator, the `composeOrientationMatrix` extraction that gave the
+  widget, the polarimetry and the equation box one shared composition, and the anchor-corner rule
+  with its two degenerate cuts), plus the process yield the series produced: the drawing-surface
+  contract ladder and the six-gate citation rule, both promoted into `STATUS.md` § 5 and `AGENTS.md`.
+  Suite 2480.
+
 - **v0.24.0** (2026-08-01) — the Nye-view release. Carries **NYE** (the dot-diagram view, its Yariv
   Table 16.1 print gate and the four ITC-D erratum candidates), **NYE-F** (roving tabindex plus the
   4224-combination view-model sweep) and **B27-S** (property-flag badges in the group identity

@@ -5,7 +5,7 @@
 > **Authority:** authoritative for the current cycle. Section 1 is the ONLY list of open,
 > in-scope work; deferred ideas live in `docs/planning/BACKLOG.md`.
 
-_Last updated: 2026-08-02. Synthesises open points from the planning documents in
+_Last updated: 2026-08-03. Synthesises open points from the planning documents in
 `docs/planning/` (`ROADMAP.md` and `ROADMAP-next.md` are closed out; `TODO-next.md` is the
 frozen working-draft archive of series closed before 2026-07-31; `LEDGER.md` is the append-only
 record from that date on). See those files for derivation details, file:line anchors, and
@@ -19,7 +19,29 @@ is described in `AGENTS.md`._
 
 ---
 
-## Current release: v0.24.0 (2026-08-01)
+## Current release: v0.25.0 (2026-08-03)
+
+**The sample-orientation release** — a MINOR carrying one new capability. No calculated output
+changed.
+
+- **SIM-O** — a live **sample-orientation view** beside the Simulator's crystal-rotation sliders
+  (desktop, where crystal rotation lives): the sample as a flat plate that turns with the sliders,
+  carrying the crystal axes x/y/z from one of its corners, in front of a fixed lab frame X/Y/Z whose
+  Z is the beam. The picture is not a second model of the orientation — it draws the app's own
+  rotation matrix, which the series extracted to `composeOrientationMatrix` so the widget, the
+  polarimetry and the crystal-axes equation box all read one composition. That box is the widget's
+  legend and its zero-rotation special case.
+- **Process yield, disproportionate to the feature.** The physics was right from the first commit and
+  never revised; the *drawing* took six revisions, four of them tracing to specification errors. What
+  came out of that is the **contract ladder for drawing surfaces** in § 5 — metric, orientation,
+  semantics, screen handedness — the one-source rule for depth conventions, the contact-sheet method
+  for view acceptances, and the six-gate citation rule. The ledger carries all of it, including a
+  retracted claim, as evidence that corrections stay correctable.
+
+Suite 2480 green. See `CHANGELOG.md` `[0.25.0]` for the user-facing detail and the SIM-O entry with
+its six dated revisions in `docs/planning/LEDGER.md`.
+
+### v0.24.0 (2026-08-01)
 
 **The Nye-view release** — a MINOR carrying two new capabilities, one behaviour fix and one
 display change. No calculated output changed.
@@ -105,27 +127,7 @@ snapping — A-series ledger in `TODO-next.md`).
 Series closed since the last release cut. Each release absorbs them into its own block above, so
 this list is empty immediately after a cut and grows again as work closes.
 
-- **SIM-O — sample-orientation widget for the Simulator** (2026-08-02). A live axonometric scene
-  beside the crystal-rotation sliders: the sample as a flat plate turning with the sliders, carrying
-  the crystal triad from one corner, in front of a fixed lab triad whose Z is the beam. Desktop-only,
-  inheriting the rotation controls' own breakpoint gate rather than adding one. The widget takes its
-  rotation matrix from the engine, which required extracting the composition — inlined identically in
-  two places — into `composeOrientationMatrix`; the extraction was proven behaviour-neutral against
-  the pins rather than asserted. Two corrections to the recorded anchor-corner rule came out of it:
-  the score's sign is not the defect criterion (an axis leaves the body unless it runs inward along
-  all three of the corner's face normals), and [110] is degenerate as well as [111]. Visual
-  acceptance then found the viewpoint itself wrong — the lab axes came out cyclically permuted, and
-  no test could see it, because every fixture compared lab-space vectors the camera never touches;
-  further passes found it sheared (free axis-image constants had specified a non-orthographic
-  projection), then aimed at the wrong one of the two cameras the contract admitted, then — on a
-  handedness figure of merit that turned out to be inverted — sent into a mirrored camera family that
-  was never needed. The camera is a plain rotation built from `linalg` primitives, chosen by **contact
-  sheet**: six candidates rendered by the real component, labelled with their measured invariants,
-  picked at acceptance. Six pins with a mutation-tested division of labour guard the class — metric,
-  orientation, semantic, screen handedness, screen identity, parallelism — and every rejected
-  candidate breaks at least one. The generalisation is promoted to § 5 below as a contract ladder for
-  drawing surfaces. Suite 2422 → 2478. Full record, including all five dated revisions and the
-  retraction, in `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md` `[Unreleased]`.
+_Nothing closed since v0.25.0._
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
