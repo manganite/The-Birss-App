@@ -152,7 +152,28 @@ Known naming impurities, documented rather than renamed: `groupNotation.test.ts`
 plain names; `sharingPartitions.reference.test.ts` guards GENERATED data rather than literature;
 `handBirss.e2e.test.ts` is a named acceptance checkpoint, not a browser E2E test.
 
-`npm run lint` and `npm run test` are the automated quality gates (run in CI via `.github/workflows/ci.yml`, which also regenerates `birss-tables/table-nomenclature.md` from `birss-tables/tools/generate_nomenclature.py` and fails the build on drift; CI additionally runs `npm run build`). Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: the ~150 golden fixtures of `goldenTensors.fixtures.ts` (provenance classes below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
+### The gates
+
+**Five commands, and the list is quoted in full or not at all.** `.github/workflows/ci.yml` runs
+them in this order on every push and pull request:
+
+1. `npm run lint` — `tsc --noEmit`
+2. `npm run lint:eslint` — `eslint .`
+3. `npm run format:check` — `prettier --check .`
+4. `npm run build`
+5. `npm run test`
+
+CI additionally regenerates `birss-tables/table-nomenclature.md` from
+`birss-tables/tools/generate_nomenclature.py` and fails on drift.
+
+A work report that says "gates green" **cites all five by name**. If one is deliberately skipped, the
+skip is stated in the report — a shortened list is indistinguishable from a complete one at a glance,
+which is the Erratum-11 enumeration rule applied to process rather than to data. Adopted 2026-08-03
+after a branch reached review with `lint:eslint` and `format:check` red and three gates reported
+green; the prose this sentence replaced named only two of the five, and the executor never opened
+`ci.yml` to check.
+
+Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: the ~150 golden fixtures of `goldenTensors.fixtures.ts` (provenance classes below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
 
 `src/services/goldenTensors.fixtures.ts` + `goldenTensors.test.ts` extend this with golden component-relation fixtures for **every Type-III crystal family**, c-type ED (incl. the canonical Cr2O3 `-3'm'` magnetoelectric SHG tensor), and the axial (MD) `det(g)` branch — each pinning down the *identity* of a hand-curated `GENERATORS` entry, not just its order or invariants.
 

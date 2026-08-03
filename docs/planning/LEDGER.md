@@ -967,6 +967,33 @@ consequences were named in advance and came out as named: lab tips and the hande
 30², a consequence of the shared arrow length, not a change to the identity). Nothing else moved.
 Suite 2478 → 2480.
 
+### Revision 7, 2026-08-03 — the gate list was short, and short looked complete
+
+Review found the branch red on `lint:eslint` (one unused import, left behind when the arrow-length
+unification removed `SCALE` from the test's lab projection) and on `format:check` (the same file).
+Both trivial. The finding underneath them is not.
+
+**Every report in this series said "lint · test · build".** CI runs five commands — `lint`,
+`lint:eslint`, `format:check`, `build`, `test` — and the two never cited are precisely the two that
+were failing. A green three-item list and a green five-item list read identically at a glance, which
+is why the omission survived a dozen commits and several rounds of review.
+
+**Two causes, both real.** `AGENTS.md` named only `lint` and `test` as "the automated quality gates",
+adding that "CI additionally runs `npm run build`" — a normative document that was factually short of
+its own workflow file. And the executor took that prose as the enumeration instead of opening
+`ci.yml`, which is the same move the B27-S author rule was written against: *an absence or a
+completeness claim cites the enumeration that establishes it.* Reading the summary is not reading the
+source; the summary is exactly where a missing item hides.
+
+**Fixed at the root, not only at the symptom.** `AGENTS.md` now carries the five gates as a numbered
+list in CI order, with the rule that a report citing "gates green" quotes all five by name and states
+any deliberate skip. This is the Erratum-11 enumeration rule moved from data to process — the same
+shape as the erratum enumeration for findings and the usage-grep rule for premises, now for the
+checks a branch claims to have passed.
+
+Fix commit: the unused import and the formatting, plus this documentation correction. Suite unchanged
+at 2480; the two newly-cited gates pass.
+
 ### Open
 
 *(none — the series is closed.)*

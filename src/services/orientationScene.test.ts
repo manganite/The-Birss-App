@@ -18,7 +18,6 @@ import {
   LAB_ANCHOR_WORLD,
   LAB_APPROACH_FRACTION,
   AXIS_ARROW_LENGTH,
-  SCALE,
   BODY_ORIGIN,
   SCENE_WIDTH,
   SCENE_HEIGHT,
@@ -669,7 +668,10 @@ describe('orientationScene — rotation', () => {
     const Ruser = mul(Ry(phiY), mul(Rx(phiX), Rz(psi)));
     const s = CORNER_SIGNS[0];
     const body = [s[0] * HALF_EXTENTS.x, s[1] * HALF_EXTENTS.y, s[2] * HALF_EXTENTS.z];
-    closeTo(scene.corners3[0], [0, 1, 2].map((i) => [0, 1, 2].reduce((acc, k) => acc + Ruser[i][k] * body[k], 0)));
+    closeTo(
+      scene.corners3[0],
+      [0, 1, 2].map((i) => [0, 1, 2].reduce((acc, k) => acc + Ruser[i][k] * body[k], 0)),
+    );
   });
 
   /** Decision (1): the cuboid is cut-independent. Same rotation, five cuts, identical body. */
