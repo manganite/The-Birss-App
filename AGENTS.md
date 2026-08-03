@@ -154,24 +154,30 @@ plain names; `sharingPartitions.reference.test.ts` guards GENERATED data rather 
 
 ### The gates
 
-**Five commands, and the list is quoted in full or not at all.** `.github/workflows/ci.yml` runs
-them in this order on every push and pull request:
+**Six checks, and the list is quoted in full or not at all.** `.github/workflows/ci.yml` runs them in
+this order on every push and pull request; any one of them failing fails the build:
 
 1. `npm run lint` — `tsc --noEmit`
 2. `npm run lint:eslint` — `eslint .`
 3. `npm run format:check` — `prettier --check .`
 4. `npm run build`
-5. `npm run test`
+5. **nomenclature drift** — regenerate `birss-tables/table-nomenclature.md` from
+   `birss-tables/tools/generate_nomenclature.py`, then `git diff --exit-code` on it. There is no npm
+   script for this one; run the two commands by hand whenever `birss-tables/` is touched.
+6. `npm run test`
 
-CI additionally regenerates `birss-tables/table-nomenclature.md` from
-`birss-tables/tools/generate_nomenclature.py` and fails on drift.
-
-A work report that says "gates green" **cites all five by name**. If one is deliberately skipped, the
+A work report that says "gates green" **cites all six by name**. If one is deliberately skipped, the
 skip is stated in the report — a shortened list is indistinguishable from a complete one at a glance,
-which is the Erratum-11 enumeration rule applied to process rather than to data. Adopted 2026-08-03
-after a branch reached review with `lint:eslint` and `format:check` red and three gates reported
-green; the prose this sentence replaced named only two of the five, and the executor never opened
-`ci.yml` to check.
+which is the Erratum-11 enumeration rule applied to process rather than to data. And **enumerating
+means reading the step list, not grepping it for a pattern: a filter is a summary too**, and the item
+that differs from the others is exactly the one a pattern drops.
+
+Adopted 2026-08-03, in two goes. First after a branch reached review with `lint:eslint` and
+`format:check` red while three gates were reported green — the prose this section replaced named only
+two of the five npm gates, and the executor had never opened `ci.yml`. Then, the same day, the
+replacement itself came up one short: it was built by grepping `ci.yml` for `npm run`, so the
+nomenclature step — the only check that is not an npm script — fell straight through the filter. The
+second failure is the sharper one, because it happened inside the fix for the first.
 
 Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: the ~150 golden fixtures of `goldenTensors.fixtures.ts` (provenance classes below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
 
