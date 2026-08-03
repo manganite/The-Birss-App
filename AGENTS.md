@@ -161,9 +161,11 @@ this order on every push and pull request; any one of them failing fails the bui
 2. `npm run lint:eslint` — `eslint .`
 3. `npm run format:check` — `prettier --check .`
 4. `npm run build`
-5. **nomenclature drift** — regenerate `birss-tables/table-nomenclature.md` from
-   `birss-tables/tools/generate_nomenclature.py`, then `git diff --exit-code` on it. There is no npm
-   script for this one; run the two commands by hand whenever `birss-tables/` is touched.
+5. `npm run check:nomenclature` — regenerate `birss-tables/table-nomenclature.md` from
+   `birss-tables/tools/generate_nomenclature.py`, then `git diff --exit-code` on it. Run it whenever
+   `birss-tables/` is touched. It was the only check without a script until 2026-08-03, which is
+   exactly why it fell out of an enumeration; giving it one removes the asymmetry rather than only
+   documenting it.
 6. `npm run test`
 
 A work report that says "gates green" **cites all six by name**. If one is deliberately skipped, the

@@ -27,8 +27,6 @@ jobs:
       - name: Build
         run: npm run build
       - name: Nomenclature table is reproducible
-        run: |
-          python3 birss-tables/tools/generate_nomenclature.py
-          git diff --exit-code birss-tables/table-nomenclature.md
+        run: npm run check:nomenclature
       - name: Test
         run: npm run test
