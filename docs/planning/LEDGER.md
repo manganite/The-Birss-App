@@ -994,6 +994,41 @@ checks a branch claims to have passed.
 Fix commit: the unused import and the formatting, plus this documentation correction. Suite unchanged
 at 2480; the two newly-cited gates pass.
 
+### Revision 8, 2026-08-03 — two Copilot findings, both with a live kernel
+
+Both comments predate the layout and camera work, so the first question was whether they still hold
+at HEAD. Both do, and both were disposed under the four-condition post-verdict threshold
+(comment/docs-only, responsive to review, inside the enumerated path set, diff quoted in the merge
+report) rather than deferred on age.
+
+**1. The layout claim in this ledger had gone stale.** The Design-decisions bullet of the SIM-O entry
+still reads "beside the sliders from `lg` up; between `md` and `lg` ... it drops below them there",
+and cites a 276-unit canvas. Neither survived: the grid restructure made the two columns
+unconditional inside the `hidden md:block` gate, and the canvas was fitted to 255. Measured at HEAD,
+the scene is beside the sliders at every width the block is visible at — 768, 900, 1024, 1280, 1440 —
+with slider tracks of 185, 317, 441, 630, 630 px. The original bullet stands as written, per the
+append-only rule; this paragraph is its correction.
+
+Copilot's second half — that side-by-side from `md` "can squeeze the slider tracks more than
+intended" — is a fair worry and measurement answers it: the narrowest case is 185 px at 768 px, which
+is *wider* than the 168 px the same viewport gave under the flex layout the maintainer sighted and
+accepted. No regression, and the coarse-step keyboard contract (A1/A3) covers precision use anyway.
+
+**2. `SceneFace.depth` is not a depth.** It is `normal · VIEW_TO_CAMERA` — the cosine between the
+face's outward normal and the line of sight, a FACING measure. The doc comment claimed "depth along
+the view direction; larger is nearer the camera", which is wrong twice over. Ordering by it is
+nonetheless sound, and the corrected comment now says why rather than asserting a false reason: the
+body is convex and only front faces survive culling, so no two emitted faces overlap and any stable
+order draws the same picture.
+
+Correcting this sharpened the semantic pin's own statement. "The visible face carrying the largest
+depth is -z" was always meant as "the sample shows its FACE to the viewer", and with the quantity
+named correctly that is what it now says.
+
+The field NAME is left alone deliberately: renaming it would touch the tests and is a code change,
+which fails the first of the four conditions and would cost a re-review round for a nit. Recorded
+here as an open naming candidate rather than smuggled through as a comment fix.
+
 ### Open
 
 *(none — the series is closed.)*

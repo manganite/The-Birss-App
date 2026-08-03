@@ -217,7 +217,18 @@ export interface SceneFace {
   points: ScenePoint[];
   /** Outward normal in lab coordinates, after rotation. */
   normal: number[];
-  /** Depth along the view direction; larger is nearer the camera. Faces are emitted far -> near. */
+  /**
+   * How squarely the face meets the camera: `normal · VIEW_TO_CAMERA`, i.e. the cosine of the angle
+   * between its outward normal and the line of sight. Positive exactly when the face is visible,
+   * which is what culls it; 1 means head-on.
+   *
+   * NOT a geometric depth, despite the field name -- it says nothing about how far the face is
+   * along the view direction, and a larger value does not mean nearer. Ordering by it is still
+   * sound here for a reason worth stating: the body is convex and only front faces survive culling,
+   * so no two emitted faces overlap and any stable order draws the same picture. The order is fixed
+   * ascending so the emission is deterministic, and the opacity ramp reads as depth shading because
+   * a face turned away from the viewer is also the one further into the scene for this body.
+   */
   depth: number;
 }
 
@@ -236,7 +247,8 @@ export interface OrientationScene {
   corners3: number[][];
   /** The same corners, projected. */
   corners: ScenePoint[];
-  /** Camera-facing faces only, painter's order (far first). The body is convex, so they never overlap. */
+  /** Camera-facing faces only, in ascending `depth` (least head-on first). The body is convex and
+   *  these never overlap, so the order is for determinism and shading rather than for occlusion. */
   faces: SceneFace[];
   /** Index into `corners` of the corner the crystal triad hangs from. */
   anchorCorner: number;
