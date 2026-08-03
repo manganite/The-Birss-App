@@ -5,7 +5,7 @@
 > **Authority:** authoritative for the current cycle. Section 1 is the ONLY list of open,
 > in-scope work; deferred ideas live in `docs/planning/BACKLOG.md`.
 
-_Last updated: 2026-08-01. Synthesises open points from the planning documents in
+_Last updated: 2026-08-02. Synthesises open points from the planning documents in
 `docs/planning/` (`ROADMAP.md` and `ROADMAP-next.md` are closed out; `TODO-next.md` is the
 frozen working-draft archive of series closed before 2026-07-31; `LEDGER.md` is the append-only
 record from that date on). See those files for derivation details, file:line anchors, and
@@ -105,7 +105,27 @@ snapping — A-series ledger in `TODO-next.md`).
 Series closed since the last release cut. Each release absorbs them into its own block above, so
 this list is empty immediately after a cut and grows again as work closes.
 
-_Nothing closed since v0.24.0._
+- **SIM-O — sample-orientation widget for the Simulator** (2026-08-02). A live axonometric scene
+  beside the crystal-rotation sliders: the sample as a flat plate turning with the sliders, carrying
+  the crystal triad from one corner, in front of a fixed lab triad whose Z is the beam. Desktop-only,
+  inheriting the rotation controls' own breakpoint gate rather than adding one. The widget takes its
+  rotation matrix from the engine, which required extracting the composition — inlined identically in
+  two places — into `composeOrientationMatrix`; the extraction was proven behaviour-neutral against
+  the pins rather than asserted. Two corrections to the recorded anchor-corner rule came out of it:
+  the score's sign is not the defect criterion (an axis leaves the body unless it runs inward along
+  all three of the corner's face normals), and [110] is degenerate as well as [111]. Visual
+  acceptance then found the viewpoint itself wrong — the lab axes came out cyclically permuted, and
+  no test could see it, because every fixture compared lab-space vectors the camera never touches;
+  further passes found it sheared (free axis-image constants had specified a non-orthographic
+  projection), then aimed at the wrong one of the two cameras the contract admitted, then — on a
+  handedness figure of merit that turned out to be inverted — sent into a mirrored camera family that
+  was never needed. The camera is a plain rotation built from `linalg` primitives, chosen by **contact
+  sheet**: six candidates rendered by the real component, labelled with their measured invariants,
+  picked at acceptance. Six pins with a mutation-tested division of labour guard the class — metric,
+  orientation, semantic, screen handedness, screen identity, parallelism — and every rejected
+  candidate breaks at least one. The generalisation is promoted to § 5 below as a contract ladder for
+  drawing surfaces. Suite 2422 → 2478. Full record, including all five dated revisions and the
+  retraction, in `docs/planning/LEDGER.md`; user-facing detail in `CHANGELOG.md` `[Unreleased]`.
 
 Further Tables refinements are **unscoped**, not pending: nothing is queued behind these, and
 candidates live in `docs/planning/BACKLOG.md` (the deprioritized LaTeX-copy item among them).
@@ -163,6 +183,28 @@ Carried from `ROADMAP.md` and `ROADMAP-next.md`. These constrain future work.
   captured from a known-good revision and regenerated only by re-capture — never
   edited to turn a red pin green. For any data/math item, extend the relevant
   fixture first and require it green, then change the code.
+- **A test of the modelled quantity is not a test of its depiction.** Four defects reached visual
+  acceptance in SIM-O with a fully green suite — an axis permutation, a shear, the wrong one of two
+  contract-conforming cameras, and a net parity flip — because every fixture compared lab-space
+  quantities the camera never touches. A drawing surface therefore carries its own **contract
+  ladder**, each rung blind to the ones below it:
+  1. **Metric** — the projection does not distort. For an orthographic view, `M·Mᵀ = I`, or
+     equivalently Gauss's `z₁² + z₂² + z₃² = 0` on the axis images.
+  2. **Orientation** — the sign structure of the axis images: which way each axis goes.
+  3. **Semantics** — what the view is _of_; above all which axis is depth. Metric and orientation
+     together still leave this free.
+  4. **Screen handedness** — parity as it reaches the page: the winding of the drawn triad must
+     agree with the occlusion, or a reader trusts the occlusion and concludes the labels are wrong.
+     Such a pin must **derive its depth side from the same code that decides the occlusion**, never
+     restate the convention. Restating it is how this one shipped inverted: the winding was read in
+     screen coordinates, where the right-handed third axis points _into_ the page, and paired with a
+     depth taken _towards the viewer_ — the two differ by a sign, and the resulting figure of merit
+     was wrong for every camera at once, which is exactly the kind of error a second statement of a
+     convention produces and a single source cannot.
+  And **choose views by contact sheet, not by decree**: render the candidates from the real code,
+  label each with its measured invariants, and let acceptance pick. Three of the four defects above
+  were specification errors that a six-tile sheet would have caught before any of them was written
+  down. See the SIM-O entry and its four dated revisions in `docs/planning/LEDGER.md`.
 - **Authoritative convention references:** `docs/references/BIRSS-APP-CONVENTIONS-REFERENCE.md`
   (convention contract & verification ladder) and `birss-tables/table-nomenclature.md`
   (122-group nomenclature + operators/generators) are the two central, cross-linked

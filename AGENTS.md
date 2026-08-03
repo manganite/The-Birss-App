@@ -152,7 +152,28 @@ Known naming impurities, documented rather than renamed: `groupNotation.test.ts`
 plain names; `sharingPartitions.reference.test.ts` guards GENERATED data rather than literature;
 `handBirss.e2e.test.ts` is a named acceptance checkpoint, not a browser E2E test.
 
-`npm run lint` and `npm run test` are the automated quality gates (run in CI via `.github/workflows/ci.yml`, which also regenerates `birss-tables/table-nomenclature.md` from `birss-tables/tools/generate_nomenclature.py` and fails the build on drift; CI additionally runs `npm run build`). Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: the ~150 golden fixtures of `goldenTensors.fixtures.ts` (provenance classes below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
+### The gates
+
+**Five commands, and the list is quoted in full or not at all.** `.github/workflows/ci.yml` runs
+them in this order on every push and pull request:
+
+1. `npm run lint` — `tsc --noEmit`
+2. `npm run lint:eslint` — `eslint .`
+3. `npm run format:check` — `prettier --check .`
+4. `npm run build`
+5. `npm run test`
+
+CI additionally regenerates `birss-tables/table-nomenclature.md` from
+`birss-tables/tools/generate_nomenclature.py` and fails on drift.
+
+A work report that says "gates green" **cites all five by name**. If one is deliberately skipped, the
+skip is stated in the report — a shortened list is indistinguishable from a complete one at a glance,
+which is the Erratum-11 enumeration rule applied to process rather than to data. Adopted 2026-08-03
+after a branch reached review with `lint:eslint` and `format:check` red and three gates reported
+green; the prose this sentence replaced named only two of the five, and the executor never opened
+`ci.yml` to check.
+
+Tests for `tensorCalculator.ts` live in `src/services/tensorCalculator.test.ts` and cover: group-order sanity for all 122 point groups, parity invariants (e.g. ED vanishes for centrosymmetric groups, EQ never vanishes, grey groups `G1'` reproduce `G` for i-type), and `formatCoeff`/`isCentrosymmetric` unit tests, plus the convention-audit guardrails: the ~150 golden fixtures of `goldenTensors.fixtures.ts` (provenance classes below), the two reference tests (`nomenclature.reference.test.ts`, `operatorSet.reference.test.ts` — parse `birss-tables/table-nomenclature.md` at test time), the grey-c≡0 and particularization checks, and three hand-Birss end-to-end tests (`handBirss.e2e.test.ts`); see `docs/findings/AUDIT-convention-references.md` for the full coverage matrix.
 
 `src/services/goldenTensors.fixtures.ts` + `goldenTensors.test.ts` extend this with golden component-relation fixtures for **every Type-III crystal family**, c-type ED (incl. the canonical Cr2O3 `-3'm'` magnetoelectric SHG tensor), and the axial (MD) `det(g)` branch — each pinning down the *identity* of a hand-curated `GENERATORS` entry, not just its order or invariants.
 
@@ -173,7 +194,7 @@ src/
   types.ts                       # Shared prop interfaces (TensorConfig, OrientationState, SimulationState), domain unions (CrystalSystem, Parity, TimeParity, GroupType, GroupKey) and TENSOR_META
   domainTypes.ts                 # Dependency-free domain unions (R2), imported by types.ts and the data modules
   data/pointGroups.ts            # Static registry of all 122 magnetic point groups
-  services/                      # 16 non-test modules; the dependency direction is spelled out below
+  services/                      # 17 non-test modules; the dependency direction is spelled out below
     tensorCalculator.ts          # Thin barrel re-exporting the public API below
     tolerances.ts                # Shared numeric epsilons (COEFF_EPSILON, ROOT_MATCH_EPSILON, …)
     symmetryGroups.ts            # Matrix algebra, GENERATORS table, group closure, getSymmetryOperations
@@ -184,6 +205,7 @@ src/
     propertyFlags.ts             # isPolar / isChiral / isFerromagnetic / isMagnetoelectric
     conventionMapping.ts         # App ↔ Birss ↔ ITC group-symbol mapping and display names
     orientation.ts               # Miller index → preset angles (hklToPresetAngles), azimuth-zero convention
+    orientationScene.ts          # Scene model for the Simulator's sample-orientation widget (slab, triads, anchor corner)
     trigPoly.ts                  # Trigonometric polynomial algebra for symbolic rotation angles (phiX, phiY, psi)
     symbolicProjection.ts        # Symbolic SHG source terms — parallel path producing TrigPoly coefficients
     trigPolyFormat.ts            # LaTeX formatting for TrigPoly and SymPoly expressions
@@ -196,6 +218,7 @@ src/
     PointGroupExplorer.tsx       # Explorer page — browse & filter the 122 groups
     OperationsModal.tsx          # Modal showing symmetry operations for a selected group
     SimulatorPage.tsx            # Simulator page — radar chart polarimetry, Fourier series formulas
+    OrientationSceneView.tsx     # Simulator: the live sample-orientation scene beside the rotation sliders
     TablesPage.tsx               # Tables page — interactive Birss-table lookup
     tables/                      # Tables-page sub-views (LookupControls, LookupChain, TensorFormResult, GroupSharingList, …)
     help/                        # Help-page per-tab sub-views (Overview, Conventions, Physics, Simulation, Deeper)
@@ -228,6 +251,7 @@ are both consequences of that layering rather than separate conventions.
 | 3 | `latexFormatting` | `symmetryGroups`, `tensorProjection` |
 | 3 | `propertyFlags` | `symmetryGroups`, `tensorProjection`, `data/` |
 | 3 | `orientation` | `tensorProjection` |
+| 3 | `orientationScene` | `tensorProjection`, `tolerances` |
 | 3 | `groupSearch` | `conventionMapping`, `data/` |
 | 4 | `nyeScheme` | `tensorForms` (type-only), `tensorProjection` |
 | 4 | `trigPolyFormat` | `trigPoly`, `tensorProjection`, `symbolicProjection` (type-only), `tolerances` |
@@ -244,6 +268,11 @@ What each module is for, and the constraints that are not visible in the graph:
 - **`linalg.ts`** — `rref`, `spanRank`, `isIndependentOf` and the pivot epsilons, the numeric 3×3
   rotations, and the symbolic `TrigMat3` helpers. The `trigPoly` dependency comes from that last
   group only; the numeric half is independent of it.
+- **`orientationScene.ts`** — the scene model behind the Simulator's sample-orientation widget:
+  slab corners, camera-facing faces, the two triads and the anchor corner, already projected into
+  SVG units. Like `nyeScheme` it is a VIEW over an existing derivation, not a second one — its
+  rotation matrix is `tensorProjection.composeOrientationMatrix`, so the picture and the
+  crystal-axes equation box cannot disagree.
 - **`tensorProjection.ts`** — the numeric projection core (`calculateTensorBasisResults`,
   `calculateSHGExpressions`, `getLabFrameVectors`, `transformTensor`/`averageTensor`), the Q0
   constraint partition (`reducedPartition`, `formatReducedRelations`,
