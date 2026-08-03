@@ -79,6 +79,15 @@ components. Remaining design-system work:
   monoclinic notes.
 - Document the chosen note / emphasis tokens in a comment or `AGENTS.md`.
 
+### Orientation scene — `SceneFace.depth` is misnamed (SIM-O residue) — `quick-win`
+
+- The field holds `normal · VIEW_TO_CAMERA`, the cosine between a face's outward normal and the
+  line of sight — a **facing** measure, not a depth along the view direction, and a larger value
+  does not mean nearer. The doc comment was corrected in the SIM-O series (Copilot finding C2,
+  ledger Revision 8); the identifier was left alone because renaming it touches
+  `orientationScene.test.ts` and so is a code change, which would have cost a re-review round for a
+  nit. Rename to `facing` with its test references when something else takes that file.
+
 ### Lab-frame panel (B19 — one deferred item) — `quick-win`
 
 - Per-term tooltips / legend for `x_crys / X_LAB / …` and the `k`-relation.

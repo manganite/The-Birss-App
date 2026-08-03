@@ -30,6 +30,7 @@
     "test:interaction": "vitest run interaction.test",
     "bench": "vitest bench --run",
     "nomenclature": "python3 birss-tables/tools/generate_nomenclature.py",
+    "check:nomenclature": "npm run nomenclature && git diff --exit-code birss-tables/table-nomenclature.md",
     "table7data": "node birss-tables/tools/generate_table7_data.mjs",
     "sharingdata": "node scripts/generate-sharing.mjs"
   },
