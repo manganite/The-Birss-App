@@ -1029,6 +1029,40 @@ The field NAME is left alone deliberately: renaming it would touch the tests and
 which fails the first of the four conditions and would cost a re-review round for a nit. Recorded
 here as an open naming candidate rather than smuggled through as a comment fix.
 
+### Addendum, 2026-08-03 — the gate rule was short again, and by its own author
+
+Revision 7 replaced a two-item gate list with a five-item one and adopted the rule that a report
+claiming "gates green" quotes the list in full. Within hours the maintainer found the replacement one
+item short: `.github/workflows/ci.yml` has **six** verification steps, and the nomenclature-drift
+check sits at position 5, between build and test —
+
+    python3 birss-tables/tools/generate_nomenclature.py
+    git diff --exit-code birss-tables/table-nomenclature.md
+
+— which reddens the build exactly like a failing test. The section had it as a trailing sentence
+("CI additionally regenerates…"), which reads as a side effect rather than as a gate.
+
+**Why it was missed, and it is not carelessness.** The list was built by grepping `ci.yml` for
+`npm run`. Every other check is an npm script; this one is two inline shell commands. The filter was
+a perfect fit for five of six items and blind to the sixth by construction — and the sixth is the
+odd one precisely because it differs, which is the property a pattern search cannot see.
+
+**Filtering is a summary too.** That is the same failure as Revision 7's original: reading `AGENTS.md`
+instead of `ci.yml` was taking a summary for the source, and grepping `ci.yml` for `npm run` was
+taking a *projection* of the source for the source. Only the resolution improved between the two —
+the shape did not. The rule now says so in the text: enumerating means reading the step list, not
+grepping for a pattern.
+
+**Recorded because of where it happened.** The second miss occurred inside the fix for the first, on
+the same day, against the rule's own author. An enumeration discipline that only its author's good
+intentions enforce is not a discipline; what makes this one worth keeping is that the review caught it
+twice and the record says so both times.
+
+Practical consequence, stated as a procedure rather than as luck: the nomenclature step is run
+whenever `birss-tables/` is touched. Across the whole SIM-O series it never was, so the step would
+have passed — but nothing about the series' method established that, and "it would have been green"
+is not a check.
+
 ### Open
 
 *(none — the series is closed.)*
